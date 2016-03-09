@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.wso2.carbon.security.jaas.internal.config;
+package org.wso2.carbon.security.internal.config;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

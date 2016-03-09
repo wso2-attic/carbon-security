@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 
-package org.wso2.carbon.security.jaas.internal;
+package org.wso2.carbon.security.internal;
 
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
@@ -24,10 +25,12 @@ import org.osgi.service.permissionadmin.PermissionAdmin;
 import org.osgi.service.permissionadmin.PermissionInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.wso2.carbon.security.jaas.internal.config.DefaultPermissionInfoCollection;
-import org.wso2.carbon.security.jaas.internal.config.SecurityConfigBuilder;
+import org.wso2.carbon.security.internal.config.DefaultPermissionInfo;
+import org.wso2.carbon.security.internal.config.DefaultPermissionInfoCollection;
+import org.wso2.carbon.security.internal.config.SecurityConfigBuilder;
 import org.wso2.carbon.security.jaas.CarbonPolicy;
-import org.wso2.carbon.security.jaas.internal.config.DefaultPermissionInfo;
+import org.wso2.carbon.security.usercore.common.CarbonRealmServiceImpl;
+import org.wso2.carbon.security.usercore.service.RealmService;
 
 import java.security.Policy;
 import java.util.ArrayList;
@@ -38,12 +41,13 @@ import java.util.List;
  * OSGi service component which handle authentication and authorization
  */
 @Component(
-        name = "org.wso2.carbon.security.jaas.internal.CarbonSecurityProvider",
+        name = "org.wso2.carbon.security.internal.CarbonSecurityComponent",
         immediate = true
 )
-public class CarbonSecurityProvider {
+public class CarbonSecurityComponent {
 
-    private static final Logger log = LoggerFactory.getLogger(CarbonSecurityProvider.class);
+    private static final Logger log = LoggerFactory.getLogger(CarbonSecurityComponent.class);
+    private ServiceRegistration registration;
 
     @Activate
     public void registerCarbonSecurityProvider(BundleContext bundleContext) {
@@ -56,11 +60,24 @@ public class CarbonSecurityProvider {
         Policy.setPolicy(policy);
         System.setSecurityManager(new SecurityManager());
 
+        try {
+            registration = bundleContext.registerService(RealmService.class.getName(),
+                                                         CarbonRealmServiceImpl.getInstance(), null);
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+        }
+
         log.info("Carbon-Security bundle activated successfully.");
     }
 
     @Deactivate
     public void unregisterCarbonSecurityProvider(BundleContext bundleContext) {
+
+        try {
+            bundleContext.ungetService(registration.getReference());
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+        }
         log.info("Carbon-Security bundle deactivated successfully.");
     }
 
