@@ -14,7 +14,9 @@
  * limitations under the License.
  */
 
-package org.wso2.carbon.security.jaas.internal.config;
+package org.wso2.carbon.security.internal.config;
+
+import org.wso2.carbon.security.internal.config.DefaultPermissionInfo;
 
 import java.util.Collections;
 import java.util.Set;
