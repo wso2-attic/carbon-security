@@ -1,4 +1,4 @@
-package org.wso2.carbon.security.jaas.modules;
+package org.wso2.carbon.security.jaas.modules.test;
 
 import io.netty.handler.codec.http.DefaultHttpRequest;
 import io.netty.handler.codec.http.HttpMethod;
@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 import org.wso2.carbon.security.jaas.CarbonCallbackHandler;
+import org.wso2.carbon.security.jaas.modules.BasicAuthLoginModule;
 
 import javax.security.auth.Subject;
 import javax.security.auth.callback.CallbackHandler;

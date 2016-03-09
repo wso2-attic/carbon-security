@@ -5,12 +5,12 @@
         <groupId>org.wso2.carbon.security</groupId>
         <artifactId>org.wso2.carbon.security.parent</artifactId>
         <version>1.0.0-SNAPSHOT</version>
-        <relativePath>../../pom.xml</relativePath>
+        <relativePath>../pom.xml</relativePath>
     </parent>
 
-    <artifactId>org.wso2.carbon.security.jaas</artifactId>
+    <artifactId>org.wso2.carbon.security</artifactId>
     <packaging>bundle</packaging>
-    <name>WSO2 Carbon JAAS - OSGi Bundle</name>
+    <name>WSO2 Carbon Security - OSGi Bundle</name>
 
     <build>
         <extensions>
@@ -68,10 +68,10 @@
     </dependencies>
 
     <properties>
-        <private.package>org.wso2.carbon.security.jaas.internal</private.package>
+        <private.package>org.wso2.carbon.security.internal</private.package>
         <export.package>
-            !org.wso2.carbon.security.jaas.internal,
-            org.wso2.carbon.security.jaas.*
+            !org.wso2.carbon.security.internal,
+            org.wso2.carbon.security.*
         </export.package>
         <import.package>
             org.osgi.framework.*;version="${osgi.framework.package.import.version.range}",
