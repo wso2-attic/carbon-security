@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.wso2.carbon.security.internal;
+package org.wso2.carbon.security.jaas.internal;
 
 import org.osgi.framework.BundleContext;
 import org.osgi.service.component.annotations.Activate;
@@ -24,10 +24,10 @@ import org.osgi.service.permissionadmin.PermissionAdmin;
 import org.osgi.service.permissionadmin.PermissionInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.wso2.carbon.security.internal.config.DefaultPermissionInfo;
-import org.wso2.carbon.security.internal.config.DefaultPermissionInfoCollection;
-import org.wso2.carbon.security.internal.config.SecurityConfigBuilder;
+import org.wso2.carbon.security.jaas.internal.config.DefaultPermissionInfoCollection;
+import org.wso2.carbon.security.jaas.internal.config.SecurityConfigBuilder;
 import org.wso2.carbon.security.jaas.CarbonPolicy;
+import org.wso2.carbon.security.jaas.internal.config.DefaultPermissionInfo;
 
 import java.security.Policy;
 import java.util.ArrayList;
@@ -38,7 +38,7 @@ import java.util.List;
  * OSGi service component which handle authentication and authorization
  */
 @Component(
-        name = "org.wso2.carbon.security.internal.CarbonSecurityProvider",
+        name = "org.wso2.carbon.security.jaas.internal.CarbonSecurityProvider",
         immediate = true
 )
 public class CarbonSecurityProvider {

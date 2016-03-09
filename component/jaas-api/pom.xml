@@ -8,9 +8,9 @@
         <relativePath>../../pom.xml</relativePath>
     </parent>
 
-    <artifactId>org.wso2.carbon.security.jass-api</artifactId>
+    <artifactId>org.wso2.carbon.security.jaas</artifactId>
     <packaging>bundle</packaging>
-    <name>WSO2 Carbon Security - OSGi Bundle</name>
+    <name>WSO2 Carbon JAAS - OSGi Bundle</name>
 
     <build>
         <extensions>
@@ -60,7 +60,6 @@
         <dependency>
             <groupId>org.testng</groupId>
             <artifactId>testng</artifactId>
-            <version>6.9.4</version>
         </dependency>
         <dependency>
             <groupId>org.wso2.orbit.org.yaml</groupId>
@@ -69,10 +68,10 @@
     </dependencies>
 
     <properties>
-        <private.package>org.wso2.carbon.security.internal</private.package>
+        <private.package>org.wso2.carbon.security.jaas.internal</private.package>
         <export.package>
-            !org.wso2.carbon.security.internal,
-            org.wso2.carbon.security.*
+            !org.wso2.carbon.security.jaas.internal,
+            org.wso2.carbon.security.jaas.*
         </export.package>
         <import.package>
             org.osgi.framework.*;version="${osgi.framework.package.import.version.range}",

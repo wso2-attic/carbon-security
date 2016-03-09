@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.wso2.carbon.security.exception;
+package org.wso2.carbon.security.jaas.exception;
 
 /**
  * This class {@code CarbonSecurityException} is a form of {@code Exception}

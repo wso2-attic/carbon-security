@@ -17,12 +17,12 @@
 package org.wso2.carbon.security.usercore.connector.inmemory;
 
 import org.wso2.carbon.security.usercore.bean.Group;
-import org.wso2.carbon.security.user.core.bean.User;
+import org.wso2.carbon.security.usercore.bean.User;
 import org.wso2.carbon.security.usercore.config.UserStoreConfig;
-import org.wso2.carbon.security.user.core.connector.IdentityStoreConnector;
+import org.wso2.carbon.security.usercore.connector.IdentityStoreConnector;
 import org.wso2.carbon.security.usercore.connector.UserStoreConstants;
-import org.wso2.carbon.security.user.core.exception.AuthenticationFailure;
-import org.wso2.carbon.security.user.core.exception.IdentityStoreException;
+import org.wso2.carbon.security.usercore.exception.AuthenticationFailure;
+import org.wso2.carbon.security.usercore.exception.IdentityStoreException;
 import org.wso2.carbon.security.usercore.bean.Group;
 import org.wso2.carbon.security.usercore.config.UserStoreConfig;
 import org.wso2.carbon.security.usercore.connector.UserStoreConstants;
@@ -160,6 +160,11 @@ public class InMemoryUserStoreConnector implements IdentityStoreConnector {
         InMemoryUserStoreGroup inMemoryUserStoreGroup = this.groups.get(groupID);
         Group group = new Group(inMemoryUserStoreGroup.getGroupID(), this.getUserStoreID(), "");
         return group;
+    }
+
+    @Override
+    public Group getGroupByName(String groupName) throws IdentityStoreException {
+        return null;
     }
 
     public Group getGroup(String attribute, String value) throws IdentityStoreException {

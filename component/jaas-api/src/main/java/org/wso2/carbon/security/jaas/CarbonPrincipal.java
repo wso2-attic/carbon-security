@@ -16,7 +16,7 @@
 
 package org.wso2.carbon.security.jaas;
 
-import org.wso2.carbon.security.util.InMemoryUserStoreManager;
+import org.wso2.carbon.security.jaas.util.InMemoryUserStoreManager;
 
 import java.io.Serializable;
 import java.security.Principal;

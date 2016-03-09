@@ -16,8 +16,8 @@
 
 package org.wso2.carbon.security.usercore.connector;
 
-import org.wso2.carbon.security.user.core.bean.Permission;
-import org.wso2.carbon.security.user.core.bean.Role;
+import org.wso2.carbon.security.usercore.bean.Permission;
+import org.wso2.carbon.security.usercore.bean.Role;
 import org.wso2.carbon.security.usercore.exception.AuthorizationStoreException;
 import org.wso2.carbon.security.usercore.exception.AuthorizationStoreException;
 

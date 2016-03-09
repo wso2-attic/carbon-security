@@ -17,9 +17,8 @@
 package org.wso2.carbon.security.usercore.service;
 
 import org.wso2.carbon.security.usercore.store.AuthorizationStore;
-import org.wso2.carbon.security.user.core.store.CredentialStore;
-import org.wso2.carbon.security.user.core.store.IdentityStore;
-import org.wso2.carbon.security.usercore.store.AuthorizationStore;
+import org.wso2.carbon.security.usercore.store.CredentialStore;
+import org.wso2.carbon.security.usercore.store.IdentityStore;
 
 /**
  * User realm service.

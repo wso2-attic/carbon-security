@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.wso2.carbon.security.util;
+package org.wso2.carbon.security.jaas.util;
 
 import org.wso2.carbon.security.jaas.CarbonPermission;
 

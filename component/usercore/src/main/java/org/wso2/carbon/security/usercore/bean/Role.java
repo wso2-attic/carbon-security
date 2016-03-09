@@ -16,7 +16,7 @@
 
 package org.wso2.carbon.security.usercore.bean;
 
-import org.wso2.carbon.security.user.core.store.AuthorizationStore;
+import org.wso2.carbon.security.usercore.store.AuthorizationStore;
 
 import java.util.List;
 

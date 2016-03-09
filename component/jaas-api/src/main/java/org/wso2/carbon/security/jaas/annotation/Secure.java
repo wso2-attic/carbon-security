@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.wso2.carbon.security.annotation;
+package org.wso2.carbon.security.jaas.annotation;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

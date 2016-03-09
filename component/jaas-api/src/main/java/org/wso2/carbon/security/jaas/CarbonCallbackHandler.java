@@ -21,8 +21,8 @@ import io.netty.handler.codec.http.HttpHeaders;
 import io.netty.handler.codec.http.HttpRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.wso2.carbon.security.exception.CarbonSecurityException;
-import org.wso2.carbon.security.util.CarbonSecurityConstants;
+import org.wso2.carbon.security.jaas.exception.CarbonSecurityException;
+import org.wso2.carbon.security.jaas.util.CarbonSecurityConstants;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
