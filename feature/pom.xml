@@ -37,12 +37,7 @@
     <dependencies>
         <dependency>
             <groupId>org.wso2.carbon.security</groupId>
-            <artifactId>org.wso2.carbon.security.jaas</artifactId>
-            <version>1.0.0-SNAPSHOT</version>
-        </dependency>
-        <dependency>
-            <groupId>org.wso2.carbon.security</groupId>
-            <artifactId>org.wso2.carbon.security.usercore</artifactId>
+            <artifactId>org.wso2.carbon.security</artifactId>
             <version>1.0.0-SNAPSHOT</version>
         </dependency>
         <dependency>
@@ -115,11 +110,7 @@
                             </adviceFileContents>
                             <bundles>
                                 <bundle>
-                                    <symbolicName>org.wso2.carbon.security.jaas</symbolicName>
-                                    <version>${carbon.security.version}</version>
-                                </bundle>
-                                <bundle>
-                                    <symbolicName>org.wso2.carbon.security.usercore</symbolicName>
+                                    <symbolicName>org.wso2.carbon.security</symbolicName>
                                     <version>${carbon.security.version}</version>
                                 </bundle>
                                 <bundle>
