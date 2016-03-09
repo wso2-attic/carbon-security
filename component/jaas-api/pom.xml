@@ -8,7 +8,7 @@
         <relativePath>../../pom.xml</relativePath>
     </parent>
 
-    <artifactId>org.wso2.carbon.security</artifactId>
+    <artifactId>org.wso2.carbon.security.jass-api</artifactId>
     <packaging>bundle</packaging>
     <name>WSO2 Carbon Security - OSGi Bundle</name>
 
