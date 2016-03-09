@@ -168,6 +168,7 @@
 
     <modules>
         <module>component/jaas-api</module>
+        <module>component/usercore</module>
         <module>feature</module>
     </modules>
 
