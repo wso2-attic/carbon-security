@@ -124,6 +124,11 @@
                 <artifactId>snakeyaml</artifactId>
                 <version>${org.snakeyaml.version}</version>
             </dependency>
+            <dependency>
+                <groupId>org.testng</groupId>
+                <artifactId>testng</artifactId>
+                <version>${org.testng.version}</version>
+            </dependency>
 
             <dependency>
                 <groupId>org.osgi</groupId>
@@ -182,6 +187,7 @@
         <netty.version>4.0.30.Final</netty.version>
         <nimbus.version>2.26.1.wso2v3</nimbus.version>
         <json.smart.version>2.1.0.wso2v1</json.smart.version>
+        <org.testng.version>6.9.4</org.testng.version>
 
         <!-- Equinox dependency versions -->
         <osgi.core.api.version>6.0.0</osgi.core.api.version>

@@ -14,13 +14,26 @@
  * limitations under the License.
  */
 
-package org.wso2.carbon.security.util;
+package org.wso2.carbon.security.jaas.internal.config;
+
+import java.util.Collections;
+import java.util.Set;
 
 /**
- * This class holds the constants used by the security module.
+ * DefaultPermissionInfoCollection
  */
-public class CarbonSecurityConstants {
+public class DefaultPermissionInfoCollection {
 
-    public static final String HTTP_AUTHORIZATION_PREFIX_BEARER = "Bearer";
-    public static final String HTTP_AUTHORIZATION_PREFIX_BASIC = "Basic";
+    Set<DefaultPermissionInfo> permissions;
+
+    public Set<DefaultPermissionInfo> getPermissions() {
+        if (permissions == null) {
+            return Collections.EMPTY_SET;
+        }
+        return Collections.unmodifiableSet(permissions);
+    }
+
+    public void setPermissions(Set<DefaultPermissionInfo> permissions) {
+        this.permissions = Collections.unmodifiableSet(permissions);
+    }
 }

@@ -16,9 +16,9 @@
 
 package org.wso2.carbon.security.usercore.bean;
 
-import org.wso2.carbon.security.user.core.exception.IdentityStoreException;
-import org.wso2.carbon.security.user.core.store.AuthorizationStore;
-import org.wso2.carbon.security.user.core.store.IdentityStore;
+import org.wso2.carbon.security.usercore.exception.IdentityStoreException;
+import org.wso2.carbon.security.usercore.store.AuthorizationStore;
+import org.wso2.carbon.security.usercore.store.IdentityStore;
 
 import java.util.List;
 

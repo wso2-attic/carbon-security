@@ -20,7 +20,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.wso2.carbon.context.api.PrivilegedCarbonContext;
 import org.wso2.carbon.security.jaas.CarbonPrincipal;
-import org.wso2.carbon.security.util.InMemoryUserStoreManager;
+import org.wso2.carbon.security.jaas.util.InMemoryUserStoreManager;
 
 import java.io.IOException;
 import java.util.Map;

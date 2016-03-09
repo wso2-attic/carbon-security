@@ -16,14 +16,14 @@
 
 package org.wso2.carbon.security.usercore.internal;
 
-import org.apache.log4j.Logger;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
-import org.wso2.carbon.security.user.core.common.CarbonRealmServiceImpl;
-import org.wso2.carbon.security.usercore.service.RealmService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.wso2.carbon.security.usercore.common.CarbonRealmServiceImpl;
 import org.wso2.carbon.security.usercore.service.RealmService;
 
 /**
@@ -35,7 +35,7 @@ import org.wso2.carbon.security.usercore.service.RealmService;
 )
 public class RealmServiceComponent {
 
-    private Logger log = Logger.getLogger(RealmServiceComponent.class);
+    private Logger log = LoggerFactory.getLogger(RealmServiceComponent.class);
     private ServiceRegistration registration;
 
     @Activate
@@ -44,8 +44,8 @@ public class RealmServiceComponent {
         try {
             registration = bundleContext.registerService(RealmService.class.getName(),
                     CarbonRealmServiceImpl.getInstance(), null);
-        } catch (Throwable t) {
-            log.error(t);
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
         }
     }
 
@@ -54,8 +54,8 @@ public class RealmServiceComponent {
 
         try {
             bundleContext.ungetService(registration.getReference());
-        } catch (Throwable t) {
-            log.error(t);
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
         }
     }
 }

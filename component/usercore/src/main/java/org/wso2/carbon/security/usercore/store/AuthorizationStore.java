@@ -16,16 +16,12 @@
 
 package org.wso2.carbon.security.usercore.store;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.wso2.carbon.security.usercore.bean.Group;
-import org.wso2.carbon.security.user.core.bean.Permission;
+import org.wso2.carbon.security.usercore.bean.Permission;
 import org.wso2.carbon.security.usercore.bean.Role;
-import org.wso2.carbon.security.user.core.bean.User;
-import org.wso2.carbon.security.usercore.connector.AuthorizationStoreConnector;
-import org.wso2.carbon.security.usercore.connector.inmemory.InMemoryAuthorizationStoreConnector;
-import org.wso2.carbon.security.usercore.exception.AuthorizationFailure;
-import org.wso2.carbon.security.usercore.bean.Group;
-import org.wso2.carbon.security.usercore.bean.Role;
+import org.wso2.carbon.security.usercore.bean.User;
 import org.wso2.carbon.security.usercore.connector.AuthorizationStoreConnector;
 import org.wso2.carbon.security.usercore.connector.inmemory.InMemoryAuthorizationStoreConnector;
 import org.wso2.carbon.security.usercore.exception.AuthorizationFailure;
@@ -38,7 +34,7 @@ import java.util.List;
  */
 public class AuthorizationStore {
 
-    private static Logger log = Logger.getLogger(AuthorizationStore.class);
+    private static Logger log = LoggerFactory.getLogger(AuthorizationStore.class);
     private AuthorizationStoreConnector authorizationStore;
 
     public AuthorizationStore() {

@@ -17,13 +17,10 @@
 package org.wso2.carbon.security.usercore.store;
 
 import org.wso2.carbon.security.usercore.bean.User;
-import org.wso2.carbon.security.user.core.connector.CredentialStoreConnector;
+import org.wso2.carbon.security.usercore.connector.CredentialStoreConnector;
 import org.wso2.carbon.security.usercore.connector.inmemory.InMemoryCredentialStoreConnector;
-import org.wso2.carbon.security.user.core.context.AuthenticationContext;
-import org.wso2.carbon.security.user.core.exception.AuthenticationFailure;
-import org.wso2.carbon.security.usercore.exception.IdentityStoreException;
-import org.wso2.carbon.security.usercore.bean.User;
-import org.wso2.carbon.security.usercore.connector.inmemory.InMemoryCredentialStoreConnector;
+import org.wso2.carbon.security.usercore.context.AuthenticationContext;
+import org.wso2.carbon.security.usercore.exception.AuthenticationFailure;
 import org.wso2.carbon.security.usercore.exception.IdentityStoreException;
 
 import javax.security.auth.callback.Callback;
