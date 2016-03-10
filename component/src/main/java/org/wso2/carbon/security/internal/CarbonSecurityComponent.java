@@ -23,6 +23,9 @@ import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.jndi.JNDIContextManager;
+import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.component.annotations.ReferenceCardinality;
+import org.osgi.service.component.annotations.ReferencePolicy;
 import org.osgi.service.permissionadmin.PermissionAdmin;
 import org.osgi.service.permissionadmin.PermissionInfo;
 import org.slf4j.Logger;
@@ -31,6 +34,9 @@ import org.wso2.carbon.security.internal.config.DefaultPermissionInfo;
 import org.wso2.carbon.security.internal.config.DefaultPermissionInfoCollection;
 import org.wso2.carbon.security.internal.config.SecurityConfigBuilder;
 import org.wso2.carbon.security.jaas.CarbonPolicy;
+import org.wso2.carbon.security.jaas.HTTPCallbackHandler;
+import org.wso2.carbon.security.jaas.handler.BasicAuthCallbackHandler;
+import org.wso2.carbon.security.jaas.handler.JWTCallbackHandler;
 import org.wso2.carbon.security.usercore.common.CarbonRealmServiceImpl;
 import org.wso2.carbon.security.usercore.service.RealmService;
 import org.wso2.carbon.security.usercore.util.DatabaseUtil;
@@ -41,6 +47,7 @@ import java.security.Policy;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -66,6 +73,9 @@ public class CarbonSecurityComponent {
         Policy.setPolicy(policy);
         System.setSecurityManager(new SecurityManager());
 
+        CarbonSecurityDataHolder.getInstance().addCallbackHandler(new BasicAuthCallbackHandler());
+        CarbonSecurityDataHolder.getInstance().addCallbackHandler(new JWTCallbackHandler());
+
         try {
             registration = bundleContext.registerService(RealmService.class.getName(),
                                                          CarbonRealmServiceImpl.getInstance(), null);
@@ -88,6 +98,21 @@ public class CarbonSecurityComponent {
             log.error(e.getMessage(), e);
         }
         log.info("Carbon-Security bundle deactivated successfully.");
+    }
+
+    @Reference(
+            name = "httpCallbackHandlers",
+            service = HTTPCallbackHandler.class,
+            cardinality = ReferenceCardinality.MULTIPLE,
+            policy = ReferencePolicy.DYNAMIC,
+            unbind = "unregisterHttpCallbackHandler"
+    )
+    protected void registerHttpCallbackHandler(HTTPCallbackHandler httpCallbackHandler, Map<String, ?> ref) {
+        CarbonSecurityDataHolder.getInstance().addCallbackHandler(httpCallbackHandler);
+    }
+
+    protected void unregisterHttpCallbackHandler(HTTPCallbackHandler httpCallbackHandler, Map<String, ?> ref) {
+        CarbonSecurityDataHolder.getInstance().removeCallbackHandler(httpCallbackHandler);
     }
 
     /**

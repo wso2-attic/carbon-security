@@ -23,4 +23,12 @@ public class CarbonSecurityConstants {
 
     public static final String HTTP_AUTHORIZATION_PREFIX_BEARER = "Bearer";
     public static final String HTTP_AUTHORIZATION_PREFIX_BASIC = "Basic";
+
+    public static final String USERNAME_PASSWORD_LOGIN_MODULE = "USERNAME_PASSWORD_LM";
+    public static final String JWT_LOGIN_MODULE = "JWT_LM";
+    public static final String SAML_LOGIN_MODULE = "SAML_LM";
+
+    private CarbonSecurityConstants() {
+
+    }
 }

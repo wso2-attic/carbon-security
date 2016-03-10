@@ -25,6 +25,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.wso2.carbon.security.jaas.CarbonCallback;
 import org.wso2.carbon.security.jaas.CarbonPrincipal;
+import org.wso2.carbon.security.jaas.util.CarbonSecurityConstants;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -85,7 +86,7 @@ public class JWTLoginModule implements LoginModule {
     @Override
     public boolean login() throws LoginException {
 
-        CarbonCallback<SignedJWT> jwtCarbonCallback = new CarbonCallback<>(CarbonCallback.Type.JWT);
+        CarbonCallback<SignedJWT> jwtCarbonCallback = new CarbonCallback<>(CarbonSecurityConstants.USERNAME_PASSWORD_LOGIN_MODULE);
         Callback[] callbacks = {jwtCarbonCallback};
 
         try {

@@ -39,9 +39,9 @@ import javax.security.auth.spi.LoginModule;
  * This LoginModule does not recognize any options defined in the login configuration.
  * </p>
  */
-public class BasicAuthLoginModule implements LoginModule {
+public class UsernamePasswordLoginModule implements LoginModule {
 
-    private static final Logger log = LoggerFactory.getLogger(BasicAuthLoginModule.class);
+    private static final Logger log = LoggerFactory.getLogger(UsernamePasswordLoginModule.class);
     private Subject subject;
     private String username;
     private char[] password;

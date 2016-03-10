@@ -16,24 +16,19 @@
 
 package org.wso2.carbon.security.jaas;
 
-import com.nimbusds.jwt.SignedJWT;
-import io.netty.handler.codec.http.HttpHeaders;
 import io.netty.handler.codec.http.HttpRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.wso2.carbon.security.jaas.exception.CarbonSecurityException;
+import org.wso2.carbon.security.internal.CarbonSecurityDataHolder;
 import org.wso2.carbon.security.jaas.util.CarbonSecurityConstants;
 
-import java.io.IOException;
-import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
-import java.text.ParseException;
-import java.util.Base64;
 import javax.security.auth.callback.Callback;
 import javax.security.auth.callback.CallbackHandler;
 import javax.security.auth.callback.NameCallback;
 import javax.security.auth.callback.PasswordCallback;
 import javax.security.auth.callback.UnsupportedCallbackException;
+import java.io.IOException;
+import java.util.List;
 
 /**
  * The class {@code CarbonCallbackHandler} is an implementation {@code CarbonCallbackHandler}.
@@ -45,142 +40,70 @@ public class CarbonCallbackHandler implements CallbackHandler {
 
     private HttpRequest httpRequest;
 
-    private boolean preProcessed;
-
-    private String username;
-
-    private char[] password;
-
-    private SignedJWT singedJWT;
-
-
     public CarbonCallbackHandler(HttpRequest httpRequest) {
-
         this.httpRequest = httpRequest;
     }
 
     @Override
     public void handle(Callback[] callbacks) throws IOException, UnsupportedCallbackException {
 
-        if (callbacks != null) {
-            preProcessed = false;
+        if (callbacks != null && callbacks.length > 0) {
+
+            boolean handled = false;
+
             for (Callback callback : callbacks) {
-                if (callback instanceof NameCallback) {
-                    if (!preProcessed) {
-                        try {
-                            preProcessRequest(CarbonCallback.Type.BASIC_AUTH);
-                            preProcessed = true;
-                        } catch (CarbonSecurityException e) {
-                            if (log.isDebugEnabled()) {
-                                log.debug(e.getMessage(), e);
+                // Specially handle NameCallback and PasswordCallback, since they are available OOTB
+                if (callback instanceof NameCallback || callback instanceof PasswordCallback) {
+                    if (!handled) {
+                        List<HTTPCallbackHandler> callbackHandlers = CarbonSecurityDataHolder.getInstance()
+                                .getCallbackHandler(CarbonSecurityConstants.USERNAME_PASSWORD_LOGIN_MODULE);
+                        if(callbackHandlers != null && !callbackHandlers.isEmpty()) {
+                            for (HTTPCallbackHandler httpCallbackHandler : callbackHandlers) {
+                                try {
+                                    HTTPCallbackHandler handler = httpCallbackHandler.getClass().newInstance();
+                                    handler.setHTTPRequest(httpRequest);
+                                    if (handler.canHandle()) {
+                                        handler.handle(callbacks);
+                                        handled = true;
+                                    }
+                                } catch (InstantiationException | IllegalAccessException e) {
+                                    if (log.isDebugEnabled()) {
+                                        log.debug("Unable to instantiate an object from the class " + httpCallbackHandler
+                                                .getClass());
+                                    }
+                                }
                             }
+                        } else {
                             throw new UnsupportedCallbackException(callback);
                         }
                     }
-                    ((NameCallback) callback).setName(username);
-
-                } else if (callback instanceof PasswordCallback) {
-                    if (!preProcessed) {
-                        try {
-                            preProcessRequest(CarbonCallback.Type.BASIC_AUTH);
-                            preProcessed = true;
-                        } catch (CarbonSecurityException e) {
-                            if (log.isDebugEnabled()) {
-                                log.debug(e.getMessage(), e);
-                            }
-                            throw new UnsupportedCallbackException(callback);
-                        }
-                    }
-                    ((PasswordCallback) callback).setPassword(password);
-
+                // Handle CarbonCallbacks
                 } else if (callback instanceof CarbonCallback) {
-                    CarbonCallback carbonCallback = ((CarbonCallback) callback);
-                    try {
-                        preProcessRequest(carbonCallback.getType());
-                    } catch (CarbonSecurityException e) {
-                        if (log.isDebugEnabled()) {
-                            log.debug(e.getMessage(), e);
+                    List<HTTPCallbackHandler> callbackHandlers = CarbonSecurityDataHolder.getInstance()
+                            .getCallbackHandler(((CarbonCallback) callback).getLoginModuleType());
+                    if(callbackHandlers != null && !callbackHandlers.isEmpty()) {
+                        for(HTTPCallbackHandler httpCallbackHandler : callbackHandlers) {
+                            try {
+                                HTTPCallbackHandler handler = httpCallbackHandler.getClass().newInstance();
+                                handler.setHTTPRequest(httpRequest);
+                                if (handler.canHandle()) {
+                                    handler.handle(new Callback[] {callback});
+                                }
+                            } catch (InstantiationException | IllegalAccessException e) {
+                                if (log.isDebugEnabled()) {
+                                    log.debug("Unable to instantiate an object from the class " + httpCallbackHandler
+                                            .getClass());
+                                }
+                            }
                         }
+                    } else {
                         throw new UnsupportedCallbackException(callback);
-                    }
-
-                    if (CarbonCallback.Type.JWT.equals(carbonCallback.getType())) {
-                        ((CarbonCallback) callback).setContent(singedJWT);
                     }
 
                 } else {
                     throw new UnsupportedCallbackException(callback);
                 }
             }
-            clearCredentials();
-        }
-    }
-
-    private void preProcessRequest(CarbonCallback.Type type) throws CarbonSecurityException {
-
-        if (httpRequest != null) {
-
-            HttpHeaders headers = httpRequest.headers();
-            if (headers != null) {
-
-                String authorizationHeader = headers.get(HttpHeaders.Names.AUTHORIZATION);
-                if (authorizationHeader != null && !authorizationHeader.isEmpty()) {
-
-                    if (CarbonCallback.Type.BASIC_AUTH.equals(type)) {
-                        if (authorizationHeader.trim().startsWith(CarbonSecurityConstants.HTTP_AUTHORIZATION_PREFIX_BASIC)) {
-
-                            String credentials = authorizationHeader.trim().split(" ")[1];
-                            byte[] decodedByte = credentials.getBytes(Charset.forName(StandardCharsets.UTF_8.name()));
-                            String authDecoded = new String(Base64.getDecoder().decode(decodedByte),
-                                                            Charset.forName(StandardCharsets.UTF_8.name()));
-                            String[] authParts = authDecoded.split(":");
-                            if (authParts.length == 2) {
-                                username = authParts[0];
-                                password = authParts[1].toCharArray();
-                            } else {
-                                throw new CarbonSecurityException("Invalid authorization header.");
-                            }
-                        } else {
-                            throw new CarbonSecurityException("Basic authorization header cannot be found.");
-                        }
-
-                    } else if (CarbonCallback.Type.JWT.equals(type)) {
-                        if (authorizationHeader.trim().startsWith(CarbonSecurityConstants
-                                                                          .HTTP_AUTHORIZATION_PREFIX_BEARER)) {
-
-                            String jwt = authorizationHeader.trim().split(" ")[1];
-
-                            if (jwt != null && !jwt.trim().isEmpty()) {
-                                try {
-                                    singedJWT = SignedJWT.parse(jwt);
-                                } catch (ParseException e) {
-                                    throw new CarbonSecurityException("Error while parsing the JWT token.", e);
-                                }
-                            } else {
-                                throw new CarbonSecurityException("JWT token cannot be found in the authorization header.");
-                            }
-                        } else {
-                            throw new CarbonSecurityException("Bearer authorization header cannot be found.");
-                        }
-                    }
-                } else {
-                    throw new CarbonSecurityException("Authorization header cannot be found in the request.");
-                }
-            } else {
-                throw new CarbonSecurityException("HTTP headers cannot be found in the request.");
-            }
-        } else {
-            throw new CarbonSecurityException("HTTP request cannot be found.");
-        }
-    }
-
-    private void clearCredentials() {
-        username = null;
-        if (password != null) {
-            for (int i = 0; i < password.length; i++) {
-                password[i] = ' ';
-            }
-            password = null;
         }
     }
 
