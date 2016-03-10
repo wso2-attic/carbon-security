@@ -18,7 +18,7 @@ package org.wso2.carbon.security.usercore.connector.jdbc;
 
 import org.wso2.carbon.security.usercore.bean.Group;
 import org.wso2.carbon.security.usercore.bean.User;
-import org.wso2.carbon.security.usercore.config.StoreConfiguration;
+import org.wso2.carbon.security.internal.config.IdentityStoreConfig;
 import org.wso2.carbon.security.usercore.connector.ConnectorConstants;
 import org.wso2.carbon.security.usercore.connector.IdentityStoreConnector;
 import org.wso2.carbon.security.usercore.exception.IdentityStoreException;
@@ -41,18 +41,18 @@ import java.util.Set;
 public class JDBCIdentityStoreConnector implements IdentityStoreConnector {
 
     private DataSource dataSource;
-    private StoreConfiguration storeConfiguration;
+    private IdentityStoreConfig identityStoreConfig;
     private Map<String, String> sqlStatements;
     private String userStoreId;
 
     @Override
-    public void init(StoreConfiguration storeConfiguration) throws IdentityStoreException {
+    public void init(IdentityStoreConfig identityStoreConfig) throws IdentityStoreException {
 
-        Properties properties = storeConfiguration.getStoreProperties();
+        Properties properties = identityStoreConfig.getStoreProperties();
 
         this.sqlStatements = (Map<String, String>) properties.get(ConnectorConstants.SQL_STATEMENTS);
         this.userStoreId = properties.getProperty(ConnectorConstants.USERSTORE_ID);
-        this.storeConfiguration = storeConfiguration;
+        this.identityStoreConfig = identityStoreConfig;
         try {
             dataSource = DatabaseUtil.getInstance()
                     .getDataSource(properties.getProperty(ConnectorConstants.DATA_SOURCE));
@@ -227,7 +227,7 @@ public class JDBCIdentityStoreConnector implements IdentityStoreConnector {
     }
 
     @Override
-    public StoreConfiguration getStoreConfiguration() {
-        return storeConfiguration;
+    public IdentityStoreConfig getIdentityStoreConfig() {
+        return identityStoreConfig;
     }
 }

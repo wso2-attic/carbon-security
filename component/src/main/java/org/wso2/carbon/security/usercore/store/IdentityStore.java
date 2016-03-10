@@ -18,9 +18,10 @@ package org.wso2.carbon.security.usercore.store;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.wso2.carbon.security.internal.config.IdentityStoreConfig;
+import org.wso2.carbon.security.internal.config.StoreConfigBuilder;
 import org.wso2.carbon.security.usercore.bean.Group;
 import org.wso2.carbon.security.usercore.bean.User;
-import org.wso2.carbon.security.usercore.config.StoreConfiguration;
 import org.wso2.carbon.security.usercore.connector.IdentityStoreConnector;
 import org.wso2.carbon.security.usercore.connector.UserStoreConstants;
 import org.wso2.carbon.security.usercore.connector.jdbc.JDBCIdentityStoreConnector;
@@ -28,7 +29,6 @@ import org.wso2.carbon.security.usercore.exception.IdentityStoreException;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.io.FileNotFoundException;
-import java.net.URL;
 import java.util.List;
 import java.util.Map;
 
@@ -42,16 +42,11 @@ public class IdentityStore {
 
     public void init() throws FileNotFoundException, IdentityStoreException {
 
-        StoreConfiguration storeConfiguration = new StoreConfiguration();
-
-        URL url = IdentityStore.class.getClassLoader().getResource(UserStoreConstants.USER_STORE_CONFIGURATION_FILE);
-        if (url == null) {
-            throw new IdentityStoreException("User store configuration file is missing");
-        }
-        storeConfiguration.loadProperties(url.getPath());
+        IdentityStoreConfig identityStoreConfig = StoreConfigBuilder
+                .buildIdentityStoreConfig(UserStoreConstants.USER_STORE_CONFIGURATION_FILE);
 
         userStoreConnector = new JDBCIdentityStoreConnector();
-        userStoreConnector.init(storeConfiguration);
+        userStoreConnector.init(identityStoreConfig);
     }
 
     /**

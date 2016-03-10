@@ -16,11 +16,13 @@
 
 package org.wso2.carbon.security.usercore.connector.jdbc;
 
-import org.wso2.carbon.security.usercore.config.StoreConfiguration;
+import org.wso2.carbon.security.internal.config.CredentialStoreConfig;
+import org.wso2.carbon.security.internal.config.IdentityStoreConfig;
 import org.wso2.carbon.security.usercore.connector.ConnectorConstants;
 import org.wso2.carbon.security.usercore.connector.CredentialStoreConnector;
 import org.wso2.carbon.security.usercore.exception.AuthenticationFailure;
 import org.wso2.carbon.security.usercore.exception.CredentialStoreException;
+import org.wso2.carbon.security.usercore.store.CredentialStore;
 import org.wso2.carbon.security.usercore.util.DatabaseUtil;
 import org.wso2.carbon.security.usercore.util.NamedPreparedStatement;
 
@@ -41,15 +43,15 @@ import java.util.Properties;
 public class JDBCCredentialStoreConnector implements CredentialStoreConnector {
 
     private DataSource dataSource;
-    private StoreConfiguration storeConfiguration;
+    private CredentialStoreConfig identityStoreConfig;
     private Map<String, String> sqlQueries;
     private String credentialStoreId;
 
-    public void init(StoreConfiguration configuration) throws CredentialStoreException {
+    public void init(CredentialStoreConfig configuration) throws CredentialStoreException {
 
         Properties properties = configuration.getStoreProperties();
 
-        this.storeConfiguration = configuration;
+        this.identityStoreConfig = configuration;
         this.sqlQueries = (Map<String, String>) properties.get(ConnectorConstants.SQL_STATEMENTS);
         try {
             this.dataSource = DatabaseUtil.getInstance().getDataSource(properties

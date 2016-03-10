@@ -16,16 +16,23 @@
 
 package org.wso2.carbon.security.usercore.connector;
 
+import org.wso2.carbon.security.internal.config.CredentialStoreConfig;
 import org.wso2.carbon.security.usercore.exception.AuthenticationFailure;
 import org.wso2.carbon.security.usercore.exception.CredentialStoreException;
-import org.wso2.carbon.security.usercore.exception.IdentityStoreException;
 
 import javax.security.auth.callback.Callback;
 
 /**
- *
+ * Credential store connector.
  */
 public interface CredentialStoreConnector {
+
+    /**
+     * Initialize the Credential store connector.
+     * @param credentialStoreConfig Credential store configurations.
+     * @throws CredentialStoreException
+     */
+    void init(CredentialStoreConfig credentialStoreConfig) throws CredentialStoreException;
 
     /**
      * Get the ID of this credential store.

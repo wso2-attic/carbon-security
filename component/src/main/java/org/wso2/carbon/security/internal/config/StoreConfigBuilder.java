@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.wso2.carbon.security.usercore.config;
+package org.wso2.carbon.security.internal.config;
 
 import org.yaml.snakeyaml.Yaml;
 
@@ -25,34 +25,25 @@ import java.util.Map;
 import java.util.Properties;
 
 /**
- * User store configurations.
+ * Configuration builder for stores.
  */
-public class StoreConfiguration {
-
-    private Properties storeProperties;
-
-    public Properties getStoreProperties() {
-        return storeProperties;
-    }
-
-    public void setStoreProperties(Properties storeProperties) {
-        this.storeProperties = storeProperties;
-    }
+public class StoreConfigBuilder {
 
     /**
-     * Load properties from a yaml configuration file.
-     * @param filePath Path to the yaml configuration file.
-     * @return Loaded properties.
-     * @throws FileNotFoundException
+     * Build a IdentityStoreConfig from a file.
+     * @param fileName Name of the configuration file.
+     * @return Instance of IdentityStoreConfig.
      */
-    public Properties loadProperties(String filePath) throws FileNotFoundException {
+    public static IdentityStoreConfig buildIdentityStoreConfig(String fileName) throws FileNotFoundException {
+
+        String filePath = "conf" + File.separator + "security" + File.separator + fileName;
 
         Yaml yaml = new Yaml();
         Map<String, String> values = (Map<String, String>) yaml.load(new FileInputStream(new File(filePath)));
 
-        storeProperties = new Properties();
+        Properties storeProperties = new Properties();
         values.forEach(storeProperties::put);
 
-        return storeProperties;
+        return new IdentityStoreConfig(storeProperties);
     }
 }
