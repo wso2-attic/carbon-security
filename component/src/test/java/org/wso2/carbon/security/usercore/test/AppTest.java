@@ -16,65 +16,58 @@
 
 package org.wso2.carbon.security.usercore.test;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.testng.Assert;
 import org.testng.annotations.Test;
-import org.wso2.carbon.security.usercore.bean.Permission;
-import org.wso2.carbon.security.usercore.bean.User;
+import org.wso2.carbon.security.usercore.bean.Group;
 import org.wso2.carbon.security.usercore.common.CarbonRealmServiceImpl;
-import org.wso2.carbon.security.usercore.context.AuthenticationContext;
 import org.wso2.carbon.security.usercore.exception.AuthenticationFailure;
 import org.wso2.carbon.security.usercore.exception.AuthorizationFailure;
 import org.wso2.carbon.security.usercore.exception.AuthorizationStoreException;
+import org.wso2.carbon.security.usercore.exception.CredentialStoreException;
 import org.wso2.carbon.security.usercore.exception.IdentityStoreException;
 import org.wso2.carbon.security.usercore.store.AuthorizationStore;
 import org.wso2.carbon.security.usercore.store.CredentialStore;
 import org.wso2.carbon.security.usercore.store.IdentityStore;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
+import javax.security.auth.callback.Callback;
+import javax.security.auth.callback.NameCallback;
+import javax.security.auth.callback.PasswordCallback;
 
 /**
  * Main test class.
  */
 public class AppTest {
 
+    Logger log = LoggerFactory.getLogger(AppTest.class);
+
     private CredentialStore authManager = null;
     private AuthorizationStore authzManager = null;
     private IdentityStore identityStore = null;
 
-    public void configure() throws IdentityStoreException {
+    public void configure() {
 
-        authManager = CarbonRealmServiceImpl.getInstance().getCredentialStore();
-        authzManager = CarbonRealmServiceImpl.getInstance().getAuthorizationStore();
-        identityStore = CarbonRealmServiceImpl.getInstance().getIdentityStore();
-    }
-
-    private void addUser() throws IdentityStoreException, AuthorizationStoreException {
-
-//        Map<String, String> userClaims = new HashMap<>();
-//        userClaims.put("userName", "admin");
-//
-//        User user = identityStore
-//                .addUser(userClaims, "password".toCharArray(), new ArrayList<String>());
-//        String userId = user.getUserID();
-
-        //authzManager.updateRolesInUser(userId, "internal/everyone", "PRIMARY");
-        //authzManager.addRolePermission("internal/everyone", "/permissions/login", "PRIMARY");
+        try {
+            authManager = CarbonRealmServiceImpl.getInstance().getCredentialStore();
+            authzManager = CarbonRealmServiceImpl.getInstance().getAuthorizationStore();
+            identityStore = CarbonRealmServiceImpl.getInstance().getIdentityStore();
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+        }
     }
 
     @Test
     public void testApp() throws IdentityStoreException, AuthorizationStoreException, AuthorizationFailure,
-            AuthenticationFailure {
+            AuthenticationFailure, CredentialStoreException {
 
-//        configure();
-//        addUser();
-//
-//        String userName = "admin";
-//        String password = "password";
+        Callback [] callbacks = new Callback[2];
+        Callback passwordCallback = new PasswordCallback("password", false);
+        Callback nameCallback = new NameCallback("username");
 
-//        AuthenticationContext context = authManager.authenticate("userName", userName, password.toCharArray());
-//        String userId = context.getUser().getUserID();
-//        Assert.assertTrue(authzManager.isUserAuthorized(userId, new Permission("/permissions/login")));
+        callbacks[0] = passwordCallback;
+        callbacks[1] = nameCallback;
+
+        // authManager.authenticate(callbacks);
     }
 }

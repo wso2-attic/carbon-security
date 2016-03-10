@@ -18,7 +18,7 @@ package org.wso2.carbon.security.usercore.connector;
 
 import org.wso2.carbon.security.usercore.bean.Group;
 import org.wso2.carbon.security.usercore.bean.User;
-import org.wso2.carbon.security.usercore.config.UserStoreConfig;
+import org.wso2.carbon.security.usercore.config.StoreConfiguration;
 import org.wso2.carbon.security.usercore.exception.IdentityStoreException;
 
 import java.util.List;
@@ -33,10 +33,10 @@ public interface IdentityStoreConnector {
     /**
      * Initialize user store by passing user store configurations read from files.
      *
-     * @param userStoreConfig UserStoreConfigurations.
+     * @param storeConfiguration UserStoreConfigurations.
      * @throws IdentityStoreException
      */
-    void init(UserStoreConfig userStoreConfig) throws IdentityStoreException;
+    void init(StoreConfiguration storeConfiguration) throws IdentityStoreException;
 
     /**
      * Get the name of the user store.
@@ -105,7 +105,7 @@ public interface IdentityStoreConnector {
      * @return Group with the given GroupID
      * @throws IdentityStoreException
      */
-    Group getGroup(String groupID) throws IdentityStoreException;
+    Group getGroupById(String groupID) throws IdentityStoreException;
 
     /**
      * Retrieve group from the group name.
@@ -113,7 +113,7 @@ public interface IdentityStoreConnector {
      * @return Group with the given group name.
      * @throws IdentityStoreException
      */
-    Group getGroupByName(String groupName) throws IdentityStoreException;
+    Group getGroup(String groupName) throws IdentityStoreException;
 
     /**
      * List Groups with given filter for given attribute.
@@ -230,8 +230,8 @@ public interface IdentityStoreConnector {
     boolean isReadOnly() throws IdentityStoreException;
 
     /**
-     * Returns UserStoreConfig which consists of user store configurations.     *
-     * @return UserStoreConfig which consists of user store configurations
+     * Returns StoreConfiguration which consists of user store configurations.     *
+     * @return StoreConfiguration which consists of user store configurations
      */
-    UserStoreConfig getUserStoreConfig();
+    StoreConfiguration getStoreConfiguration();
 }

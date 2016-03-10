@@ -18,9 +18,10 @@ package org.wso2.carbon.security.usercore.store;
 
 import org.wso2.carbon.security.usercore.bean.User;
 import org.wso2.carbon.security.usercore.connector.CredentialStoreConnector;
-import org.wso2.carbon.security.usercore.connector.inmemory.InMemoryCredentialStoreConnector;
+import org.wso2.carbon.security.usercore.connector.jdbc.JDBCCredentialStoreConnector;
 import org.wso2.carbon.security.usercore.context.AuthenticationContext;
 import org.wso2.carbon.security.usercore.exception.AuthenticationFailure;
+import org.wso2.carbon.security.usercore.exception.CredentialStoreException;
 import org.wso2.carbon.security.usercore.exception.IdentityStoreException;
 
 import javax.security.auth.callback.Callback;
@@ -30,7 +31,7 @@ import javax.security.auth.callback.Callback;
  */
 public class CredentialStore {
 
-    private CredentialStoreConnector credentialStoreConnector = new InMemoryCredentialStoreConnector();
+    private CredentialStoreConnector credentialStoreConnector = new JDBCCredentialStoreConnector();
 
     /**
      * Authenticate the user.
@@ -39,7 +40,8 @@ public class CredentialStore {
      * @throws AuthenticationFailure
      * @throws IdentityStoreException
      */
-    public AuthenticationContext authenticate(Callback[] callbacks) throws AuthenticationFailure, IdentityStoreException {
+    public AuthenticationContext authenticate(Callback[] callbacks) throws AuthenticationFailure,
+            CredentialStoreException, IdentityStoreException {
 
         String userId = credentialStoreConnector.authenticate(callbacks);
         if (userId != null) {

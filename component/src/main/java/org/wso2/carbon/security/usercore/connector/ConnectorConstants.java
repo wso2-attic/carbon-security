@@ -26,4 +26,5 @@ public class ConnectorConstants {
 
     public static final String SQL_QUERY_GET_GROUP = "";
     public static final java.lang.String USERSTORE_ID = "";
+    public static final String SQL_QUERY_GET_USER_PASSWORD = "";
 }
