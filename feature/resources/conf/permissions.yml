@@ -127,3 +127,7 @@ permissions:
   type: "org.osgi.framework.ServicePermission"
   name: "*"
   actions: "get,register"
+ -
+  type: "java.lang.RuntimePermission"
+  name: "accessClassInPackage.sun.reflect.generics.reflectiveObjects"
+  actions: ""

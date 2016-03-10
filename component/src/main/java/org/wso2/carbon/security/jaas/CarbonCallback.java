@@ -33,16 +33,10 @@ public class CarbonCallback<T> implements Callback, Serializable {
 
     private transient T content;
 
-    private Type type;
+    private String loginModuleType;
 
-    public enum Type {
-        BASIC_AUTH,
-        SAML,
-        JWT
-    }
-
-    public CarbonCallback(Type type) {
-        this.type = type;
+    public CarbonCallback(String loginModuleType) {
+        this.loginModuleType = loginModuleType;
     }
 
     public T getContent() {
@@ -55,8 +49,8 @@ public class CarbonCallback<T> implements Callback, Serializable {
         this.content = content;
     }
 
-    public Type getType() {
-        return this.type;
+    public String getLoginModuleType() {
+        return this.loginModuleType;
     }
 
 }

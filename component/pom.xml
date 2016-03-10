@@ -82,7 +82,8 @@
             com.nimbusds.jose.*;version="${com.nimbusds.package.import.version.range}",
             com.nimbusds.jwt.*;version="${com.nimbusds.package.import.version.range}",
             org.wso2.carbon.context.api.*;version="${org.wso2.carbon.context.import.version.range}",
-            org.yaml.snakeyaml.*;version="${org.snakeyaml.package.import.version.range}"
+            org.yaml.snakeyaml.*;version="${org.snakeyaml.package.import.version.range}",
+            javax.sql.*
         </import.package>
 
         <dsannotations>*</dsannotations>

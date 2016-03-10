@@ -17,7 +17,6 @@
 package org.wso2.carbon.security.usercore.context;
 
 import org.wso2.carbon.security.usercore.bean.User;
-import org.wso2.carbon.security.usercore.bean.User;
 
 /**
  * AuthenticationContext
