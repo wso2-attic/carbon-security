@@ -45,6 +45,8 @@ public class DatabaseUtil {
         if (initialContext == null) {
             throw new RuntimeException("Context is null. Cannot retrieve data source");
         }
-        return (DataSource) initialContext.lookup(dataSourceName);
+
+        // return (DataSource) initialContext.lookup(dataSourceName);
+        return null;
     }
 }
