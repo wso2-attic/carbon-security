@@ -30,6 +30,11 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 
+/**
+ * <p>
+ * This class extracts credentials from Basic Authorization Header
+ * </p>
+ */
 public class BasicAuthCallbackHandler implements HTTPCallbackHandler {
 
     private HttpRequest httpRequest;

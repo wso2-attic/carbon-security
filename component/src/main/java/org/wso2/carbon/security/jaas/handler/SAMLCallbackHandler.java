@@ -24,6 +24,11 @@ import javax.security.auth.callback.Callback;
 import javax.security.auth.callback.UnsupportedCallbackException;
 import java.io.IOException;
 
+/**
+ * <p>
+ * This class builds SAML Assertion from the Authorization header
+ * </p>
+ */
 public class SAMLCallbackHandler implements HTTPCallbackHandler {
 
     private HttpRequest httpRequest;

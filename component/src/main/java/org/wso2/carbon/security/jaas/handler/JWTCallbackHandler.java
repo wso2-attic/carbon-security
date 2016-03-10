@@ -30,6 +30,11 @@ import javax.security.auth.callback.UnsupportedCallbackException;
 import java.io.IOException;
 import java.text.ParseException;
 
+/**
+ * <p>
+ * This class builds JWT from the Authorization header
+ * </p>
+ */
 public class JWTCallbackHandler implements HTTPCallbackHandler {
 
     private static final Logger log = LoggerFactory.getLogger(JWTCallbackHandler.class);
