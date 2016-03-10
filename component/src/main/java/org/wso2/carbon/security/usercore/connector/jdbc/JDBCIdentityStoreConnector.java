@@ -18,12 +18,14 @@ package org.wso2.carbon.security.usercore.connector.jdbc;
 
 import org.wso2.carbon.security.usercore.bean.Group;
 import org.wso2.carbon.security.usercore.bean.User;
-import org.wso2.carbon.security.usercore.config.UserStoreConfig;
+import org.wso2.carbon.security.usercore.config.StoreConfiguration;
 import org.wso2.carbon.security.usercore.connector.ConnectorConstants;
 import org.wso2.carbon.security.usercore.connector.IdentityStoreConnector;
 import org.wso2.carbon.security.usercore.exception.IdentityStoreException;
+import org.wso2.carbon.security.usercore.util.DatabaseUtil;
 import org.wso2.carbon.security.usercore.util.NamedPreparedStatement;
 
+import javax.naming.NamingException;
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -39,18 +41,24 @@ import java.util.Set;
 public class JDBCIdentityStoreConnector implements IdentityStoreConnector {
 
     private DataSource dataSource;
-    private UserStoreConfig userStoreConfig;
+    private StoreConfiguration storeConfiguration;
     private Map<String, String> sqlStatements;
     private String userStoreId;
 
     @Override
-    public void init(UserStoreConfig userStoreConfig) throws IdentityStoreException {
+    public void init(StoreConfiguration storeConfiguration) throws IdentityStoreException {
 
-        this.userStoreConfig = userStoreConfig;
-        Properties properties = userStoreConfig.getUserStoreProperties();
-        dataSource = (DataSource) properties.get(ConnectorConstants.DATA_SOURCE);
-        sqlStatements = (Map<String, String>) properties.get(ConnectorConstants.SQL_STATEMENTS);
-        userStoreId = properties.getProperty(ConnectorConstants.USERSTORE_ID);
+        Properties properties = storeConfiguration.getStoreProperties();
+
+        this.sqlStatements = (Map<String, String>) properties.get(ConnectorConstants.SQL_STATEMENTS);
+        this.userStoreId = properties.getProperty(ConnectorConstants.USERSTORE_ID);
+        this.storeConfiguration = storeConfiguration;
+        try {
+            dataSource = DatabaseUtil.getInstance()
+                    .getDataSource(properties.getProperty(ConnectorConstants.DATA_SOURCE));
+        } catch (NamingException e) {
+            throw new IdentityStoreException(e);
+        }
     }
 
     @Override
@@ -89,7 +97,7 @@ public class JDBCIdentityStoreConnector implements IdentityStoreConnector {
     }
 
     @Override
-    public Group getGroup(String groupId) throws IdentityStoreException {
+    public Group getGroupById(String groupId) throws IdentityStoreException {
 
         Connection connection = null;
         try {
@@ -118,7 +126,7 @@ public class JDBCIdentityStoreConnector implements IdentityStoreConnector {
     }
 
     @Override
-    public Group getGroupByName(String groupName) throws IdentityStoreException {
+    public Group getGroup(String groupName) throws IdentityStoreException {
 
         Connection connection = null;
         try {
@@ -219,7 +227,7 @@ public class JDBCIdentityStoreConnector implements IdentityStoreConnector {
     }
 
     @Override
-    public UserStoreConfig getUserStoreConfig() {
-        return userStoreConfig;
+    public StoreConfiguration getStoreConfiguration() {
+        return storeConfiguration;
     }
 }

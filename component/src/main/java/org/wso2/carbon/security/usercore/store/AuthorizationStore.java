@@ -23,7 +23,7 @@ import org.wso2.carbon.security.usercore.bean.Permission;
 import org.wso2.carbon.security.usercore.bean.Role;
 import org.wso2.carbon.security.usercore.bean.User;
 import org.wso2.carbon.security.usercore.connector.AuthorizationStoreConnector;
-import org.wso2.carbon.security.usercore.connector.inmemory.InMemoryAuthorizationStoreConnector;
+import org.wso2.carbon.security.usercore.connector.jdbc.JDBCAuthorizationConnector;
 import org.wso2.carbon.security.usercore.exception.AuthorizationFailure;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
@@ -38,7 +38,7 @@ public class AuthorizationStore {
     private AuthorizationStoreConnector authorizationStore;
 
     public AuthorizationStore() {
-        authorizationStore = new InMemoryAuthorizationStoreConnector();
+        authorizationStore = new JDBCAuthorizationConnector();
     }
 
     /**

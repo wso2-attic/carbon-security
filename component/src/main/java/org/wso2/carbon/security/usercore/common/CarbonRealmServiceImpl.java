@@ -16,23 +16,29 @@
 
 package org.wso2.carbon.security.usercore.common;
 
+import org.wso2.carbon.security.usercore.exception.IdentityStoreException;
 import org.wso2.carbon.security.usercore.service.RealmService;
 import org.wso2.carbon.security.usercore.store.AuthorizationStore;
 import org.wso2.carbon.security.usercore.store.CredentialStore;
 import org.wso2.carbon.security.usercore.store.IdentityStore;
+
+import java.io.FileNotFoundException;
 
 /**
  * Basic user realm service.
  */
 public class CarbonRealmServiceImpl implements RealmService {
 
-    private static CarbonRealmServiceImpl instance = new CarbonRealmServiceImpl();
-    private CredentialStore credentialStore = new CredentialStore();;
-    private AuthorizationStore authorizationStore = new AuthorizationStore();;
-    private IdentityStore identityStore = new IdentityStore();;
+    private static CarbonRealmServiceImpl instance;
+    private CredentialStore credentialStore = new CredentialStore();
+    private AuthorizationStore authorizationStore = new AuthorizationStore();
+    private IdentityStore identityStore = new IdentityStore();
 
-    private CarbonRealmServiceImpl() {
+    private CarbonRealmServiceImpl() throws FileNotFoundException, IdentityStoreException {
+        
         super();
+        instance = new CarbonRealmServiceImpl();
+        identityStore.init();
     }
 
     /**

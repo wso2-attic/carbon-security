@@ -17,10 +17,12 @@
 package org.wso2.carbon.security.internal;
 
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.ServiceReference;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
+import org.osgi.service.jndi.JNDIContextManager;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.component.annotations.ReferenceCardinality;
 import org.osgi.service.component.annotations.ReferencePolicy;
@@ -37,12 +39,16 @@ import org.wso2.carbon.security.jaas.handler.BasicAuthCallbackHandler;
 import org.wso2.carbon.security.jaas.handler.JWTCallbackHandler;
 import org.wso2.carbon.security.usercore.common.CarbonRealmServiceImpl;
 import org.wso2.carbon.security.usercore.service.RealmService;
+import org.wso2.carbon.security.usercore.util.DatabaseUtil;
 
+import javax.naming.Context;
+import javax.naming.NamingException;
 import java.security.Policy;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * OSGi service component which handle authentication and authorization
@@ -70,11 +76,12 @@ public class CarbonSecurityComponent {
         CarbonSecurityDataHolder.getInstance().addCallbackHandler(new BasicAuthCallbackHandler());
         CarbonSecurityDataHolder.getInstance().addCallbackHandler(new JWTCallbackHandler());
 
-
-
         try {
             registration = bundleContext.registerService(RealmService.class.getName(),
                                                          CarbonRealmServiceImpl.getInstance(), null);
+
+            // Set JNDI context for the later use.
+            this.setJNDIContext(bundleContext);
         } catch (Exception e) {
             log.error(e.getMessage(), e);
         }
@@ -107,8 +114,6 @@ public class CarbonSecurityComponent {
     protected void unregisterHttpCallbackHandler(HTTPCallbackHandler httpCallbackHandler, Map<String, ?> ref) {
         CarbonSecurityDataHolder.getInstance().removeCallbackHandler(httpCallbackHandler);
     }
-
-
 
     /**
      * Set default permissions for all bundles using PermissionAdmin
@@ -154,5 +159,17 @@ public class CarbonSecurityComponent {
         return (PermissionAdmin) context.getService(context.getServiceReference(PermissionAdmin.class.getName()));
     }
 
+    private void setJNDIContext(BundleContext bundleContext) throws NamingException {
+
+        ServiceReference<JNDIContextManager> contextManagerSRef = bundleContext.getServiceReference(
+                JNDIContextManager.class);
+
+        JNDIContextManager jndiContextManager = Optional.ofNullable(contextManagerSRef)
+                .map(bundleContext::getService)
+                .orElseThrow(() -> new RuntimeException("JNDIContextManager service is not available."));
+
+        Context initialContext = jndiContextManager.newInitialContext();
+        DatabaseUtil.getInstance().setJNDIContext(initialContext);
+    }
 }
 

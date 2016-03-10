@@ -18,7 +18,6 @@ package org.wso2.carbon.security.jaas.modules;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.wso2.carbon.context.api.PrivilegedCarbonContext;
 import org.wso2.carbon.security.jaas.CarbonPrincipal;
 import org.wso2.carbon.security.jaas.util.InMemoryUserStoreManager;
 
@@ -131,8 +130,8 @@ public class UsernamePasswordLoginModule implements LoginModule {
                 subject.getPrincipals().add(carbonPrincipal);
             }
 
-            PrivilegedCarbonContext privilegedCarbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
-            privilegedCarbonContext.setSubject(subject);
+            // PrivilegedCarbonContext privilegedCarbonContext = PrivilegedCarbonContext.getCurrentContext();
+            // privilegedCarbonContext.setSubject(subject);
 
             username = null;
             for (int i = 0; i < password.length; i++) {

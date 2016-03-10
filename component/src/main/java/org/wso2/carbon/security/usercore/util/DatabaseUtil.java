@@ -16,8 +16,35 @@
 
 package org.wso2.carbon.security.usercore.util;
 
+import javax.sql.DataSource;
+import javax.naming.Context;
+import javax.naming.NamingException;
+
 /**
  * Database related utility methods.
  */
 public class DatabaseUtil {
+
+    private static Context initialContext;
+    private static final DatabaseUtil instance = new DatabaseUtil();
+
+    private DatabaseUtil() {
+        super();
+    }
+
+    public static DatabaseUtil getInstance() {
+        return instance;
+    }
+
+    public void setJNDIContext(Context initialContext) {
+        DatabaseUtil.initialContext = initialContext;
+    }
+
+    public DataSource getDataSource(String dataSourceName) throws NamingException {
+
+        if (initialContext == null) {
+            throw new RuntimeException("Context is null. Cannot retrieve data source");
+        }
+        return (DataSource) initialContext.lookup(dataSourceName);
+    }
 }
