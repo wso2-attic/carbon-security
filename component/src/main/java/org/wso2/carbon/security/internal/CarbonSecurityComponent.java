@@ -66,13 +66,16 @@ public class CarbonSecurityComponent {
     @Activate
     public void registerCarbonSecurityProvider(BundleContext bundleContext) {
 
-        // Set default permissions for all bundles
-        setDefaultPermissions(bundleContext);
+        // Set default permissions if security manager is enabled
+        if(System.getProperty("java.security.manager") != null) {
+            // Set default permissions for all bundles
+            setDefaultPermissions(bundleContext);
 
-        // Registering CarbonPolicy
-        CarbonPolicy policy = new CarbonPolicy();
-        Policy.setPolicy(policy);
-        System.setSecurityManager(new SecurityManager());
+            // Registering CarbonPolicy
+            CarbonPolicy policy = new CarbonPolicy();
+            Policy.setPolicy(policy);
+            System.setSecurityManager(new SecurityManager());
+        }
 
         // Set default callback handlers
         CarbonSecurityDataHolder.getInstance().addCallbackHandler(new BasicAuthCallbackHandler());
