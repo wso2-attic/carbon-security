@@ -1,5 +1,6 @@
-userStoreClass: org.wso2.carbon.user.user.core.connector.inmemory.InMemoryUserStoreConnector
-userStoreName: PRIMARY
-executionOrder: 1
-readOnly: true
-userStoreID: 1
+userStoreClass: "org.wso2.carbon.user.user.core.connector.inmemory.InMemoryUserStoreConnector"
+userStoreName: "PRIMARY"
+executionOrder: "1"
+readOnly: "true"
+userStoreID: "1"
+DataSource: "jdbc:h2:~/WSO2/WSO2CARBON_DB"
