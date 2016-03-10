@@ -29,24 +29,14 @@ import java.io.FileNotFoundException;
  */
 public class CarbonRealmServiceImpl implements RealmService {
 
-    private static CarbonRealmServiceImpl instance;
     private CredentialStore credentialStore = new CredentialStore();
     private AuthorizationStore authorizationStore = new AuthorizationStore();
     private IdentityStore identityStore = new IdentityStore();
 
-    private CarbonRealmServiceImpl() throws FileNotFoundException, IdentityStoreException {
+    public CarbonRealmServiceImpl() throws FileNotFoundException, IdentityStoreException {
         
         super();
-        instance = new CarbonRealmServiceImpl();
         identityStore.init();
-    }
-
-    /**
-     * Get this instance.
-     * @return @see CarbonRealmServiceImpl
-     */
-    public static RealmService getInstance() {
-        return instance;
     }
 
     /**
