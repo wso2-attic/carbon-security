@@ -25,4 +25,9 @@ public class DatabaseColumnNames {
         public static final String GROUP_UNIQUE_ID = "GROUP_UNIQUE_ID";
         public static final String GROUP_NAME = "GROUP_NAME";
     }
+
+    public static class User {
+        public static final String PASSWORD = "";
+        public static final String USER_ID = "";
+    }
 }

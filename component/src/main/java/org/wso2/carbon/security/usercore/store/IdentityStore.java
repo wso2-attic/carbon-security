@@ -20,11 +20,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.wso2.carbon.security.usercore.bean.Group;
 import org.wso2.carbon.security.usercore.bean.User;
+import org.wso2.carbon.security.usercore.config.StoreConfiguration;
 import org.wso2.carbon.security.usercore.connector.IdentityStoreConnector;
-import org.wso2.carbon.security.usercore.connector.inmemory.InMemoryUserStoreConnector;
+import org.wso2.carbon.security.usercore.connector.UserStoreConstants;
+import org.wso2.carbon.security.usercore.connector.jdbc.JDBCIdentityStoreConnector;
 import org.wso2.carbon.security.usercore.exception.IdentityStoreException;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
+import java.io.FileNotFoundException;
+import java.net.URL;
 import java.util.List;
 import java.util.Map;
 
@@ -34,7 +38,21 @@ import java.util.Map;
 public class IdentityStore {
 
     private static final Logger log = LoggerFactory.getLogger(IdentityStore.class);
-    private static IdentityStoreConnector userStore = new InMemoryUserStoreConnector();;
+    private static IdentityStoreConnector userStoreConnector;
+
+    public void init() throws FileNotFoundException, IdentityStoreException {
+
+        StoreConfiguration storeConfiguration = new StoreConfiguration();
+
+        URL url = IdentityStore.class.getClassLoader().getResource(UserStoreConstants.USER_STORE_CONFIGURATION_FILE);
+        if (url == null) {
+            throw new IdentityStoreException("User store configuration file is missing");
+        }
+        storeConfiguration.loadProperties(url.getPath());
+
+        userStoreConnector = new JDBCIdentityStoreConnector();
+        userStoreConnector.init(storeConfiguration);
+    }
 
     /**
      * Checks whether the user exists.
@@ -63,7 +81,7 @@ public class IdentityStore {
      * @throws IdentityStoreException
      */
     public List<Group> getGroupsOfUser(String userID) throws IdentityStoreException {
-        return userStore.getGroupsOfUser(userID);
+        return userStoreConnector.getGroupsOfUser(userID);
     }
 
     /**
@@ -74,7 +92,7 @@ public class IdentityStore {
      * @throws IdentityStoreException
      */
     public List<User> getUsersOfGroup(String groupID, String userStoreId) throws IdentityStoreException {
-        return userStore.getUsersOfGroup(groupID);
+        return userStoreConnector.getUsersOfGroup(groupID);
     }
 
     /**
@@ -98,13 +116,31 @@ public class IdentityStore {
     }
 
     /**
+     * Get the group from name.
+     * @param groupName
+     * @return Group
+     */
+    public Group getGroup(String groupName) throws IdentityStoreException {
+        return userStoreConnector.getGroup(groupName);
+    }
+
+    /**
+     * Get the group from group id.
+     * @param groupId Group id.
+     * @return Group.
+     */
+    public Group getGroupFromId(String groupId) throws IdentityStoreException {
+        return userStoreConnector.getGroupById(groupId);
+    }
+
+    /**
      * Get user claim values.
      * @param userID Id of the user.
      * @return Map of user claims.
      * @throws IdentityStoreException
      */
     public Map<String, String> getUserClaimValues(String userID) throws IdentityStoreException {
-        return userStore.getUserClaimValues(userID);
+        return userStoreConnector.getUserClaimValues(userID);
     }
 
     /**
@@ -128,7 +164,7 @@ public class IdentityStore {
      */
     public User addUser(Map<String, String> claims, Object credential, List<String> groupList)
             throws IdentityStoreException {
-        return userStore.addUser(claims, credential, groupList);
+        return userStoreConnector.addUser(claims, credential, groupList);
     }
 
     /**
@@ -137,7 +173,7 @@ public class IdentityStore {
      * @throws IdentityStoreException
      */
     public void deleteUser(String userID) throws IdentityStoreException {
-        userStore.deleteUser(userID);
+        userStoreConnector.deleteUser(userID);
     }
 
     /**

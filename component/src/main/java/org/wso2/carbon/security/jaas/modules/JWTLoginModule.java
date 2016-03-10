@@ -23,7 +23,6 @@ import com.nimbusds.jwt.ReadOnlyJWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.wso2.carbon.context.api.PrivilegedCarbonContext;
 import org.wso2.carbon.security.jaas.CarbonCallback;
 import org.wso2.carbon.security.jaas.CarbonPrincipal;
 
@@ -122,8 +121,8 @@ public class JWTLoginModule implements LoginModule {
                     subject.getPrincipals().add(carbonPrincipal);
                 }
 
-                PrivilegedCarbonContext privilegedCarbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
-                privilegedCarbonContext.setSubject(subject);
+                // PrivilegedCarbonContext privilegedCarbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+                // privilegedCarbonContext.setSubject(subject);
 
                 commitSucceeded = true;
             } catch (ParseException e) {
