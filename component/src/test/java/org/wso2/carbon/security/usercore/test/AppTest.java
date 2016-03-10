@@ -49,9 +49,9 @@ public class AppTest {
     public void configure() {
 
         try {
-            authManager = CarbonRealmServiceImpl.getInstance().getCredentialStore();
-            authzManager = CarbonRealmServiceImpl.getInstance().getAuthorizationStore();
-            identityStore = CarbonRealmServiceImpl.getInstance().getIdentityStore();
+            authManager = new CarbonRealmServiceImpl().getCredentialStore();
+            authzManager = new CarbonRealmServiceImpl().getAuthorizationStore();
+            identityStore = new CarbonRealmServiceImpl().getIdentityStore();
         } catch (Exception e) {
             log.error(e.getMessage(), e);
         }

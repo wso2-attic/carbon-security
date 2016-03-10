@@ -77,8 +77,8 @@ public class CarbonSecurityComponent {
         CarbonSecurityDataHolder.getInstance().addCallbackHandler(new JWTCallbackHandler());
 
         try {
-            registration = bundleContext.registerService(RealmService.class.getName(),
-                                                         CarbonRealmServiceImpl.getInstance(), null);
+            registration = bundleContext.registerService(RealmService.class.getName(), new CarbonRealmServiceImpl(),
+                                                         null);
 
             // Set JNDI context for the later use.
             this.setJNDIContext(bundleContext);
