@@ -18,7 +18,7 @@ package org.wso2.carbon.security.usercore.connector;
 
 import org.wso2.carbon.security.usercore.bean.Group;
 import org.wso2.carbon.security.usercore.bean.User;
-import org.wso2.carbon.security.usercore.config.StoreConfiguration;
+import org.wso2.carbon.security.internal.config.IdentityStoreConfig;
 import org.wso2.carbon.security.usercore.exception.IdentityStoreException;
 
 import java.util.List;
@@ -31,12 +31,12 @@ import java.util.Set;
 public interface IdentityStoreConnector {
 
     /**
-     * Initialize user store by passing user store configurations read from files.
+     * Initialize identity store by passing identity store configurations read from files.
      *
-     * @param storeConfiguration UserStoreConfigurations.
+     * @param identityStoreConfig UserStoreConfigurations.
      * @throws IdentityStoreException
      */
-    void init(StoreConfiguration storeConfiguration) throws IdentityStoreException;
+    void init(IdentityStoreConfig identityStoreConfig) throws IdentityStoreException;
 
     /**
      * Get the name of the user store.
@@ -230,8 +230,8 @@ public interface IdentityStoreConnector {
     boolean isReadOnly() throws IdentityStoreException;
 
     /**
-     * Returns StoreConfiguration which consists of user store configurations.     *
-     * @return StoreConfiguration which consists of user store configurations
+     * Returns IdentityStoreConfig which consists of user store configurations.     *
+     * @return IdentityStoreConfig which consists of user store configurations
      */
-    StoreConfiguration getStoreConfiguration();
+    IdentityStoreConfig getIdentityStoreConfig();
 }
