@@ -22,10 +22,10 @@ import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
-import org.osgi.service.jndi.JNDIContextManager;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.component.annotations.ReferenceCardinality;
 import org.osgi.service.component.annotations.ReferencePolicy;
+import org.osgi.service.jndi.JNDIContextManager;
 import org.osgi.service.permissionadmin.PermissionAdmin;
 import org.osgi.service.permissionadmin.PermissionInfo;
 import org.slf4j.Logger;
@@ -37,6 +37,7 @@ import org.wso2.carbon.security.jaas.CarbonPolicy;
 import org.wso2.carbon.security.jaas.HTTPCallbackHandler;
 import org.wso2.carbon.security.jaas.handler.BasicAuthCallbackHandler;
 import org.wso2.carbon.security.jaas.handler.JWTCallbackHandler;
+import org.wso2.carbon.security.jaas.handler.SAMLCallbackHandler;
 import org.wso2.carbon.security.usercore.common.CarbonRealmServiceImpl;
 import org.wso2.carbon.security.usercore.service.RealmService;
 import org.wso2.carbon.security.usercore.util.DatabaseUtil;
@@ -68,13 +69,15 @@ public class CarbonSecurityComponent {
         // Set default permissions for all bundles
         setDefaultPermissions(bundleContext);
 
-        //Registering CarbonPolicy
+        // Registering CarbonPolicy
         CarbonPolicy policy = new CarbonPolicy();
         Policy.setPolicy(policy);
         System.setSecurityManager(new SecurityManager());
 
+        // Set default callback handlers
         CarbonSecurityDataHolder.getInstance().addCallbackHandler(new BasicAuthCallbackHandler());
         CarbonSecurityDataHolder.getInstance().addCallbackHandler(new JWTCallbackHandler());
+        CarbonSecurityDataHolder.getInstance().addCallbackHandler(new SAMLCallbackHandler());
 
         try {
             // Set JNDI context for the later use.
