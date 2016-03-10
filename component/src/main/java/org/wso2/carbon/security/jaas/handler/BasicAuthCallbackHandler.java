@@ -32,7 +32,7 @@ import java.util.Base64;
 
 /**
  * <p>
- * This class extracts credentials from Basic Authorization Header
+ * This class extracts credentials from Basic Authorization header
  * </p>
  */
 public class BasicAuthCallbackHandler implements HTTPCallbackHandler {
