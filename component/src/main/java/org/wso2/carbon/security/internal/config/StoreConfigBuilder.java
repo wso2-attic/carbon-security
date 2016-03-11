@@ -38,7 +38,7 @@ public class StoreConfigBuilder {
      */
     public static IdentityStoreConfig buildIdentityStoreConfig(String fileName) throws FileNotFoundException {
 
-        File file = Paths.get(CarbonSecurityConstants.getCarbonHomeDirectory().toString(), "conf", "security", 
+        File file = Paths.get(CarbonSecurityConstants.getCarbonHomeDirectory().toString(), "conf", "security",
                               fileName).toFile();
 
         if(file.exists()) {
