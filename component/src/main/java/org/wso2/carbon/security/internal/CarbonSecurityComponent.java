@@ -86,7 +86,7 @@ public class CarbonSecurityComponent {
             // Set JNDI context for the later use.
             this.setJNDIContext(bundleContext);
         } catch (NamingException e) {
-            log.error(e.getMessage(), e);
+            log.error("Error while setting the JNDI context.", e);
         }
 
         try {

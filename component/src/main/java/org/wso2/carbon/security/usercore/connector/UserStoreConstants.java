@@ -33,5 +33,5 @@ public class UserStoreConstants {
 
     public static final String USER_STORE_ID = "userStoreID";
 
-    public static final String USER_STORE_CONFIGURATION_FILE = "PrimaryUserstore.yml";
+    public static final String USER_STORE_CONFIGURATION_FILE = "resources/conf/primary-userstore.yml";
 }
