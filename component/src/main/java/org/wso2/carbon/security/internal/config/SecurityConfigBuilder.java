@@ -89,6 +89,10 @@ public class SecurityConfigBuilder {
         permissionInfoSet.add(new DefaultPermissionInfo("java.lang.RuntimePermission", "setSecurityManager", null));
         permissionInfoSet.add(new DefaultPermissionInfo("java.lang.RuntimePermission", "getClassLoader", null));
         permissionInfoSet.add(new DefaultPermissionInfo("java.lang.RuntimePermission", "accessDeclaredMembers",  null));
+        permissionInfoSet.add(new DefaultPermissionInfo("java.lang.RuntimePermission", "setContextClassLoader", null));
+        permissionInfoSet.add(new DefaultPermissionInfo("java.lang.RuntimePermission",
+                                                        "accessClassInPackage.sun.reflect.generics" +
+                                                        ".reflectiveObjects", ""));
         permissionInfoSet.add(new DefaultPermissionInfo("java.io.FilePermission", "<<ALL FILES>>", "read,write," +
                                                                                                    "delete,execute"));
         permissionInfoSet.add(new DefaultPermissionInfo("org.osgi.framework.AdaptPermission",
@@ -113,9 +117,6 @@ public class SecurityConfigBuilder {
         permissionInfoSet.add(new DefaultPermissionInfo("org.osgi.framework.PackagePermission", "*", "exportonly," +
                                                                                                      "import"));
         permissionInfoSet.add(new DefaultPermissionInfo("org.osgi.framework.ServicePermission", "*", "get,register"));
-        permissionInfoSet.add(new DefaultPermissionInfo("java.lang.RuntimePermission",
-                                                        "accessClassInPackage.sun.reflect.generics" +
-                                                        ".reflectiveObjects", ""));
 
 
         DefaultPermissionInfoCollection permissionInfoCollection = new DefaultPermissionInfoCollection();

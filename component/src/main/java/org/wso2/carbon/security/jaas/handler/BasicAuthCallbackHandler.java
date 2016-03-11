@@ -44,11 +44,6 @@ public class BasicAuthCallbackHandler implements HTTPCallbackHandler {
     private char[] password;
 
     @Override
-    public String getSupportedLoginModuleType() {
-        return CarbonSecurityConstants.USERNAME_PASSWORD_LOGIN_MODULE;
-    }
-
-    @Override
     public void setHTTPRequest(HttpRequest httpRequest) {
         this.httpRequest = httpRequest;
     }

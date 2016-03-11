@@ -55,45 +55,52 @@ public class CarbonCallbackHandler implements CallbackHandler {
                 // Specially handle NameCallback and PasswordCallback, since they are available OOTB
                 if (callback instanceof NameCallback || callback instanceof PasswordCallback) {
                     if (!handled) {
-                        List<HTTPCallbackHandler> callbackHandlers = CarbonSecurityDataHolder.getInstance()
-                                .getCallbackHandler(CarbonSecurityConstants.USERNAME_PASSWORD_LOGIN_MODULE);
-                        if(callbackHandlers != null && !callbackHandlers.isEmpty()) {
-                            for (HTTPCallbackHandler httpCallbackHandler : callbackHandlers) {
+                        List<CarbonCallbackHandlerFactory> callbackHandlerFactories = CarbonSecurityDataHolder.getInstance()
+                                .getCallbackHandlerFactory(CarbonSecurityConstants.USERNAME_PASSWORD_LOGIN_MODULE);
+                        if (callbackHandlerFactories != null && !callbackHandlerFactories.isEmpty()) {
+                            for (CarbonCallbackHandlerFactory callbackHandlerFactory : callbackHandlerFactories) {
+                                HTTPCallbackHandler handler;
                                 try {
-                                    HTTPCallbackHandler handler = httpCallbackHandler.getClass().newInstance();
-                                    handler.setHTTPRequest(httpRequest);
-                                    if (handler.canHandle()) {
-                                        handler.handle(callbacks);
-                                        handled = true;
-                                    }
-                                } catch (InstantiationException | IllegalAccessException e) {
+                                    handler = (HTTPCallbackHandler) callbackHandlerFactory
+                                            .getObjectInstance(null, null, null, null);
+                                } catch (Exception e) {
                                     if (log.isDebugEnabled()) {
-                                        log.debug("Unable to instantiate an object from the class " + httpCallbackHandler
-                                                .getClass());
+                                        log.debug("Unable get a instance from the factory " + callbackHandlerFactory
+                                                .getClass().getName(), e);
                                     }
+                                    throw new UnsupportedCallbackException(callback);
+                                }
+
+                                handler.setHTTPRequest(httpRequest);
+                                if (handler.canHandle()) {
+                                    handler.handle(callbacks);
+                                    handled = true;
                                 }
                             }
                         } else {
                             throw new UnsupportedCallbackException(callback);
                         }
                     }
-                // Handle CarbonCallbacks
+                    // Handle CarbonCallbacks
                 } else if (callback instanceof CarbonCallback) {
-                    List<HTTPCallbackHandler> callbackHandlers = CarbonSecurityDataHolder.getInstance()
-                            .getCallbackHandler(((CarbonCallback) callback).getLoginModuleType());
-                    if(callbackHandlers != null && !callbackHandlers.isEmpty()) {
-                        for(HTTPCallbackHandler httpCallbackHandler : callbackHandlers) {
+                    List<CarbonCallbackHandlerFactory> callbackHandlerFactories = CarbonSecurityDataHolder.getInstance()
+                            .getCallbackHandlerFactory(((CarbonCallback) callback).getLoginModuleType());
+                    if (callbackHandlerFactories != null && !callbackHandlerFactories.isEmpty()) {
+                        for (CarbonCallbackHandlerFactory callbackHandlerFactory : callbackHandlerFactories) {
+                            HTTPCallbackHandler handler;
                             try {
-                                HTTPCallbackHandler handler = httpCallbackHandler.getClass().newInstance();
-                                handler.setHTTPRequest(httpRequest);
-                                if (handler.canHandle()) {
-                                    handler.handle(new Callback[] {callback});
-                                }
-                            } catch (InstantiationException | IllegalAccessException e) {
+                                handler = (HTTPCallbackHandler) callbackHandlerFactory
+                                        .getObjectInstance(null, null, null, null);
+                            } catch (Exception e) {
                                 if (log.isDebugEnabled()) {
-                                    log.debug("Unable to instantiate an object from the class " + httpCallbackHandler
-                                            .getClass());
+                                    log.debug("Unable get a instance from the factory " + callbackHandlerFactory
+                                            .getClass().getName(), e);
                                 }
+                                throw new UnsupportedCallbackException(callback);
+                            }
+                            handler.setHTTPRequest(httpRequest);
+                            if (handler.canHandle()) {
+                                handler.handle(new Callback[]{callback});
                             }
                         }
                     } else {

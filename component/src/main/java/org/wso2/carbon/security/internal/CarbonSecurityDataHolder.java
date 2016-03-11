@@ -16,6 +16,7 @@
 
 package org.wso2.carbon.security.internal;
 
+import org.wso2.carbon.security.jaas.CarbonCallbackHandlerFactory;
 import org.wso2.carbon.security.jaas.HTTPCallbackHandler;
 
 import java.util.Arrays;
@@ -27,38 +28,38 @@ public class CarbonSecurityDataHolder {
 
     private static CarbonSecurityDataHolder instance = new CarbonSecurityDataHolder();
 
-    private static Map<String, List<HTTPCallbackHandler>> httpCallbackHandlerMap;
+    private static Map<String, List<CarbonCallbackHandlerFactory>> callbackHandlerFactoryMap;
 
     private CarbonSecurityDataHolder() {
-        this.httpCallbackHandlerMap = new HashMap<>();
+        this.callbackHandlerFactoryMap = new HashMap<>();
     }
 
     public static CarbonSecurityDataHolder getInstance() {
         return instance;
     }
 
-    public void addCallbackHandler(HTTPCallbackHandler httpCallbackHandler) {
-        if (httpCallbackHandlerMap.get(httpCallbackHandler.getSupportedLoginModuleType()) == null) {
-            synchronized (httpCallbackHandlerMap) {
-                if (httpCallbackHandlerMap.get(httpCallbackHandler.getSupportedLoginModuleType()) == null) {
-                    httpCallbackHandlerMap.put(httpCallbackHandler.getSupportedLoginModuleType(), Arrays.asList(httpCallbackHandler));
+    public void registerCallbackHandlerFactory(CarbonCallbackHandlerFactory callbackHandlerFactory) {
+        if (callbackHandlerFactoryMap.get(callbackHandlerFactory.getSupportedLoginModuleType()) == null) {
+            synchronized (callbackHandlerFactoryMap) {
+                if (callbackHandlerFactoryMap.get(callbackHandlerFactory.getSupportedLoginModuleType()) == null) {
+                    callbackHandlerFactoryMap.put(callbackHandlerFactory.getSupportedLoginModuleType(), Arrays.asList(callbackHandlerFactory));
                 }
             }
         } else {
-            synchronized (httpCallbackHandlerMap) {
-                httpCallbackHandlerMap.get(httpCallbackHandler.getSupportedLoginModuleType()).add(httpCallbackHandler);
+            synchronized (callbackHandlerFactoryMap) {
+                callbackHandlerFactoryMap.get(callbackHandlerFactory.getSupportedLoginModuleType()).add(callbackHandlerFactory);
             }
         }
     }
 
-    public void removeCallbackHandler(HTTPCallbackHandler httpCallbackHandler) {
-        synchronized (httpCallbackHandlerMap) {
-            httpCallbackHandlerMap.get(httpCallbackHandler.getSupportedLoginModuleType()).remove(httpCallbackHandler);
+    public void unregisterCallbackHandlerFactory(CarbonCallbackHandlerFactory callbackHandlerFactory) {
+        synchronized (callbackHandlerFactoryMap) {
+            callbackHandlerFactoryMap.get(callbackHandlerFactory.getSupportedLoginModuleType()).remove(callbackHandlerFactory);
         }
     }
 
-    public List<HTTPCallbackHandler> getCallbackHandler(String type) {
-        return httpCallbackHandlerMap.get(type);
+    public List<CarbonCallbackHandlerFactory> getCallbackHandlerFactory(String type) {
+        return callbackHandlerFactoryMap.get(type);
     }
 
 }
