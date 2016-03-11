@@ -16,10 +16,15 @@
 
 package org.wso2.carbon.security.jaas.util;
 
+import java.nio.file.Path;
+import java.nio.file.Paths;
+
 /**
  * This class holds the constants used by the security module.
  */
 public class CarbonSecurityConstants {
+
+    public static final String CARBON_HOME = "carbon.home";
 
     public static final String HTTP_AUTHORIZATION_PREFIX_BEARER = "Bearer";
     public static final String HTTP_AUTHORIZATION_PREFIX_BASIC = "Basic";
@@ -27,6 +32,10 @@ public class CarbonSecurityConstants {
     public static final String USERNAME_PASSWORD_LOGIN_MODULE = "USERNAME_PASSWORD_LM";
     public static final String JWT_LOGIN_MODULE = "JWT_LM";
     public static final String SAML_LOGIN_MODULE = "SAML_LM";
+
+    public static Path getCarbonHomeDirectory() {
+        return Paths.get(System.getProperty(CARBON_HOME));
+    }
 
     private CarbonSecurityConstants() {
 

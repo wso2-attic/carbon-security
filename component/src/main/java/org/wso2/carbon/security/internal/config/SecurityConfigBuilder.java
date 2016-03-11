@@ -18,6 +18,7 @@ package org.wso2.carbon.security.internal.config;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.wso2.carbon.security.jaas.util.CarbonSecurityConstants;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.introspector.BeanAccess;
 
@@ -27,6 +28,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -36,8 +39,6 @@ import java.util.Set;
 public class SecurityConfigBuilder {
 
     private static final Logger log = LoggerFactory.getLogger(SecurityConfigBuilder.class);
-
-    public static final String JAAS_PERMISSIONS_CONF = "jaas.permissions.conf";
 
     private SecurityConfigBuilder() {
     }
@@ -50,17 +51,16 @@ public class SecurityConfigBuilder {
     public static DefaultPermissionInfoCollection buildDefaultPermissionInfoCollection() {
 
         DefaultPermissionInfoCollection permissionInfoCollection;
-        String jaasPermissionsConfigFile = System.getProperty(JAAS_PERMISSIONS_CONF,
-                           "conf" + File.separator + "security" + File.separator + "permissions.yml");
 
-        File file = new File(jaasPermissionsConfigFile);
+        File file = Paths.get(CarbonSecurityConstants.getCarbonHomeDirectory().toString(), "conf", "security",
+                              "permissions.yml").toFile();
         if (file.exists()) {
             try (Reader in = new InputStreamReader(new FileInputStream(file), StandardCharsets.ISO_8859_1)) {
                 Yaml yaml = new Yaml();
                 yaml.setBeanAccess(BeanAccess.FIELD);
                 permissionInfoCollection = yaml.loadAs(in, DefaultPermissionInfoCollection.class);
             } catch (IOException e) {
-                String msg = "Error while loading " + jaasPermissionsConfigFile + " configuration file";
+                String msg = "Error while loading permissions.yml configuration file";
                 throw new RuntimeException(msg, e);
             }
         } else {
