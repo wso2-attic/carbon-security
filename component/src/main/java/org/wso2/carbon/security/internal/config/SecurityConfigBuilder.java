@@ -106,13 +106,16 @@ public class SecurityConfigBuilder {
         permissionInfoSet.add(new DefaultPermissionInfo("org.osgi.framework.AdminPermission", "*", "*"));
         permissionInfoSet.add(new DefaultPermissionInfo("org.osgi.framework.BundlePermission", "*", "host,provide," +
                                                                                                     "fragment"));
-        permissionInfoSet.add(new DefaultPermissionInfo("ava.util.PropertyPermission", "*", "read,write"));
+        permissionInfoSet.add(new DefaultPermissionInfo("java.util.PropertyPermission", "*", "read,write"));
         permissionInfoSet.add(new DefaultPermissionInfo("java.lang.management.ManagementPermission", "control", null));
         permissionInfoSet.add(new DefaultPermissionInfo("java.util.logging.LoggingPermission", "control", null));
         permissionInfoSet.add(new DefaultPermissionInfo("java.security.SecurityPermission", "setPolicy", null));
         permissionInfoSet.add(new DefaultPermissionInfo("org.osgi.framework.PackagePermission", "*", "exportonly," +
                                                                                                      "import"));
         permissionInfoSet.add(new DefaultPermissionInfo("org.osgi.framework.ServicePermission", "*", "get,register"));
+        permissionInfoSet.add(new DefaultPermissionInfo("java.lang.RuntimePermission",
+                                                        "accessClassInPackage.sun.reflect.generics" +
+                                                        ".reflectiveObjects", ""));
 
 
         DefaultPermissionInfoCollection permissionInfoCollection = new DefaultPermissionInfoCollection();
