@@ -16,11 +16,13 @@
 
 package org.wso2.carbon.security.internal.config;
 
+import org.wso2.carbon.security.jaas.util.CarbonSecurityConstants;
 import org.yaml.snakeyaml.Yaml;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.nio.file.Paths;
 import java.util.Map;
 import java.util.Properties;
 
@@ -36,14 +38,20 @@ public class StoreConfigBuilder {
      */
     public static IdentityStoreConfig buildIdentityStoreConfig(String fileName) throws FileNotFoundException {
 
-        String filePath = "conf" + File.separator + "security" + File.separator + fileName;
+        File file = Paths.get(CarbonSecurityConstants.getCarbonHomeDirectory().toString(), "conf", "security", 
+                              fileName).toFile();
 
-        Yaml yaml = new Yaml();
-        Map<String, String> values = (Map<String, String>) yaml.load(new FileInputStream(new File(filePath)));
+        if(file.exists()) {
 
-        Properties storeProperties = new Properties();
-        values.forEach(storeProperties::put);
+            Yaml yaml = new Yaml();
+            Map<String, String> values = (Map<String, String>) yaml.load(new FileInputStream(file));
 
-        return new IdentityStoreConfig(storeProperties);
+            Properties storeProperties = new Properties();
+            values.forEach(storeProperties::put);
+
+            return new IdentityStoreConfig(storeProperties);
+        }
+        //TODO
+        return null;
     }
 }
