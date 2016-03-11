@@ -44,11 +44,6 @@ public class JWTCallbackHandler implements HTTPCallbackHandler {
     private SignedJWT singedJWT;
 
     @Override
-    public String getSupportedLoginModuleType() {
-        return CarbonSecurityConstants.JWT_LOGIN_MODULE;
-    }
-
-    @Override
     public void setHTTPRequest(HttpRequest httpRequest) {
         this.httpRequest = httpRequest;
     }

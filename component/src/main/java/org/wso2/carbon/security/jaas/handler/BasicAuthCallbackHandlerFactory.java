@@ -16,36 +16,26 @@
 
 package org.wso2.carbon.security.jaas.handler;
 
-import io.netty.handler.codec.http.HttpRequest;
-import org.wso2.carbon.security.jaas.HTTPCallbackHandler;
+import org.wso2.carbon.security.jaas.CarbonCallbackHandlerFactory;
 import org.wso2.carbon.security.jaas.util.CarbonSecurityConstants;
 
-import javax.security.auth.callback.Callback;
-import javax.security.auth.callback.UnsupportedCallbackException;
-import java.io.IOException;
+import javax.naming.Context;
+import javax.naming.Name;
+import java.util.Hashtable;
 
 /**
- * <p>
- * This class builds SAML Assertion from the Authorization header
- * </p>
+ *
  */
-public class SAMLCallbackHandler implements HTTPCallbackHandler {
-
-    private HttpRequest httpRequest;
+public class BasicAuthCallbackHandlerFactory extends CarbonCallbackHandlerFactory {
 
     @Override
-    public void setHTTPRequest(HttpRequest httpRequest) {
-        this.httpRequest = httpRequest;
+    public String getSupportedLoginModuleType() {
+        return CarbonSecurityConstants.USERNAME_PASSWORD_LOGIN_MODULE;
     }
 
     @Override
-    public boolean canHandle() {
-        return false;
+    public Object getObjectInstance(Object obj, Name name, Context nameCtx, Hashtable<?, ?> environment)
+            throws Exception {
+        return new BasicAuthCallbackHandler();
     }
-
-    @Override
-    public void handle(Callback[] callbacks) throws IOException, UnsupportedCallbackException {
-
-    }
-
 }
