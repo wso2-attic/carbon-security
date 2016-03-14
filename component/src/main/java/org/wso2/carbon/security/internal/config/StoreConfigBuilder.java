@@ -33,25 +33,41 @@ public class StoreConfigBuilder {
 
     /**
      * Build a IdentityStoreConfig from a file.
+     *
      * @param fileName Name of the configuration file.
      * @return Instance of IdentityStoreConfig.
      */
     public static IdentityStoreConfig buildIdentityStoreConfig(String fileName) throws FileNotFoundException {
 
-        File file = Paths.get(CarbonSecurityConstants.getCarbonHomeDirectory().toString(), "conf", "security", 
-                              fileName).toFile();
+        File file = Paths.get(CarbonSecurityConstants.getCarbonHomeDirectory().toString(), "conf", "security",
+                fileName).toFile();
 
-        if(file.exists()) {
+        Yaml yaml = new Yaml();
+        Map<String, String> values = (Map<String, String>) yaml.load(new FileInputStream(file));
 
-            Yaml yaml = new Yaml();
-            Map<String, String> values = (Map<String, String>) yaml.load(new FileInputStream(file));
+        Properties storeProperties = new Properties();
+        values.forEach(storeProperties::put);
 
-            Properties storeProperties = new Properties();
-            values.forEach(storeProperties::put);
+        return new IdentityStoreConfig(storeProperties);
+    }
 
-            return new IdentityStoreConfig(storeProperties);
-        }
-        //TODO
-        return null;
+    /**
+     * Build a CredentialStoreConfig from a file.
+     *
+     * @param fileName Name of the configuration file.
+     * @return Instance of CredentialStoreConfig.
+     */
+    public static CredentialStoreConfig buildCredentialStoreConfig(String fileName) throws FileNotFoundException {
+
+        File file = Paths.get(CarbonSecurityConstants.getCarbonHomeDirectory().toString(), "conf", "security",
+                fileName).toFile();
+
+        Yaml yaml = new Yaml();
+        Map<String, String> values = (Map<String, String>) yaml.load(new FileInputStream(file));
+
+        Properties storeProperties = new Properties();
+        values.forEach(storeProperties::put);
+
+        return new CredentialStoreConfig(storeProperties);
     }
 }

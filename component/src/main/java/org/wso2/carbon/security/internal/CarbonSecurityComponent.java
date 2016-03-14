@@ -17,7 +17,6 @@
 package org.wso2.carbon.security.internal;
 
 import org.osgi.framework.BundleContext;
-import org.osgi.framework.ServiceReference;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
@@ -25,11 +24,11 @@ import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.component.annotations.ReferenceCardinality;
 import org.osgi.service.component.annotations.ReferencePolicy;
-import org.osgi.service.jndi.JNDIContextManager;
 import org.osgi.service.permissionadmin.PermissionAdmin;
 import org.osgi.service.permissionadmin.PermissionInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.wso2.carbon.datasource.core.api.DataSourceService;
 import org.wso2.carbon.security.internal.config.DefaultPermissionInfo;
 import org.wso2.carbon.security.internal.config.DefaultPermissionInfoCollection;
 import org.wso2.carbon.security.internal.config.SecurityConfigBuilder;
@@ -42,14 +41,11 @@ import org.wso2.carbon.security.usercore.common.CarbonRealmServiceImpl;
 import org.wso2.carbon.security.usercore.service.RealmService;
 import org.wso2.carbon.security.usercore.util.DatabaseUtil;
 
-import javax.naming.Context;
-import javax.naming.NamingException;
 import java.security.Policy;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 /**
  * OSGi service component which handle authentication and authorization
@@ -81,13 +77,6 @@ public class CarbonSecurityComponent {
         CarbonSecurityDataHolder.getInstance().addCallbackHandler(new BasicAuthCallbackHandler());
         CarbonSecurityDataHolder.getInstance().addCallbackHandler(new JWTCallbackHandler());
         CarbonSecurityDataHolder.getInstance().addCallbackHandler(new SAMLCallbackHandler());
-
-        try {
-            // Set JNDI context for the later use.
-            this.setJNDIContext(bundleContext);
-        } catch (NamingException e) {
-            log.error("Error while setting the JNDI context.", e);
-        }
 
         try {
             registration = bundleContext.registerService(RealmService.class.getName(), new CarbonRealmServiceImpl(),
@@ -123,6 +112,25 @@ public class CarbonSecurityComponent {
 
     protected void unregisterHttpCallbackHandler(HTTPCallbackHandler httpCallbackHandler, Map<String, ?> ref) {
         CarbonSecurityDataHolder.getInstance().removeCallbackHandler(httpCallbackHandler);
+    }
+
+    @Reference(
+            name = "org.wso2.carbon.datasource.DataSourceService",
+            service = DataSourceService.class,
+            cardinality = ReferenceCardinality.AT_LEAST_ONE,
+            policy = ReferencePolicy.DYNAMIC,
+            unbind = "unregisterDataSourceService"
+    )
+    protected void registerDataSourceService(DataSourceService service) {
+
+        if (service == null) {
+            log.error("DataSourceService is null");
+            return;
+        }
+        DatabaseUtil.getInstance().setDataSourceService(service);
+    }
+
+    protected void unregisterDataSourceService(DataSourceService service) {
     }
 
     /**
@@ -167,19 +175,6 @@ public class CarbonSecurityComponent {
 
     private PermissionAdmin getPermissionAdmin(BundleContext context) {
         return (PermissionAdmin) context.getService(context.getServiceReference(PermissionAdmin.class.getName()));
-    }
-
-    private void setJNDIContext(BundleContext bundleContext) throws NamingException {
-
-        ServiceReference<JNDIContextManager> contextManagerSRef = bundleContext.getServiceReference(
-                JNDIContextManager.class);
-
-        JNDIContextManager jndiContextManager = Optional.ofNullable(contextManagerSRef)
-                .map(bundleContext::getService)
-                .orElseThrow(() -> new RuntimeException("JNDIContextManager service is not available."));
-
-        Context initialContext = jndiContextManager.newInitialContext();
-        DatabaseUtil.getInstance().setJNDIContext(initialContext);
     }
 }
 
