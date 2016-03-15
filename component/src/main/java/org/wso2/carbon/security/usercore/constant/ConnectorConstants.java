@@ -22,9 +22,10 @@ package org.wso2.carbon.security.usercore.constant;
 public class ConnectorConstants {
 
     public static final String DATA_SOURCE = "DataSource";
-    public static final String SQL_STATEMENTS = "SqlStatements";
-
-    public static final String SQL_QUERY_GET_GROUP = "";
+    public static final String DATABASE_TYPE = "DatabaseType";
+    public static final String SQL_QUERIES = "SqlStatements";
     public static final String USERSTORE_ID = "";
-    public static final String SQL_QUERY_GET_USER_PASSWORD = "";
+
+    public static final String SQL_QUERY_GET_GROUP = "sql_query_get_group";
+    public static final String SQL_QUERY_COMPARE_PASSWORD_HASH = "sql_query_compare_password_hash";
 }

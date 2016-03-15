@@ -20,8 +20,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.wso2.carbon.datasource.core.exception.DataSourceException;
 import org.wso2.carbon.security.internal.config.CredentialStoreConfig;
-import org.wso2.carbon.security.usercore.connector.ConnectorConstants;
+import org.wso2.carbon.security.usercore.constant.ConnectorConstants;
 import org.wso2.carbon.security.usercore.connector.CredentialStoreConnector;
+import org.wso2.carbon.security.usercore.constant.DatabaseColumnNames;
 import org.wso2.carbon.security.usercore.exception.AuthenticationFailure;
 import org.wso2.carbon.security.usercore.exception.CredentialStoreException;
 import org.wso2.carbon.security.usercore.util.DatabaseUtil;
@@ -54,7 +55,7 @@ public class JDBCCredentialStoreConnector implements CredentialStoreConnector {
         Properties properties = configuration.getStoreProperties();
 
         this.identityStoreConfig = configuration;
-        this.sqlQueries = (Map<String, String>) properties.get(ConnectorConstants.SQL_STATEMENTS);
+        this.sqlQueries = (Map<String, String>) properties.get(ConnectorConstants.SQL_QUERIES);
         try {
             this.dataSource = DatabaseUtil.getInstance().getDataSource(properties
                     .getProperty(ConnectorConstants.DATA_SOURCE));
@@ -87,37 +88,24 @@ public class JDBCCredentialStoreConnector implements CredentialStoreConnector {
             throw new AuthenticationFailure("Username or password is null");
         }
 
-        Connection connection = null;
-        try {
-            connection = dataSource.getConnection();
+        try (Connection connection = dataSource.getConnection()) {
+
             NamedPreparedStatement preparedStatement = new NamedPreparedStatement(connection,
-                    sqlQueries.get(ConnectorConstants.SQL_QUERY_GET_USER_PASSWORD));
+                    sqlQueries.get(ConnectorConstants.SQL_QUERY_COMPARE_PASSWORD_HASH));
+
+            // TODO: Use correct hashing algorithm.
+            String hashedPassword = hashPassword(password, null);
+            preparedStatement.setString("hashedPassword", hashedPassword);
+            preparedStatement.setString("username", username);
+
             ResultSet resultSet = preparedStatement.executeQuery();
             if (!resultSet.next()) {
                 throw new AuthenticationFailure("No user for given username");
             }
 
-            String userId = resultSet.getString(DatabaseColumnNames.User.USER_ID);
-            String dbPasswordHash = resultSet.getString(DatabaseColumnNames.User.PASSWORD);
-            // TODO: Use correct hashing algorithm.
-            String hashedPassword = hashPassword(password, null);
-
-            // TODO: Use StringUtils here.
-            if (!hashedPassword.equals(dbPasswordHash)) {
-                throw new AuthenticationFailure("Password mismatch");
-            } else {
-                return userId;
-            }
+            return resultSet.getString(DatabaseColumnNames.User.USER_ID);
         } catch (SQLException e) {
             throw new CredentialStoreException("Exception occurred while authenticating the user", e);
-        } finally {
-            if (connection != null) {
-                try {
-                    connection.close();
-                } catch (SQLException e) {
-                    throw new CredentialStoreException("Error occurred while closing the connection", e);
-                }
-            }
         }
     }
 
