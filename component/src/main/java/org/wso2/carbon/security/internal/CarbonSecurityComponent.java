@@ -76,14 +76,17 @@ public class CarbonSecurityComponent {
             Policy.setPolicy(policy);
         }
 
-        // Set default callback handlers
-        CarbonSecurityDataHolder.getInstance().registerCallbackHandlerFactory(new BasicAuthCallbackHandlerFactory());
-        CarbonSecurityDataHolder.getInstance().registerCallbackHandlerFactory(new JWTCallbackHandlerFactory());
-        CarbonSecurityDataHolder.getInstance().registerCallbackHandlerFactory(new SAMLCallbackHandlerFactory());
-
         try {
-            registration = bundleContext.registerService(RealmService.class.getName(), new CarbonRealmServiceImpl(),
-                                                         null);
+
+            CarbonRealmServiceImpl carbonRealmService = new CarbonRealmServiceImpl();
+
+            // Set default callback handlers
+            CarbonSecurityDataHolder.getInstance().registerCallbackHandlerFactory(new BasicAuthCallbackHandlerFactory());
+            CarbonSecurityDataHolder.getInstance().registerCallbackHandlerFactory(new JWTCallbackHandlerFactory());
+            CarbonSecurityDataHolder.getInstance().registerCallbackHandlerFactory(new SAMLCallbackHandlerFactory());
+            CarbonSecurityDataHolder.getInstance().registerCarbonRealmService(carbonRealmService);
+
+            registration = bundleContext.registerService(RealmService.class.getName(), carbonRealmService, null);
         } catch (Exception e) {
             log.error(e.getMessage(), e);
         }

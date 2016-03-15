@@ -18,8 +18,13 @@ package org.wso2.carbon.security.jaas.modules;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.wso2.carbon.security.internal.CarbonSecurityDataHolder;
 import org.wso2.carbon.security.jaas.CarbonPrincipal;
 import org.wso2.carbon.security.jaas.util.InMemoryUserStoreManager;
+import org.wso2.carbon.security.usercore.context.AuthenticationContext;
+import org.wso2.carbon.security.usercore.exception.AuthenticationFailure;
+import org.wso2.carbon.security.usercore.exception.CredentialStoreException;
+import org.wso2.carbon.security.usercore.exception.IdentityStoreException;
 
 import java.io.IOException;
 import java.util.Map;
@@ -102,8 +107,19 @@ public class UsernamePasswordLoginModule implements LoginModule {
         username = usernameCallback.getName();
         password = passwordCallback.getPassword();
 
-        success = InMemoryUserStoreManager.getInstance().authenticate(username, password);
-        return success;
+        try {
+            AuthenticationContext context = CarbonSecurityDataHolder.getInstance().getCarbonRealmService()
+                    .getCredentialStore().authenticate(callbacks);
+        } catch (AuthenticationFailure authenticationFailure) {
+            throw new LoginException("Authentication failure");
+        } catch (IdentityStoreException e) {
+            throw new RuntimeException("Identity store exception occurred", e);
+        } catch (CredentialStoreException e) {
+            throw new RuntimeException("Credential store exception occurred", e);
+        }
+
+        success = true;
+        return true;
     }
 
     /**

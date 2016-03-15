@@ -18,6 +18,7 @@ package org.wso2.carbon.security.internal;
 
 import org.wso2.carbon.security.jaas.CarbonCallbackHandlerFactory;
 import org.wso2.carbon.security.jaas.HTTPCallbackHandler;
+import org.wso2.carbon.security.usercore.common.CarbonRealmServiceImpl;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -27,8 +28,8 @@ import java.util.Map;
 public class CarbonSecurityDataHolder {
 
     private static CarbonSecurityDataHolder instance = new CarbonSecurityDataHolder();
-
     private static Map<String, List<CarbonCallbackHandlerFactory>> callbackHandlerFactoryMap;
+    private static CarbonRealmServiceImpl carbonRealmService;
 
     private CarbonSecurityDataHolder() {
         this.callbackHandlerFactoryMap = new HashMap<>();
@@ -62,4 +63,11 @@ public class CarbonSecurityDataHolder {
         return callbackHandlerFactoryMap.get(type);
     }
 
+    public void registerCarbonRealmService(CarbonRealmServiceImpl carbonRealmService) {
+        CarbonSecurityDataHolder.carbonRealmService = carbonRealmService;
+    }
+
+    public CarbonRealmServiceImpl getCarbonRealmService() {
+        return CarbonSecurityDataHolder.carbonRealmService;
+    }
 }

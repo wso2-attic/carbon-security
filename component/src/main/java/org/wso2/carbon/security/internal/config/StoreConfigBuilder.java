@@ -17,6 +17,8 @@
 package org.wso2.carbon.security.internal.config;
 
 import org.wso2.carbon.security.jaas.util.CarbonSecurityConstants;
+import org.wso2.carbon.security.usercore.constant.ConnectorConstants;
+import org.wso2.carbon.security.usercore.util.MySQLFamilySQLQueryFactory;
 import org.yaml.snakeyaml.Yaml;
 
 import java.io.File;
@@ -52,7 +54,6 @@ public class StoreConfigBuilder {
 
     /**
      * Build a CredentialStoreConfig from a file.
-     *
      * @param fileName Name of the configuration file.
      * @return Instance of CredentialStoreConfig.
      */
@@ -66,6 +67,13 @@ public class StoreConfigBuilder {
 
         Properties storeProperties = new Properties();
         values.forEach(storeProperties::put);
+
+        String databaseType = values.get(ConnectorConstants.DATABASE_TYPE);
+
+        if (databaseType == null || databaseType.equals("MySQL")) {
+            Map<String, String> sqlQueries = new MySQLFamilySQLQueryFactory().getQueries();
+            storeProperties.put(ConnectorConstants.SQL_QUERIES, sqlQueries);
+        }
 
         return new CredentialStoreConfig(storeProperties);
     }

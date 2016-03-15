@@ -16,8 +16,7 @@
 
 package org.wso2.carbon.security.usercore.util;
 
-import org.wso2.carbon.security.usercore.connector.UserStoreConstants;
-import org.wso2.carbon.security.usercore.connector.UserStoreConstants;
+import org.wso2.carbon.security.usercore.constant.UserStoreConstants;
 
 /**
  * User core utils.
