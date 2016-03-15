@@ -16,7 +16,7 @@
 
 package org.wso2.carbon.security.jaas.handler;
 
-import org.wso2.carbon.security.jaas.CarbonCallbackHandlerFactory;
+import org.wso2.carbon.security.jaas.HTTPCallbackHandlerFactory;
 import org.wso2.carbon.security.jaas.util.CarbonSecurityConstants;
 
 import javax.naming.Context;
@@ -26,7 +26,7 @@ import java.util.Hashtable;
 /**
  *
  */
-public class BasicAuthCallbackHandlerFactory extends CarbonCallbackHandlerFactory {
+public class BasicAuthCallbackHandlerFactory implements HTTPCallbackHandlerFactory {
 
     @Override
     public String getSupportedLoginModuleType() {

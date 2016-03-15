@@ -33,14 +33,10 @@ import org.slf4j.LoggerFactory;
 import org.wso2.carbon.security.internal.config.DefaultPermissionInfo;
 import org.wso2.carbon.security.internal.config.DefaultPermissionInfoCollection;
 import org.wso2.carbon.security.internal.config.SecurityConfigBuilder;
-import org.wso2.carbon.security.jaas.CarbonCallbackHandlerFactory;
+import org.wso2.carbon.security.jaas.HTTPCallbackHandlerFactory;
 import org.wso2.carbon.security.jaas.CarbonPolicy;
-import org.wso2.carbon.security.jaas.HTTPCallbackHandler;
-import org.wso2.carbon.security.jaas.handler.BasicAuthCallbackHandler;
 import org.wso2.carbon.security.jaas.handler.BasicAuthCallbackHandlerFactory;
-import org.wso2.carbon.security.jaas.handler.JWTCallbackHandler;
 import org.wso2.carbon.security.jaas.handler.JWTCallbackHandlerFactory;
-import org.wso2.carbon.security.jaas.handler.SAMLCallbackHandler;
 import org.wso2.carbon.security.jaas.handler.SAMLCallbackHandlerFactory;
 import org.wso2.carbon.security.usercore.common.CarbonRealmServiceImpl;
 import org.wso2.carbon.security.usercore.service.RealmService;
@@ -115,16 +111,16 @@ public class CarbonSecurityComponent {
 
     @Reference(
             name = "httpCallbackHandlerFactories",
-            service = CarbonCallbackHandlerFactory.class,
+            service = HTTPCallbackHandlerFactory.class,
             cardinality = ReferenceCardinality.MULTIPLE,
             policy = ReferencePolicy.DYNAMIC,
             unbind = "unregisterCallbackHandlerFactory"
     )
-    protected void registerCallbackHandlerFactory(CarbonCallbackHandlerFactory callbackHandlerFactory, Map<String, ?> ref) {
+    protected void registerCallbackHandlerFactory(HTTPCallbackHandlerFactory callbackHandlerFactory, Map<String, ?> ref) {
         CarbonSecurityDataHolder.getInstance().registerCallbackHandlerFactory(callbackHandlerFactory);
     }
 
-    protected void unregisterCallbackHandlerFactory(CarbonCallbackHandlerFactory callbackHandlerFactory, Map<String, ?> ref) {
+    protected void unregisterCallbackHandlerFactory(HTTPCallbackHandlerFactory callbackHandlerFactory, Map<String, ?> ref) {
         CarbonSecurityDataHolder.getInstance().unregisterCallbackHandlerFactory(callbackHandlerFactory);
     }
 
