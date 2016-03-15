@@ -27,13 +27,15 @@ public class UsernamePasswordLoginModuleTest {
 
     @Test
     public void testBasicAuthLogin() {
-
+//
 //        HttpRequest httpRequest = new DefaultHttpRequest(HttpVersion.HTTP_1_1, HttpMethod.GET, "");
 //        httpRequest.headers().add("Authorization", "Basic " + Base64.getEncoder().encodeToString("admin:admin".getBytes()));
 //
 //        CallbackHandler callbackHandler = new CarbonCallbackHandler(httpRequest);
 //
 //        LoginContext loginContext;
+//
+//
 //        try {
 //
 //            loginContext = new LoginContext("CarbonSecurityConfig", new Subject(), callbackHandler, new Configuration() {

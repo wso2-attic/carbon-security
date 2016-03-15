@@ -16,8 +16,7 @@
 
 package org.wso2.carbon.security.internal;
 
-import org.wso2.carbon.security.jaas.CarbonCallbackHandlerFactory;
-import org.wso2.carbon.security.jaas.HTTPCallbackHandler;
+import org.wso2.carbon.security.jaas.HTTPCallbackHandlerFactory;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -28,7 +27,7 @@ public class CarbonSecurityDataHolder {
 
     private static CarbonSecurityDataHolder instance = new CarbonSecurityDataHolder();
 
-    private static Map<String, List<CarbonCallbackHandlerFactory>> callbackHandlerFactoryMap;
+    private static Map<String, List<HTTPCallbackHandlerFactory>> callbackHandlerFactoryMap;
 
     private CarbonSecurityDataHolder() {
         this.callbackHandlerFactoryMap = new HashMap<>();
@@ -38,7 +37,7 @@ public class CarbonSecurityDataHolder {
         return instance;
     }
 
-    public void registerCallbackHandlerFactory(CarbonCallbackHandlerFactory callbackHandlerFactory) {
+    public void registerCallbackHandlerFactory(HTTPCallbackHandlerFactory callbackHandlerFactory) {
         if (callbackHandlerFactoryMap.get(callbackHandlerFactory.getSupportedLoginModuleType()) == null) {
             synchronized (callbackHandlerFactoryMap) {
                 if (callbackHandlerFactoryMap.get(callbackHandlerFactory.getSupportedLoginModuleType()) == null) {
@@ -52,13 +51,13 @@ public class CarbonSecurityDataHolder {
         }
     }
 
-    public void unregisterCallbackHandlerFactory(CarbonCallbackHandlerFactory callbackHandlerFactory) {
+    public void unregisterCallbackHandlerFactory(HTTPCallbackHandlerFactory callbackHandlerFactory) {
         synchronized (callbackHandlerFactoryMap) {
             callbackHandlerFactoryMap.get(callbackHandlerFactory.getSupportedLoginModuleType()).remove(callbackHandlerFactory);
         }
     }
 
-    public List<CarbonCallbackHandlerFactory> getCallbackHandlerFactory(String type) {
+    public List<HTTPCallbackHandlerFactory> getCallbackHandlerFactory(String type) {
         return callbackHandlerFactoryMap.get(type);
     }
 
