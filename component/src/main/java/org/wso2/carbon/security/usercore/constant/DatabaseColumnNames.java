@@ -14,17 +14,20 @@
  * limitations under the License.
  */
 
-package org.wso2.carbon.security.usercore.connector;
+package org.wso2.carbon.security.usercore.constant;
 
 /**
- * Connector related constants.
+ * Names of the database table columns.
  */
-public class ConnectorConstants {
+public class DatabaseColumnNames {
 
-    public static final String DATA_SOURCE = "DataSource";
-    public static final String SQL_STATEMENTS = "SqlStatements";
+    public static class Group {
+        public static final String GROUP_UNIQUE_ID = "GROUP_UNIQUE_ID";
+        public static final String GROUP_NAME = "GROUP_NAME";
+    }
 
-    public static final String SQL_QUERY_GET_GROUP = "";
-    public static final java.lang.String USERSTORE_ID = "";
-    public static final String SQL_QUERY_GET_USER_PASSWORD = "";
+    public static class User {
+        public static final String PASSWORD = "";
+        public static final String USER_ID = "";
+    }
 }

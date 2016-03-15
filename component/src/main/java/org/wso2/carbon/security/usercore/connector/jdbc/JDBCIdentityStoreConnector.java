@@ -16,6 +16,7 @@
 
 package org.wso2.carbon.security.usercore.connector.jdbc;
 
+import org.wso2.carbon.datasource.core.exception.DataSourceException;
 import org.wso2.carbon.security.usercore.bean.Group;
 import org.wso2.carbon.security.usercore.bean.User;
 import org.wso2.carbon.security.internal.config.IdentityStoreConfig;
@@ -56,8 +57,8 @@ public class JDBCIdentityStoreConnector implements IdentityStoreConnector {
         try {
             dataSource = DatabaseUtil.getInstance()
                     .getDataSource(properties.getProperty(ConnectorConstants.DATA_SOURCE));
-        } catch (NamingException e) {
-            throw new IdentityStoreException(e);
+        } catch (DataSourceException e) {
+            e.printStackTrace();
         }
     }
 

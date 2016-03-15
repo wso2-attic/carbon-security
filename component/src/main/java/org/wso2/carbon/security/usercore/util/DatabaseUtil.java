@@ -16,6 +16,9 @@
 
 package org.wso2.carbon.security.usercore.util;
 
+import org.wso2.carbon.datasource.core.api.DataSourceService;
+import org.wso2.carbon.datasource.core.exception.DataSourceException;
+
 import javax.sql.DataSource;
 import javax.naming.Context;
 import javax.naming.NamingException;
@@ -25,7 +28,7 @@ import javax.naming.NamingException;
  */
 public class DatabaseUtil {
 
-    private static Context initialContext;
+    private static DataSourceService dataSourceService;
     private static final DatabaseUtil instance = new DatabaseUtil();
 
     private DatabaseUtil() {
@@ -36,17 +39,15 @@ public class DatabaseUtil {
         return instance;
     }
 
-    public void setJNDIContext(Context initialContext) {
-        DatabaseUtil.initialContext = initialContext;
+    public void setDataSourceService(DataSourceService dataSourceService) {
+        DatabaseUtil.dataSourceService = dataSourceService;
     }
 
-    public DataSource getDataSource(String dataSourceName) throws NamingException {
+    public DataSource getDataSource(String dataSourceName) throws DataSourceException {
 
-        if (initialContext == null) {
-            throw new RuntimeException("Context is null. Cannot retrieve data source");
+        if (dataSourceService == null) {
+            throw new RuntimeException("Datasource service is null. Cannot retrieve data source");
         }
-
-        // return (DataSource) initialContext.lookup(dataSourceName);
-        return null;
+        return (DataSource) dataSourceService.getDataSource(dataSourceName);
     }
 }

@@ -16,21 +16,21 @@
 
 package org.wso2.carbon.security.usercore.connector.jdbc;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.wso2.carbon.datasource.core.exception.DataSourceException;
 import org.wso2.carbon.security.internal.config.CredentialStoreConfig;
-import org.wso2.carbon.security.internal.config.IdentityStoreConfig;
 import org.wso2.carbon.security.usercore.connector.ConnectorConstants;
 import org.wso2.carbon.security.usercore.connector.CredentialStoreConnector;
 import org.wso2.carbon.security.usercore.exception.AuthenticationFailure;
 import org.wso2.carbon.security.usercore.exception.CredentialStoreException;
-import org.wso2.carbon.security.usercore.store.CredentialStore;
 import org.wso2.carbon.security.usercore.util.DatabaseUtil;
 import org.wso2.carbon.security.usercore.util.NamedPreparedStatement;
 
-import javax.sql.DataSource;
-import javax.naming.NamingException;
 import javax.security.auth.callback.Callback;
 import javax.security.auth.callback.NameCallback;
 import javax.security.auth.callback.PasswordCallback;
+import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -41,6 +41,8 @@ import java.util.Properties;
  * JDBC connector for the credential store.
  */
 public class JDBCCredentialStoreConnector implements CredentialStoreConnector {
+
+    Logger log = LoggerFactory.getLogger(JDBCCredentialStoreConnector.class);
 
     private DataSource dataSource;
     private CredentialStoreConfig identityStoreConfig;
@@ -56,8 +58,8 @@ public class JDBCCredentialStoreConnector implements CredentialStoreConnector {
         try {
             this.dataSource = DatabaseUtil.getInstance().getDataSource(properties
                     .getProperty(ConnectorConstants.DATA_SOURCE));
-        } catch (NamingException e) {
-            throw new CredentialStoreException("Exception occurred while initialising the Credential store", e);
+        } catch (DataSourceException e) {
+            throw new CredentialStoreException("Error while setting the data source", e);
         }
     }
 

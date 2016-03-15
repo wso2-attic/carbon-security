@@ -14,20 +14,24 @@
  * limitations under the License.
  */
 
-package org.wso2.carbon.security.usercore.connector.jdbc;
+package org.wso2.carbon.security.usercore.constant;
 
 /**
- * Names of the database table columns.
+ * User store constants.
  */
-public class DatabaseColumnNames {
+public class UserStoreConstants {
 
-    public static class Group {
-        public static final String GROUP_UNIQUE_ID = "GROUP_UNIQUE_ID";
-        public static final String GROUP_NAME = "GROUP_NAME";
-    }
+    public static final String USER_STORE_NAME = "userStoreName";
 
-    public static class User {
-        public static final String PASSWORD = "";
-        public static final String USER_ID = "";
-    }
+    public static final String EXECUTION_ORDER = "executionOrder";
+
+    public static final String READ_ONLY = "readOnly";
+
+    public static final String USER_STORE_CLASS = "userStoreClass";
+
+    public static final String PRIMARY = "PRIMARY";
+
+    public static final String USER_STORE_ID = "userStoreID";
+
+    public static final String USER_STORE_CONFIGURATION_FILE = "primary-userstore.yml";
 }

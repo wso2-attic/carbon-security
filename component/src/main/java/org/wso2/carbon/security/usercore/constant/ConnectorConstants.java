@@ -14,24 +14,17 @@
  * limitations under the License.
  */
 
-package org.wso2.carbon.security.usercore.connector;
+package org.wso2.carbon.security.usercore.constant;
 
 /**
- * User store constants.
+ * Connector related constants.
  */
-public class UserStoreConstants {
+public class ConnectorConstants {
 
-    public static final String USER_STORE_NAME = "userStoreName";
+    public static final String DATA_SOURCE = "DataSource";
+    public static final String SQL_STATEMENTS = "SqlStatements";
 
-    public static final String EXECUTION_ORDER = "executionOrder";
-
-    public static final String READ_ONLY = "readOnly";
-
-    public static final String USER_STORE_CLASS = "userStoreClass";
-
-    public static final String PRIMARY = "PRIMARY";
-
-    public static final String USER_STORE_ID = "userStoreID";
-
-    public static final String USER_STORE_CONFIGURATION_FILE = "primary-userstore.yml";
+    public static final String SQL_QUERY_GET_GROUP = "";
+    public static final String USERSTORE_ID = "";
+    public static final String SQL_QUERY_GET_USER_PASSWORD = "";
 }
