@@ -21,8 +21,8 @@ import javax.naming.spi.ObjectFactory;
 /**
  *
  */
-public abstract class CarbonCallbackHandlerFactory implements ObjectFactory {
+public interface HTTPCallbackHandlerFactory extends ObjectFactory {
 
-    public abstract String getSupportedLoginModuleType();
+    String getSupportedLoginModuleType();
 
 }

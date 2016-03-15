@@ -49,16 +49,17 @@ public class CarbonCallbackHandler implements CallbackHandler {
 
         if (callbacks != null && callbacks.length > 0) {
 
+            // in the case of NameCallback and PasswordCallback, both will get handled at once.
             boolean handled = false;
 
             for (Callback callback : callbacks) {
                 // Specially handle NameCallback and PasswordCallback, since they are available OOTB
                 if (callback instanceof NameCallback || callback instanceof PasswordCallback) {
                     if (!handled) {
-                        List<CarbonCallbackHandlerFactory> callbackHandlerFactories = CarbonSecurityDataHolder.getInstance()
+                        List<HTTPCallbackHandlerFactory> callbackHandlerFactories = CarbonSecurityDataHolder.getInstance()
                                 .getCallbackHandlerFactory(CarbonSecurityConstants.USERNAME_PASSWORD_LOGIN_MODULE);
                         if (callbackHandlerFactories != null && !callbackHandlerFactories.isEmpty()) {
-                            for (CarbonCallbackHandlerFactory callbackHandlerFactory : callbackHandlerFactories) {
+                            for (HTTPCallbackHandlerFactory callbackHandlerFactory : callbackHandlerFactories) {
                                 HTTPCallbackHandler handler;
                                 try {
                                     handler = (HTTPCallbackHandler) callbackHandlerFactory
@@ -75,6 +76,7 @@ public class CarbonCallbackHandler implements CallbackHandler {
                                 if (handler.canHandle()) {
                                     handler.handle(callbacks);
                                     handled = true;
+                                    break;
                                 }
                             }
                         } else {
@@ -83,10 +85,10 @@ public class CarbonCallbackHandler implements CallbackHandler {
                     }
                     // Handle CarbonCallbacks
                 } else if (callback instanceof CarbonCallback) {
-                    List<CarbonCallbackHandlerFactory> callbackHandlerFactories = CarbonSecurityDataHolder.getInstance()
+                    List<HTTPCallbackHandlerFactory> callbackHandlerFactories = CarbonSecurityDataHolder.getInstance()
                             .getCallbackHandlerFactory(((CarbonCallback) callback).getLoginModuleType());
                     if (callbackHandlerFactories != null && !callbackHandlerFactories.isEmpty()) {
-                        for (CarbonCallbackHandlerFactory callbackHandlerFactory : callbackHandlerFactories) {
+                        for (HTTPCallbackHandlerFactory callbackHandlerFactory : callbackHandlerFactories) {
                             HTTPCallbackHandler handler;
                             try {
                                 handler = (HTTPCallbackHandler) callbackHandlerFactory
@@ -101,6 +103,7 @@ public class CarbonCallbackHandler implements CallbackHandler {
                             handler.setHTTPRequest(httpRequest);
                             if (handler.canHandle()) {
                                 handler.handle(new Callback[]{callback});
+                                break;
                             }
                         }
                     } else {
