@@ -20,13 +20,13 @@ import org.wso2.carbon.datasource.core.exception.DataSourceException;
 import org.wso2.carbon.security.usercore.bean.Group;
 import org.wso2.carbon.security.usercore.bean.User;
 import org.wso2.carbon.security.internal.config.IdentityStoreConfig;
-import org.wso2.carbon.security.usercore.connector.ConnectorConstants;
+import org.wso2.carbon.security.usercore.constant.ConnectorConstants;
 import org.wso2.carbon.security.usercore.connector.IdentityStoreConnector;
+import org.wso2.carbon.security.usercore.constant.DatabaseColumnNames;
 import org.wso2.carbon.security.usercore.exception.IdentityStoreException;
 import org.wso2.carbon.security.usercore.util.DatabaseUtil;
 import org.wso2.carbon.security.usercore.util.NamedPreparedStatement;
 
-import javax.naming.NamingException;
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -51,7 +51,7 @@ public class JDBCIdentityStoreConnector implements IdentityStoreConnector {
 
         Properties properties = identityStoreConfig.getStoreProperties();
 
-        this.sqlStatements = (Map<String, String>) properties.get(ConnectorConstants.SQL_STATEMENTS);
+        this.sqlStatements = (Map<String, String>) properties.get(ConnectorConstants.SQL_QUERIES);
         this.userStoreId = properties.getProperty(ConnectorConstants.USERSTORE_ID);
         this.identityStoreConfig = identityStoreConfig;
         try {
