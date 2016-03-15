@@ -32,11 +32,15 @@ import org.wso2.carbon.datasource.core.api.DataSourceService;
 import org.wso2.carbon.security.internal.config.DefaultPermissionInfo;
 import org.wso2.carbon.security.internal.config.DefaultPermissionInfoCollection;
 import org.wso2.carbon.security.internal.config.SecurityConfigBuilder;
+import org.wso2.carbon.security.jaas.CarbonCallbackHandlerFactory;
 import org.wso2.carbon.security.jaas.CarbonPolicy;
 import org.wso2.carbon.security.jaas.HTTPCallbackHandler;
 import org.wso2.carbon.security.jaas.handler.BasicAuthCallbackHandler;
+import org.wso2.carbon.security.jaas.handler.BasicAuthCallbackHandlerFactory;
 import org.wso2.carbon.security.jaas.handler.JWTCallbackHandler;
+import org.wso2.carbon.security.jaas.handler.JWTCallbackHandlerFactory;
 import org.wso2.carbon.security.jaas.handler.SAMLCallbackHandler;
+import org.wso2.carbon.security.jaas.handler.SAMLCallbackHandlerFactory;
 import org.wso2.carbon.security.usercore.common.CarbonRealmServiceImpl;
 import org.wso2.carbon.security.usercore.service.RealmService;
 import org.wso2.carbon.security.usercore.util.DatabaseUtil;
@@ -70,13 +74,12 @@ public class CarbonSecurityComponent {
             // Registering CarbonPolicy
             CarbonPolicy policy = new CarbonPolicy();
             Policy.setPolicy(policy);
-            System.setSecurityManager(new SecurityManager());
         }
 
         // Set default callback handlers
-        CarbonSecurityDataHolder.getInstance().addCallbackHandler(new BasicAuthCallbackHandler());
-        CarbonSecurityDataHolder.getInstance().addCallbackHandler(new JWTCallbackHandler());
-        CarbonSecurityDataHolder.getInstance().addCallbackHandler(new SAMLCallbackHandler());
+        CarbonSecurityDataHolder.getInstance().registerCallbackHandlerFactory(new BasicAuthCallbackHandlerFactory());
+        CarbonSecurityDataHolder.getInstance().registerCallbackHandlerFactory(new JWTCallbackHandlerFactory());
+        CarbonSecurityDataHolder.getInstance().registerCallbackHandlerFactory(new SAMLCallbackHandlerFactory());
 
         try {
             registration = bundleContext.registerService(RealmService.class.getName(), new CarbonRealmServiceImpl(),
@@ -100,18 +103,18 @@ public class CarbonSecurityComponent {
     }
 
     @Reference(
-            name = "httpCallbackHandlers",
-            service = HTTPCallbackHandler.class,
+            name = "httpCallbackHandlerFactories",
+            service = CarbonCallbackHandlerFactory.class,
             cardinality = ReferenceCardinality.MULTIPLE,
             policy = ReferencePolicy.DYNAMIC,
-            unbind = "unregisterHttpCallbackHandler"
+            unbind = "unregisterCallbackHandlerFactory"
     )
-    protected void registerHttpCallbackHandler(HTTPCallbackHandler httpCallbackHandler, Map<String, ?> ref) {
-        CarbonSecurityDataHolder.getInstance().addCallbackHandler(httpCallbackHandler);
+    protected void registerCallbackHandlerFactory(CarbonCallbackHandlerFactory callbackHandlerFactory, Map<String, ?> ref) {
+        CarbonSecurityDataHolder.getInstance().registerCallbackHandlerFactory(callbackHandlerFactory);
     }
 
-    protected void unregisterHttpCallbackHandler(HTTPCallbackHandler httpCallbackHandler, Map<String, ?> ref) {
-        CarbonSecurityDataHolder.getInstance().removeCallbackHandler(httpCallbackHandler);
+    protected void unregisterCallbackHandlerFactory(CarbonCallbackHandlerFactory callbackHandlerFactory, Map<String, ?> ref) {
+        CarbonSecurityDataHolder.getInstance().unregisterCallbackHandlerFactory(callbackHandlerFactory);
     }
 
     @Reference(

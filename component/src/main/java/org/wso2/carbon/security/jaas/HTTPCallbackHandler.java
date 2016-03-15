@@ -6,10 +6,8 @@ import javax.security.auth.callback.CallbackHandler;
 
 public interface HTTPCallbackHandler extends CallbackHandler {
 
-    public abstract String getSupportedLoginModuleType();
+    void setHTTPRequest(HttpRequest httpRequest);
 
-    public abstract void setHTTPRequest(HttpRequest httpRequest);
-
-    public abstract boolean canHandle();
+    boolean canHandle();
 
 }

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.wso2.carbon.security.usercore.connector;
+package org.wso2.carbon.security.usercore.constant;
 
 /**
  * User store constants.

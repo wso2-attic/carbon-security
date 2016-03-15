@@ -14,20 +14,28 @@
  * limitations under the License.
  */
 
-package org.wso2.carbon.security.usercore.connector.jdbc;
+package org.wso2.carbon.security.jaas.handler;
+
+import org.wso2.carbon.security.jaas.CarbonCallbackHandlerFactory;
+import org.wso2.carbon.security.jaas.util.CarbonSecurityConstants;
+
+import javax.naming.Context;
+import javax.naming.Name;
+import java.util.Hashtable;
 
 /**
- * Names of the database table columns.
+ *
  */
-public class DatabaseColumnNames {
+public class JWTCallbackHandlerFactory extends CarbonCallbackHandlerFactory {
 
-    public static class Group {
-        public static final String GROUP_UNIQUE_ID = "GROUP_UNIQUE_ID";
-        public static final String GROUP_NAME = "GROUP_NAME";
+    @Override
+    public String getSupportedLoginModuleType() {
+        return CarbonSecurityConstants.JWT_LOGIN_MODULE;
     }
 
-    public static class User {
-        public static final String PASSWORD = "";
-        public static final String USER_ID = "";
+    @Override
+    public Object getObjectInstance(Object obj, Name name, Context nameCtx, Hashtable<?, ?> environment)
+            throws Exception {
+        return new JWTCallbackHandler();
     }
 }

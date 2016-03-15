@@ -89,6 +89,10 @@ public class SecurityConfigBuilder {
         permissionInfoSet.add(new DefaultPermissionInfo("java.lang.RuntimePermission", "setSecurityManager", null));
         permissionInfoSet.add(new DefaultPermissionInfo("java.lang.RuntimePermission", "getClassLoader", null));
         permissionInfoSet.add(new DefaultPermissionInfo("java.lang.RuntimePermission", "accessDeclaredMembers",  null));
+        permissionInfoSet.add(new DefaultPermissionInfo("java.lang.RuntimePermission", "setContextClassLoader", null));
+        permissionInfoSet.add(new DefaultPermissionInfo("java.lang.RuntimePermission",
+                                                        "accessClassInPackage.sun.reflect.generics" +
+                                                        ".reflectiveObjects", ""));
         permissionInfoSet.add(new DefaultPermissionInfo("java.io.FilePermission", "<<ALL FILES>>", "read,write," +
                                                                                                    "delete,execute"));
         permissionInfoSet.add(new DefaultPermissionInfo("org.osgi.framework.AdaptPermission",
@@ -106,7 +110,7 @@ public class SecurityConfigBuilder {
         permissionInfoSet.add(new DefaultPermissionInfo("org.osgi.framework.AdminPermission", "*", "*"));
         permissionInfoSet.add(new DefaultPermissionInfo("org.osgi.framework.BundlePermission", "*", "host,provide," +
                                                                                                     "fragment"));
-        permissionInfoSet.add(new DefaultPermissionInfo("ava.util.PropertyPermission", "*", "read,write"));
+        permissionInfoSet.add(new DefaultPermissionInfo("java.util.PropertyPermission", "*", "read,write"));
         permissionInfoSet.add(new DefaultPermissionInfo("java.lang.management.ManagementPermission", "control", null));
         permissionInfoSet.add(new DefaultPermissionInfo("java.util.logging.LoggingPermission", "control", null));
         permissionInfoSet.add(new DefaultPermissionInfo("java.security.SecurityPermission", "setPolicy", null));

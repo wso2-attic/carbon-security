@@ -33,14 +33,13 @@ public class StoreConfigBuilder {
 
     /**
      * Build a IdentityStoreConfig from a file.
-     *
      * @param fileName Name of the configuration file.
      * @return Instance of IdentityStoreConfig.
      */
     public static IdentityStoreConfig buildIdentityStoreConfig(String fileName) throws FileNotFoundException {
 
-        File file = Paths.get(CarbonSecurityConstants.getCarbonHomeDirectory().toString(), "conf", "security",
-                fileName).toFile();
+        File file = Paths.get(CarbonSecurityConstants.getCarbonHomeDirectory().toString(), "conf", "security", 
+                              fileName).toFile();
 
         Yaml yaml = new Yaml();
         Map<String, String> values = (Map<String, String>) yaml.load(new FileInputStream(file));
