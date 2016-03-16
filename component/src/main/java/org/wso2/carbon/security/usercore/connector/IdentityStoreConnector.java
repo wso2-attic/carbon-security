@@ -59,7 +59,7 @@ public interface IdentityStoreConnector {
      * @return User Object with
      * @throws IdentityStoreException
      */
-    User getUser(String userID) throws IdentityStoreException;
+    User getUserFromId(String userID) throws IdentityStoreException;
 
     /**
      * Get user from the user name.
@@ -67,7 +67,7 @@ public interface IdentityStoreConnector {
      * @return
      * @throws IdentityStoreException
      */
-    User getUserByName(String username) throws IdentityStoreException;
+    User getUser(String username) throws IdentityStoreException;
 
     /**
      * List all users in User Store.

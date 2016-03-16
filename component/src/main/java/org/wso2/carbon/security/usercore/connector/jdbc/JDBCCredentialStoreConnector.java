@@ -91,7 +91,7 @@ public class JDBCCredentialStoreConnector implements CredentialStoreConnector {
         try (Connection connection = dataSource.getConnection()) {
 
             NamedPreparedStatement preparedStatement = new NamedPreparedStatement(connection,
-                    sqlQueries.get(ConnectorConstants.SQL_QUERY_COMPARE_PASSWORD_HASH));
+                    sqlQueries.get(ConnectorConstants.QueryTypes.SQL_QUERY_COMPARE_PASSWORD_HASH));
 
             // TODO: Use correct hashing algorithm.
             String hashedPassword = hashPassword(password, null);

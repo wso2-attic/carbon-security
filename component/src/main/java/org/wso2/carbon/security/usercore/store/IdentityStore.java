@@ -97,7 +97,7 @@ public class IdentityStore {
      * @throws IdentityStoreException
      */
     public User getUser(String username) throws IdentityStoreException {
-        throw new NotImplementedException();
+        return userStoreConnector.getUser(username);
     }
 
     /**
@@ -107,7 +107,7 @@ public class IdentityStore {
      * @throws IdentityStoreException
      */
     public User getUserfromId(String userId) throws IdentityStoreException {
-        throw new NotImplementedException();
+        return userStoreConnector.getUserFromId(userId);
     }
 
     /**

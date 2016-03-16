@@ -31,6 +31,7 @@ import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -45,6 +46,7 @@ public class JDBCIdentityStoreConnector implements IdentityStoreConnector {
     private IdentityStoreConfig identityStoreConfig;
     private Map<String, String> sqlStatements;
     private String userStoreId;
+    private String userStoreName;
 
     @Override
     public void init(IdentityStoreConfig identityStoreConfig) throws IdentityStoreException {
@@ -53,6 +55,7 @@ public class JDBCIdentityStoreConnector implements IdentityStoreConnector {
 
         this.sqlStatements = (Map<String, String>) properties.get(ConnectorConstants.SQL_QUERIES);
         this.userStoreId = properties.getProperty(ConnectorConstants.USERSTORE_ID);
+        this.userStoreName = properties.getProperty(ConnectorConstants.USERSTORE_NAME);
         this.identityStoreConfig = identityStoreConfig;
         try {
             dataSource = DatabaseUtil.getInstance()
@@ -64,22 +67,54 @@ public class JDBCIdentityStoreConnector implements IdentityStoreConnector {
 
     @Override
     public String getUserStoreName() {
-        return null;
+        return userStoreName;
     }
 
     @Override
     public String getUserStoreID() {
-        return null;
+        return userStoreId;
     }
 
     @Override
-    public User getUser(String userID) throws IdentityStoreException {
-        return null;
+    public User getUserFromId(String userID) throws IdentityStoreException {
+
+        try (Connection connection = dataSource.getConnection()) {
+
+            NamedPreparedStatement namedPreparedStatement = new NamedPreparedStatement(connection,
+                    sqlStatements.get(ConnectorConstants.QueryTypes.SQL_QUERY_GET_USER_FROM_ID));
+            namedPreparedStatement.setString("userId", userID);
+            ResultSet resultSet = namedPreparedStatement.executeQuery();
+
+            if (!resultSet.next()) {
+                throw new IdentityStoreException("No user for given id");
+            }
+
+            String username = resultSet.getString(DatabaseColumnNames.User.USERNAME);
+            return new User(userID, userStoreId, username);
+        } catch (SQLException e) {
+            throw new IdentityStoreException("Error occurred while retrieving user from database", e);
+        }
     }
 
     @Override
-    public User getUserByName(String username) throws IdentityStoreException {
-        return null;
+    public User getUser(String username) throws IdentityStoreException {
+
+        try (Connection connection = dataSource.getConnection()) {
+
+            NamedPreparedStatement namedPreparedStatement = new NamedPreparedStatement(connection,
+                    sqlStatements.get(ConnectorConstants.QueryTypes.SQL_QUERY_GET_USER_FROM_USERNAME));
+            namedPreparedStatement.setString("username", username);
+            ResultSet resultSet = namedPreparedStatement.executeQuery();
+
+            if (!resultSet.next()) {
+                throw new IdentityStoreException("No user for given id");
+            }
+
+            String userId = resultSet.getString(DatabaseColumnNames.User.USER_ID);
+            return new User(userId, userStoreId, username);
+        } catch (SQLException e) {
+            throw new IdentityStoreException("Error occurred while retrieving user from database", e);
+        }
     }
 
     @Override
@@ -88,8 +123,26 @@ public class JDBCIdentityStoreConnector implements IdentityStoreConnector {
     }
 
     @Override
-    public Map<String, String> getUserClaimValues(String userID) throws IdentityStoreException {
-        return null;
+    public Map<String, String> getUserClaimValues(String userId) throws IdentityStoreException {
+
+        try (Connection connection = dataSource.getConnection()) {
+
+            NamedPreparedStatement namedPreparedStatement = new NamedPreparedStatement(connection,
+                    sqlStatements.get(ConnectorConstants.QueryTypes.SQL_QUERY_GET_USER_CLAIMS));
+            namedPreparedStatement.setString("userId", userId);
+            ResultSet resultSet = namedPreparedStatement.executeQuery();
+
+            Map<String, String> userClaims = new HashMap<>();
+            while (resultSet.next()) {
+                String claimUri = resultSet.getString("claimUri");
+                String claimValue = resultSet.getString("claimValue");
+                userClaims.put(claimUri, claimValue);
+            }
+            return userClaims;
+        } catch (SQLException e) {
+            throw new IdentityStoreException("Error occurred while retrieving user claims from database", e);
+        }
+
     }
 
     @Override
@@ -100,58 +153,42 @@ public class JDBCIdentityStoreConnector implements IdentityStoreConnector {
     @Override
     public Group getGroupById(String groupId) throws IdentityStoreException {
 
-        Connection connection = null;
-        try {
-            connection = dataSource.getConnection();
+        try (Connection connection = dataSource.getConnection()) {
+
             NamedPreparedStatement namedPreparedStatement = new NamedPreparedStatement(connection,
-                    sqlStatements.get(ConnectorConstants.SQL_QUERY_GET_GROUP));
+                    sqlStatements.get(ConnectorConstants.QueryTypes.SQL_QUERY_GET_GROUP));
             namedPreparedStatement.setString(DatabaseColumnNames.Group.GROUP_UNIQUE_ID, groupId);
             ResultSet resultSet = namedPreparedStatement.executeQuery();
 
             if (!resultSet.next()) {
                 throw new IdentityStoreException("No group for given id");
             }
+
             String groupName = resultSet.getString(DatabaseColumnNames.Group.GROUP_NAME);
             return new Group(groupId, userStoreId, groupName);
         } catch (SQLException e) {
-            throw new IdentityStoreException("Internal error occurred while communicating with database",e);
-        } finally {
-            if (connection != null) {
-                try {
-                    connection.close();
-                } catch (SQLException e) {
-                    throw new IdentityStoreException(e);
-                }
-            }
+            throw new IdentityStoreException("Internal error occurred while communicating with database", e);
         }
     }
 
     @Override
     public Group getGroup(String groupName) throws IdentityStoreException {
 
-        Connection connection = null;
-        try {
-            connection = dataSource.getConnection();
+        try (Connection connection = dataSource.getConnection()) {
+
             NamedPreparedStatement namedPreparedStatement = new NamedPreparedStatement(connection,
-                    sqlStatements.get(ConnectorConstants.SQL_QUERY_GET_GROUP));
+                    sqlStatements.get(ConnectorConstants.QueryTypes.SQL_QUERY_GET_GROUP));
             namedPreparedStatement.setString(DatabaseColumnNames.Group.GROUP_NAME, groupName);
             ResultSet resultSet = namedPreparedStatement.executeQuery();
 
             if (!resultSet.next()) {
                 throw new IdentityStoreException("No group for given name");
             }
+
             String groupId = resultSet.getString(DatabaseColumnNames.Group.GROUP_UNIQUE_ID);
             return new Group(groupId, userStoreId, groupName);
         } catch (SQLException e) {
-            throw new IdentityStoreException("Internal error occurred while communicating with database",e);
-        } finally {
-            if (connection != null) {
-                try {
-                    connection.close();
-                } catch (SQLException e) {
-                    throw new IdentityStoreException(e);
-                }
-            }
+            throw new IdentityStoreException("Internal error occurred while communicating with database", e);
         }
     }
 

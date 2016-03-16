@@ -57,7 +57,7 @@ public class CredentialStore {
 
         String userId = credentialStoreConnector.authenticate(callbacks);
         if (userId != null) {
-            return new AuthenticationContext(new User(userId, credentialStoreConnector.getCredentialStoreId()));
+            return new AuthenticationContext(new User(userId, credentialStoreConnector.getCredentialStoreId(), null));
         }
         throw new AuthenticationFailure("Invalid user credentials");
     }

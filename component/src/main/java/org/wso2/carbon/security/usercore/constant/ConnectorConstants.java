@@ -24,8 +24,15 @@ public class ConnectorConstants {
     public static final String DATA_SOURCE = "DataSource";
     public static final String DATABASE_TYPE = "DatabaseType";
     public static final String SQL_QUERIES = "SqlStatements";
-    public static final String USERSTORE_ID = "";
+    public static final String USERSTORE_ID = "UserstoreId";
+    public static final java.lang.String USERSTORE_NAME = "UserstoreName";
 
-    public static final String SQL_QUERY_GET_GROUP = "sql_query_get_group";
-    public static final String SQL_QUERY_COMPARE_PASSWORD_HASH = "sql_query_compare_password_hash";
+    public static final class QueryTypes {
+
+        public static final String SQL_QUERY_GET_GROUP = "sql_query_get_group";
+        public static final String SQL_QUERY_COMPARE_PASSWORD_HASH = "sql_query_compare_password_hash";
+        public static final String SQL_QUERY_GET_USER_FROM_ID = "sql_query_get_user_from_id";
+        public static final String SQL_QUERY_GET_USER_FROM_USERNAME = "sql_query_get_user_from_username";
+        public static final String SQL_QUERY_GET_USER_CLAIMS = "sql_query_get_user_claims";
+    }
 }

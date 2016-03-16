@@ -27,7 +27,13 @@ public class MySQLFamilySQLQueryFactory extends SQLQueryFactory {
                                                         "FROM UM_USER " +
                                                         "WHERE USERNAME = :username AND PASSWORD = :hashedPassword";
 
+    private static final String GET_USER_FROM_USERNAME = "SELECT USER_UNIQUE_ID " +
+                                                         "FROM UM_USER " +
+                                                         "WHERE USERNAME = :username";
+
     public MySQLFamilySQLQueryFactory() {
-        sqlQueries.put(ConnectorConstants.SQL_QUERY_COMPARE_PASSWORD_HASH, COMPARE_PASSWORD_HASH);
+
+        sqlQueries.put(ConnectorConstants.QueryTypes.SQL_QUERY_COMPARE_PASSWORD_HASH, COMPARE_PASSWORD_HASH);
+        sqlQueries.put(ConnectorConstants.QueryTypes.SQL_QUERY_GET_USER_FROM_USERNAME, GET_USER_FROM_USERNAME);
     }
 }

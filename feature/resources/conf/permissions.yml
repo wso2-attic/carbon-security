@@ -33,7 +33,7 @@ permissions:
   actions: ""
  -
   type: "javax.security.auth.AuthPermission"
-  name: "getSubject"
+  name: "getUserName"
   actions: ""
  -
   type: "java.lang.RuntimePermission"

@@ -81,7 +81,7 @@ public class SecurityConfigBuilder {
                                                         null));
         permissionInfoSet.add(new DefaultPermissionInfo("javax.security.auth.AuthPermission",
                                                         "createLoginContext.CarbonSecurityConfig", null));
-        permissionInfoSet.add(new DefaultPermissionInfo("javax.security.auth.AuthPermission", "getSubject", null));
+        permissionInfoSet.add(new DefaultPermissionInfo("javax.security.auth.AuthPermission", "getUserName", null));
         permissionInfoSet.add(new DefaultPermissionInfo("java.lang.RuntimePermission",
                                                         "accessClassInPackage.sun.security.provider", null));
         permissionInfoSet.add(new DefaultPermissionInfo("java.lang.RuntimePermission", "getProtectionDomain", null));
