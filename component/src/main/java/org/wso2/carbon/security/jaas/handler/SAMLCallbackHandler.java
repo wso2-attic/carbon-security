@@ -118,7 +118,7 @@ public class SAMLCallbackHandler implements HTTPCallbackHandler {
                     try {
                         SAMLResponseInputStream.close();
                     } catch (IOException e) {
-                        e.printStackTrace();
+                        //TODO
                     }
                 }
             }
