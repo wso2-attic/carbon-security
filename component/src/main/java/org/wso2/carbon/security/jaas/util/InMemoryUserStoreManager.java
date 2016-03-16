@@ -39,7 +39,7 @@ public class InMemoryUserStoreManager {
         userStore.put("admin", new char[]{'a', 'd', 'm', 'i', 'n'});
 
         permissionStore.put("admin", new CarbonPermission[]{
-                new CarbonPermission("org.wso2.carbon.mss.stockquote.StockQuoteService.getQuote", "GET")});
+                new CarbonPermission("org.wso2.msf4j.stockquote.StockQuoteService.getQuote", "GET")});
     }
 
     public static InMemoryUserStoreManager getInstance() {
