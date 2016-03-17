@@ -144,13 +144,15 @@ public interface IdentityStoreConnector {
 
     /**
      * Add an user to the user store.
+     * @param username Login name or claim that can be used to uniquely identify the user.
      * @param claims User claims.
      * @param credential User credentials.
-     * @param groupList List of Groups of the user.
+     * @param groupNameList List of Group names of the user.
      * @return Added user.
      * @throws IdentityStoreException
      */
-    User addUser(Map<String, String> claims, Object credential, List<String> groupList) throws IdentityStoreException;
+    User addUser(String username, Map<String, String> claims, Object credential, List<String> groupNameList)
+            throws IdentityStoreException;
 
     /**
      * Add a Group.
@@ -173,7 +175,7 @@ public interface IdentityStoreConnector {
      * @param identities List of Users.
      * @throws IdentityStoreException
      */
-    void assingUsersToGroup(String groupId, List<User> identities) throws IdentityStoreException;
+    void assignUsersToGroup(String groupId, List<User> identities) throws IdentityStoreException;
 
     /**
      * Add new credential to the User.

@@ -27,6 +27,7 @@ import org.wso2.carbon.security.usercore.exception.AuthenticationFailure;
 import org.wso2.carbon.security.usercore.exception.CredentialStoreException;
 import org.wso2.carbon.security.usercore.util.DatabaseUtil;
 import org.wso2.carbon.security.usercore.util.NamedPreparedStatement;
+import org.wso2.carbon.security.usercore.util.UserCoreUtil;
 
 import javax.security.auth.callback.Callback;
 import javax.security.auth.callback.NameCallback;
@@ -94,16 +95,16 @@ public class JDBCCredentialStoreConnector implements CredentialStoreConnector {
                     sqlQueries.get(ConnectorConstants.QueryTypes.SQL_QUERY_COMPARE_PASSWORD_HASH));
 
             // TODO: Use correct hashing algorithm.
-            String hashedPassword = hashPassword(password, null);
+            String hashedPassword = UserCoreUtil.hashPassword(password, null);
             preparedStatement.setString("hashedPassword", hashedPassword);
             preparedStatement.setString("username", username);
 
-            ResultSet resultSet = preparedStatement.executeQuery();
+            ResultSet resultSet = preparedStatement.getPreparedStatement().executeQuery();
             if (!resultSet.next()) {
                 throw new AuthenticationFailure("No user for given username");
             }
 
-            return resultSet.getString(DatabaseColumnNames.User.USER_ID);
+            return resultSet.getString(DatabaseColumnNames.User.USER_UNIQUE_ID);
         } catch (SQLException e) {
             throw new CredentialStoreException("Exception occurred while authenticating the user", e);
         }
@@ -112,11 +113,5 @@ public class JDBCCredentialStoreConnector implements CredentialStoreConnector {
     @Override
     public boolean canHandle(Callback[] callbacks) {
         return false;
-    }
-
-    private String hashPassword(char[] password, String hashAlgo) {
-
-        // TODO: Implement this method.
-        return new String(password);
     }
 }
