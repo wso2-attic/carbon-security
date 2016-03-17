@@ -23,17 +23,53 @@ import org.wso2.carbon.security.usercore.constant.ConnectorConstants;
  */
 public class MySQLFamilySQLQueryFactory extends SQLQueryFactory {
 
-    private static final String COMPARE_PASSWORD_HASH = "SELECT USER_UNIQUE_ID " +
-                                                        "FROM UM_USER " +
-                                                        "WHERE USERNAME = :username AND PASSWORD = :hashedPassword";
+    private static final String COMPARE_PASSWORD_HASH =
+            "SELECT USER_UNIQUE_ID " +
+            "FROM UM_USER " +
+            "WHERE USERNAME = :username AND PASSWORD = :hashedPassword";
 
-    private static final String GET_USER_FROM_USERNAME = "SELECT USER_UNIQUE_ID " +
-                                                         "FROM UM_USER " +
-                                                         "WHERE USERNAME = :username";
+    private static final String GET_USER_FROM_USERNAME =
+            "SELECT USER_UNIQUE_ID " +
+            "FROM UM_USER " +
+            "WHERE USERNAME = :username";
+
+    private static final String GET_USER_FROM_ID =
+            "SELECT USERNAME " +
+            "FROM UM_USER " +
+            "WHERE USER_UNIQUE_ID = :userId";
+
+    private static final String GET_GROUP_FROM_NAME =
+            "SELECT GROUP_UNIQUE_ID " +
+            "FROM UM_GROUP " +
+            "WHERE GROUP_NAME = :groupName";
+
+    private static final String GET_GROUP_FROM_ID =
+            "SELECT GROUP_NAME " +
+            "FROM UM_GROUP " +
+            "WHERE GROUP_UNIQUE_ID = :groupId";
+
+    private static final String GET_USER_ATTRIBUTES =
+            "SELECT ATTR_NAME, ATTR_VALUE " +
+            "FROM UM_USER_ATTRIBUTES " +
+            "WHERE USER_ID = (SELECT USER_ID FROM UM_USER WHERE USER_UNIQUE_ID = :userId)";
+
+    private static final String DELETE_USER =
+            "DELETE FROM UM_USER " +
+            "WHERE USER_UNIQUE_ID = :userId";
+
+    private static final String DELETE_GROUP =
+            "DELETE FROM UM_GROUP " +
+            "WHERE GROUP_UNIQUE_ID = :groupId";
 
     public MySQLFamilySQLQueryFactory() {
 
         sqlQueries.put(ConnectorConstants.QueryTypes.SQL_QUERY_COMPARE_PASSWORD_HASH, COMPARE_PASSWORD_HASH);
         sqlQueries.put(ConnectorConstants.QueryTypes.SQL_QUERY_GET_USER_FROM_USERNAME, GET_USER_FROM_USERNAME);
+        sqlQueries.put(ConnectorConstants.QueryTypes.SQL_QUERY_GET_USER_FROM_ID, GET_USER_FROM_ID);
+        sqlQueries.put(ConnectorConstants.QueryTypes.SQL_QUERY_GET_GROUP_FROM_NAME, GET_GROUP_FROM_NAME);
+        sqlQueries.put(ConnectorConstants.QueryTypes.SQL_QUERY_GET_GROUP_FROM_ID, GET_GROUP_FROM_ID);
+        sqlQueries.put(ConnectorConstants.QueryTypes.SQL_QUERY_GET_USER_ATTRIBUTES, GET_USER_ATTRIBUTES);
+        sqlQueries.put(ConnectorConstants.QueryTypes.SQL_QUERY_DELETE_USER, DELETE_USER);
+        sqlQueries.put(ConnectorConstants.QueryTypes.SQL_QUERY_DELETE_GROUP, DELETE_GROUP);
     }
 }

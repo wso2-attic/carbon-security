@@ -18,6 +18,8 @@ package org.wso2.carbon.security.usercore.util;
 
 import org.wso2.carbon.security.usercore.constant.UserStoreConstants;
 
+import java.util.UUID;
+
 /**
  * User core utils.
  */
@@ -47,5 +49,17 @@ public class UserCoreUtil {
 
     public String appendDomainName(String username, String domainName) {
         return domainName + DOMAIN_SEPARATOR + username;
+    }
+
+    public static String hashPassword(char[] password, String hashAlgo) {
+
+        // TODO: Implement this method.
+        return new String(password);
+    }
+
+    public static String getRandomUserId() {
+
+        //TODO: Implement this method.
+        return UUID.randomUUID().toString();
     }
 }

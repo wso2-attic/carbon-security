@@ -21,14 +21,23 @@ package org.wso2.carbon.security.usercore.constant;
  */
 public class DatabaseColumnNames {
 
-    public static class Group {
+    public static final class Group {
         public static final String GROUP_UNIQUE_ID = "GROUP_UNIQUE_ID";
         public static final String GROUP_NAME = "GROUP_NAME";
     }
 
-    public static class User {
+    public static final class User {
         public static final String USERNAME = "USERNAME";
         public static final String PASSWORD = "PASSWORD";
-        public static final String USER_ID = "USER_UNIQUE_ID";
+        public static final String USER_UNIQUE_ID = "USER_UNIQUE_ID";
+    }
+
+    public static final class Role {
+    }
+
+    public static final class UserAttributes {
+        public static final String ATTR_NAME = "ATTR_NAME";
+        public static final String ATTR_VALUE = "ATTR_VALUE";
+        public static final String USER_ID = "USER_ID";
     }
 }

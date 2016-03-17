@@ -18,7 +18,6 @@ package org.wso2.carbon.security.usercore.util;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -28,45 +27,43 @@ import java.util.List;
  */
 public class NamedPreparedStatement {
 
-    private PreparedStatement prepStmt;
+    private PreparedStatement preparedStatement;
     private List<String> fields = new ArrayList<>();
 
-    public NamedPreparedStatement(Connection conn, String sql) throws SQLException {
+    public NamedPreparedStatement(Connection connection, String sqlQuery) throws SQLException {
 
         int pos;
-        while((pos = sql.indexOf(":")) != -1) {
-            int end = sql.substring(pos).indexOf(" ");
-            if (end == -1)
-                end = sql.length();
-            else
+        while ((pos = sqlQuery.indexOf(":")) != -1) {
+            int end = sqlQuery.substring(pos).indexOf(" ");
+            if (end == -1) {
+                end = sqlQuery.length();
+            }
+            else {
                 end += pos;
-            fields.add(sql.substring(pos+1,end));
-            sql = sql.substring(0, pos) + "?" + sql.substring(end);
+            }
+            fields.add(sqlQuery.substring(pos + 1,end));
+            sqlQuery = sqlQuery.substring(0, pos) + "?" + sqlQuery.substring(end);
         }
-        prepStmt = conn.prepareStatement(sql);
+        preparedStatement = connection.prepareStatement(sqlQuery);
     }
 
     public PreparedStatement getPreparedStatement() {
-        return prepStmt;
+        return preparedStatement;
     }
 
-    public ResultSet executeQuery() throws SQLException {
-        return prepStmt.executeQuery();
-    }
-
-    public void close() throws SQLException {
-        prepStmt.close();
+    public void setLong(String name, long value) throws SQLException {
+        preparedStatement.setLong(getIndex(name), value);
     }
 
     public void setInt(String name, int value) throws SQLException {
-        prepStmt.setInt(getIndex(name), value);
+        preparedStatement.setInt(getIndex(name), value);
     }
 
     public void setString(String name, String value) throws SQLException {
-        prepStmt.setString(getIndex(name), value);
+        preparedStatement.setString(getIndex(name), value);
     }
 
     private int getIndex(String name) {
-        return fields.indexOf(name)+1;
+        return fields.indexOf(name) + 1;
     }
 }
