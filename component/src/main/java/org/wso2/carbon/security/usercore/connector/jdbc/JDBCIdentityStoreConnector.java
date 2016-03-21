@@ -30,7 +30,6 @@ import org.wso2.carbon.security.usercore.util.UnitOfWork;
 import org.wso2.carbon.security.usercore.util.UserCoreUtil;
 
 import javax.sql.DataSource;
-import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -81,9 +80,9 @@ public class JDBCIdentityStoreConnector implements IdentityStoreConnector {
     @Override
     public User getUser(String username) throws IdentityStoreException {
 
-        try (Connection connection = dataSource.getConnection()) {
+        try (UnitOfWork unitOfWork = UnitOfWork.beginTransaction(dataSource.getConnection())) {
 
-            NamedPreparedStatement namedPreparedStatement = new NamedPreparedStatement(connection,
+            NamedPreparedStatement namedPreparedStatement = new NamedPreparedStatement(unitOfWork.getConnection(),
                     sqlStatements.get(ConnectorConstants.QueryTypes.SQL_QUERY_GET_USER_FROM_USERNAME));
             namedPreparedStatement.setString("username", username);
             ResultSet resultSet = namedPreparedStatement.getPreparedStatement().executeQuery();
@@ -102,9 +101,9 @@ public class JDBCIdentityStoreConnector implements IdentityStoreConnector {
     @Override
     public User getUserFromId(String userID) throws IdentityStoreException {
 
-        try (Connection connection = dataSource.getConnection()) {
+        try (UnitOfWork unitOfWork = UnitOfWork.beginTransaction(dataSource.getConnection())) {
 
-            NamedPreparedStatement namedPreparedStatement = new NamedPreparedStatement(connection,
+            NamedPreparedStatement namedPreparedStatement = new NamedPreparedStatement(unitOfWork.getConnection(),
                     sqlStatements.get(ConnectorConstants.QueryTypes.SQL_QUERY_GET_USER_FROM_ID));
             namedPreparedStatement.setString("userId", userID);
             ResultSet resultSet = namedPreparedStatement.getPreparedStatement().executeQuery();
@@ -122,20 +121,29 @@ public class JDBCIdentityStoreConnector implements IdentityStoreConnector {
 
     @Override
     public List<User> listUsers(String filterPattern, int offset, int length) throws IdentityStoreException {
-        return null;
+
+        List<User> userList = new ArrayList<>();
+
+        try (UnitOfWork unitOfWork = UnitOfWork.beginTransaction(dataSource.getConnection())) {
+
+        } catch (SQLException e) {
+            throw new IdentityStoreException("Internal error occurred while listing users", e);
+        }
+
+        return userList;
     }
 
     @Override
     public Map<String, String> getUserClaimValues(String userId) throws IdentityStoreException {
 
-        try (Connection connection = dataSource.getConnection()) {
+        try (UnitOfWork unitOfWork = UnitOfWork.beginTransaction(dataSource.getConnection())) {
 
-            NamedPreparedStatement namedPreparedStatement = new NamedPreparedStatement(connection,
+            NamedPreparedStatement namedPreparedStatement = new NamedPreparedStatement(unitOfWork.getConnection(),
                     sqlStatements.get(ConnectorConstants.QueryTypes.SQL_QUERY_GET_USER_ATTRIBUTES));
             namedPreparedStatement.setString("userId", userId);
             ResultSet resultSet = namedPreparedStatement.getPreparedStatement().executeQuery();
-
             Map<String, String> userClaims = new HashMap<>();
+
             while (resultSet.next()) {
                 String attrName = resultSet.getString(DatabaseColumnNames.UserAttributes.ATTR_NAME);
                 String attrValue = resultSet.getString(DatabaseColumnNames.UserAttributes.ATTR_VALUE);
@@ -156,9 +164,9 @@ public class JDBCIdentityStoreConnector implements IdentityStoreConnector {
     @Override
     public Group getGroup(String groupName) throws IdentityStoreException {
 
-        try (Connection connection = dataSource.getConnection()) {
+        try (UnitOfWork unitOfWork = UnitOfWork.beginTransaction(dataSource.getConnection())) {
 
-            NamedPreparedStatement namedPreparedStatement = new NamedPreparedStatement(connection,
+            NamedPreparedStatement namedPreparedStatement = new NamedPreparedStatement(unitOfWork.getConnection(),
                     sqlStatements.get(ConnectorConstants.QueryTypes.SQL_QUERY_GET_GROUP_FROM_NAME));
             namedPreparedStatement.setString(DatabaseColumnNames.Group.GROUP_NAME, groupName);
             ResultSet resultSet = namedPreparedStatement.getPreparedStatement().executeQuery();
@@ -177,9 +185,9 @@ public class JDBCIdentityStoreConnector implements IdentityStoreConnector {
     @Override
     public Group getGroupById(String groupId) throws IdentityStoreException {
 
-        try (Connection connection = dataSource.getConnection()) {
+        try (UnitOfWork unitOfWork = UnitOfWork.beginTransaction(dataSource.getConnection())) {
 
-            NamedPreparedStatement namedPreparedStatement = new NamedPreparedStatement(connection,
+            NamedPreparedStatement namedPreparedStatement = new NamedPreparedStatement(unitOfWork.getConnection(),
                     sqlStatements.get(ConnectorConstants.QueryTypes.SQL_QUERY_GET_GROUP_FROM_ID));
             namedPreparedStatement.setString(DatabaseColumnNames.Group.GROUP_UNIQUE_ID, groupId);
             ResultSet resultSet = namedPreparedStatement.getPreparedStatement().executeQuery();
@@ -203,9 +211,9 @@ public class JDBCIdentityStoreConnector implements IdentityStoreConnector {
     @Override
     public List<Group> getGroupsOfUser(String userId) throws IdentityStoreException {
 
-        try (Connection connection = dataSource.getConnection()) {
+        try (UnitOfWork unitOfWork = UnitOfWork.beginTransaction(dataSource.getConnection())) {
 
-            NamedPreparedStatement namedPreparedStatement = new NamedPreparedStatement(connection,
+            NamedPreparedStatement namedPreparedStatement = new NamedPreparedStatement(unitOfWork.getConnection(),
                     sqlStatements.get(ConnectorConstants.QueryTypes.SQL_QUERY_GET_GROUPS_OF_USER));
             namedPreparedStatement.setString(DatabaseColumnNames.Group.GROUP_UNIQUE_ID, userId);
             ResultSet resultSet = namedPreparedStatement.getPreparedStatement().executeQuery();
@@ -226,9 +234,9 @@ public class JDBCIdentityStoreConnector implements IdentityStoreConnector {
     @Override
     public List<User> getUsersOfGroup(String groupId) throws IdentityStoreException {
 
-        try (Connection connection = dataSource.getConnection()) {
+        try (UnitOfWork unitOfWork = UnitOfWork.beginTransaction(dataSource.getConnection())) {
 
-            NamedPreparedStatement namedPreparedStatement = new NamedPreparedStatement(connection,
+            NamedPreparedStatement namedPreparedStatement = new NamedPreparedStatement(unitOfWork.getConnection(),
                     sqlStatements.get(ConnectorConstants.QueryTypes.SQL_QUERY_GET_USERS_OF_GROUP));
             namedPreparedStatement.setString(DatabaseColumnNames.Group.GROUP_UNIQUE_ID, groupId);
             ResultSet resultSet = namedPreparedStatement.getPreparedStatement().executeQuery();
@@ -246,20 +254,38 @@ public class JDBCIdentityStoreConnector implements IdentityStoreConnector {
         }
     }
 
+    /**
+     * This process is happening in two separate transactions. First transaction is optional and in the first
+     * transaction, related group ids will be retrieved from database if there are any in the group list. Second
+     * transaction is happening in 3 batches. First user details will be added to the user table and second user
+     * attributes will be added to the attributes table if there are any and finally user-group table will be updated
+     * if there are any groups present.
+     */
     @Override
     public User addUser(String username, Map<String, String> claims, Object credential, List<String> groupList)
             throws IdentityStoreException {
 
-        long [] groupIds = new long[groupList.size()];
+        List<Long> groupIds = new ArrayList<>();
 
-        try (UnitOfWork unitOfWork = UnitOfWork.beginTransaction(dataSource.getConnection())) {
+        // Get the related group id's from the group names if there are any groups.
+        if (groupList != null && !groupList.isEmpty()) {
+            try (UnitOfWork unitOfWork = UnitOfWork.beginTransaction(dataSource.getConnection())) {
 
-            // TODO: Find a way to run multiple SELECT statements in a single transaction.
+                NamedPreparedStatement getGroupsPreparedStatement = new NamedPreparedStatement(
+                        unitOfWork.getConnection(),
+                        ConnectorConstants.QueryTypes.SQL_QUERY_GET_GROUP_IDS, groupList.size());
+                getGroupsPreparedStatement.setString("groupNames", groupList);
+                ResultSet resultSet = getGroupsPreparedStatement.getPreparedStatement().executeQuery();
 
-        } catch (SQLException e) {
-            throw new IdentityStoreException("Error while retrieving group id's", e);
+                while (!resultSet.next()) {
+                    groupIds.add(resultSet.getLong(DatabaseColumnNames.Group.ID));
+                }
+            } catch (SQLException e) {
+                throw new IdentityStoreException("Error while retrieving group id's", e);
+            }
         }
 
+        // Add all user information in a single transaction.
         try (UnitOfWork unitOfWork = UnitOfWork.beginTransaction(dataSource.getConnection())) {
 
             String generatedUserId = UserCoreUtil.getRandomUserId();
@@ -267,7 +293,7 @@ public class JDBCIdentityStoreConnector implements IdentityStoreConnector {
             NamedPreparedStatement addUserPreparedStatement = new NamedPreparedStatement(unitOfWork.getConnection(),
                     sqlStatements.get(ConnectorConstants.QueryTypes.SQL_QUERY_ADD_USER));
             addUserPreparedStatement.setString(DatabaseColumnNames.User.USERNAME, username);
-            // TODO: Add the hashing algo.
+            // TODO: Add the hashing algorithm.
             addUserPreparedStatement.setString(DatabaseColumnNames.User.PASSWORD,
                     UserCoreUtil.hashPassword((char[]) credential, "sha256"));
             addUserPreparedStatement.setString(DatabaseColumnNames.User.USER_UNIQUE_ID, generatedUserId);
@@ -279,29 +305,95 @@ public class JDBCIdentityStoreConnector implements IdentityStoreConnector {
                 throw new IdentityStoreException("Failed to add the user.");
             }
 
-            long id = resultSet.getLong(1);
+            // Id of the user in the database.
+            long userId = resultSet.getLong(1);
 
-            NamedPreparedStatement addUserClaimsPreparedStatement = new NamedPreparedStatement(unitOfWork.getConnection(),
-                    sqlStatements.get(ConnectorConstants.QueryTypes.SQL_QUERY_ADD_USER_CLAIMS));
+            // Add user claims if there are any.
+            if (claims != null && !claims.isEmpty()) {
 
-            for (Map.Entry<String, String> claim : claims.entrySet()) {
-                addUserClaimsPreparedStatement.setLong(DatabaseColumnNames.UserAttributes.USER_ID, id);
-                addUserClaimsPreparedStatement.setString(DatabaseColumnNames.UserAttributes.ATTR_NAME,
-                        claim.getKey());
-                addUserClaimsPreparedStatement.setString(DatabaseColumnNames.UserAttributes.ATTR_VALUE,
-                        claim.getValue());
-                addUserClaimsPreparedStatement.getPreparedStatement().addBatch();
+                NamedPreparedStatement addUserClaimsPreparedStatement = new NamedPreparedStatement(
+                        unitOfWork.getConnection(),
+                        sqlStatements.get(ConnectorConstants.QueryTypes.SQL_QUERY_ADD_USER_CLAIMS));
+
+                for (Map.Entry<String, String> claim : claims.entrySet()) {
+                    addUserClaimsPreparedStatement.setLong(DatabaseColumnNames.UserAttributes.USER_ID, userId);
+                    addUserClaimsPreparedStatement.setString(DatabaseColumnNames.UserAttributes.ATTR_NAME,
+                            claim.getKey());
+                    addUserClaimsPreparedStatement.setString(DatabaseColumnNames.UserAttributes.ATTR_VALUE,
+                            claim.getValue());
+                    addUserClaimsPreparedStatement.getPreparedStatement().addBatch();
+                }
+                addUserClaimsPreparedStatement.getPreparedStatement().executeBatch();
             }
-            addUserClaimsPreparedStatement.getPreparedStatement().executeBatch();
+
+            // Add groups if there are any.
+            if (!groupIds.isEmpty()) {
+
+                NamedPreparedStatement addUserGroupsPreparedStatement = new NamedPreparedStatement(
+                        unitOfWork.getConnection(),
+                        sqlStatements.get(ConnectorConstants.QueryTypes.SQL_QUERY_ADD_USER_GROUPS));
+
+                for (long groupId : groupIds) {
+                    addUserGroupsPreparedStatement.setLong(DatabaseColumnNames.UserGroup.USER_ID, userId);
+                    addUserGroupsPreparedStatement.setLong(DatabaseColumnNames.UserGroup.GROUP_ID, groupId);
+                    addUserGroupsPreparedStatement.getPreparedStatement().addBatch();
+                }
+                addUserGroupsPreparedStatement.getPreparedStatement().executeBatch();
+            }
+
             return new User(generatedUserId, userStoreId, username);
         } catch (SQLException e) {
-            throw new IdentityStoreException("Internal error occurred while adding the user", e);
+            throw new IdentityStoreException("Internal error occurred while adding the user.", e);
         }
     }
 
     @Override
-    public Group addGroup(String groupName) throws IdentityStoreException {
-        return null;
+    public Group addGroup(String groupName, List<String> users) throws IdentityStoreException {
+
+        List<Long> userIds = new ArrayList<>();
+
+        // Get all user ids if there are any users to be added.
+        if (users != null && !users.isEmpty()) {
+
+            try (UnitOfWork unitOfWork = UnitOfWork.beginTransaction(dataSource.getConnection())) {
+                NamedPreparedStatement getUserIdsPreparedStatement = new NamedPreparedStatement(
+                        unitOfWork.getConnection(),
+                        sqlStatements.get(ConnectorConstants.QueryTypes.SQL_QUERY_GET_USER_IDS));
+                getUserIdsPreparedStatement.setString("userNames", users);
+                ResultSet resultSet = getUserIdsPreparedStatement.getPreparedStatement().executeQuery();
+
+                while (!resultSet.next()) {
+                    userIds.add(resultSet.getLong(DatabaseColumnNames.User.ID));
+                }
+            } catch (SQLException e) {
+                throw new IdentityStoreException("Internal error occurred while retrieving user ids.");
+            }
+        }
+
+        // Add all group information in a single transaction.
+        try (UnitOfWork unitOfWork = UnitOfWork.beginTransaction(dataSource.getConnection())) {
+
+            String generatedGroupId = UserCoreUtil.getRandomUserId();
+
+            NamedPreparedStatement addGroupPreparedStatement = new NamedPreparedStatement(
+                    unitOfWork.getConnection(),
+                    sqlStatements.get(ConnectorConstants.QueryTypes.SQL_QUERY_ADD_GROUP));
+            addGroupPreparedStatement.setString("groupName", groupName);
+            addGroupPreparedStatement.getPreparedStatement().executeUpdate();
+            ResultSet resultSet = addGroupPreparedStatement.getPreparedStatement().getGeneratedKeys();
+
+            if (!resultSet.next()) {
+                throw new IdentityStoreException("Failed to add group");
+            }
+
+            long groupId = resultSet.getLong(1);
+
+            // TODO: Add the users for this group.
+
+            return new Group(generatedGroupId, userStoreId, groupName);
+        } catch (SQLException e) {
+            throw new IdentityStoreException("Internal error occurred while adding group.");
+        }
     }
 
     @Override
@@ -338,9 +430,9 @@ public class JDBCIdentityStoreConnector implements IdentityStoreConnector {
     @Override
     public void deleteUser(String userId) throws IdentityStoreException {
 
-        try (Connection connection = dataSource.getConnection()) {
+        try (UnitOfWork unitOfWork = UnitOfWork.beginTransaction(dataSource.getConnection())) {
 
-            NamedPreparedStatement namedPreparedStatement = new NamedPreparedStatement(connection,
+            NamedPreparedStatement namedPreparedStatement = new NamedPreparedStatement(unitOfWork.getConnection(),
                     sqlStatements.get(ConnectorConstants.QueryTypes.SQL_QUERY_DELETE_USER));
             namedPreparedStatement.setString(DatabaseColumnNames.User.USER_UNIQUE_ID, userId);
 
@@ -356,9 +448,9 @@ public class JDBCIdentityStoreConnector implements IdentityStoreConnector {
     @Override
     public void deleteGroup(String groupId) throws IdentityStoreException {
 
-        try (Connection connection = dataSource.getConnection()) {
+        try (UnitOfWork unitOfWork = UnitOfWork.beginTransaction(dataSource.getConnection())) {
 
-            NamedPreparedStatement namedPreparedStatement = new NamedPreparedStatement(connection,
+            NamedPreparedStatement namedPreparedStatement = new NamedPreparedStatement(unitOfWork.getConnection(),
                     sqlStatements.get(ConnectorConstants.QueryTypes.SQL_QUERY_DELETE_GROUP));
             namedPreparedStatement.setString(DatabaseColumnNames.Group.GROUP_UNIQUE_ID, groupId);
 

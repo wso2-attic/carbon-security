@@ -156,10 +156,12 @@ public interface IdentityStoreConnector {
 
     /**
      * Add a Group.
+     * @param groupName Name of the group.
+     * @param users List of users to be added to this group.
      * @return Added Group.
      * @throws IdentityStoreException
      */
-    Group addGroup(String groupName) throws IdentityStoreException;
+    Group addGroup(String groupName, List<String> users) throws IdentityStoreException;
 
     /**
      * Assign Group/s to an User.
