@@ -30,7 +30,7 @@ public class NamedPreparedStatement {
     private PreparedStatement preparedStatement;
     private List<String> fields = new ArrayList<>();
 
-    public NamedPreparedStatement(Connection connection, String sqlQuery) throws SQLException {
+    public NamedPreparedStatement(Connection connection, String sqlQuery, int repetition) throws SQLException {
 
         int pos;
         while ((pos = sqlQuery.indexOf(":")) != -1) {
@@ -41,10 +41,20 @@ public class NamedPreparedStatement {
             else {
                 end += pos;
             }
+
             fields.add(sqlQuery.substring(pos + 1,end));
-            sqlQuery = sqlQuery.substring(0, pos) + "?" + sqlQuery.substring(end);
+
+            StringBuilder builder = new StringBuilder("?");
+            for (int i = 0; i < repetition; i++) {
+                builder.append(", ?");
+            }
+            sqlQuery = sqlQuery.substring(0, pos) + builder.toString() + sqlQuery.substring(end);
         }
         preparedStatement = connection.prepareStatement(sqlQuery);
+    }
+
+    public NamedPreparedStatement(Connection connection, String sqlQuery) throws SQLException {
+        this(connection, sqlQuery, 0);
     }
 
     public PreparedStatement getPreparedStatement() {
@@ -61,6 +71,15 @@ public class NamedPreparedStatement {
 
     public void setString(String name, String value) throws SQLException {
         preparedStatement.setString(getIndex(name), value);
+    }
+
+    public void setString(String name, List<String> values) throws SQLException {
+
+        int indexInc = 0;
+        for (String value : values) {
+            preparedStatement.setString(getIndex(name) + indexInc, value);
+            indexInc++;
+        }
     }
 
     private int getIndex(String name) {

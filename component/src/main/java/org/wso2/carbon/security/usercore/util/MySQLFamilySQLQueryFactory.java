@@ -61,6 +61,23 @@ public class MySQLFamilySQLQueryFactory extends SQLQueryFactory {
             "DELETE FROM UM_GROUP " +
             "WHERE GROUP_UNIQUE_ID = :groupId";
 
+    private static final String GET_GROUP_IDS =
+            "SELECT ID " +
+            "FROM UM_GROUP " +
+            "WHERE GROUP_NAME IN (:groupNames)";
+
+    private static final String ADD_USER =
+            "INSERT INTO UM_USER (USER_UNIQUE_ID, USERNAME, PASSWORD) " +
+            "VALUES (:user_unique_id, :username, :password)";
+
+    private static final String ADD_USER_ATTRIBUTES =
+            "INSERT INTO UM_USER_ATTRIBUTES (ATTR_NAME, ATTR_VALUE, USER_ID) " +
+            "VALUES (:attr_name, :attr_val, :user_id)";
+
+    private static final String ADD_USER_GROUP =
+            "INSERT INTO UM_USER_GROUP (USER_ID, GROUP_ID) " +
+            "VALUES (:user_id, :group_id)";
+
     public MySQLFamilySQLQueryFactory() {
 
         sqlQueries.put(ConnectorConstants.QueryTypes.SQL_QUERY_COMPARE_PASSWORD_HASH, COMPARE_PASSWORD_HASH);
@@ -71,5 +88,9 @@ public class MySQLFamilySQLQueryFactory extends SQLQueryFactory {
         sqlQueries.put(ConnectorConstants.QueryTypes.SQL_QUERY_GET_USER_ATTRIBUTES, GET_USER_ATTRIBUTES);
         sqlQueries.put(ConnectorConstants.QueryTypes.SQL_QUERY_DELETE_USER, DELETE_USER);
         sqlQueries.put(ConnectorConstants.QueryTypes.SQL_QUERY_DELETE_GROUP, DELETE_GROUP);
+        sqlQueries.put(ConnectorConstants.QueryTypes.SQL_QUERY_GET_GROUP_IDS, GET_GROUP_IDS);
+        sqlQueries.put(ConnectorConstants.QueryTypes.SQL_QUERY_ADD_USER, ADD_USER);
+        sqlQueries.put(ConnectorConstants.QueryTypes.SQL_QUERY_ADD_USER_CLAIMS, ADD_USER_ATTRIBUTES);
+        sqlQueries.put(ConnectorConstants.QueryTypes.SQL_QUERY_ADD_USER_GROUPS, ADD_USER_GROUP);
     }
 }

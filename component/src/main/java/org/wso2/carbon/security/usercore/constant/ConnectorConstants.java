@@ -41,5 +41,9 @@ public class ConnectorConstants {
         public static final String SQL_QUERY_DELETE_GROUP = "sql_query_delete_group";
         public static final String SQL_QUERY_ADD_USER = "sql_query_add_user";
         public static final String SQL_QUERY_ADD_USER_CLAIMS = "sql_query_add_user_claims";
+        public static final String SQL_QUERY_GET_GROUP_IDS = "sql_query_get_group_ids";
+        public static final String SQL_QUERY_ADD_USER_GROUPS = "sql_query_add_user_groups";
+        public static final String SQL_QUERY_GET_USER_IDS = "sql_query_get_user_ids";
+        public static final String SQL_QUERY_ADD_GROUP = "sql_query_add_group";
     }
 }
