@@ -97,7 +97,7 @@ public class IdentityStore {
      * @throws IdentityStoreException
      */
     public User getUser(String username) throws IdentityStoreException {
-        throw new NotImplementedException();
+        return userStoreConnector.getUser(username);
     }
 
     /**
@@ -107,7 +107,7 @@ public class IdentityStore {
      * @throws IdentityStoreException
      */
     public User getUserfromId(String userId) throws IdentityStoreException {
-        throw new NotImplementedException();
+        return userStoreConnector.getUserFromId(userId);
     }
 
     /**
@@ -151,15 +151,16 @@ public class IdentityStore {
 
     /**
      * Add an user to the user store.
+     * @param username Login name or claim that can be used to uniquely identify the user.
      * @param claims User claims.
      * @param credential User credentials.
      * @param groupList List of Groups of the user.
      * @return Added user.
      * @throws IdentityStoreException
      */
-    public User addUser(Map<String, String> claims, Object credential, List<String> groupList)
+    public User addUser(String username, Map<String, String> claims, Object credential, List<String> groupList)
             throws IdentityStoreException {
-        return userStoreConnector.addUser(claims, credential, groupList);
+        return userStoreConnector.addUser(username, claims, credential, groupList);
     }
 
     /**

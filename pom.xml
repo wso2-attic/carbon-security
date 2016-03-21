@@ -75,6 +75,11 @@
                 <version>${slf4j.api.version}</version>
             </dependency>
             <dependency>
+                <groupId>javax.ws.rs</groupId>
+                <artifactId>javax.ws.rs-api</artifactId>
+                <version>${rs-api.version}</version>
+            </dependency>
+            <dependency>
                 <groupId>io.netty</groupId>
                 <artifactId>netty-buffer</artifactId>
                 <version>${netty.version}</version>
@@ -103,6 +108,18 @@
                 <groupId>io.netty</groupId>
                 <artifactId>netty-transport</artifactId>
                 <version>${netty.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.google.code.gson</groupId>
+                <artifactId>gson</artifactId>
+                <version>${gson.version}</version>
+            </dependency>
+
+
+            <dependency>
+                <groupId>org.wso2.msf4j</groupId>
+                <artifactId>msf4j-core</artifactId>
+                <version>${msf4j.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.wso2.orbit.com.nimbusds</groupId>
@@ -189,21 +206,17 @@
     <modules>
         <module>component</module>
         <module>feature</module>
+        <module>samples/usercore-sample</module>
     </modules>
 
     <properties>
-        <slf4j.api.version>1.7.12</slf4j.api.version>
         <carbon.security.version>1.0.0-SNAPSHOT</carbon.security.version>
         <org.wso2.carbon.context.api.version>1.0.0-SNAPSHOT</org.wso2.carbon.context.api.version>
         <carbon.feature.plugin.version>2.1.0-SNAPSHOT</carbon.feature.plugin.version>
         <carbon.kernel.version>5.0.0</carbon.kernel.version>
-        <osgi.api.version>6.0.0</osgi.api.version>
-        <netty.version>4.0.30.Final</netty.version>
-        <nimbus.version>2.26.1.wso2v3</nimbus.version>
-        <json.smart.version>2.1.0.wso2v1</json.smart.version>
-        <org.testng.version>6.9.4</org.testng.version>
         <carbon.jndi.version>1.0.0-SNAPSHOT</carbon.jndi.version>
         <carbon.datasources.version>1.0.0-SNAPSHOT</carbon.datasources.version>
+        <msf4j.version>1.0.0-SNAPSHOT</msf4j.version>
         <opensaml.version>2.6.4.wso2v1</opensaml.version>
 
         <!-- Equinox dependency versions -->
@@ -212,7 +225,16 @@
         <equinox.osgi.services.version>3.4.0.v20140312-2051</equinox.osgi.services.version>
         <equinox.ds.version>1.4.200.v20131126-2331</equinox.ds.version>
         <equinox.common.version>3.6.200.v20130402-1505</equinox.common.version>
+
+        <osgi.api.version>6.0.0</osgi.api.version>
+        <netty.version>4.0.30.Final</netty.version>
+        <nimbus.version>2.26.1.wso2v3</nimbus.version>
+        <json.smart.version>2.1.0.wso2v1</json.smart.version>
+        <org.testng.version>6.9.4</org.testng.version>
+        <slf4j.api.version>1.7.12</slf4j.api.version>
         <org.snakeyaml.version>1.16.0.wso2v1</org.snakeyaml.version>
+        <rs-api.version>2.0</rs-api.version>
+        <gson.version>2.2.4</gson.version>
     </properties>
 
 </project>

@@ -24,8 +24,26 @@ public class ConnectorConstants {
     public static final String DATA_SOURCE = "DataSource";
     public static final String DATABASE_TYPE = "DatabaseType";
     public static final String SQL_QUERIES = "SqlStatements";
-    public static final String USERSTORE_ID = "";
+    public static final String USERSTORE_ID = "UserstoreId";
+    public static final java.lang.String USERSTORE_NAME = "UserstoreName";
 
-    public static final String SQL_QUERY_GET_GROUP = "sql_query_get_group";
-    public static final String SQL_QUERY_COMPARE_PASSWORD_HASH = "sql_query_compare_password_hash";
+    public static final class QueryTypes {
+
+        public static final String SQL_QUERY_GET_GROUP_FROM_NAME = "sql_query_get_group_from_name";
+        public static final String SQL_QUERY_GET_GROUP_FROM_ID = "sql_query_get_group_from_name";
+        public static final String SQL_QUERY_COMPARE_PASSWORD_HASH = "sql_query_compare_password_hash";
+        public static final String SQL_QUERY_GET_USER_FROM_ID = "sql_query_get_user_from_id";
+        public static final String SQL_QUERY_GET_USER_FROM_USERNAME = "sql_query_get_user_from_username";
+        public static final String SQL_QUERY_GET_USER_ATTRIBUTES = "sql_query_get_user_attributes";
+        public static final String SQL_QUERY_GET_GROUPS_OF_USER = "sql_query_get_groups_of_user";
+        public static final String SQL_QUERY_GET_USERS_OF_GROUP = "sql_query_get_users_of_group";
+        public static final String SQL_QUERY_DELETE_USER = "sql_query_delete_user";
+        public static final String SQL_QUERY_DELETE_GROUP = "sql_query_delete_group";
+        public static final String SQL_QUERY_ADD_USER = "sql_query_add_user";
+        public static final String SQL_QUERY_ADD_USER_CLAIMS = "sql_query_add_user_claims";
+        public static final String SQL_QUERY_GET_GROUP_IDS = "sql_query_get_group_ids";
+        public static final String SQL_QUERY_ADD_USER_GROUPS = "sql_query_add_user_groups";
+        public static final String SQL_QUERY_GET_USER_IDS = "sql_query_get_user_ids";
+        public static final String SQL_QUERY_ADD_GROUP = "sql_query_add_group";
+    }
 }

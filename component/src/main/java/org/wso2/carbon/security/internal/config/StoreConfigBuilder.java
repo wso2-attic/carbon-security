@@ -49,6 +49,13 @@ public class StoreConfigBuilder {
         Properties storeProperties = new Properties();
         values.forEach(storeProperties::put);
 
+        String databaseType = values.get(ConnectorConstants.DATABASE_TYPE);
+
+        if (databaseType == null || databaseType.equals("MySQL")) {
+            Map<String, String> sqlQueries = new MySQLFamilySQLQueryFactory().getQueries();
+            storeProperties.put(ConnectorConstants.SQL_QUERIES, sqlQueries);
+        }
+
         return new IdentityStoreConfig(storeProperties);
     }
 

@@ -20,9 +20,6 @@ import org.wso2.carbon.security.usercore.exception.AuthorizationFailure;
 import org.wso2.carbon.security.usercore.exception.IdentityStoreException;
 import org.wso2.carbon.security.usercore.store.AuthorizationStore;
 import org.wso2.carbon.security.usercore.store.IdentityStore;
-import org.wso2.carbon.security.usercore.exception.AuthorizationFailure;
-import org.wso2.carbon.security.usercore.exception.IdentityStoreException;
-import org.wso2.carbon.security.usercore.store.AuthorizationStore;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.util.List;
@@ -37,23 +34,24 @@ public class User {
     private String userID;
     private String userStoreID;
     private String tenantId;
-    private String subject;
+    private String userName;
 
     private IdentityStore identityStore = new IdentityStore();;
     private AuthorizationStore authorizationStore = new AuthorizationStore();
 
-    public User(String userID, String userStoreID) throws IdentityStoreException {
+    public User(String userID, String userStoreID, String userName) throws IdentityStoreException {
 
         this.userID = userID;
         this.userStoreID = userStoreID;
+        this.userName = userName;
     }
 
     /**
      * Get the fully qualified name of this user.
      * @return Fully qualified name as a String.
      */
-    public String getSubject() {
-        return subject;
+    public String getUserName() {
+        return userName;
     }
 
     /**
