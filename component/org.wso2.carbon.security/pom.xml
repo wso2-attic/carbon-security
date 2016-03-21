@@ -5,7 +5,7 @@
         <groupId>org.wso2.carbon.security</groupId>
         <artifactId>org.wso2.carbon.security.parent</artifactId>
         <version>1.0.0-SNAPSHOT</version>
-        <relativePath>../pom.xml</relativePath>
+        <relativePath>../../pom.xml</relativePath>
     </parent>
 
     <artifactId>org.wso2.carbon.security</artifactId>
@@ -79,8 +79,8 @@
             <version>1.4</version>
         </dependency>
         <!--<dependency>-->
-            <!--<groupId>org.wso2.orbit.org.opensaml</groupId>-->
-            <!--<artifactId>opensaml</artifactId>-->
+        <!--<groupId>org.wso2.orbit.org.opensaml</groupId>-->
+        <!--<artifactId>opensaml</artifactId>-->
         <!--</dependency>-->
         <dependency>
             <groupId>org.wso2</groupId>
@@ -117,8 +117,10 @@
 
         <!-- OSGi API version range-->
         <osgi.framework.package.import.version.range>[1.8.0, 2.0.0)</osgi.framework.package.import.version.range>
-        <org.osgi.service.permissionadmin.import.version.range>[1.2.0, 1.3.0)</org.osgi.service.permissionadmin.import.version.range>
-        <org.osgi.service.component.annotations.version.range>[1.2.0, 1.3.0)</org.osgi.service.component.annotations.version.range>
+        <org.osgi.service.permissionadmin.import.version.range>[1.2.0, 1.3.0)
+        </org.osgi.service.permissionadmin.import.version.range>
+        <org.osgi.service.component.annotations.version.range>[1.2.0, 1.3.0)
+        </org.osgi.service.component.annotations.version.range>
         <org.osgi.service.jndi.version.range>[1.0.0, 1.1.0)</org.osgi.service.jndi.version.range>
         <org.wso2.carbon.datasource.version.range>[1.0.0, 1.1.0)</org.wso2.carbon.datasource.version.range>
 
