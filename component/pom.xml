@@ -78,10 +78,10 @@
             <artifactId>commons-dbcp</artifactId>
             <version>1.4</version>
         </dependency>
-        <dependency>
-            <groupId>org.wso2.orbit.org.opensaml</groupId>
-            <artifactId>opensaml</artifactId>
-        </dependency>
+        <!--<dependency>-->
+            <!--<groupId>org.wso2.orbit.org.opensaml</groupId>-->
+            <!--<artifactId>opensaml</artifactId>-->
+        <!--</dependency>-->
         <dependency>
             <groupId>org.wso2</groupId>
             <artifactId>org.wso2.carbon.jaas.boot</artifactId>
@@ -114,7 +114,6 @@
         </import.package>
 
         <dsannotations>*</dsannotations>
-        <jaas.module.class>org.wso2.carbon.security.jaas.modules.UsernamePasswordLoginModule</jaas.module.class>
 
         <!-- OSGi API version range-->
         <osgi.framework.package.import.version.range>[1.8.0, 2.0.0)</osgi.framework.package.import.version.range>
