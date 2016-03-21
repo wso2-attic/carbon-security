@@ -78,6 +78,15 @@
             <artifactId>commons-dbcp</artifactId>
             <version>1.4</version>
         </dependency>
+        <!--<dependency>-->
+            <!--<groupId>org.wso2.orbit.org.opensaml</groupId>-->
+            <!--<artifactId>opensaml</artifactId>-->
+        <!--</dependency>-->
+        <dependency>
+            <groupId>org.wso2</groupId>
+            <artifactId>org.wso2.carbon.jaas.boot</artifactId>
+            <version>1.0.0-SNAPSHOT</version>
+        </dependency>
     </dependencies>
 
     <properties>
@@ -100,7 +109,8 @@
             javax.naming.*,
             org.osgi.service.component.annotations.*;version="${org.osgi.service.component.annotations.version.range}",
             org.osgi.service.jndi.*;version="${org.osgi.service.jndi.version.range}",
-            org.wso2.carbon.datasource.core.*;version="${org.wso2.carbon.datasource.version.range}"
+            org.wso2.carbon.datasource.core.*;version="${org.wso2.carbon.datasource.version.range}",
+            org.wso2.carbon.jaas.boot.*
         </import.package>
 
         <dsannotations>*</dsannotations>
