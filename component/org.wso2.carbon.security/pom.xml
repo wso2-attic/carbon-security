@@ -84,7 +84,7 @@
         <!--</dependency>-->
         <dependency>
             <groupId>org.wso2</groupId>
-            <artifactId>org.wso2.carbon.jaas.boot</artifactId>
+            <artifactId>org.wso2.carbon.security.boot</artifactId>
             <version>1.0.0-SNAPSHOT</version>
         </dependency>
     </dependencies>
@@ -110,7 +110,7 @@
             org.osgi.service.component.annotations.*;version="${org.osgi.service.component.annotations.version.range}",
             org.osgi.service.jndi.*;version="${org.osgi.service.jndi.version.range}",
             org.wso2.carbon.datasource.core.*;version="${org.wso2.carbon.datasource.version.range}",
-            org.wso2.carbon.jaas.boot.*
+            org.wso2.carbon.security.boot.*
         </import.package>
 
         <dsannotations>*</dsannotations>
