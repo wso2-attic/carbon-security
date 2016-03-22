@@ -1,6 +1,6 @@
 package org.wso2.carbon.security.jaas;
 
-import org.wso2.carbon.jaas.boot.ProxyLoginModule;
+import org.wso2.carbon.security.boot.ProxyLoginModule;
 import org.wso2.carbon.security.internal.CarbonSecurityDataHolder;
 
 import javax.security.auth.login.AppConfigurationEntry;

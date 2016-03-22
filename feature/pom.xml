@@ -37,8 +37,13 @@
     <dependencies>
         <dependency>
             <groupId>org.wso2.carbon.security</groupId>
+            <artifactId>org.wso2.carbon.security.boot</artifactId>
+            <version>${carbon.security.boot.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.wso2.carbon.security</groupId>
             <artifactId>org.wso2.carbon.security</artifactId>
-            <version>1.0.0-SNAPSHOT</version>
+            <version>${carbon.security.version}</version>
         </dependency>
         <dependency>
             <groupId>io.netty</groupId>
@@ -144,6 +149,10 @@
                                 </advice>
                             </adviceFileContents>
                             <bundles>
+                                <bundle>
+                                    <symbolicName>org.wso2.carbon.security.boot</symbolicName>
+                                    <version>${carbon.security.boot.version}</version>
+                                </bundle>
                                 <bundle>
                                     <symbolicName>org.wso2.carbon.security</symbolicName>
                                     <version>${carbon.security.version}</version>

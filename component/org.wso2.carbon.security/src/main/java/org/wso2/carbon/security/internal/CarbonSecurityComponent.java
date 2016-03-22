@@ -29,7 +29,7 @@ import org.osgi.service.permissionadmin.PermissionInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.wso2.carbon.datasource.core.api.DataSourceService;
-import org.wso2.carbon.jaas.boot.ProxyLoginModule;
+import org.wso2.carbon.security.boot.ProxyLoginModule;
 import org.wso2.carbon.security.internal.config.DefaultPermissionInfo;
 import org.wso2.carbon.security.internal.config.DefaultPermissionInfoCollection;
 import org.wso2.carbon.security.internal.config.SecurityConfigBuilder;
@@ -59,11 +59,7 @@ import java.util.Map;
  */
 @Component(
         name = "org.wso2.carbon.security.internal.CarbonSecurityComponent",
-        immediate = true,
-        property = {
-                "capability-name=sun.security.provider.PolicyFile",
-                "component-key=carbon-policy-service"
-        }
+        immediate = true
 )
 public class CarbonSecurityComponent {
 
