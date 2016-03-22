@@ -59,11 +59,7 @@ import java.util.Map;
  */
 @Component(
         name = "org.wso2.carbon.security.internal.CarbonSecurityComponent",
-        immediate = true,
-        property = {
-                "capability-name=sun.security.provider.PolicyFile",
-                "component-key=carbon-policy-service"
-        }
+        immediate = true
 )
 public class CarbonSecurityComponent {
 
