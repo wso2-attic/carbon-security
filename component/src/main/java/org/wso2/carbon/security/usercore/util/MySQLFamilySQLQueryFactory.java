@@ -51,7 +51,9 @@ public class MySQLFamilySQLQueryFactory extends SQLQueryFactory {
     private static final String GET_USER_ATTRIBUTES =
             "SELECT ATTR_NAME, ATTR_VALUE " +
             "FROM UM_USER_ATTRIBUTES " +
-            "WHERE USER_ID = (SELECT USER_ID FROM UM_USER WHERE USER_UNIQUE_ID = :userId)";
+            "WHERE USER_ID = (SELECT USER_ID " +
+                             "FROM UM_USER " +
+                             "WHERE USER_UNIQUE_ID = :userId)";
 
     private static final String DELETE_USER =
             "DELETE FROM UM_USER " +
@@ -74,9 +76,25 @@ public class MySQLFamilySQLQueryFactory extends SQLQueryFactory {
             "INSERT INTO UM_USER_ATTRIBUTES (ATTR_NAME, ATTR_VALUE, USER_ID) " +
             "VALUES (:attr_name, :attr_val, :user_id)";
 
-    private static final String ADD_USER_GROUP =
+    private static final String ADD_USER_GROUPS =
             "INSERT INTO UM_USER_GROUP (USER_ID, GROUP_ID) " +
             "VALUES (:user_id, :group_id)";
+
+    private static final String GET_USER_IDS =
+            "SELECT ID " +
+            "FROM UM_USER " +
+            "WHERE USERNAME IN (:userNames)";
+
+    private static final String ADD_GROUP =
+            "INSERT INTO (GROUP_NAME, GROUP_UNIQUE_ID) " +
+            "VALUES (:group_name, :group_id)";
+
+    private static final String LIST_USERS =
+            "SELECT USERNAME " +
+            "FROM UM_USER " +
+            "WHERE USERNAME LIKE :username" +
+            "LIMIT :length" +
+            "OFFSET :offset";
 
     public MySQLFamilySQLQueryFactory() {
 
@@ -91,6 +109,9 @@ public class MySQLFamilySQLQueryFactory extends SQLQueryFactory {
         sqlQueries.put(ConnectorConstants.QueryTypes.SQL_QUERY_GET_GROUP_IDS, GET_GROUP_IDS);
         sqlQueries.put(ConnectorConstants.QueryTypes.SQL_QUERY_ADD_USER, ADD_USER);
         sqlQueries.put(ConnectorConstants.QueryTypes.SQL_QUERY_ADD_USER_CLAIMS, ADD_USER_ATTRIBUTES);
-        sqlQueries.put(ConnectorConstants.QueryTypes.SQL_QUERY_ADD_USER_GROUPS, ADD_USER_GROUP);
+        sqlQueries.put(ConnectorConstants.QueryTypes.SQL_QUERY_ADD_USER_GROUPS, ADD_USER_GROUPS);
+        sqlQueries.put(ConnectorConstants.QueryTypes.SQL_QUERY_GET_USER_IDS, GET_USER_IDS);
+        sqlQueries.put(ConnectorConstants.QueryTypes.SQL_QUERY_ADD_GROUP, ADD_GROUP);
+        sqlQueries.put(ConnectorConstants.QueryTypes.SQL_QUERY_LIST_USERS, LIST_USERS);
     }
 }

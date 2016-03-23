@@ -75,7 +75,8 @@ public interface IdentityStoreConnector {
      * @param filterPattern Filter pattern to be used.
      * @param offset        Offset to get the Users.
      * @param length        Number of users from the offset.
-     * @return List of Identities which matches the given claim attribute with given filter
+     * @return List of Identities which matches the given claim attribute with given filter or empty list if there are
+     *         no identities to match.
      * @throws IdentityStoreException
      */
     List<User> listUsers(String filterPattern, int offset, int length) throws IdentityStoreException;
