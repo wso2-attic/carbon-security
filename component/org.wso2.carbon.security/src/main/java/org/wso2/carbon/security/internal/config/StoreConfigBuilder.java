@@ -21,9 +21,9 @@ import org.wso2.carbon.security.usercore.constant.ConnectorConstants;
 import org.wso2.carbon.security.usercore.util.MySQLFamilySQLQueryFactory;
 import org.yaml.snakeyaml.Yaml;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Map;
 import java.util.Properties;
@@ -38,13 +38,13 @@ public class StoreConfigBuilder {
      * @param fileName Name of the configuration file.
      * @return Instance of IdentityStoreConfig.
      */
-    public static IdentityStoreConfig buildIdentityStoreConfig(String fileName) throws FileNotFoundException {
+    public static IdentityStoreConfig buildIdentityStoreConfig(String fileName) throws IOException {
 
-        File file = Paths.get(CarbonSecurityConstants.getCarbonHomeDirectory().toString(), "conf", "security", 
-                              fileName).toFile();
+        Path file = Paths.get(CarbonSecurityConstants.getCarbonHomeDirectory().toString(), "conf", "security",
+                              fileName);
 
         Yaml yaml = new Yaml();
-        Map<String, String> values = (Map<String, String>) yaml.load(new FileInputStream(file));
+        Map<String, String> values = (Map<String, String>) yaml.load(Files.newInputStream(file));
 
         Properties storeProperties = new Properties();
         values.forEach(storeProperties::put);
@@ -64,13 +64,13 @@ public class StoreConfigBuilder {
      * @param fileName Name of the configuration file.
      * @return Instance of CredentialStoreConfig.
      */
-    public static CredentialStoreConfig buildCredentialStoreConfig(String fileName) throws FileNotFoundException {
+    public static CredentialStoreConfig buildCredentialStoreConfig(String fileName) throws IOException {
 
-        File file = Paths.get(CarbonSecurityConstants.getCarbonHomeDirectory().toString(), "conf", "security",
-                fileName).toFile();
+        Path file = Paths.get(CarbonSecurityConstants.getCarbonHomeDirectory().toString(), "conf", "security",
+                              fileName);
 
         Yaml yaml = new Yaml();
-        Map<String, String> values = (Map<String, String>) yaml.load(new FileInputStream(file));
+        Map<String, String> values = (Map<String, String>) yaml.load(Files.newInputStream(file));
 
         Properties storeProperties = new Properties();
         values.forEach(storeProperties::put);

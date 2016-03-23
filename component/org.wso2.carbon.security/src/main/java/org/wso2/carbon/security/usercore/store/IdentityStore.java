@@ -29,6 +29,7 @@ import org.wso2.carbon.security.usercore.exception.IdentityStoreException;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
@@ -40,7 +41,7 @@ public class IdentityStore {
     private static final Logger log = LoggerFactory.getLogger(IdentityStore.class);
     private static IdentityStoreConnector userStoreConnector;
 
-    public void init() throws FileNotFoundException, IdentityStoreException {
+    public void init() throws IOException, IdentityStoreException {
 
         IdentityStoreConfig identityStoreConfig = StoreConfigBuilder
                 .buildIdentityStoreConfig(UserStoreConstants.USER_STORE_CONFIGURATION_FILE);
