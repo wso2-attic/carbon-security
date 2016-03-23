@@ -29,14 +29,21 @@ import org.osgi.service.permissionadmin.PermissionInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.wso2.carbon.datasource.core.api.DataSourceService;
+import org.wso2.carbon.security.boot.ProxyLoginModule;
 import org.wso2.carbon.security.internal.config.DefaultPermissionInfo;
 import org.wso2.carbon.security.internal.config.DefaultPermissionInfoCollection;
 import org.wso2.carbon.security.internal.config.SecurityConfigBuilder;
-import org.wso2.carbon.security.jaas.HTTPCallbackHandlerFactory;
+import org.wso2.carbon.security.jaas.CarbonJAASConfiguration;
+import org.wso2.carbon.security.jaas.CarbonLoginModuleService;
 import org.wso2.carbon.security.jaas.CarbonPolicy;
+import org.wso2.carbon.security.jaas.HTTPCallbackHandlerFactory;
+import org.wso2.carbon.security.jaas.LoginModuleService;
 import org.wso2.carbon.security.jaas.handler.BasicAuthCallbackHandlerFactory;
 import org.wso2.carbon.security.jaas.handler.JWTCallbackHandlerFactory;
 import org.wso2.carbon.security.jaas.handler.SAMLCallbackHandlerFactory;
+import org.wso2.carbon.security.jaas.modules.JWTLoginModule;
+import org.wso2.carbon.security.jaas.modules.SAML2LoginModule;
+import org.wso2.carbon.security.jaas.modules.UsernamePasswordLoginModule;
 import org.wso2.carbon.security.usercore.common.CarbonRealmServiceImpl;
 import org.wso2.carbon.security.usercore.service.RealmService;
 import org.wso2.carbon.security.usercore.util.DatabaseUtil;
@@ -57,32 +64,32 @@ import java.util.Map;
 public class CarbonSecurityComponent {
 
     private static final Logger log = LoggerFactory.getLogger(CarbonSecurityComponent.class);
-    private ServiceRegistration registration;
+
+    private ServiceRegistration realmServiceRegistration;
+
+    private ServiceRegistration loginModuleServiceRegistration;
 
     @Activate
     public void registerCarbonSecurityProvider(BundleContext bundleContext) {
 
-        // Set default permissions if security manager is enabled
-        if(System.getProperty("java.security.manager") != null) {
-            // Set default permissions for all bundles
-            setDefaultPermissions(bundleContext);
+        initAuthenticationConfigs(bundleContext);
 
-            // Registering CarbonPolicy
-            CarbonPolicy policy = new CarbonPolicy();
-            Policy.setPolicy(policy);
+        // if security manager is enabled init authorization configs
+        if (System.getProperty("java.security.manager") != null) {
+            initAuthorizationConfigs(bundleContext);
         }
 
         try {
+            loginModuleServiceRegistration = bundleContext.registerService(LoginModuleService.class.getName(),
+                                                                           new CarbonLoginModuleService(), null);
+        } catch (Exception e) {
+            log.error("Failed to register LoginModuleService", e);
+        }
 
+        try {
             CarbonRealmServiceImpl carbonRealmService = new CarbonRealmServiceImpl();
-
-            // Set default callback handlers
-            CarbonSecurityDataHolder.getInstance().registerCallbackHandlerFactory(new BasicAuthCallbackHandlerFactory());
-            CarbonSecurityDataHolder.getInstance().registerCallbackHandlerFactory(new JWTCallbackHandlerFactory());
-            CarbonSecurityDataHolder.getInstance().registerCallbackHandlerFactory(new SAMLCallbackHandlerFactory());
             CarbonSecurityDataHolder.getInstance().registerCarbonRealmService(carbonRealmService);
-
-            registration = bundleContext.registerService(RealmService.class.getName(), carbonRealmService, null);
+            realmServiceRegistration = bundleContext.registerService(RealmService.class.getName(), carbonRealmService, null);
         } catch (Exception e) {
             log.error(e.getMessage(), e);
         }
@@ -94,10 +101,17 @@ public class CarbonSecurityComponent {
     public void unregisterCarbonSecurityProvider(BundleContext bundleContext) {
 
         try {
-            bundleContext.ungetService(registration.getReference());
+            bundleContext.ungetService(realmServiceRegistration.getReference());
         } catch (Exception e) {
             log.error(e.getMessage(), e);
         }
+
+        try {
+            bundleContext.ungetService(loginModuleServiceRegistration.getReference());
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+        }
+
         log.info("Carbon-Security bundle deactivated successfully.");
     }
 
@@ -108,11 +122,15 @@ public class CarbonSecurityComponent {
             policy = ReferencePolicy.DYNAMIC,
             unbind = "unregisterCallbackHandlerFactory"
     )
-    protected void registerCallbackHandlerFactory(HTTPCallbackHandlerFactory callbackHandlerFactory, Map<String, ?> ref) {
+    protected void registerCallbackHandlerFactory(HTTPCallbackHandlerFactory callbackHandlerFactory,
+                                                  Map<String, ?> ref) {
+
         CarbonSecurityDataHolder.getInstance().registerCallbackHandlerFactory(callbackHandlerFactory);
     }
 
-    protected void unregisterCallbackHandlerFactory(HTTPCallbackHandlerFactory callbackHandlerFactory, Map<String, ?> ref) {
+    protected void unregisterCallbackHandlerFactory(HTTPCallbackHandlerFactory callbackHandlerFactory,
+                                                    Map<String, ?> ref) {
+
         CarbonSecurityDataHolder.getInstance().unregisterCallbackHandlerFactory(callbackHandlerFactory);
     }
 
@@ -133,6 +151,40 @@ public class CarbonSecurityComponent {
     }
 
     protected void unregisterDataSourceService(DataSourceService service) {
+
+    }
+
+    private void initAuthenticationConfigs(BundleContext bundleContext) {
+
+        //Initialize proxy login module
+        ProxyLoginModule.init(bundleContext);
+
+        // Set CarbonJAASConfiguration as the implantation of Configuration
+        CarbonJAASConfiguration configuration = new CarbonJAASConfiguration();
+        configuration.init();
+
+        //Registering login modules provided by the bundle
+        long bundleId = bundleContext.getBundle().getBundleId();
+        CarbonSecurityDataHolder.getInstance().registerLoginModule(bundleId, UsernamePasswordLoginModule.class
+                .getName());
+        CarbonSecurityDataHolder.getInstance().registerLoginModule(bundleId, JWTLoginModule.class.getName());
+        CarbonSecurityDataHolder.getInstance().registerLoginModule(bundleId, SAML2LoginModule.class.getName());
+
+
+        // Registering callback handler factories
+        CarbonSecurityDataHolder.getInstance().registerCallbackHandlerFactory(new BasicAuthCallbackHandlerFactory());
+        CarbonSecurityDataHolder.getInstance().registerCallbackHandlerFactory(new JWTCallbackHandlerFactory());
+        CarbonSecurityDataHolder.getInstance().registerCallbackHandlerFactory(new SAMLCallbackHandlerFactory());
+    }
+
+    private void initAuthorizationConfigs(BundleContext bundleContext) {
+
+        // Set default permissions for all bundles
+        setDefaultPermissions(bundleContext);
+
+        // Registering CarbonPolicy
+        CarbonPolicy policy = new CarbonPolicy();
+        Policy.setPolicy(policy);
     }
 
     /**

@@ -28,11 +28,16 @@ public class CarbonSecurityDataHolder {
 
     private static CarbonSecurityDataHolder instance = new CarbonSecurityDataHolder();
 
-    private static Map<String, List<HTTPCallbackHandlerFactory>> callbackHandlerFactoryMap;
-    private static CarbonRealmServiceImpl carbonRealmService;
+    private Map<String, List<HTTPCallbackHandlerFactory>> callbackHandlerFactoryMap;
+
+    private Map<String, Long> loginModuleMap;
+
+    private CarbonRealmServiceImpl carbonRealmService;
 
     private CarbonSecurityDataHolder() {
+
         this.callbackHandlerFactoryMap = new HashMap<>();
+        this.loginModuleMap = new HashMap<>();
     }
 
     public static CarbonSecurityDataHolder getInstance() {
@@ -40,6 +45,7 @@ public class CarbonSecurityDataHolder {
     }
 
     public void registerCallbackHandlerFactory(HTTPCallbackHandlerFactory callbackHandlerFactory) {
+
         if (callbackHandlerFactoryMap.get(callbackHandlerFactory.getSupportedLoginModuleType()) == null) {
             synchronized (callbackHandlerFactoryMap) {
                 if (callbackHandlerFactoryMap.get(callbackHandlerFactory.getSupportedLoginModuleType()) == null) {
@@ -54,20 +60,40 @@ public class CarbonSecurityDataHolder {
     }
 
     public void unregisterCallbackHandlerFactory(HTTPCallbackHandlerFactory callbackHandlerFactory) {
+
         synchronized (callbackHandlerFactoryMap) {
             callbackHandlerFactoryMap.get(callbackHandlerFactory.getSupportedLoginModuleType()).remove(callbackHandlerFactory);
         }
     }
 
     public List<HTTPCallbackHandlerFactory> getCallbackHandlerFactory(String type) {
+
         return callbackHandlerFactoryMap.get(type);
     }
 
     public void registerCarbonRealmService(CarbonRealmServiceImpl carbonRealmService) {
-        CarbonSecurityDataHolder.carbonRealmService = carbonRealmService;
+
+        this.carbonRealmService = carbonRealmService;
     }
 
     public CarbonRealmServiceImpl getCarbonRealmService() {
-        return CarbonSecurityDataHolder.carbonRealmService;
+
+        return this.carbonRealmService;
     }
+
+    public void registerLoginModule(long bundleId, String className) {
+
+        loginModuleMap.put(className, bundleId);
+    }
+
+    public void unRegisterLoginModule(long bundleId, String className) {
+
+        loginModuleMap.remove(className, bundleId);
+    }
+
+    public Long getBundleIdOfLoginModule(String className) {
+
+        return loginModuleMap.get(className);
+    }
+
 }
