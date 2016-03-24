@@ -29,6 +29,7 @@ import org.wso2.carbon.security.usercore.exception.IdentityStoreException;
 
 import javax.security.auth.callback.Callback;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 
 /**
  * CredentialStore
@@ -37,7 +38,7 @@ public class CredentialStore {
 
     private CredentialStoreConnector credentialStoreConnector;
 
-    public void init() throws FileNotFoundException, CredentialStoreException {
+    public void init() throws IOException, CredentialStoreException {
 
         CredentialStoreConfig credentialStoreConfig = StoreConfigBuilder
                 .buildCredentialStoreConfig(UserStoreConstants.USER_STORE_CONFIGURATION_FILE);

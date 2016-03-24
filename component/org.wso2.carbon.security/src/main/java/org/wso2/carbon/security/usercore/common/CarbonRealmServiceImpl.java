@@ -23,7 +23,7 @@ import org.wso2.carbon.security.usercore.store.AuthorizationStore;
 import org.wso2.carbon.security.usercore.store.CredentialStore;
 import org.wso2.carbon.security.usercore.store.IdentityStore;
 
-import java.io.FileNotFoundException;
+import java.io.IOException;
 
 /**
  * Basic user realm service.
@@ -34,7 +34,7 @@ public class CarbonRealmServiceImpl implements RealmService {
     private AuthorizationStore authorizationStore = new AuthorizationStore();
     private IdentityStore identityStore = new IdentityStore();
 
-    public CarbonRealmServiceImpl() throws FileNotFoundException, IdentityStoreException, CredentialStoreException {
+    public CarbonRealmServiceImpl() throws IOException, IdentityStoreException, CredentialStoreException {
         
         super();
         credentialStore.init();

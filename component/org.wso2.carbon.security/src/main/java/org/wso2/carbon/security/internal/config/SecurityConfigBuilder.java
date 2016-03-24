@@ -22,12 +22,11 @@ import org.wso2.carbon.security.jaas.util.CarbonSecurityConstants;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.introspector.BeanAccess;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashSet;
@@ -52,10 +51,10 @@ public class SecurityConfigBuilder {
 
         DefaultPermissionInfoCollection permissionInfoCollection;
 
-        File file = Paths.get(CarbonSecurityConstants.getCarbonHomeDirectory().toString(), "conf", "security",
-                              "permissions.yml").toFile();
-        if (file.exists()) {
-            try (Reader in = new InputStreamReader(new FileInputStream(file), StandardCharsets.ISO_8859_1)) {
+        Path file = Paths.get(CarbonSecurityConstants.getCarbonHomeDirectory().toString(), "conf", "security",
+                              "permissions.yml");
+        if (Files.exists(file)) {
+            try (Reader in = new InputStreamReader(Files.newInputStream(file), StandardCharsets.ISO_8859_1)) {
                 Yaml yaml = new Yaml();
                 yaml.setBeanAccess(BeanAccess.FIELD);
                 permissionInfoCollection = yaml.loadAs(in, DefaultPermissionInfoCollection.class);
