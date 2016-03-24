@@ -61,16 +61,8 @@ public class CarbonJAASConfiguration extends Configuration {
 
         for (AppConfigurationEntry appConfigurationEntry : configurationEntries) {
 
-            Long bundleId = CarbonSecurityDataHolder.getInstance().getBundleIdOfLoginModule
-                    (appConfigurationEntry.getLoginModuleName());
-            if (bundleId == null) {
-                throw new IllegalStateException("Login module " + appConfigurationEntry.getLoginModuleName()
-                                                + " must be registered using LoginModuleService.");
-            }
-
             Map options = new HashMap<>(appConfigurationEntry.getOptions());
             options.put(ProxyLoginModule.PROPERTY_LOGIN_MODULE, appConfigurationEntry.getLoginModuleName());
-            options.put(ProxyLoginModule.PROPERTY_BUNDLE_ID, String.valueOf(bundleId));
 
             updatedConfigurationEntries.add(new AppConfigurationEntry(ProxyLoginModule.class.getName(),
                                                                       appConfigurationEntry.getControlFlag(),

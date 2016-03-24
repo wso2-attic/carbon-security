@@ -56,6 +56,7 @@ public class CarbonCallbackHandler implements CallbackHandler {
                 // Specially handle NameCallback and PasswordCallback, since they are available OOTB
                 if (callback instanceof NameCallback || callback instanceof PasswordCallback) {
                     if (!handled) {
+                        // TODO - We can use PrototypeServiceFactory in this case
                         List<HTTPCallbackHandlerFactory> callbackHandlerFactories = CarbonSecurityDataHolder.getInstance()
                                 .getCallbackHandlerFactory(CarbonSecurityConstants.USERNAME_PASSWORD_LOGIN_MODULE);
                         if (callbackHandlerFactories != null && !callbackHandlerFactories.isEmpty()) {
@@ -85,6 +86,7 @@ public class CarbonCallbackHandler implements CallbackHandler {
                     }
                     // Handle CarbonCallbacks
                 } else if (callback instanceof CarbonCallback) {
+                    // TODO - We can use PrototypeServiceFactory in this case
                     List<HTTPCallbackHandlerFactory> callbackHandlerFactories = CarbonSecurityDataHolder.getInstance()
                             .getCallbackHandlerFactory(((CarbonCallback) callback).getLoginModuleType());
                     if (callbackHandlerFactories != null && !callbackHandlerFactories.isEmpty()) {
