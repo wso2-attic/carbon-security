@@ -48,4 +48,9 @@ public class DatabaseColumnNames {
         public static final String USER_ID = "USER_ID";
         public static final String GROUP_ID = "GROUP_ID";
     }
+
+    public static final class PasswordInfo {
+        public static final String HASH_ALGO = "HASH_ALGO";
+        public static final String PASSWORD_SALT = "PASSWORD_SALT";
+    }
 }

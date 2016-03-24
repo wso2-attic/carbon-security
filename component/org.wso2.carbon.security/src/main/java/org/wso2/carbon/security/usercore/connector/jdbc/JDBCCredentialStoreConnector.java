@@ -23,16 +23,19 @@ import org.wso2.carbon.security.internal.config.CredentialStoreConfig;
 import org.wso2.carbon.security.usercore.constant.ConnectorConstants;
 import org.wso2.carbon.security.usercore.connector.CredentialStoreConnector;
 import org.wso2.carbon.security.usercore.constant.DatabaseColumnNames;
+import org.wso2.carbon.security.usercore.constant.UserStoreConstants;
 import org.wso2.carbon.security.usercore.exception.AuthenticationFailure;
 import org.wso2.carbon.security.usercore.exception.CredentialStoreException;
 import org.wso2.carbon.security.usercore.util.DatabaseUtil;
 import org.wso2.carbon.security.usercore.util.NamedPreparedStatement;
+import org.wso2.carbon.security.usercore.util.UnitOfWork;
 import org.wso2.carbon.security.usercore.util.UserCoreUtil;
 
 import javax.security.auth.callback.Callback;
 import javax.security.auth.callback.NameCallback;
 import javax.security.auth.callback.PasswordCallback;
 import javax.sql.DataSource;
+import java.security.NoSuchAlgorithmException;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -56,6 +59,7 @@ public class JDBCCredentialStoreConnector implements CredentialStoreConnector {
         Properties properties = configuration.getStoreProperties();
 
         this.identityStoreConfig = configuration;
+        this.credentialStoreId = properties.getProperty(UserStoreConstants.USER_STORE_ID);
         this.sqlQueries = (Map<String, String>) properties.get(ConnectorConstants.SQL_QUERIES);
         try {
             this.dataSource = DatabaseUtil.getInstance().getDataSource(properties
@@ -84,34 +88,53 @@ public class JDBCCredentialStoreConnector implements CredentialStoreConnector {
             }
         }
 
-        // TODO: Use StringUtils here if possible.
         if (username == null || password == null) {
             throw new AuthenticationFailure("Username or password is null");
         }
 
-        try (Connection connection = dataSource.getConnection()) {
+        try (UnitOfWork unitOfWork = UnitOfWork.beginTransaction(dataSource.getConnection())) {
 
-            NamedPreparedStatement preparedStatement = new NamedPreparedStatement(connection,
+            NamedPreparedStatement getPasswordInfoPreparedStatement = new NamedPreparedStatement(
+                    unitOfWork.getConnection(),
+                    sqlQueries.get(ConnectorConstants.QueryTypes.SQL_QUERY_GET_PASSWORD_INFO));
+            getPasswordInfoPreparedStatement.setString("username", username);
+
+            ResultSet resultSet = getPasswordInfoPreparedStatement.getPreparedStatement().executeQuery();
+            if (!resultSet.next()) {
+                throw new CredentialStoreException("Unable to retrieve password information.");
+            }
+
+            String hashAlgo = resultSet.getString(DatabaseColumnNames.PasswordInfo.HASH_ALGO);
+            String salt = resultSet.getString(DatabaseColumnNames.PasswordInfo.PASSWORD_SALT);
+
+            NamedPreparedStatement comparePasswordPreparedStatement = new NamedPreparedStatement(
+                    unitOfWork.getConnection(),
                     sqlQueries.get(ConnectorConstants.QueryTypes.SQL_QUERY_COMPARE_PASSWORD_HASH));
 
-            // TODO: Use correct hashing algorithm.
-            String hashedPassword = UserCoreUtil.hashPassword(password, null);
-            preparedStatement.setString("hashedPassword", hashedPassword);
-            preparedStatement.setString("username", username);
+            String hashedPassword = UserCoreUtil.hashPassword(password, salt, hashAlgo);
+            comparePasswordPreparedStatement.setString("hashed_password", hashedPassword);
+            comparePasswordPreparedStatement.setString("username", username);
 
-            ResultSet resultSet = preparedStatement.getPreparedStatement().executeQuery();
+            resultSet = comparePasswordPreparedStatement.getPreparedStatement().executeQuery();
             if (!resultSet.next()) {
-                throw new AuthenticationFailure("No user for given username");
+                throw new AuthenticationFailure("Invalid username or password");
             }
 
             return resultSet.getString(DatabaseColumnNames.User.USER_UNIQUE_ID);
-        } catch (SQLException e) {
+        } catch (SQLException | NoSuchAlgorithmException e) {
             throw new CredentialStoreException("Exception occurred while authenticating the user", e);
         }
     }
 
     @Override
     public boolean canHandle(Callback[] callbacks) {
+
+        for (Callback callback : callbacks) {
+            if (callback instanceof  NameCallback || callback instanceof PasswordCallback) {
+                return true;
+            }
+        }
+
         return false;
     }
 }

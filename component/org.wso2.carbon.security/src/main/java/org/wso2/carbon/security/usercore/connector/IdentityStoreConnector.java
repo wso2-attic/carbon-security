@@ -167,18 +167,18 @@ public interface IdentityStoreConnector {
     /**
      * Assign Group/s to an User.
      * @param userId Id of the User.
-     * @param groups List of Groups to be assign.
+     * @param groups List of Group names to be assign.
      * @throws IdentityStoreException
      */
-    void assignGroupsToUser(String userId, List<Group> groups) throws IdentityStoreException;
+    void assignGroupsToUser(String userId, List<String> groups) throws IdentityStoreException;
 
     /**
      * Assign Users to Group.
      * @param groupId Id of the Group.
-     * @param identities List of Users.
+     * @param users List of user names.
      * @throws IdentityStoreException
      */
-    void assignUsersToGroup(String groupId, List<User> identities) throws IdentityStoreException;
+    void assignUsersToGroup(String groupId, List<String> users) throws IdentityStoreException;
 
     /**
      * Add new credential to the User.
