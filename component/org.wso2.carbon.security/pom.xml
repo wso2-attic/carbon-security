@@ -107,6 +107,7 @@
             org.yaml.snakeyaml.*;version="${org.snakeyaml.package.import.version.range}",
             javax.sql.*,
             javax.naming.*,
+            javax.xml.*,
             org.osgi.service.component.annotations.*;version="${org.osgi.service.component.annotations.version.range}",
             org.osgi.service.jndi.*;version="${org.osgi.service.jndi.version.range}",
             org.wso2.carbon.datasource.core.*;version="${org.wso2.carbon.datasource.version.range}",

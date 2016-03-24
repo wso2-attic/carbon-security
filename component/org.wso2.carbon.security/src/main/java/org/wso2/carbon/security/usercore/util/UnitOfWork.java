@@ -33,18 +33,42 @@ public class UnitOfWork implements AutoCloseable {
     /**
      * Begin the transaction process.
      * @param connection Database connection.
-     * @return Instance of UnitOfWork.
+     * @param autoCommit Set auto commit status of this transaction.
+     * @return Instance of @see UnitOfWork.
+     * @throws SQLException
+     */
+    public static UnitOfWork beginTransaction(Connection connection, boolean autoCommit) throws SQLException {
+
+        connection.setAutoCommit(autoCommit);
+        return beginTransaction(connection);
+    }
+
+    /**
+     * Begin the transaction process.
+     * @param connection Database connection
+     * @return Instance of @see UnitOfWork
      * @throws SQLException
      */
     public static UnitOfWork beginTransaction(Connection connection) throws SQLException {
 
         UnitOfWork unitOfWork = new UnitOfWork();
         unitOfWork.connection = connection;
-        unitOfWork.connection.setAutoCommit(false);
 
         return unitOfWork;
     }
 
+    /**
+     * End the transaction by committing to the database.
+     * @throws SQLException
+     */
+    public void endTransaction() throws SQLException {
+        connection.commit();
+    }
+
+    /**
+     * Get the underlying connection object.
+     * @return instance of @see Connection.
+     */
     public Connection getConnection() {
         return connection;
     }
@@ -55,7 +79,6 @@ public class UnitOfWork implements AutoCloseable {
      */
     @Override
     public void close() throws SQLException {
-        connection.commit();
         connection.close();
     }
 }

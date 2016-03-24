@@ -165,6 +165,17 @@ public class IdentityStore {
     }
 
     /**
+     * Add a group to the user store.
+     * @param groupName Name of the group.
+     * @param users List of users to be added to this group.
+     * @return Added group.
+     * @throws IdentityStoreException
+     */
+    public Group addGroup(String groupName, List<String> users) throws IdentityStoreException {
+        return userStoreConnector.addGroup(groupName, users);
+    }
+
+    /**
      * Delete an existing user.
      * @param userID ID of the user.
      * @throws IdentityStoreException

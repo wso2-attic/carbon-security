@@ -30,11 +30,19 @@ public class NamedPreparedStatement {
     private PreparedStatement preparedStatement;
     private List<String> fields = new ArrayList<>();
 
+    /**
+     * Create a named prepared statement with repeated indexes.
+     * @param connection Database connection to be used.
+     * @param sqlQuery Underlying SQL query.
+     * @param repetition Repetition of each index.
+     * @throws SQLException
+     */
     public NamedPreparedStatement(Connection connection, String sqlQuery, int repetition) throws SQLException {
 
         int pos;
         while ((pos = sqlQuery.indexOf(":")) != -1) {
-            int end = sqlQuery.substring(pos).indexOf(" ");
+
+            int end = sqlQuery.substring(pos).indexOf(";");
             if (end == -1) {
                 end = sqlQuery.length();
             }
@@ -42,37 +50,71 @@ public class NamedPreparedStatement {
                 end += pos;
             }
 
-            fields.add(sqlQuery.substring(pos + 1,end));
+            fields.add(sqlQuery.substring(pos + 1, end));
 
             StringBuilder builder = new StringBuilder("?");
-            for (int i = 0; i < repetition; i++) {
+            for (int i = 0; i < repetition - 1; i++) {
                 builder.append(", ?");
             }
-            sqlQuery = sqlQuery.substring(0, pos) + builder.toString() + sqlQuery.substring(end);
+            sqlQuery = sqlQuery.substring(0, pos) + builder.toString() + sqlQuery.substring(end + 1);
         }
         preparedStatement = connection.prepareStatement(sqlQuery);
     }
 
+    /**
+     * Create a named prepared statement.
+     * @param connection Database connection to be used.
+     * @param sqlQuery Underlying SQL query.
+     * @throws SQLException
+     */
     public NamedPreparedStatement(Connection connection, String sqlQuery) throws SQLException {
         this(connection, sqlQuery, 0);
     }
 
+    /**
+     * Get underlying prepared statement.
+     * @return @see PreparedStatement.
+     */
     public PreparedStatement getPreparedStatement() {
         return preparedStatement;
     }
 
+    /**
+     * Set <code>long</code> value for the named index.
+     * @param name Name of the index.
+     * @param value Value to be replaced.
+     * @throws SQLException
+     */
     public void setLong(String name, long value) throws SQLException {
         preparedStatement.setLong(getIndex(name), value);
     }
 
+    /**
+     * Set <code>int</code> value for the named index.
+     * @param name Name of the index.
+     * @param value Value to be replaced.
+     * @throws SQLException
+     */
     public void setInt(String name, int value) throws SQLException {
         preparedStatement.setInt(getIndex(name), value);
     }
 
+    /**
+     * Set <code>String</code> value for the named index.
+     * @param name Name of the index.
+     * @param value Value to be replaced.
+     * @throws SQLException
+     */
     public void setString(String name, String value) throws SQLException {
         preparedStatement.setString(getIndex(name), value);
     }
 
+    /**
+     * Replace repeated indexes with the list of values.
+     * @param name Name of the index.
+     * @param values Values to be replaced.
+     * @throws SQLException
+     */
     public void setString(String name, List<String> values) throws SQLException {
 
         int indexInc = 0;

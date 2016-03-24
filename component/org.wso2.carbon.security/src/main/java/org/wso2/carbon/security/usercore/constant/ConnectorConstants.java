@@ -45,5 +45,10 @@ public class ConnectorConstants {
         public static final String SQL_QUERY_ADD_USER_GROUPS = "sql_query_add_user_groups";
         public static final String SQL_QUERY_GET_USER_IDS = "sql_query_get_user_ids";
         public static final String SQL_QUERY_ADD_GROUP = "sql_query_add_group";
+        public static final String SQL_QUERY_LIST_USERS = "sql_query_list_users";
+        public static final String SQL_QUERY_GET_GROUP_ID_FROM_UNIQUE_ID = "sql_query_get_group_id_from_unique_id";
+        public static final String SQL_QUERY_GET_USER_ID_FROM_UNIQUE_ID = "sql_query_get_user_id_from_unique_id";
+        public static final String SQL_QUERY_GET_PASSWORD_INFO = "sql_query_get_password_info";
+        public static final String SQL_QUERY_ADD_PASSWORD_INFO = "sql_query_add_password_info";
     }
 }
