@@ -97,7 +97,7 @@ public interface IdentityStoreConnector {
      * @return
      * @throws IdentityStoreException
      */
-    Map<String, String> getUserClaimValues(String userID, Set<String> claimURIs) throws IdentityStoreException;
+    Map<String, String> getUserClaimValues(String userID, List<String> claimURIs) throws IdentityStoreException;
 
     /**
      * Retrieve group with given group ID

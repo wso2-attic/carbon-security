@@ -31,32 +31,6 @@ import java.util.UUID;
  */
 public class UserCoreUtil {
 
-    public static final String DOMAIN_SEPARATOR = "/";
-
-    /**
-     * Returns only username
-     *
-     * @param username username with domain name or only username
-     * @return
-     */
-    public String getUserName(String username) {
-        if (username.contains(DOMAIN_SEPARATOR)) {
-            return username.substring(username.indexOf(DOMAIN_SEPARATOR) + 1);
-        }
-        return username;
-    }
-
-    public String getUserStoreName(String username) {
-        if (username.contains(DOMAIN_SEPARATOR)) {
-            return username.substring(0, username.indexOf(DOMAIN_SEPARATOR));
-        }
-        return UserStoreConstants.PRIMARY;
-    }
-
-    public String appendDomainName(String username, String domainName) {
-        return domainName + DOMAIN_SEPARATOR + username;
-    }
-
     /**
      * Hash the given password using given algorithm.
      * @param password Password to be hashed.
