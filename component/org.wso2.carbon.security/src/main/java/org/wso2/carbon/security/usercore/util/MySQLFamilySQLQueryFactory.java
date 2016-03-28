@@ -121,6 +121,25 @@ public class MySQLFamilySQLQueryFactory extends SQLQueryFactory {
             "INSERT INTO UM_PASSWORD_INFO (USER_ID, PASSWORD_SALT, HASH_ALGO) " +
             "VALUES (:user_id;, :password_salt;, :hash_algo;)";
 
+    public static final String SET_USER_ATTRIBUTE =
+            "INSERT INTO UM_USER_ATTRIBUTES (ATTR_NAME, ATTR_VALUE, USER_ID) " +
+            "VALUES (:attr_name;, :attr_val;, (SELECT ID FROM UM_USER WHERE USER_UNIQUE_ID = :user_id;))";
+
+    public static final String DELETE_USER_ATTRIBUTE =
+            "DELETE FROM UM_USER_ATTRIBUTES " +
+            "WHERE USER_ID = (SELECT ID " +
+                             "FROM UM_USER " +
+                             "WHERE USER_UNIQUE_ID = :user_id;) " +
+            "AND ATTR_NAME = :attr_name;";
+
+    public static final String GET_USER_ATTRIBUTEs_FROM_URI =
+            "SELECT ATTR_NAME, ATTR_VALUE " +
+            "FROM UM_USER_ATTRIBUTES " +
+            "WHERE USER_ID = (SELECT ID " +
+                             "FROM UM_USER " +
+                             "WHERE USER_UNIQUE_ID = :user_id;) " +
+            "AND ATTR_NAME IN (:claim_uris;)";
+
     public MySQLFamilySQLQueryFactory() {
 
         sqlQueries.put(ConnectorConstants.QueryTypes.SQL_QUERY_COMPARE_PASSWORD_HASH, COMPARE_PASSWORD_HASH);
@@ -142,5 +161,9 @@ public class MySQLFamilySQLQueryFactory extends SQLQueryFactory {
         sqlQueries.put(ConnectorConstants.QueryTypes.SQL_QUERY_GET_USERS_OF_GROUP, GET_USERS_OF_GROUP);
         sqlQueries.put(ConnectorConstants.QueryTypes.SQL_QUERY_GET_PASSWORD_INFO, GET_PASSWORD_INFO);
         sqlQueries.put(ConnectorConstants.QueryTypes.SQL_QUERY_ADD_PASSWORD_INFO, ADD_PASSWORD_INFO);
+        sqlQueries.put(ConnectorConstants.QueryTypes.SQL_QUERY_SET_USER_ATTRIBUTE, SET_USER_ATTRIBUTE);
+        sqlQueries.put(ConnectorConstants.QueryTypes.SQL_QUERY_DELETE_USER_ATTRIBUTE, DELETE_USER_ATTRIBUTE);
+        sqlQueries.put(ConnectorConstants.QueryTypes.SQL_QUERY_GET_USER_ATTRIBUTES_FROM_URI,
+                GET_USER_ATTRIBUTEs_FROM_URI);
     }
 }

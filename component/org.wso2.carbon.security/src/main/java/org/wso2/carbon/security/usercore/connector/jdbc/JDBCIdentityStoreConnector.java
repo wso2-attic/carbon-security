@@ -24,6 +24,7 @@ import org.wso2.carbon.security.usercore.constant.ConnectorConstants;
 import org.wso2.carbon.security.usercore.connector.IdentityStoreConnector;
 import org.wso2.carbon.security.usercore.constant.DatabaseColumnNames;
 import org.wso2.carbon.security.usercore.exception.IdentityStoreException;
+import org.wso2.carbon.security.usercore.store.IdentityStore;
 import org.wso2.carbon.security.usercore.util.DatabaseUtil;
 import org.wso2.carbon.security.usercore.util.NamedPreparedStatement;
 import org.wso2.carbon.security.usercore.util.UnitOfWork;
@@ -161,6 +162,7 @@ public class JDBCIdentityStoreConnector implements IdentityStoreConnector {
                     sqlStatements.get(ConnectorConstants.QueryTypes.SQL_QUERY_GET_USER_ATTRIBUTES));
             namedPreparedStatement.setString("user_id", userId);
             ResultSet resultSet = namedPreparedStatement.getPreparedStatement().executeQuery();
+
             Map<String, String> userClaims = new HashMap<>();
 
             while (resultSet.next()) {
@@ -172,14 +174,34 @@ public class JDBCIdentityStoreConnector implements IdentityStoreConnector {
             return userClaims;
 
         } catch (SQLException e) {
-            throw new IdentityStoreException("Error occurred while retrieving user claims from database", e);
+            throw new IdentityStoreException("Error occurred while retrieving user claims", e);
         }
-
     }
 
     @Override
-    public Map<String, String> getUserClaimValues(String userID, Set<String> claimURIs) throws IdentityStoreException {
-        return null;
+    public Map<String, String> getUserClaimValues(String userID, List<String> claimURIs) throws IdentityStoreException {
+
+        try (UnitOfWork unitOfWork = UnitOfWork.beginTransaction(dataSource.getConnection())) {
+
+            NamedPreparedStatement namedPreparedStatement = new NamedPreparedStatement(unitOfWork.getConnection(),
+                    sqlStatements.get(ConnectorConstants.QueryTypes.SQL_QUERY_GET_USER_ATTRIBUTES_FROM_URI));
+            namedPreparedStatement.setString("user_id", userID);
+            namedPreparedStatement.setString("claim_uris", claimURIs);
+            ResultSet resultSet = namedPreparedStatement.getPreparedStatement().executeQuery();
+
+            Map<String, String> userClaims = new HashMap<>();
+
+            while (resultSet.next()) {
+                String attrName = resultSet.getString(DatabaseColumnNames.UserAttributes.ATTR_NAME);
+                String attrValue = resultSet.getString(DatabaseColumnNames.UserAttributes.ATTR_VALUE);
+                userClaims.put(attrName, attrValue);
+            }
+
+            return userClaims;
+
+        } catch (SQLException e) {
+            throw new IdentityStoreException("Error occurred while retrieving user claims");
+        }
     }
 
     @Override
@@ -228,6 +250,8 @@ public class JDBCIdentityStoreConnector implements IdentityStoreConnector {
 
     @Override
     public List<Group> listGroups(String attribute, String filter, int maxItemLimit) throws IdentityStoreException {
+
+        // TODO What is this method do?
         return null;
     }
 
@@ -545,21 +569,86 @@ public class JDBCIdentityStoreConnector implements IdentityStoreConnector {
     @Override
     public void updateCredential(String userID, Object newCredential) throws IdentityStoreException {
 
+        // TODO: Add SQL queries.
+        // TODO: Is this password? Do we need to hash and save?
+        try (UnitOfWork unitOfWork = UnitOfWork.beginTransaction(dataSource.getConnection())) {
+
+            NamedPreparedStatement updateCredentialPreparedStatement = new NamedPreparedStatement(
+                    unitOfWork.getConnection(),
+                    sqlStatements.get(ConnectorConstants.QueryTypes.SQL_QUERY_UPDATE_CREDENTIAL));
+            updateCredentialPreparedStatement.setString("user_id", userID);
+            updateCredentialPreparedStatement.setString("credential", (String) newCredential);
+            int rowCount = updateCredentialPreparedStatement.getPreparedStatement().executeUpdate();
+
+            if (rowCount < 1) {
+                throw new IdentityStoreException("No credentials updated.");
+            }
+        } catch (SQLException e) {
+            throw new IdentityStoreException("Error occurred while updating credentials.", e);
+        }
     }
 
     @Override
     public void updateCredential(String userID, Object oldCredential, Object newCredential)
             throws IdentityStoreException {
 
+        // TODO: Add SQL queries.
+        // TODO: Is this password? Do we need to hash and save?
+        try (UnitOfWork unitOfWork = UnitOfWork.beginTransaction(dataSource.getConnection())) {
+
+            NamedPreparedStatement updateCredentialPreparedStatement = new NamedPreparedStatement(
+                    unitOfWork.getConnection(),
+                    sqlStatements.get(ConnectorConstants.QueryTypes.SQL_QUERY_UPDATE_OLD_CREDENTIAL));
+            updateCredentialPreparedStatement.setString("user_id", userID);
+            updateCredentialPreparedStatement.setString("old_credential", (String) oldCredential);
+            updateCredentialPreparedStatement.setString("credential", (String) newCredential);
+            int rowCount = updateCredentialPreparedStatement.getPreparedStatement().executeUpdate();
+
+            if (rowCount < 1) {
+                throw new IdentityStoreException("No credentials updated.");
+            }
+        } catch (SQLException e) {
+            throw new IdentityStoreException("Error occurred while updating credentials.", e);
+        }
     }
 
     @Override
     public void setUserAttributeValues(String userID, Map<String, String> attributes) throws IdentityStoreException {
 
+        try (UnitOfWork unitOfWork = UnitOfWork.beginTransaction(dataSource.getConnection())) {
+
+            NamedPreparedStatement namedPreparedStatement = new NamedPreparedStatement(unitOfWork.getConnection(),
+                    sqlStatements.get(ConnectorConstants.QueryTypes.SQL_QUERY_SET_USER_ATTRIBUTE));
+            namedPreparedStatement.setString("user_id", userID);
+
+            for(Map.Entry<String, String> entry : attributes.entrySet()) {
+                namedPreparedStatement.setString("attr_name", entry.getKey());
+                namedPreparedStatement.setString("attr_val", entry.getValue());
+                namedPreparedStatement.getPreparedStatement().addBatch();
+            }
+            namedPreparedStatement.getPreparedStatement().executeBatch();
+        } catch (SQLException e) {
+            throw new IdentityStoreException("Error occurred while adding user attributes.");
+        }
     }
 
     @Override
     public void deleteUserAttributeValues(String userID, List<String> attributes) throws IdentityStoreException {
+
+        try (UnitOfWork unitOfWork = UnitOfWork.beginTransaction(dataSource.getConnection())) {
+
+            NamedPreparedStatement namedPreparedStatement = new NamedPreparedStatement(unitOfWork.getConnection(),
+                    sqlStatements.get(ConnectorConstants.QueryTypes.SQL_QUERY_DELETE_USER_ATTRIBUTE));
+            namedPreparedStatement.setString("user_id", userID);
+
+            for(String attr : attributes) {
+                namedPreparedStatement.setString("attr_name", attr);
+                namedPreparedStatement.getPreparedStatement().addBatch();
+            }
+            namedPreparedStatement.getPreparedStatement().executeBatch();
+        } catch (SQLException e) {
+            throw new IdentityStoreException("Error occurred while deleting user attributes.");
+        }
     }
 
     @Override
