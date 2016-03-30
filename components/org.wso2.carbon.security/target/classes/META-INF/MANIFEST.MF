@@ -1,0 +1,71 @@
+Manifest-Version: 1.0
+Bnd-LastModified: 1459354231275
+Build-Jdk: 1.8.0_66
+Built-By: jayanga
+Bundle-Contributors: WSO2 Inc
+Bundle-Copyright: WSO2 Inc
+Bundle-Description: WSO2 is an open source application development softw
+ are company focused on providing service-orientedarchitecture solutions
+  for professional developers.
+Bundle-Developers: WSO2 Inc
+Bundle-DocURL: https://docs.wso2.com
+Bundle-License: http://www.apache.org/licenses/LICENSE-2.0.txt
+Bundle-ManifestVersion: 2
+Bundle-Name: org.wso2.carbon.security
+Bundle-SymbolicName: org.wso2.carbon.security
+Bundle-Vendor: WSO2 Inc
+Bundle-Version: 1.0.0.SNAPSHOT
+Created-By: Apache Maven Bundle Plugin
+Export-Package: org.wso2.carbon.security.boot;version="1.0.0";uses:="jav
+ ax.security.auth,javax.security.auth.callback,javax.security.auth.login
+ ,javax.security.auth.spi,org.osgi.framework",org.wso2.carbon.security.i
+ nternal.config;version="1.0.0",org.wso2.carbon.security.jaas;version="1
+ .0.0";uses:="io.netty.handler.codec.http,javax.naming.spi,javax.securit
+ y.auth.callback,javax.security.auth.login",org.wso2.carbon.security.jaa
+ s.exception;version="1.0.0",org.wso2.carbon.security.jaas.handler;versi
+ on="1.0.0";uses:="io.netty.handler.codec.http,javax.naming,javax.securi
+ ty.auth.callback,org.wso2.carbon.security.jaas",org.wso2.carbon.securit
+ y.jaas.modules;version="1.0.0";uses:="javax.security.auth,javax.securit
+ y.auth.callback,javax.security.auth.login,javax.security.auth.spi",org.
+ wso2.carbon.security.jaas.util;version="1.0.0";uses:="org.wso2.carbon.s
+ ecurity.jaas",org.wso2.carbon.security.usercore.bean;version="1.0.0";us
+ es:="org.wso2.carbon.security.usercore.exception",org.wso2.carbon.secur
+ ity.usercore.common;version="1.0.0";uses:="org.wso2.carbon.security.use
+ rcore.exception,org.wso2.carbon.security.usercore.service,org.wso2.carb
+ on.security.usercore.store",org.wso2.carbon.security.usercore.connector
+ ;version="1.0.0";uses:="javax.security.auth.callback,org.wso2.carbon.se
+ curity.internal.config,org.wso2.carbon.security.usercore.bean,org.wso2.
+ carbon.security.usercore.exception",org.wso2.carbon.security.usercore.c
+ onnector.jdbc;version="1.0.0";uses:="javax.security.auth.callback,org.w
+ so2.carbon.security.internal.config,org.wso2.carbon.security.usercore.b
+ ean,org.wso2.carbon.security.usercore.connector,org.wso2.carbon.securit
+ y.usercore.exception",org.wso2.carbon.security.usercore.constant;versio
+ n="1.0.0",org.wso2.carbon.security.usercore.context;version="1.0.0";use
+ s:="org.wso2.carbon.security.usercore.bean",org.wso2.carbon.security.us
+ ercore.exception;version="1.0.0",org.wso2.carbon.security.usercore.serv
+ ice;version="1.0.0";uses:="org.wso2.carbon.security.usercore.store",org
+ .wso2.carbon.security.usercore.store;version="1.0.0";uses:="javax.secur
+ ity.auth.callback,org.wso2.carbon.security.usercore.bean,org.wso2.carbo
+ n.security.usercore.context,org.wso2.carbon.security.usercore.exception
+ ",org.wso2.carbon.security.usercore.util;version="1.0.0";uses:="javax.s
+ ql,org.wso2.carbon.datasource.core.api,org.wso2.carbon.datasource.core.
+ exception"
+Import-Package: org.osgi.framework;version="[1.8.0,2.0.0)",org.osgi.serv
+ ice.permissionadmin;version="[1.2.0,1.3.0)",org.slf4j;version="[1.7.1,2
+ .0.0)",io.netty.handler.codec.http;version="[4.0,5)",javax.security.aut
+ h,javax.security.auth.callback,javax.security.auth.login,javax.security
+ .auth.spi,com.nimbusds.jose;version="[2.26.1,2.27)",com.nimbusds.jose.c
+ rypto;version="[2.26.1,2.27)",com.nimbusds.jwt;version="[2.26.1,2.27)",
+ org.yaml.snakeyaml;version="[1.16.0,2.0.0)",org.yaml.snakeyaml.introspe
+ ctor;version="[1.16.0,2.0.0)",javax.sql,javax.naming,javax.naming.spi,j
+ avax.xml.bind,org.wso2.carbon.datasource.core.api;version="[1.0.0,1.1.0
+ )",org.wso2.carbon.datasource.core.exception;version="[1.0.0,1.1.0)",or
+ g.wso2.carbon.security.boot;version="[1.0,2)"
+Require-Capability: osgi.service;effective:=active;cardinality:=multiple
+ ;filter:="(objectClass=org.wso2.carbon.datasource.core.api.DataSourceSe
+ rvice)",osgi.service;effective:=active;resolution:=optional;cardinality
+ :=multiple;filter:="(objectClass=org.wso2.carbon.security.jaas.HTTPCall
+ backHandlerFactory)",osgi.ee;filter:="(&(osgi.ee=JavaSE)(version=1.8))"
+Service-Component: OSGI-INF/org.wso2.carbon.security.internal.CarbonSecu
+ rityComponent.xml
+Tool: Bnd-2.4.1.201501161923
