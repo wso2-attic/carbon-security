@@ -85,7 +85,7 @@ public class Group {
      * @param userId Id of the User to be checked.
      * @return True if User is in this Group.
      */
-    public boolean hasUser(String userId) {
+    public boolean hasUser(String userId) throws IdentityStoreException {
         return identityStore.isUserInGroup(userId, groupID);
     }
 
@@ -100,9 +100,9 @@ public class Group {
 
     /**
      * Add a new User list by <b>replacing</b> the existing User list. (PUT)
-     * @param newUserList List of Users needs to be assigned to this Group.
+     * @param newUserList List of User names needs to be assigned to this Group.
      */
-    public void updateUsers(List<User> newUserList) {
+    public void updateUsers(List<String> newUserList) throws IdentityStoreException {
         identityStore.updateUsersInGroup(groupID, newUserList);
     }
 
@@ -111,7 +111,7 @@ public class Group {
      * @param assignList List to be added to the new list.
      * @param unAssignList List to be removed from the existing list.
      */
-    public void updateUsers(List<User> assignList, List<User> unAssignList) {
+    public void updateUsers(List<String> assignList, List<String> unAssignList) throws IdentityStoreException {
         identityStore.updateUsersInGroup(groupID, assignList, unAssignList);
     }
 

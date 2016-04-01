@@ -132,13 +132,33 @@ public class MySQLFamilySQLQueryFactory extends SQLQueryFactory {
                              "WHERE USER_UNIQUE_ID = :user_id;) " +
             "AND ATTR_NAME = :attr_name;";
 
-    public static final String GET_USER_ATTRIBUTEs_FROM_URI =
+    public static final String GET_USER_ATTRIBUTES_FROM_URI =
             "SELECT ATTR_NAME, ATTR_VALUE " +
             "FROM UM_USER_ATTRIBUTES " +
             "WHERE USER_ID = (SELECT ID " +
                              "FROM UM_USER " +
                              "WHERE USER_UNIQUE_ID = :user_id;) " +
             "AND ATTR_NAME IN (:claim_uris;)";
+
+    public static final String UPDATE_CREDENTIALS =
+            "UPDATE UM_USER " +
+            "SET PASSWORD = :credential; " +
+            "WHERE USERNAME = :username;";
+
+    public static final String REMOVE_GROUP_FROM_USER =
+            "DELETE FROM UM_USER_GROUP " +
+            "WHERE USER_ID = :user_id; AND GROUP_ID = :group_id;";
+
+    public static final String RENAME_USER =
+            "UPDATE UM_USER " +
+            "SET USERNAME = :new_name; " +
+            "WHERE USER_UNIQUE_ID = :user_id;";
+
+    public static final String IS_USER_IN_GROUP =
+            "SELECT ID " +
+            "FROM UM_USER_GROUP " +
+            "WHERE USER_ID = (SELECT ID FROM UM_USER WHERE USER_UNIQUE_ID = :user_id;) " +
+            "AND GROUP_ID = (SELECT ID FROM UM_GROUP WHERE GROUP_UNIQUE_ID = :group_id;)";
 
     public MySQLFamilySQLQueryFactory() {
 
@@ -164,6 +184,10 @@ public class MySQLFamilySQLQueryFactory extends SQLQueryFactory {
         sqlQueries.put(ConnectorConstants.QueryTypes.SQL_QUERY_SET_USER_ATTRIBUTE, SET_USER_ATTRIBUTE);
         sqlQueries.put(ConnectorConstants.QueryTypes.SQL_QUERY_DELETE_USER_ATTRIBUTE, DELETE_USER_ATTRIBUTE);
         sqlQueries.put(ConnectorConstants.QueryTypes.SQL_QUERY_GET_USER_ATTRIBUTES_FROM_URI,
-                GET_USER_ATTRIBUTEs_FROM_URI);
+                GET_USER_ATTRIBUTES_FROM_URI);
+        sqlQueries.put(ConnectorConstants.QueryTypes.SQL_QUERY_UPDATE_CREDENTIAL, UPDATE_CREDENTIALS);
+        sqlQueries.put(ConnectorConstants.QueryTypes.SQL_QUERY_REMOVE_GROUP_FROM_USER, REMOVE_GROUP_FROM_USER);
+        sqlQueries.put(ConnectorConstants.QueryTypes.SQL_QUERY_RENAME_USER, RENAME_USER);
+        sqlQueries.put(ConnectorConstants.QueryTypes.SQL_QUERY_IS_USER_IN_GROUP, IS_USER_IN_GROUP);
     }
 }

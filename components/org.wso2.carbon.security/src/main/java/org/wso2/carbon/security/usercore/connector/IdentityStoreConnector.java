@@ -70,7 +70,7 @@ public interface IdentityStoreConnector {
     User getUser(String username) throws IdentityStoreException;
 
     /**
-     * List all users in User Store.
+     * List all users in User Store according to the filter pattern.
      *
      * @param filterPattern Filter pattern to be used.
      * @param offset        Offset to get the Users.
@@ -91,17 +91,16 @@ public interface IdentityStoreConnector {
     Map<String, String> getUserClaimValues(String userID) throws IdentityStoreException;
 
     /**
-     *
-     * @param userID
-     * @param claimURIs
-     * @return
+     * Get user claim values for given URIs.
+     * @param userID Unique id of the user.
+     * @param claimURIs claim uris.
+     * @return Map of user claims.
      * @throws IdentityStoreException
      */
     Map<String, String> getUserClaimValues(String userID, List<String> claimURIs) throws IdentityStoreException;
 
     /**
      * Retrieve group with given group ID
-     *
      * @param groupID Unique ID of the group
      * @return Group with the given GroupID
      * @throws IdentityStoreException
@@ -117,15 +116,14 @@ public interface IdentityStoreConnector {
     Group getGroup(String groupName) throws IdentityStoreException;
 
     /**
-     * List Groups with given filter for given attribute.
-     *
-     * @param attribute    attribute to be filtered
-     * @param filter       filter to be applied on the attribute value
-     * @param maxItemLimit maximum limit of groups to be returned
-     * @return List of Groups which matches the given filter for given attribute
+     * List groups according to the filter pattern.
+     * @param filterPattern Filter pattern for to list groups.
+     * @param offset Offset for the group list.
+     * @param length Length from the offset.
+     * @return List of groups that matches the filter pattern.
      * @throws IdentityStoreException
      */
-    List<Group> listGroups(String attribute, String filter, int maxItemLimit) throws IdentityStoreException;
+    List<Group> listGroups(String filterPattern, int offset, int length) throws IdentityStoreException;
 
     /**
      * @param userID Retrieve groups of a given User with unique ID
@@ -142,6 +140,12 @@ public interface IdentityStoreConnector {
      * @throws IdentityStoreException
      */
     List<User> getUsersOfGroup(String groupID) throws IdentityStoreException;
+
+    /**
+     * Checks whether the user is in the group.
+     * @return true if user is in the group.
+     */
+    boolean isUserInGroup(String userid, String groupId) throws IdentityStoreException;
 
     /**
      * Add an user to the user store.
@@ -181,21 +185,20 @@ public interface IdentityStoreConnector {
     void assignUsersToGroup(String groupId, List<String> users) throws IdentityStoreException;
 
     /**
-     * Add new credential to the User.
-     * @param userID ID of the user.
-     * @param newCredential New credential.
+     * Remove groups from a user.
+     * @param userId Unique id of the user.
+     * @param groups List of group names.
      * @throws IdentityStoreException
      */
-    void updateCredential(String userID, Object newCredential) throws IdentityStoreException;
+    void removeGroupsFromUser(String userId, List<String> groups) throws IdentityStoreException;
 
     /**
-     * Update credentials of a user.
-     * @param userID User Id.
-     * @param oldCredential Old credential.
-     * @param newCredential New credential.
+     * Remove users from a group.
+     * @param groupId Unique id of the group.
+     * @param users List of user names.
      * @throws IdentityStoreException
      */
-    void updateCredential(String userID, Object oldCredential, Object newCredential) throws IdentityStoreException;
+    void removeUsersFromGroup(String groupId, List<String> users) throws IdentityStoreException;
 
     /**
      * Set user attributes.

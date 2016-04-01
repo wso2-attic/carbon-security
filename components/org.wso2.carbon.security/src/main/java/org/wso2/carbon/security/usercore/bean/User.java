@@ -36,7 +36,7 @@ public class User {
     private String tenantId;
     private String userName;
 
-    private IdentityStore identityStore = new IdentityStore();;
+    private IdentityStore identityStore = new IdentityStore();
     private AuthorizationStore authorizationStore = new AuthorizationStore();
 
     public User(String userID, String userStoreID, String userName) throws IdentityStoreException {
@@ -138,7 +138,7 @@ public class User {
      * @param groupName Name of the Group.
      * @return True if this User is in the group.
      */
-    public boolean isInGroup(String groupName) {
+    public boolean isInGroup(String groupName) throws IdentityStoreException {
         return identityStore.isUserInGroup(userID, groupName);
     }
 
@@ -154,17 +154,15 @@ public class User {
      * Set claims for this User.
      * @param claims List of claims to be set.
      */
-    public void setClaims(Map<String, String> claims) {
-
-        // TODO: Implement this.
-        throw new NotImplementedException();
+    public void setClaims(Map<String, String> claims) throws IdentityStoreException {
+        identityStore.setUserAttributeValues(userID, claims);
     }
 
     /**
      * Add a new Group list by <b>replacing</b> the existing group list. (PUT)
-     * @param newGroupList New group list that needs to replace the existing list.
+     * @param newGroupList New group list names that needs to replace the existing list.
      */
-    public void updateGroups(List<Group> newGroupList) {
+    public void updateGroups(List<String> newGroupList) throws IdentityStoreException {
         identityStore.updateGroupsInUser(userID, newGroupList);
     }
 
@@ -173,7 +171,7 @@ public class User {
      * @param assignList List to be added to the new list.
      * @param unAssignList List to be removed from the existing list.
      */
-    public void updateGroups(List<Group> assignList, List<Group> unAssignList) {
+    public void updateGroups(List<String> assignList, List<String> unAssignList) throws IdentityStoreException {
         identityStore.updateGroupsInUser(userID, assignList, unAssignList);
     }
 

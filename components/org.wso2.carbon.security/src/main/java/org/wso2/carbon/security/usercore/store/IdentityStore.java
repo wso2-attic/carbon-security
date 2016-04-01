@@ -28,7 +28,6 @@ import org.wso2.carbon.security.usercore.connector.jdbc.JDBCIdentityStoreConnect
 import org.wso2.carbon.security.usercore.exception.IdentityStoreException;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
@@ -39,25 +38,15 @@ import java.util.Map;
 public class IdentityStore {
 
     private static final Logger log = LoggerFactory.getLogger(IdentityStore.class);
-    private static IdentityStoreConnector userStoreConnector;
+    private static IdentityStoreConnector identityStoreConnector;
 
     public void init() throws IOException, IdentityStoreException {
 
         IdentityStoreConfig identityStoreConfig = StoreConfigBuilder
                 .buildIdentityStoreConfig(UserStoreConstants.USER_STORE_CONFIGURATION_FILE);
 
-        userStoreConnector = new JDBCIdentityStoreConnector();
-        userStoreConnector.init(identityStoreConfig);
-    }
-
-    /**
-     * Checks whether the user exists.
-     * @param userID Id of the user.
-     * @return True if the user is exists.
-     * @throws IdentityStoreException
-     */
-    public boolean isExistingUser(String userID) throws IdentityStoreException {
-        throw new NotImplementedException();
+        identityStoreConnector = new JDBCIdentityStoreConnector();
+        identityStoreConnector.init(identityStoreConfig);
     }
 
     /**
@@ -66,8 +55,8 @@ public class IdentityStore {
      * @param groupId Id of the group.
      * @return True if the user is in the group.
      */
-    public boolean isUserInGroup(String userId, String groupId) {
-        throw new NotImplementedException();
+    public boolean isUserInGroup(String userId, String groupId) throws IdentityStoreException {
+        return identityStoreConnector.isUserInGroup(userId, groupId);
     }
 
     /**
@@ -77,7 +66,7 @@ public class IdentityStore {
      * @throws IdentityStoreException
      */
     public List<Group> getGroupsOfUser(String userID) throws IdentityStoreException {
-        return userStoreConnector.getGroupsOfUser(userID);
+        return identityStoreConnector.getGroupsOfUser(userID);
     }
 
     /**
@@ -88,7 +77,7 @@ public class IdentityStore {
      * @throws IdentityStoreException
      */
     public List<User> getUsersOfGroup(String groupID, String userStoreId) throws IdentityStoreException {
-        return userStoreConnector.getUsersOfGroup(groupID);
+        return identityStoreConnector.getUsersOfGroup(groupID);
     }
 
     /**
@@ -98,7 +87,7 @@ public class IdentityStore {
      * @throws IdentityStoreException
      */
     public User getUser(String username) throws IdentityStoreException {
-        return userStoreConnector.getUser(username);
+        return identityStoreConnector.getUser(username);
     }
 
     /**
@@ -108,7 +97,7 @@ public class IdentityStore {
      * @throws IdentityStoreException
      */
     public User getUserfromId(String userId) throws IdentityStoreException {
-        return userStoreConnector.getUserFromId(userId);
+        return identityStoreConnector.getUserFromId(userId);
     }
 
     /**
@@ -117,7 +106,7 @@ public class IdentityStore {
      * @return Group
      */
     public Group getGroup(String groupName) throws IdentityStoreException {
-        return userStoreConnector.getGroup(groupName);
+        return identityStoreConnector.getGroup(groupName);
     }
 
     /**
@@ -126,7 +115,7 @@ public class IdentityStore {
      * @return Group.
      */
     public Group getGroupFromId(String groupId) throws IdentityStoreException {
-        return userStoreConnector.getGroupById(groupId);
+        return identityStoreConnector.getGroupById(groupId);
     }
 
     /**
@@ -136,7 +125,7 @@ public class IdentityStore {
      * @throws IdentityStoreException
      */
     public Map<String, String> getUserClaimValues(String userID) throws IdentityStoreException {
-        return userStoreConnector.getUserClaimValues(userID);
+        return identityStoreConnector.getUserClaimValues(userID);
     }
 
     /**
@@ -147,7 +136,31 @@ public class IdentityStore {
      * @throws IdentityStoreException
      */
     public Map<String, String> getUserClaimValues(String userID, List<String> claimURIs) throws IdentityStoreException {
-        throw new NotImplementedException();
+        return identityStoreConnector.getUserClaimValues(userID, claimURIs);
+    }
+
+    /**
+     * List all users in User Store according to the filter pattern.
+     * @param filterPattern Filter patter to filter users.
+     * @param offset Offset for list of users.
+     * @param length Length from the offset.
+     * @return List of users match the filter pattern.
+     * @throws IdentityStoreException
+     */
+    public List<User> listUsers(String filterPattern, int offset, int length) throws IdentityStoreException {
+        return identityStoreConnector.listUsers(filterPattern,  offset, length);
+    }
+
+    /**
+     * List groups according to the filter pattern.
+     * @param filterPattern Filter pattern for to list groups.
+     * @param offset Offset for the group list.
+     * @param length Length from the offset.
+     * @return List of groups that matches the filter pattern.
+     * @throws IdentityStoreException
+     */
+    public List<Group> listGroups(String filterPattern, int offset, int length) throws IdentityStoreException {
+        return identityStoreConnector.listGroups(filterPattern, offset, length);
     }
 
     /**
@@ -161,7 +174,7 @@ public class IdentityStore {
      */
     public User addUser(String username, Map<String, String> claims, Object credential, List<String> groupList)
             throws IdentityStoreException {
-        return userStoreConnector.addUser(username, claims, credential, groupList);
+        return identityStoreConnector.addUser(username, claims, credential, groupList);
     }
 
     /**
@@ -172,7 +185,7 @@ public class IdentityStore {
      * @throws IdentityStoreException
      */
     public Group addGroup(String groupName, List<String> users) throws IdentityStoreException {
-        return userStoreConnector.addGroup(groupName, users);
+        return identityStoreConnector.addGroup(groupName, users);
     }
 
     /**
@@ -181,7 +194,36 @@ public class IdentityStore {
      * @throws IdentityStoreException
      */
     public void deleteUser(String userID) throws IdentityStoreException {
-        userStoreConnector.deleteUser(userID);
+        identityStoreConnector.deleteUser(userID);
+    }
+
+    /**
+     * Delete a group.
+     * @param groupId ID of the Group.
+     * @throws IdentityStoreException
+     */
+    public void deleteGroup(String groupId) throws IdentityStoreException {
+        identityStoreConnector.deleteGroup(groupId);
+    }
+
+    /**
+     * Set user attributes.
+     * @param userID User id.
+     * @param attributes Attributes.
+     * @throws IdentityStoreException
+     */
+    public void setUserAttributeValues(String userID, Map<String, String> attributes) throws IdentityStoreException {
+        identityStoreConnector.setUserAttributeValues(userID, attributes);
+    }
+
+    /**
+     * Delete user attribute/s of user.
+     * @param userID Id of the user.
+     * @param attributes Attributes.
+     * @throws IdentityStoreException
+     */
+    public void deleteUserAttributeValues(String userID, List<String> attributes) throws IdentityStoreException {
+        identityStoreConnector.deleteUserAttributeValues(userID, attributes);
     }
 
     /**
@@ -198,8 +240,8 @@ public class IdentityStore {
      * @param userId Id of the user.
      * @param groupsToBeAssign New group list that needs to replace the existing list.
      */
-    public void updateGroupsInUser(String userId, List<Group> groupsToBeAssign) {
-        throw new NotImplementedException();
+    public void updateGroupsInUser(String userId, List<String> groupsToBeAssign) throws IdentityStoreException {
+        identityStoreConnector.assignGroupsToUser(userId, groupsToBeAssign);
     }
 
     /**
@@ -208,8 +250,16 @@ public class IdentityStore {
      * @param groupsToBeAssign List to be added to the new list.
      * @param groupsToBeUnAssign List to be removed from the existing list.
      */
-    public void updateGroupsInUser(String userId, List<Group> groupsToBeAssign, List<Group> groupsToBeUnAssign) {
-        throw new NotImplementedException();
+    public void updateGroupsInUser(String userId, List<String> groupsToBeAssign, List<String> groupsToBeUnAssign)
+            throws IdentityStoreException {
+
+        if (groupsToBeAssign != null) {
+            identityStoreConnector.assignGroupsToUser(userId, groupsToBeAssign);
+        }
+
+        if (groupsToBeUnAssign != null) {
+            identityStoreConnector.removeGroupsFromUser(userId, groupsToBeUnAssign);
+        }
     }
 
     /**
@@ -217,8 +267,8 @@ public class IdentityStore {
      * @param groupId Id of the group.
      * @param usersToBeAssign List of Users needs to be assigned to this Group.
      */
-    public void updateUsersInGroup(String groupId, List<User> usersToBeAssign) {
-        throw new NotImplementedException();
+    public void updateUsersInGroup(String groupId, List<String> usersToBeAssign) throws IdentityStoreException {
+        identityStoreConnector.assignUsersToGroup(groupId, usersToBeAssign);
     }
 
     /**
@@ -227,7 +277,15 @@ public class IdentityStore {
      * @param usersToBeAssign List to be added to the new list.
      * @param usersToBeUnAssign List to be removed from the existing list.
      */
-    public void updateUsersInGroup(String groupId, List<User> usersToBeAssign, List<User> usersToBeUnAssign) {
-        throw new NotImplementedException();
+    public void updateUsersInGroup(String groupId, List<String> usersToBeAssign, List<String> usersToBeUnAssign)
+            throws IdentityStoreException {
+
+        if (usersToBeAssign != null) {
+            identityStoreConnector.assignUsersToGroup(groupId, usersToBeAssign);
+        }
+
+        if (usersToBeUnAssign != null) {
+            identityStoreConnector.removeUsersFromGroup(groupId, usersToBeUnAssign);
+        }
     }
 }

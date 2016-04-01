@@ -322,6 +322,7 @@
                             <driver>org.h2.Driver</driver>
                         </configuration>
                         <executions>
+                            <!--Create the database-->
                             <execution>
                                 <id>create-database</id>
                                 <phase>generate-resources</phase>
@@ -336,6 +337,7 @@
                                     <onError>abort</onError>
                                 </configuration>
                             </execution>
+                            <!--Add mock data to the database.-->
                             <execution>
                                 <id>add-mock-data</id>
                                 <phase>generate-resources</phase>
