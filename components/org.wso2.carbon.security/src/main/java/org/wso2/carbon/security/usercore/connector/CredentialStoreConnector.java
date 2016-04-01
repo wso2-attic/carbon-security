@@ -49,6 +49,14 @@ public interface CredentialStoreConnector {
     String authenticate(Callback[] callbacks) throws CredentialStoreException, AuthenticationFailure;
 
     /**
+     * Add new credential to the User.
+     * @param userID ID of the user.
+     * @param newCredential New credential.
+     * @throws CredentialStoreException
+     */
+    void updateCredential(String userID, Object newCredential) throws CredentialStoreException;
+
+    /**
      *
      * @param callbacks
      * @return

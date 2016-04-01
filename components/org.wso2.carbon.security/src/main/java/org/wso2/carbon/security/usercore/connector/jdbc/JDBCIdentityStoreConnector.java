@@ -247,7 +247,7 @@ public class JDBCIdentityStoreConnector implements IdentityStoreConnector {
     }
 
     @Override
-    public List<Group> listGroups(String attribute, String filter, int maxItemLimit) throws IdentityStoreException {
+    public List<Group> listGroups(String filterPattern, int offset, int length) throws IdentityStoreException {
 
         // TODO What is this method do?
         return null;
@@ -304,6 +304,24 @@ public class JDBCIdentityStoreConnector implements IdentityStoreConnector {
         }
     }
 
+    public boolean isUserInGroup(String userId, String groupId) throws IdentityStoreException {
+
+        try (UnitOfWork unitOfWork = UnitOfWork.beginTransaction(dataSource.getConnection())) {
+
+            NamedPreparedStatement namedPreparedStatement = new NamedPreparedStatement(unitOfWork.getConnection(),
+                    sqlStatements.get(ConnectorConstants.QueryTypes.SQL_QUERY_IS_USER_IN_GROUP));
+            namedPreparedStatement.setString("user_id", userId);
+            namedPreparedStatement.setString("group_id", groupId);
+
+            ResultSet resultSet = namedPreparedStatement.getPreparedStatement().executeQuery();
+
+            return resultSet.next();
+
+        } catch (SQLException e) {
+            throw new IdentityStoreException("Error while checking users in group", e);
+        }
+    }
+
     /*
      * This process is happening in two separate transactions. First transaction is optional and in the first
      * transaction, related group ids will be retrieved from database if there are any in the group list. Second
@@ -336,8 +354,8 @@ public class JDBCIdentityStoreConnector implements IdentityStoreConnector {
             String generatedUserId = UserCoreUtil.getRandomId();
             String salt = UserCoreUtil.getRandomId();
 
-            // This will be hard coded for current implementation. Need to decide the method to add this dynamically.
-            String hashAlgo = "SHA-256";
+            // Get the hashing algorithm for this user store from user store config.
+            String hashAlgo = identityStoreConfig.getStoreProperties().getProperty(ConnectorConstants.HASH_ALGORITHM);
 
             NamedPreparedStatement addUserPreparedStatement = new NamedPreparedStatement(unitOfWork.getConnection(),
                     sqlStatements.get(ConnectorConstants.QueryTypes.SQL_QUERY_ADD_USER));
@@ -510,7 +528,6 @@ public class JDBCIdentityStoreConnector implements IdentityStoreConnector {
         } catch (SQLException e) {
             throw new IdentityStoreException("Error occurred while assigning groups to user.", e);
         }
-
     }
 
     @Override
@@ -565,48 +582,104 @@ public class JDBCIdentityStoreConnector implements IdentityStoreConnector {
     }
 
     @Override
-    public void updateCredential(String userID, Object newCredential) throws IdentityStoreException {
+    public void removeGroupsFromUser(String userId, List<String> groups) throws IdentityStoreException {
 
-        // TODO: Add SQL queries.
-        // TODO: Is this password? Do we need to hash and save?
-        try (UnitOfWork unitOfWork = UnitOfWork.beginTransaction(dataSource.getConnection())) {
+        if (groups == null || groups.isEmpty()) {
+            throw new IdentityStoreException("Groups list cannot be null or empty.");
+        }
 
-            NamedPreparedStatement updateCredentialPreparedStatement = new NamedPreparedStatement(
+        try (UnitOfWork unitOfWork = UnitOfWork.beginTransaction(dataSource.getConnection(), false)) {
+
+            NamedPreparedStatement getGroupUniqueIdPreparedStatement = new NamedPreparedStatement(
                     unitOfWork.getConnection(),
-                    sqlStatements.get(ConnectorConstants.QueryTypes.SQL_QUERY_UPDATE_CREDENTIAL));
-            updateCredentialPreparedStatement.setString("user_id", userID);
-            updateCredentialPreparedStatement.setString("credential", (String) newCredential);
-            int rowCount = updateCredentialPreparedStatement.getPreparedStatement().executeUpdate();
+                    sqlStatements.get(ConnectorConstants.QueryTypes.SQL_QUERY_GET_USER_ID_FROM_UNIQUE_ID));
+            getGroupUniqueIdPreparedStatement.setString("user_id", userId);
 
-            if (rowCount < 1) {
-                throw new IdentityStoreException("No credentials updated.");
+            ResultSet resultSet = getGroupUniqueIdPreparedStatement.getPreparedStatement().executeQuery();
+
+            if (!resultSet.next()) {
+                throw new IdentityStoreException("No user found for given unique id.");
             }
+
+            // Get the user DB id.
+            long id = resultSet.getLong(DatabaseColumnNames.Group.ID);
+
+            List<Long> groupIds = new ArrayList<>();
+
+            NamedPreparedStatement getGroupIdsPreparedStatement = new NamedPreparedStatement(
+                    unitOfWork.getConnection(),
+                    sqlStatements.get(ConnectorConstants.QueryTypes.SQL_QUERY_GET_GROUP_IDS));
+            getGroupIdsPreparedStatement.setString("groupnames", groups);
+            resultSet = getGroupIdsPreparedStatement.getPreparedStatement().executeQuery();
+
+            while (!resultSet.next()) {
+                groupIds.add(resultSet.getLong(DatabaseColumnNames.Group.ID));
+            }
+
+            NamedPreparedStatement removeGroupsPreparedStatement = new NamedPreparedStatement(
+                    dataSource.getConnection(),
+                    sqlStatements.get(ConnectorConstants.QueryTypes.SQL_QUERY_REMOVE_GROUP_FROM_USER));
+
+            for (long groupId : groupIds) {
+                removeGroupsPreparedStatement.setLong("group_id", groupId);
+                removeGroupsPreparedStatement.setLong("user_Id", id);
+                removeGroupsPreparedStatement.getPreparedStatement().addBatch();
+            }
+            removeGroupsPreparedStatement.getPreparedStatement().executeBatch();
+            unitOfWork.endTransaction();
         } catch (SQLException e) {
-            throw new IdentityStoreException("Error occurred while updating credentials.", e);
+            throw new IdentityStoreException("Error occurred while removing groups from user.", e);
         }
     }
 
     @Override
-    public void updateCredential(String userID, Object oldCredential, Object newCredential)
-            throws IdentityStoreException {
+    public void removeUsersFromGroup(String groupId, List<String> users) throws IdentityStoreException {
 
-        // TODO: Add SQL queries.
-        // TODO: Is this password? Do we need to hash and save?
-        try (UnitOfWork unitOfWork = UnitOfWork.beginTransaction(dataSource.getConnection())) {
+        if (users == null || users.isEmpty()) {
+            throw new IdentityStoreException("Users list cannot be null or empty.");
+        }
 
-            NamedPreparedStatement updateCredentialPreparedStatement = new NamedPreparedStatement(
+        try (UnitOfWork unitOfWork = UnitOfWork.beginTransaction(dataSource.getConnection(), false)) {
+
+            NamedPreparedStatement getGroupUniqueIdPreparedStatement = new NamedPreparedStatement(
                     unitOfWork.getConnection(),
-                    sqlStatements.get(ConnectorConstants.QueryTypes.SQL_QUERY_UPDATE_OLD_CREDENTIAL));
-            updateCredentialPreparedStatement.setString("user_id", userID);
-            updateCredentialPreparedStatement.setString("old_credential", (String) oldCredential);
-            updateCredentialPreparedStatement.setString("credential", (String) newCredential);
-            int rowCount = updateCredentialPreparedStatement.getPreparedStatement().executeUpdate();
+                    sqlStatements.get(ConnectorConstants.QueryTypes.SQL_QUERY_GET_GROUP_ID_FROM_UNIQUE_ID));
+            getGroupUniqueIdPreparedStatement.setString("group_id", groupId);
 
-            if (rowCount < 1) {
-                throw new IdentityStoreException("No credentials updated.");
+            ResultSet resultSet = getGroupUniqueIdPreparedStatement.getPreparedStatement().executeQuery();
+
+            if (!resultSet.next()) {
+                throw new IdentityStoreException("No group found for given unique id.");
             }
+
+            // Get the group DB id.
+            long id = resultSet.getLong(DatabaseColumnNames.Group.ID);
+
+            List<Long> userIds = new ArrayList<>();
+
+            NamedPreparedStatement getUserIdsPreparedStatement = new NamedPreparedStatement(
+                    unitOfWork.getConnection(),
+                    sqlStatements.get(ConnectorConstants.QueryTypes.SQL_QUERY_GET_USER_IDS));
+            getUserIdsPreparedStatement.setString("usernames", users);
+            resultSet = getUserIdsPreparedStatement.getPreparedStatement().executeQuery();
+
+            while (!resultSet.next()) {
+                userIds.add(resultSet.getLong(DatabaseColumnNames.User.ID));
+            }
+
+            NamedPreparedStatement removeGroupsPreparedStatement = new NamedPreparedStatement(
+                    dataSource.getConnection(),
+                    sqlStatements.get(ConnectorConstants.QueryTypes.SQL_QUERY_REMOVE_GROUP_FROM_USER));
+
+            for (long userId : userIds) {
+                removeGroupsPreparedStatement.setLong("group_id", id);
+                removeGroupsPreparedStatement.setLong("user_Id", userId);
+                removeGroupsPreparedStatement.getPreparedStatement().addBatch();
+            }
+            removeGroupsPreparedStatement.getPreparedStatement().executeBatch();
+            unitOfWork.endTransaction();
         } catch (SQLException e) {
-            throw new IdentityStoreException("Error occurred while updating credentials.", e);
+            throw new IdentityStoreException("Error occurred while removing users from group.", e);
         }
     }
 
@@ -626,7 +699,7 @@ public class JDBCIdentityStoreConnector implements IdentityStoreConnector {
             }
             namedPreparedStatement.getPreparedStatement().executeBatch();
         } catch (SQLException e) {
-            throw new IdentityStoreException("Error occurred while adding user attributes.");
+            throw new IdentityStoreException("Error occurred while adding user attributes.", e);
         }
     }
 
@@ -645,7 +718,7 @@ public class JDBCIdentityStoreConnector implements IdentityStoreConnector {
             }
             namedPreparedStatement.getPreparedStatement().executeBatch();
         } catch (SQLException e) {
-            throw new IdentityStoreException("Error occurred while deleting user attributes.");
+            throw new IdentityStoreException("Error occurred while deleting user attributes.", e);
         }
     }
 
@@ -682,6 +755,24 @@ public class JDBCIdentityStoreConnector implements IdentityStoreConnector {
             }
         } catch (SQLException e) {
             throw new IdentityStoreException("Error occurred while deleting group.", e);
+        }
+    }
+
+    public void renameUser(String userId, String newName) throws IdentityStoreException {
+
+        try (UnitOfWork unitOfWork = UnitOfWork.beginTransaction(dataSource.getConnection())) {
+
+            NamedPreparedStatement namedPreparedStatement = new NamedPreparedStatement(unitOfWork.getConnection(),
+                    sqlStatements.get(ConnectorConstants.QueryTypes.SQL_QUERY_RENAME_USER));
+            namedPreparedStatement.setString("user_id", userId);
+            namedPreparedStatement.setString("new_name", newName);
+
+            int rows = namedPreparedStatement.getPreparedStatement().executeUpdate();
+            if (rows < 1) {
+                throw new IdentityStoreException("User rename failed.");
+            }
+        } catch (SQLException e) {
+            throw new IdentityStoreException("Error occurred while renaming the user.", e);
         }
     }
 

@@ -126,14 +126,55 @@ public class JDBCCredentialStoreConnector implements CredentialStoreConnector {
     }
 
     @Override
+    public void updateCredential(String username, Object newCredential) throws CredentialStoreException {
+
+        try (UnitOfWork unitOfWork = UnitOfWork.beginTransaction(dataSource.getConnection())) {
+
+            NamedPreparedStatement getPasswordInfoPreparedStatement = new NamedPreparedStatement(
+                    unitOfWork.getConnection(),
+                    sqlQueries.get(ConnectorConstants.QueryTypes.SQL_QUERY_GET_PASSWORD_INFO));
+            getPasswordInfoPreparedStatement.setString("username", username);
+
+            ResultSet resultSet = getPasswordInfoPreparedStatement.getPreparedStatement().executeQuery();
+            if (!resultSet.next()) {
+                throw new CredentialStoreException("Unable to retrieve password information.");
+            }
+
+            String hashAlgo = resultSet.getString(DatabaseColumnNames.PasswordInfo.HASH_ALGO);
+            String salt = resultSet.getString(DatabaseColumnNames.PasswordInfo.PASSWORD_SALT);
+
+            String hashedPassword = UserCoreUtil.hashPassword((char []) newCredential, salt, hashAlgo);
+
+            NamedPreparedStatement updateCredentialPreparedStatement = new NamedPreparedStatement(
+                    unitOfWork.getConnection(),
+                    sqlQueries.get(ConnectorConstants.QueryTypes.SQL_QUERY_UPDATE_CREDENTIAL));
+            updateCredentialPreparedStatement.setString("username", username);
+            updateCredentialPreparedStatement.setString("credential", hashedPassword);
+            int rowCount = updateCredentialPreparedStatement.getPreparedStatement().executeUpdate();
+
+            if (rowCount < 1) {
+                throw new CredentialStoreException("No credentials updated.");
+            }
+        } catch (SQLException | NoSuchAlgorithmException e) {
+            throw new CredentialStoreException("Error occurred while updating credentials.", e);
+        }
+    }
+
+    @Override
     public boolean canHandle(Callback[] callbacks) {
 
+        boolean nameCallbackPresent = false;
+        boolean passwordCallbackPresent = false;
+
         for (Callback callback : callbacks) {
-            if (callback instanceof  NameCallback || callback instanceof PasswordCallback) {
-                return true;
+            if (callback instanceof  NameCallback) {
+                nameCallbackPresent = true;
+            }
+            if (callback instanceof  PasswordCallback) {
+                passwordCallbackPresent = true;
             }
         }
 
-        return false;
+        return nameCallbackPresent && passwordCallbackPresent;
     }
 }

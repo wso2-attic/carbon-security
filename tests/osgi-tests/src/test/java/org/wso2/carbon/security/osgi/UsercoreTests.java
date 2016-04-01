@@ -26,8 +26,13 @@ import org.testng.annotations.Listeners;
 import org.testng.annotations.Test;
 import org.wso2.carbon.osgi.test.util.CarbonSysPropConfiguration;
 import org.wso2.carbon.osgi.test.util.OSGiTestConfigurationUtils;
+import org.wso2.carbon.security.usercore.bean.User;
+import org.wso2.carbon.security.usercore.exception.AuthenticationFailure;
+import org.wso2.carbon.security.usercore.exception.CredentialStoreException;
+import org.wso2.carbon.security.usercore.exception.IdentityStoreException;
 import org.wso2.carbon.security.usercore.service.RealmService;
 import org.wso2.carbon.security.usercore.store.CredentialStore;
+import org.wso2.carbon.security.usercore.store.IdentityStore;
 
 import javax.inject.Inject;
 import javax.security.auth.callback.Callback;
@@ -36,10 +41,13 @@ import javax.security.auth.callback.PasswordCallback;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static org.ops4j.pax.exam.CoreOptions.mavenBundle;
 import static org.testng.Assert.assertNotNull;
+import static org.testng.Assert.assertTrue;
 
 /**
  * Carbon Security OSGI tests.
@@ -47,7 +55,11 @@ import static org.testng.Assert.assertNotNull;
 
 @Listeners(PaxExam.class)
 @ExamReactorStrategy(PerClass.class)
-public class SecurityTest {
+public class UsercoreTests {
+
+    private static final String DEFAULT_USERNAME = "admin";
+    private static final String DEFAULT_USER_ID = "41dadd2aea6e11e59ce95e5517507c66";
+    private static final String DEFAULT_GROUP_ID = "a422aa98ecf411e59ce95e5517507c66";
 
     @Inject
     private BundleContext bundleContext;
@@ -130,8 +142,10 @@ public class SecurityTest {
         return optionList.toArray(new Option[optionList.size()]);
     }
 
+    /* Authentication flow */
+
     @Test
-    public void testAuthentication() throws Exception {
+    public void testAuthentication() throws CredentialStoreException, IdentityStoreException, AuthenticationFailure {
 
         Callback[] callbacks = new Callback[2];
         PasswordCallback passwordCallback = new PasswordCallback("password", false);
@@ -146,5 +160,49 @@ public class SecurityTest {
         CredentialStore authManager = realmService.getCredentialStore();
 
         assertNotNull(authManager.authenticate(callbacks));
+    }
+
+    /* Identity management flow */
+
+    @Test
+    public void testIsUserInGroupValid() throws IdentityStoreException {
+
+        IdentityStore identityStore = realmService.getIdentityStore();
+        assertTrue(identityStore.isUserInGroup(DEFAULT_USER_ID, DEFAULT_GROUP_ID));
+    }
+
+    @Test
+    public void testAddUserValid() throws IdentityStoreException {
+
+        String username = "jayangak";
+        char [] password = {'t', 'e', 's', 't'};
+
+        Map<String, String> userClaims = new HashMap<>();
+        userClaims.put("First Name", "Jayanga");
+        userClaims.put("Last Name", "Kaushalya");
+
+        List<String> groups = new ArrayList<>();
+        groups.add("is");
+
+        IdentityStore identityStore = realmService.getIdentityStore();
+        User user = identityStore.addUser(username, userClaims, password, groups);
+
+        assertNotNull(user);
+    }
+
+    @Test
+    public void testGetUserFromUsername() throws IdentityStoreException {
+
+        IdentityStore identityStore = realmService.getIdentityStore();
+        User user  = identityStore.getUser(DEFAULT_USERNAME);
+        assertNotNull(user);
+    }
+
+    @Test
+    public void testGetUserFromUserId() throws IdentityStoreException {
+
+        IdentityStore identityStore = realmService.getIdentityStore();
+        User user  = identityStore.getUserfromId(DEFAULT_USER_ID);
+        assertNotNull(user);
     }
 }
