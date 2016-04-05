@@ -23,7 +23,7 @@
     <parent>
         <groupId>org.wso2</groupId>
         <artifactId>wso2</artifactId>
-        <version>3</version>
+        <version>2</version>
     </parent>
 
     <groupId>org.wso2.carbon.security</groupId>
@@ -115,7 +115,6 @@
                 <version>${gson.version}</version>
             </dependency>
 
-
             <dependency>
                 <groupId>org.wso2.msf4j</groupId>
                 <artifactId>msf4j-core</artifactId>
@@ -140,11 +139,6 @@
                 <groupId>org.wso2.orbit.org.yaml</groupId>
                 <artifactId>snakeyaml</artifactId>
                 <version>${org.snakeyaml.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.testng</groupId>
-                <artifactId>testng</artifactId>
-                <version>${org.testng.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.wso2.carbon.jndi</groupId>
@@ -315,7 +309,6 @@
         <netty.version>4.0.30.Final</netty.version>
         <nimbus.version>2.26.1.wso2v3</nimbus.version>
         <json.smart.version>2.1.0.wso2v1</json.smart.version>
-        <org.testng.version>6.9.4</org.testng.version>
         <slf4j.api.version>1.7.12</slf4j.api.version>
         <org.snakeyaml.version>1.16.0.wso2v1</org.snakeyaml.version>
         <rs-api.version>2.0</rs-api.version>
