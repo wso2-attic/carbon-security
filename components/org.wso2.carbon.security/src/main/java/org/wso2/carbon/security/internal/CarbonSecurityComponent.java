@@ -82,7 +82,7 @@ public class CarbonSecurityComponent {
         try {
             loginModuleServiceRegistration = bundleContext.registerService(LoginModuleService.class.getName(),
                                                                            new CarbonLoginModuleService(), null);
-        } catch (Exception e) {
+        } catch (Throwable e) {
             log.error("Failed to register LoginModuleService", e);
         }
 
@@ -91,7 +91,7 @@ public class CarbonSecurityComponent {
             CarbonSecurityDataHolder.getInstance().registerCarbonRealmService(carbonRealmService);
             realmServiceRegistration = bundleContext.registerService(RealmService.class.getName(),
                                                                      carbonRealmService, null);
-        } catch (Exception e) {
+        } catch (Throwable e) {
             log.error(e.getMessage(), e);
         }
 
@@ -166,10 +166,10 @@ public class CarbonSecurityComponent {
 
         //Registering login modules provided by the bundle
         long bundleId = bundleContext.getBundle().getBundleId();
-        CarbonSecurityDataHolder.getInstance().registerLoginModule(bundleId, UsernamePasswordLoginModule.class
+        CarbonSecurityDataHolder.getInstance().addLoginModule(bundleId, UsernamePasswordLoginModule.class
                 .getName());
-        CarbonSecurityDataHolder.getInstance().registerLoginModule(bundleId, JWTLoginModule.class.getName());
-        CarbonSecurityDataHolder.getInstance().registerLoginModule(bundleId, SAML2LoginModule.class.getName());
+        CarbonSecurityDataHolder.getInstance().addLoginModule(bundleId, JWTLoginModule.class.getName());
+        CarbonSecurityDataHolder.getInstance().addLoginModule(bundleId, SAML2LoginModule.class.getName());
 
 
         // Registering callback handler factories
