@@ -19,12 +19,12 @@ package org.wso2.carbon.security.boot;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 
+import java.util.HashMap;
+import java.util.Map;
 import javax.security.auth.Subject;
 import javax.security.auth.callback.CallbackHandler;
 import javax.security.auth.login.LoginException;
 import javax.security.auth.spi.LoginModule;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * <p>

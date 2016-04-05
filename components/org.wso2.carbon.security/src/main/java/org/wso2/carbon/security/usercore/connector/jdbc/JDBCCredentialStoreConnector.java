@@ -20,8 +20,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.wso2.carbon.datasource.core.exception.DataSourceException;
 import org.wso2.carbon.security.internal.config.CredentialStoreConfig;
-import org.wso2.carbon.security.usercore.constant.ConnectorConstants;
 import org.wso2.carbon.security.usercore.connector.CredentialStoreConnector;
+import org.wso2.carbon.security.usercore.constant.ConnectorConstants;
 import org.wso2.carbon.security.usercore.constant.DatabaseColumnNames;
 import org.wso2.carbon.security.usercore.constant.UserStoreConstants;
 import org.wso2.carbon.security.usercore.exception.AuthenticationFailure;
@@ -31,15 +31,15 @@ import org.wso2.carbon.security.usercore.util.NamedPreparedStatement;
 import org.wso2.carbon.security.usercore.util.UnitOfWork;
 import org.wso2.carbon.security.usercore.util.UserCoreUtil;
 
-import javax.security.auth.callback.Callback;
-import javax.security.auth.callback.NameCallback;
-import javax.security.auth.callback.PasswordCallback;
-import javax.sql.DataSource;
 import java.security.NoSuchAlgorithmException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Map;
 import java.util.Properties;
+import javax.security.auth.callback.Callback;
+import javax.security.auth.callback.NameCallback;
+import javax.security.auth.callback.PasswordCallback;
+import javax.sql.DataSource;
 
 /**
  * JDBC connector for the credential store.

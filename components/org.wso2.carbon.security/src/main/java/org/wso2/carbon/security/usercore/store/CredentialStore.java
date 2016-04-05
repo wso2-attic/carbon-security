@@ -20,16 +20,15 @@ import org.wso2.carbon.security.internal.config.CredentialStoreConfig;
 import org.wso2.carbon.security.internal.config.StoreConfigBuilder;
 import org.wso2.carbon.security.usercore.bean.User;
 import org.wso2.carbon.security.usercore.connector.CredentialStoreConnector;
-import org.wso2.carbon.security.usercore.constant.UserStoreConstants;
 import org.wso2.carbon.security.usercore.connector.jdbc.JDBCCredentialStoreConnector;
+import org.wso2.carbon.security.usercore.constant.UserStoreConstants;
 import org.wso2.carbon.security.usercore.context.AuthenticationContext;
 import org.wso2.carbon.security.usercore.exception.AuthenticationFailure;
 import org.wso2.carbon.security.usercore.exception.CredentialStoreException;
 import org.wso2.carbon.security.usercore.exception.IdentityStoreException;
 
-import javax.security.auth.callback.Callback;
-import java.io.FileNotFoundException;
 import java.io.IOException;
+import javax.security.auth.callback.Callback;
 
 /**
  * CredentialStore

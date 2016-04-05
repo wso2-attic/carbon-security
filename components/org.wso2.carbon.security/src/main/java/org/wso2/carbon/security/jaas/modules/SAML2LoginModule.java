@@ -22,28 +22,30 @@ package org.wso2.carbon.security.jaas.modules;
 //import org.opensaml.xml.security.x509.BasicX509Credential;
 //import org.opensaml.xml.signature.SignatureValidator;
 //import org.opensaml.xml.validation.ValidationException;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-//import org.wso2.carbon.security.jaas.CarbonCallback;
 import org.wso2.carbon.security.jaas.CarbonPrincipal;
-//import org.wso2.carbon.security.jaas.exception.CarbonSecurityException;
-//import org.wso2.carbon.security.jaas.util.CarbonSecurityConstants;
 
+import java.security.KeyStore;
+import java.util.HashMap;
+import java.util.Map;
 import javax.security.auth.Subject;
-//import javax.security.auth.callback.Callback;
 import javax.security.auth.callback.CallbackHandler;
-//import javax.security.auth.callback.UnsupportedCallbackException;
 import javax.security.auth.login.LoginException;
 import javax.security.auth.spi.LoginModule;
+
+//import org.wso2.carbon.security.jaas.CarbonCallback;
+//import org.wso2.carbon.security.jaas.exception.CarbonSecurityException;
+//import org.wso2.carbon.security.jaas.util.CarbonSecurityConstants;
+//import javax.security.auth.callback.Callback;
+//import javax.security.auth.callback.UnsupportedCallbackException;
 //import java.io.FileInputStream;
 //import java.io.IOException;
-import java.security.KeyStore;
 //import java.security.KeyStoreException;
 //import java.security.NoSuchAlgorithmException;
 //import java.security.cert.CertificateException;
 //import java.security.cert.X509Certificate;
-import java.util.HashMap;
-import java.util.Map;
 
 
 /**

@@ -45,8 +45,7 @@ public class NamedPreparedStatement {
             int end = sqlQuery.substring(pos).indexOf(";");
             if (end == -1) {
                 end = sqlQuery.length();
-            }
-            else {
+            } else {
                 end += pos;
             }
 

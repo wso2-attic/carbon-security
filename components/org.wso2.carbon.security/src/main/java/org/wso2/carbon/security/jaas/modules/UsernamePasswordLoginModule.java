@@ -20,7 +20,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.wso2.carbon.security.internal.CarbonSecurityDataHolder;
 import org.wso2.carbon.security.jaas.CarbonPrincipal;
-import org.wso2.carbon.security.jaas.util.InMemoryUserStoreManager;
 import org.wso2.carbon.security.usercore.context.AuthenticationContext;
 import org.wso2.carbon.security.usercore.exception.AuthenticationFailure;
 import org.wso2.carbon.security.usercore.exception.CredentialStoreException;

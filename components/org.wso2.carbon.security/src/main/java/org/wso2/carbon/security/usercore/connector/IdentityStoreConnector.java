@@ -16,14 +16,13 @@
 
 package org.wso2.carbon.security.usercore.connector;
 
+import org.wso2.carbon.security.internal.config.IdentityStoreConfig;
 import org.wso2.carbon.security.usercore.bean.Group;
 import org.wso2.carbon.security.usercore.bean.User;
-import org.wso2.carbon.security.internal.config.IdentityStoreConfig;
 import org.wso2.carbon.security.usercore.exception.IdentityStoreException;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * User store.

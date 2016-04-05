@@ -89,7 +89,8 @@ public class CarbonSecurityComponent {
         try {
             CarbonRealmServiceImpl carbonRealmService = new CarbonRealmServiceImpl();
             CarbonSecurityDataHolder.getInstance().registerCarbonRealmService(carbonRealmService);
-            realmServiceRegistration = bundleContext.registerService(RealmService.class.getName(), carbonRealmService, null);
+            realmServiceRegistration = bundleContext.registerService(RealmService.class.getName(),
+                                                                     carbonRealmService, null);
         } catch (Exception e) {
             log.error(e.getMessage(), e);
         }

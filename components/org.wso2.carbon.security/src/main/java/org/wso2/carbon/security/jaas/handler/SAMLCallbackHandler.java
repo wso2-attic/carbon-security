@@ -35,7 +35,7 @@ import org.wso2.carbon.security.jaas.HTTPCallbackHandler;
 
 //import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
+//import java.io.UnsupportedEncodingException;
 //import java.util.List;
 //import java.util.Map;
 import javax.security.auth.callback.Callback;

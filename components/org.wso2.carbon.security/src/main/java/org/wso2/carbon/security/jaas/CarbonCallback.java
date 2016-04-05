@@ -21,11 +21,12 @@ import javax.security.auth.callback.Callback;
 
 /**
  * <p>
- * The {@code Callback} isn an implementation of the {@code Callback} class.
+ * The {@code Callback} is an implementation of the {@code Callback} class.
  * Underlying security services instantiate and pass a
  * {@code NameCallback} to the {@code handle}
  * method of a {@code CallbackHandler} to retrieve HttpRequest information.
  * </p>
+ * @param <T> This describes the type handled by the callback
  */
 public class CarbonCallback<T> implements Callback, Serializable {
 

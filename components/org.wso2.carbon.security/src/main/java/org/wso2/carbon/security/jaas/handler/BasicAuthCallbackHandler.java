@@ -21,14 +21,14 @@ import io.netty.handler.codec.http.HttpRequest;
 import org.wso2.carbon.security.jaas.HTTPCallbackHandler;
 import org.wso2.carbon.security.jaas.util.CarbonSecurityConstants;
 
-import javax.security.auth.callback.Callback;
-import javax.security.auth.callback.NameCallback;
-import javax.security.auth.callback.PasswordCallback;
-import javax.security.auth.callback.UnsupportedCallbackException;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
+import javax.security.auth.callback.Callback;
+import javax.security.auth.callback.NameCallback;
+import javax.security.auth.callback.PasswordCallback;
+import javax.security.auth.callback.UnsupportedCallbackException;
 
 /**
  * <p>

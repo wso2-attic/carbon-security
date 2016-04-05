@@ -20,14 +20,14 @@ import org.wso2.carbon.security.boot.ProxyLoginModule;
 import org.wso2.carbon.security.internal.CarbonSecurityDataHolder;
 import sun.security.provider.ConfigFile.Spi;
 
-import javax.security.auth.login.AppConfigurationEntry;
-import javax.security.auth.login.Configuration;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import javax.security.auth.login.AppConfigurationEntry;
+import javax.security.auth.login.Configuration;
 
 /**
  * This contains the carbon implementation of the Configuration class

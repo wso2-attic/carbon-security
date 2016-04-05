@@ -20,7 +20,6 @@ import org.wso2.carbon.security.usercore.exception.AuthorizationFailure;
 import org.wso2.carbon.security.usercore.exception.IdentityStoreException;
 import org.wso2.carbon.security.usercore.store.AuthorizationStore;
 import org.wso2.carbon.security.usercore.store.IdentityStore;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.util.List;
 import java.util.Map;
