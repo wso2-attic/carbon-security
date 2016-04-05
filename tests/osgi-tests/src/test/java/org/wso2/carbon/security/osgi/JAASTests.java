@@ -30,7 +30,7 @@ import org.testng.Assert;
 import org.testng.annotations.Listeners;
 import org.testng.annotations.Test;
 import org.wso2.carbon.security.jaas.CarbonCallbackHandler;
-import org.wso2.carbon.security.osgi.util.SecurityOSGITestUtils;
+import org.wso2.carbon.security.osgi.util.SecurityOSGiTestUtilsTemp;
 
 import java.nio.file.Paths;
 import java.util.Base64;
@@ -55,9 +55,9 @@ public class JAASTests {
     @Configuration
     public Option[] createConfiguration() {
 
-        List<Option> optionList = SecurityOSGITestUtils.getDefaultSecurityPAXOptions();
+        List<Option> optionList = SecurityOSGiTestUtilsTemp.getDefaultSecurityPAXOptions();
         optionList.add(systemProperty("java.security.auth.login.config").value(Paths.get(
-                SecurityOSGITestUtils.getCarbonHome(), "conf", "security", "carbon-jaas.config").toString()));
+                SecurityOSGiTestUtilsTemp.getCarbonHome(), "conf", "security", "carbon-jaas.config").toString()));
         return optionList.toArray(new Option[optionList.size()]);
     }
 

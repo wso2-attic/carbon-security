@@ -30,7 +30,7 @@ import static org.ops4j.pax.exam.CoreOptions.mavenBundle;
 /**
  * This class contains the utility methods for carbon-security OSGI tests.
  */
-public class SecurityOSGITestUtils {
+public class SecurityOSGiTestUtilsTemp {
 
     /**
      * Returns the default list of PAX options needed for carbon-security OSGI test.
