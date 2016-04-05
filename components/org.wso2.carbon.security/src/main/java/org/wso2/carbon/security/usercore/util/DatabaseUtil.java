@@ -26,7 +26,7 @@ import javax.sql.DataSource;
  */
 public class DatabaseUtil {
 
-    private static DataSourceService dataSourceService;
+    private DataSourceService dataSourceService;
     private static final DatabaseUtil instance = new DatabaseUtil();
 
     private DatabaseUtil() {
@@ -38,7 +38,7 @@ public class DatabaseUtil {
     }
 
     public void setDataSourceService(DataSourceService dataSourceService) {
-        DatabaseUtil.dataSourceService = dataSourceService;
+        this.dataSourceService = dataSourceService;
     }
 
     public DataSource getDataSource(String dataSourceName) throws DataSourceException {

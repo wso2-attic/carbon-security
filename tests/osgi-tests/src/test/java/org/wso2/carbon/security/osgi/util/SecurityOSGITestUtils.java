@@ -42,67 +42,68 @@ public class SecurityOSGITestUtils {
         List<Option> defaultOptionList = new ArrayList<>();
 
         defaultOptionList.add(mavenBundle()
-                               .groupId("io.netty")
-                               .artifactId("netty-codec")
-                               .versionAsInProject());
+                                      .groupId("io.netty")
+                                      .artifactId("netty-codec")
+                                      .versionAsInProject());
         defaultOptionList.add(mavenBundle()
-                               .groupId("io.netty")
-                               .artifactId("netty-buffer")
-                               .versionAsInProject());
+                                      .groupId("io.netty")
+                                      .artifactId("netty-buffer")
+                                      .versionAsInProject());
         defaultOptionList.add(mavenBundle()
-                               .groupId("io.netty")
-                               .artifactId("netty-codec-http")
-                               .versionAsInProject());
+                                      .groupId("io.netty")
+                                      .artifactId("netty-codec-http")
+                                      .versionAsInProject());
         defaultOptionList.add(mavenBundle()
-                               .groupId("io.netty")
-                               .artifactId("netty-common")
-                               .versionAsInProject());
+                                      .groupId("io.netty")
+                                      .artifactId("netty-common")
+                                      .versionAsInProject());
         defaultOptionList.add(mavenBundle()
-                               .groupId("io.netty")
-                               .artifactId("netty-handler")
-                               .versionAsInProject());
+                                      .groupId("io.netty")
+                                      .artifactId("netty-handler")
+                                      .versionAsInProject());
         defaultOptionList.add(mavenBundle()
-                               .groupId("io.netty")
-                               .artifactId("netty-transport")
-                               .versionAsInProject());
+                                      .groupId("io.netty")
+                                      .artifactId("netty-transport")
+                                      .versionAsInProject());
         defaultOptionList.add(mavenBundle()
-                               .groupId("org.wso2.orbit.com.nimbusds")
-                               .artifactId("nimbus-jose-jwt")
-                               .versionAsInProject());
+                                      .groupId("org.wso2.orbit.com.nimbusds")
+                                      .artifactId("nimbus-jose-jwt")
+                                      .versionAsInProject());
         defaultOptionList.add(mavenBundle()
-                               .groupId("net.minidev.wso2")
-                               .artifactId("json-smart")
-                               .versionAsInProject());
+                                      .groupId("net.minidev.wso2")
+                                      .artifactId("json-smart")
+                                      .versionAsInProject());
         defaultOptionList.add(mavenBundle()
-                               .groupId("org.wso2.carbon.datasources")
-                               .artifactId("org.wso2.carbon.datasource.core")
-                               .versionAsInProject());
+                                      .groupId("org.wso2.carbon.datasources")
+                                      .artifactId("org.wso2.carbon.datasource.core")
+                                      .versionAsInProject());
         defaultOptionList.add(mavenBundle()
-                               .groupId("org.wso2.carbon.jndi")
-                               .artifactId("org.wso2.carbon.jndi")
-                               .versionAsInProject());
+                                      .groupId("org.wso2.carbon.jndi")
+                                      .artifactId("org.wso2.carbon.jndi")
+                                      .versionAsInProject());
         defaultOptionList.add(mavenBundle()
-                               .groupId("org.wso2.carbon.security")
-                               .artifactId("org.wso2.carbon.security")
-                               .versionAsInProject());
+                                      .groupId("org.wso2.carbon.security")
+                                      .artifactId("org.wso2.carbon.security.boot")
+                                      .versionAsInProject().noStart());
         defaultOptionList.add(mavenBundle()
-                               .groupId("commons-io.wso2")
-                               .artifactId("commons-io")
-                               .version("2.4.0.wso2v1"));
+                                      .groupId("org.wso2.carbon.security")
+                                      .artifactId("org.wso2.carbon.security")
+                                      .versionAsInProject());
         defaultOptionList.add(mavenBundle()
-                               .groupId("com.zaxxer")
-                               .artifactId("HikariCP")
-                               .version("2.4.1"));
+                                      .groupId("commons-io.wso2")
+                                      .artifactId("commons-io")
+                                      .version("2.4.0.wso2v1"));
         defaultOptionList.add(mavenBundle()
-                               .groupId("com.h2database")
-                               .artifactId("h2")
-                               .version("1.4.191"));
-
-        String currentDir = Paths.get("").toAbsolutePath().toString();
-        Path carbonHome = Paths.get(currentDir, "target", "carbon-home");
+                                      .groupId("com.zaxxer")
+                                      .artifactId("HikariCP")
+                                      .version("2.4.1"));
+        defaultOptionList.add(mavenBundle()
+                                      .groupId("com.h2database")
+                                      .artifactId("h2")
+                                      .version("1.4.191"));
 
         CarbonSysPropConfiguration sysPropConfiguration = new CarbonSysPropConfiguration();
-        sysPropConfiguration.setCarbonHome(carbonHome.toString());
+        sysPropConfiguration.setCarbonHome(getCarbonHome());
         sysPropConfiguration.setServerKey("carbon-security");
         sysPropConfiguration.setServerName("WSO2 Carbon Security Server");
         sysPropConfiguration.setServerVersion("1.0.0");
@@ -110,6 +111,12 @@ public class SecurityOSGITestUtils {
         defaultOptionList = OSGiTestConfigurationUtils.getConfiguration(defaultOptionList, sysPropConfiguration);
 
         return defaultOptionList;
+    }
+
+    public static String getCarbonHome() {
+        String currentDir = Paths.get("").toAbsolutePath().toString();
+        Path carbonHome = Paths.get(currentDir, "target", "carbon-home");
+        return carbonHome.toString();
     }
 }
 

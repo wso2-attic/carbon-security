@@ -38,7 +38,7 @@ import java.util.Map;
 public class IdentityStore {
 
     private static final Logger log = LoggerFactory.getLogger(IdentityStore.class);
-    private static IdentityStoreConnector identityStoreConnector;
+    private IdentityStoreConnector identityStoreConnector;
 
     public void init() throws IOException, IdentityStoreException {
 
