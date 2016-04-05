@@ -87,12 +87,12 @@ public class CarbonSecurityDataHolder {
         return this.carbonRealmService;
     }
 
-    public void registerLoginModule(long bundleId, String className) {
+    public void addLoginModule(long bundleId, String className) {
 
         loginModuleMap.put(className, bundleId);
     }
 
-    public void unRegisterLoginModule(long bundleId, String className) {
+    public void removeLoginModule(long bundleId, String className) {
 
         loginModuleMap.remove(className, bundleId);
     }

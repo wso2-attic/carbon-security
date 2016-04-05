@@ -53,13 +53,13 @@ public class SAMLCallbackHandler implements HTTPCallbackHandler {
 
 //    private static boolean openSAMLBootstrapped = false;
 
-    private HttpRequest httpRequest;
+//    private HttpRequest httpRequest;
 
 //    private Assertion samlAssertion;
 
     @Override
     public void setHTTPRequest(HttpRequest httpRequest) {
-        this.httpRequest = httpRequest;
+//        this.httpRequest = httpRequest;
     }
 
     @Override
