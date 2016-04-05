@@ -19,9 +19,9 @@ package org.wso2.carbon.security.jaas.handler;
 import org.wso2.carbon.security.jaas.HTTPCallbackHandlerFactory;
 import org.wso2.carbon.security.jaas.util.CarbonSecurityConstants;
 
+import java.util.Hashtable;
 import javax.naming.Context;
 import javax.naming.Name;
-import java.util.Hashtable;
 
 /**
  *

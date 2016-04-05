@@ -25,10 +25,10 @@ import org.wso2.carbon.security.jaas.CarbonCallback;
 import org.wso2.carbon.security.jaas.HTTPCallbackHandler;
 import org.wso2.carbon.security.jaas.util.CarbonSecurityConstants;
 
-import javax.security.auth.callback.Callback;
-import javax.security.auth.callback.UnsupportedCallbackException;
 import java.io.IOException;
 import java.text.ParseException;
+import javax.security.auth.callback.Callback;
+import javax.security.auth.callback.UnsupportedCallbackException;
 
 /**
  * <p>
@@ -81,7 +81,7 @@ public class JWTCallbackHandler implements HTTPCallbackHandler {
     @Override
     public void handle(Callback[] callbacks) throws IOException, UnsupportedCallbackException {
 
-        if(callbacks != null && callbacks.length > 0) {
+        if (callbacks != null && callbacks.length > 0) {
             if (callbacks[0] instanceof CarbonCallback) {
                 ((CarbonCallback) callbacks[0]).setContent(singedJWT);
             }

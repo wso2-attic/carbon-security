@@ -20,8 +20,6 @@ import org.wso2.carbon.datasource.core.api.DataSourceService;
 import org.wso2.carbon.datasource.core.exception.DataSourceException;
 
 import javax.sql.DataSource;
-import javax.naming.Context;
-import javax.naming.NamingException;
 
 /**
  * Database related utility methods.

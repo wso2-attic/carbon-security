@@ -22,13 +22,13 @@ import org.slf4j.LoggerFactory;
 import org.wso2.carbon.security.internal.CarbonSecurityDataHolder;
 import org.wso2.carbon.security.jaas.util.CarbonSecurityConstants;
 
+import java.io.IOException;
+import java.util.List;
 import javax.security.auth.callback.Callback;
 import javax.security.auth.callback.CallbackHandler;
 import javax.security.auth.callback.NameCallback;
 import javax.security.auth.callback.PasswordCallback;
 import javax.security.auth.callback.UnsupportedCallbackException;
-import java.io.IOException;
-import java.util.List;
 
 /**
  * The class {@code CarbonCallbackHandler} is an implementation {@code CarbonCallbackHandler}.
@@ -56,8 +56,9 @@ public class CarbonCallbackHandler implements CallbackHandler {
                 // Specially handle NameCallback and PasswordCallback, since they are available OOTB
                 if (callback instanceof NameCallback || callback instanceof PasswordCallback) {
                     if (!handled) {
-                        List<HTTPCallbackHandlerFactory> callbackHandlerFactories = CarbonSecurityDataHolder.getInstance()
-                                .getCallbackHandlerFactory(CarbonSecurityConstants.USERNAME_PASSWORD_LOGIN_MODULE);
+                        List<HTTPCallbackHandlerFactory> callbackHandlerFactories = CarbonSecurityDataHolder
+                                .getInstance().getCallbackHandlerFactory(CarbonSecurityConstants
+                                                                                 .USERNAME_PASSWORD_LOGIN_MODULE);
                         if (callbackHandlerFactories != null && !callbackHandlerFactories.isEmpty()) {
                             for (HTTPCallbackHandlerFactory callbackHandlerFactory : callbackHandlerFactories) {
                                 HTTPCallbackHandler handler;

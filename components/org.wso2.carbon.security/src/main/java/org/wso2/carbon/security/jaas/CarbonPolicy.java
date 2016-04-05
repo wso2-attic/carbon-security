@@ -18,12 +18,12 @@ package org.wso2.carbon.security.jaas;
 
 import sun.security.provider.PolicyFile;
 
-import javax.security.auth.Subject;
 import java.net.URL;
 import java.security.AccessController;
 import java.security.Permission;
 import java.security.Principal;
 import java.security.ProtectionDomain;
+import javax.security.auth.Subject;
 
 /**
  * <p>
@@ -34,13 +34,11 @@ import java.security.ProtectionDomain;
  */
 public class CarbonPolicy extends PolicyFile {
 
-    public CarbonPolicy()
-    {
+    public CarbonPolicy() {
         super();
     }
 
-    public CarbonPolicy(URL paramURL)
-    {
+    public CarbonPolicy(URL paramURL) {
         super(paramURL);
     }
 

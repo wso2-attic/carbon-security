@@ -24,6 +24,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Carbon security data holder
+ */
 public class CarbonSecurityDataHolder {
 
     private static CarbonSecurityDataHolder instance = new CarbonSecurityDataHolder();
@@ -49,12 +52,14 @@ public class CarbonSecurityDataHolder {
         if (callbackHandlerFactoryMap.get(callbackHandlerFactory.getSupportedLoginModuleType()) == null) {
             synchronized (callbackHandlerFactoryMap) {
                 if (callbackHandlerFactoryMap.get(callbackHandlerFactory.getSupportedLoginModuleType()) == null) {
-                    callbackHandlerFactoryMap.put(callbackHandlerFactory.getSupportedLoginModuleType(), Arrays.asList(callbackHandlerFactory));
+                    callbackHandlerFactoryMap.put(callbackHandlerFactory.getSupportedLoginModuleType(),
+                                                  Arrays.asList(callbackHandlerFactory));
                 }
             }
         } else {
             synchronized (callbackHandlerFactoryMap) {
-                callbackHandlerFactoryMap.get(callbackHandlerFactory.getSupportedLoginModuleType()).add(callbackHandlerFactory);
+                callbackHandlerFactoryMap.get(callbackHandlerFactory.getSupportedLoginModuleType()).add
+                        (callbackHandlerFactory);
             }
         }
     }
@@ -62,7 +67,8 @@ public class CarbonSecurityDataHolder {
     public void unregisterCallbackHandlerFactory(HTTPCallbackHandlerFactory callbackHandlerFactory) {
 
         synchronized (callbackHandlerFactoryMap) {
-            callbackHandlerFactoryMap.get(callbackHandlerFactory.getSupportedLoginModuleType()).remove(callbackHandlerFactory);
+            callbackHandlerFactoryMap.get(callbackHandlerFactory.getSupportedLoginModuleType()).remove
+                    (callbackHandlerFactory);
         }
     }
 

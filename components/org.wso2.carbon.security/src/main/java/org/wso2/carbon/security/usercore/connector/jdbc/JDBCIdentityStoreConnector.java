@@ -17,11 +17,11 @@
 package org.wso2.carbon.security.usercore.connector.jdbc;
 
 import org.wso2.carbon.datasource.core.exception.DataSourceException;
+import org.wso2.carbon.security.internal.config.IdentityStoreConfig;
 import org.wso2.carbon.security.usercore.bean.Group;
 import org.wso2.carbon.security.usercore.bean.User;
-import org.wso2.carbon.security.internal.config.IdentityStoreConfig;
-import org.wso2.carbon.security.usercore.constant.ConnectorConstants;
 import org.wso2.carbon.security.usercore.connector.IdentityStoreConnector;
+import org.wso2.carbon.security.usercore.constant.ConnectorConstants;
 import org.wso2.carbon.security.usercore.constant.DatabaseColumnNames;
 import org.wso2.carbon.security.usercore.exception.IdentityStoreException;
 import org.wso2.carbon.security.usercore.util.DatabaseUtil;
@@ -29,7 +29,6 @@ import org.wso2.carbon.security.usercore.util.NamedPreparedStatement;
 import org.wso2.carbon.security.usercore.util.UnitOfWork;
 import org.wso2.carbon.security.usercore.util.UserCoreUtil;
 
-import javax.sql.DataSource;
 import java.security.NoSuchAlgorithmException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -38,6 +37,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import javax.sql.DataSource;
 
 /**
  * Identity store connector for JDBC based stores.
@@ -692,7 +692,7 @@ public class JDBCIdentityStoreConnector implements IdentityStoreConnector {
                     sqlStatements.get(ConnectorConstants.QueryTypes.SQL_QUERY_SET_USER_ATTRIBUTE));
             namedPreparedStatement.setString("user_id", userID);
 
-            for(Map.Entry<String, String> entry : attributes.entrySet()) {
+            for (Map.Entry<String, String> entry : attributes.entrySet()) {
                 namedPreparedStatement.setString("attr_name", entry.getKey());
                 namedPreparedStatement.setString("attr_val", entry.getValue());
                 namedPreparedStatement.getPreparedStatement().addBatch();
@@ -712,7 +712,7 @@ public class JDBCIdentityStoreConnector implements IdentityStoreConnector {
                     sqlStatements.get(ConnectorConstants.QueryTypes.SQL_QUERY_DELETE_USER_ATTRIBUTE));
             namedPreparedStatement.setString("user_id", userID);
 
-            for(String attr : attributes) {
+            for (String attr : attributes) {
                 namedPreparedStatement.setString("attr_name", attr);
                 namedPreparedStatement.getPreparedStatement().addBatch();
             }
