@@ -116,8 +116,8 @@ public class UsercoreTests {
                 .artifactId("org.wso2.carbon.security")
                 .versionAsInProject());
         optionList.add(mavenBundle()
-                .groupId("org.wso2.carbon.security")
-                .artifactId("connector.jdbc")
+                .groupId("org.wso2.carbon.security.connector")
+                .artifactId("org.wso2.carbon.security.connector.jdbc")
                 .version("1.0.0-SNAPSHOT"));
         optionList.add(mavenBundle()
                 .groupId("commons-io.wso2")
