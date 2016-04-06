@@ -52,7 +52,6 @@ import org.wso2.carbon.security.usercore.service.RealmService;
 import java.security.Policy;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Dictionary;
 import java.util.List;
 import java.util.Map;
 
@@ -143,7 +142,7 @@ public class CarbonSecurityComponent {
             unbind = "unregisterAuthorizationStoreConnector"
     )
     protected void registerAuthorizationConnector(AuthorizationStoreConnector authorizationStoreConnector,
-                                                  Dictionary<String, String> properties) {
+                                                  Map<String, String> properties) {
 
         String connectorId = properties.get("connector-id");
         CarbonSecurityDataHolder.getInstance().registerAuthorizationStoreConnector(connectorId,
@@ -161,7 +160,7 @@ public class CarbonSecurityComponent {
             unbind = "unregisterIdentityStoreConnector"
     )
     protected void registerIdentityConnector(IdentityStoreConnector identityStoreConnector,
-                                                  Dictionary<String, String> properties) {
+                                                  Map<String, String> properties) {
 
         String connectorId = properties.get("connector-id");
         CarbonSecurityDataHolder.getInstance().registerIdentityStoreConnector(connectorId,
@@ -179,7 +178,7 @@ public class CarbonSecurityComponent {
             unbind = "unregisterCredentialStoreConnector"
     )
     protected void registerCredentialConnector(CredentialStoreConnector credentialStoreConnector,
-                                                  Dictionary<String, String> properties) {
+                                               Map<String, String> properties) {
 
         String connectorId = properties.get("connector-id");
         CarbonSecurityDataHolder.getInstance().registerCredentialStoreConnector(connectorId,

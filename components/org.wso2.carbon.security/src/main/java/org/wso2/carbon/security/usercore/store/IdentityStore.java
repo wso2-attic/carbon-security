@@ -175,7 +175,7 @@ public class IdentityStore {
      */
     public User addUser(String username, Map<String, String> claims, Object credential, List<String> groupList)
             throws IdentityStoreException {
-        throw new UnsupportedOperationException("This method is not supported in the this version of user core");
+        throw new UnsupportedOperationException("This method is not supported in this version of user core");
     }
 
     /**
