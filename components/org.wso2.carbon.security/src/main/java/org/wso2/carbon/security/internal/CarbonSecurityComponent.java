@@ -135,7 +135,7 @@ public class CarbonSecurityComponent {
     }
 
     @Reference(
-            name = "org.wso2.carbon.security.connector.AuthorizationStoreConnector",
+            name = "org.wso2.carbon.security.usercore.connector.AuthorizationStoreConnector",
             service = AuthorizationStoreConnector.class,
             cardinality = ReferenceCardinality.AT_LEAST_ONE,
             policy = ReferencePolicy.DYNAMIC,
@@ -153,14 +153,14 @@ public class CarbonSecurityComponent {
     }
 
     @Reference(
-            name = "org.wso2.carbon.security.connector.IdentityStoreConnector",
-            service = AuthorizationStoreConnector.class,
+            name = "org.wso2.carbon.security.usercore.connector.IdentityStoreConnector",
+            service = IdentityStoreConnector.class,
             cardinality = ReferenceCardinality.AT_LEAST_ONE,
             policy = ReferencePolicy.DYNAMIC,
             unbind = "unregisterIdentityStoreConnector"
     )
     protected void registerIdentityConnector(IdentityStoreConnector identityStoreConnector,
-                                                  Map<String, String> properties) {
+                                             Map<String, String> properties) {
 
         String connectorId = properties.get("connector-id");
         CarbonSecurityDataHolder.getInstance().registerIdentityStoreConnector(connectorId,
@@ -171,8 +171,8 @@ public class CarbonSecurityComponent {
     }
 
     @Reference(
-            name = "org.wso2.carbon.security.connector.CredentialStoreConnector",
-            service = AuthorizationStoreConnector.class,
+            name = "org.wso2.carbon.security.usercore.connector.CredentialStoreConnector",
+            service = CredentialStoreConnector.class,
             cardinality = ReferenceCardinality.AT_LEAST_ONE,
             policy = ReferencePolicy.DYNAMIC,
             unbind = "unregisterCredentialStoreConnector"
