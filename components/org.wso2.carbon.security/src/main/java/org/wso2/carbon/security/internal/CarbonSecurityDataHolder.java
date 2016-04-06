@@ -18,6 +18,9 @@ package org.wso2.carbon.security.internal;
 
 import org.wso2.carbon.security.jaas.HTTPCallbackHandlerFactory;
 import org.wso2.carbon.security.usercore.common.CarbonRealmServiceImpl;
+import org.wso2.carbon.security.usercore.connector.AuthorizationStoreConnector;
+import org.wso2.carbon.security.usercore.connector.CredentialStoreConnector;
+import org.wso2.carbon.security.usercore.connector.IdentityStoreConnector;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -30,12 +33,12 @@ import java.util.Map;
 public class CarbonSecurityDataHolder {
 
     private static CarbonSecurityDataHolder instance = new CarbonSecurityDataHolder();
-
     private Map<String, List<HTTPCallbackHandlerFactory>> callbackHandlerFactoryMap;
-
     private Map<String, Long> loginModuleMap;
-
     private CarbonRealmServiceImpl carbonRealmService;
+    private Map<String, AuthorizationStoreConnector> authorizationStoreConnectorMap = new HashMap<>();
+    private Map<String, CredentialStoreConnector> credentialStoreConnectorMap = new HashMap<>();
+    private Map<String, IdentityStoreConnector> identityStoreConnectorMap = new HashMap<>();
 
     private CarbonSecurityDataHolder() {
 
@@ -102,4 +105,28 @@ public class CarbonSecurityDataHolder {
         return loginModuleMap.get(className);
     }
 
+    public void registerAuthorizationStoreConnector(String key, AuthorizationStoreConnector authorizationStoreConnector)
+    {
+        authorizationStoreConnectorMap.put(key, authorizationStoreConnector);
+    }
+
+    public void registerCredentialStoreConnector(String key, CredentialStoreConnector credentialStoreConnector) {
+        credentialStoreConnectorMap.put(key, credentialStoreConnector);
+    }
+
+    public void registerIdentityStoreConnector(String key, IdentityStoreConnector identityStoreConnector) {
+        identityStoreConnectorMap.put(key, identityStoreConnector);
+    }
+
+    public Map<String, AuthorizationStoreConnector> getAuthorizationStoreConnectorMap() {
+        return authorizationStoreConnectorMap;
+    }
+
+    public Map<String, CredentialStoreConnector> getCredentialStoreConnectorMap() {
+        return credentialStoreConnectorMap;
+    }
+
+    public Map<String, IdentityStoreConnector> getIdentityStoreConnectorMap() {
+        return identityStoreConnectorMap;
+    }
 }
