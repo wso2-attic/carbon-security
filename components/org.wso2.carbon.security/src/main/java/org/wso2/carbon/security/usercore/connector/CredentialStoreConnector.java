@@ -16,7 +16,7 @@
 
 package org.wso2.carbon.security.usercore.connector;
 
-import org.wso2.carbon.security.internal.config.CredentialStoreConfig;
+import org.wso2.carbon.security.usercore.config.CredentialStoreConfig;
 import org.wso2.carbon.security.usercore.exception.AuthenticationFailure;
 import org.wso2.carbon.security.usercore.exception.CredentialStoreException;
 

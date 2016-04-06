@@ -14,22 +14,22 @@
  * limitations under the License.
  */
 
-package org.wso2.carbon.security.internal.config;
-
-import java.util.Properties;
+package org.wso2.carbon.security.usercore.exception;
 
 /**
- * Credential store configurations.
+ * Authorization Failure.
  */
-public class CredentialStoreConfig {
+public class AuthorizationException extends Exception {
 
-    private Properties storeProperties;
-
-    public CredentialStoreConfig(Properties properties) {
-        this.storeProperties = properties;
+    public AuthorizationException() {
+        super();
     }
 
-    public Properties getStoreProperties() {
-        return storeProperties;
+    public AuthorizationException(String message) {
+        super(message);
+    }
+
+    public AuthorizationException(Throwable t) {
+        super(t);
     }
 }

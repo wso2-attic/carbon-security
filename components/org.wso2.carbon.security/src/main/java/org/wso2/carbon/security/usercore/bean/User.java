@@ -16,11 +16,10 @@
 
 package org.wso2.carbon.security.usercore.bean;
 
-import org.wso2.carbon.security.usercore.exception.AuthorizationFailure;
+import org.wso2.carbon.security.usercore.exception.AuthorizationException;
 import org.wso2.carbon.security.usercore.exception.IdentityStoreException;
 import org.wso2.carbon.security.usercore.store.AuthorizationStore;
 import org.wso2.carbon.security.usercore.store.IdentityStore;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.util.List;
 import java.util.Map;
@@ -118,9 +117,9 @@ public class User {
      * Checks whether this user is authorized for given Permission.
      * @param permission Permission that should check on this user.
      * @return True if authorized.
-     * @throws AuthorizationFailure
+     * @throws AuthorizationException
      */
-    public boolean isAuthorized(Permission permission) throws AuthorizationFailure {
+    public boolean isAuthorized(Permission permission) throws AuthorizationException {
         return authorizationStore.isUserAuthorized(userID, permission);
     }
 

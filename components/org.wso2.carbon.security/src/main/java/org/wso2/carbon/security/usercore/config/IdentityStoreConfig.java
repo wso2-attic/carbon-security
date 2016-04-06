@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.wso2.carbon.security.internal.config;
+package org.wso2.carbon.security.usercore.config;
 
 import java.util.Properties;
 
