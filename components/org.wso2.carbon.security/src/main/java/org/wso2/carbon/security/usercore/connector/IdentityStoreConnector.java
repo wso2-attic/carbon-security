@@ -52,7 +52,7 @@ public interface IdentityStoreConnector {
     String getUserStoreID();
 
     /**
-     * Search user from user id
+     * Search user from user id.
      *
      * @param userID User Id of the user
      * @return User Object with
@@ -231,7 +231,7 @@ public interface IdentityStoreConnector {
     void deleteGroup(String groupId) throws IdentityStoreException;
 
     /**
-     * To check whether a user store is read only
+     * To check whether a user store is read only.
      * @return True if the user store is read only, unless returns false
      * @throws IdentityStoreException
      */
