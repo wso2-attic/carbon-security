@@ -25,12 +25,12 @@ public class CarbonLoginModuleService implements LoginModuleService {
 
     @Override
     public void registerLoginModule(long bundleId, String className) {
-        CarbonSecurityDataHolder.getInstance().registerLoginModule(bundleId, className);
+        CarbonSecurityDataHolder.getInstance().addLoginModule(bundleId, className);
     }
 
     @Override
     public void unregisterLoginModule(long bundleId, String className) {
-        CarbonSecurityDataHolder.getInstance().unRegisterLoginModule(bundleId, className);
+        CarbonSecurityDataHolder.getInstance().removeLoginModule(bundleId, className);
     }
 
 }

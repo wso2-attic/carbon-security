@@ -16,15 +16,13 @@
 
 package org.wso2.carbon.security.usercore.util;
 
-import org.wso2.carbon.security.usercore.constant.UserStoreConstants;
-
-import javax.xml.bind.DatatypeConverter;
 import java.nio.CharBuffer;
 import java.nio.charset.Charset;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 import java.util.UUID;
+import javax.xml.bind.DatatypeConverter;
 
 /**
  * User core utils.

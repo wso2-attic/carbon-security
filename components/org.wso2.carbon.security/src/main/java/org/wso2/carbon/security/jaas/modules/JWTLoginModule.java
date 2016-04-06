@@ -27,10 +27,10 @@ import org.wso2.carbon.security.jaas.CarbonCallback;
 import org.wso2.carbon.security.jaas.CarbonPrincipal;
 import org.wso2.carbon.security.jaas.util.CarbonSecurityConstants;
 
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Paths;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
@@ -86,7 +86,8 @@ public class JWTLoginModule implements LoginModule {
     @Override
     public boolean login() throws LoginException {
 
-        CarbonCallback<SignedJWT> jwtCarbonCallback = new CarbonCallback<>(CarbonSecurityConstants.USERNAME_PASSWORD_LOGIN_MODULE);
+        CarbonCallback<SignedJWT> jwtCarbonCallback = new CarbonCallback<>(CarbonSecurityConstants
+                                                                                   .USERNAME_PASSWORD_LOGIN_MODULE);
         Callback[] callbacks = {jwtCarbonCallback};
 
         try {
@@ -122,7 +123,8 @@ public class JWTLoginModule implements LoginModule {
                     subject.getPrincipals().add(carbonPrincipal);
                 }
 
-                // PrivilegedCarbonContext privilegedCarbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+                // PrivilegedCarbonContext privilegedCarbonContext = PrivilegedCarbonContext
+                // .getThreadLocalCarbonContext();
                 // privilegedCarbonContext.setSubject(subject);
 
                 commitSucceeded = true;
@@ -226,8 +228,7 @@ public class JWTLoginModule implements LoginModule {
      */
     private String getTrustStorePath() {
         //TODO Get the key store from a System Property or a util.
-        String truststore = System.getProperty("carbon.home") + File.separator + "conf" + File.separator +
-                            "data-bridge" + File.separator + "client-truststore.jks";
-        return truststore;
+        return Paths.get(System.getProperty("carbon.home"), "conf", "data-bridge",
+                                      "client-truststore.jks").toString();
     }
 }

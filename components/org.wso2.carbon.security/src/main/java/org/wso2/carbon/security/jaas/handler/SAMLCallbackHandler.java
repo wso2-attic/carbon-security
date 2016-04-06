@@ -35,7 +35,7 @@ import org.wso2.carbon.security.jaas.HTTPCallbackHandler;
 
 //import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
+//import java.io.UnsupportedEncodingException;
 //import java.util.List;
 //import java.util.Map;
 import javax.security.auth.callback.Callback;
@@ -53,13 +53,13 @@ public class SAMLCallbackHandler implements HTTPCallbackHandler {
 
 //    private static boolean openSAMLBootstrapped = false;
 
-    private HttpRequest httpRequest;
+//    private HttpRequest httpRequest;
 
 //    private Assertion samlAssertion;
 
     @Override
     public void setHTTPRequest(HttpRequest httpRequest) {
-        this.httpRequest = httpRequest;
+//        this.httpRequest = httpRequest;
     }
 
     @Override

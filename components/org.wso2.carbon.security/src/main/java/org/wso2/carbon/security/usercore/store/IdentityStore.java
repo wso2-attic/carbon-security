@@ -26,7 +26,6 @@ import org.wso2.carbon.security.usercore.config.IdentityStoreConfig;
 import org.wso2.carbon.security.usercore.connector.IdentityStoreConnector;
 import org.wso2.carbon.security.usercore.constant.UserStoreConstants;
 import org.wso2.carbon.security.usercore.exception.IdentityStoreException;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.io.IOException;
 import java.util.List;
@@ -38,7 +37,7 @@ import java.util.Map;
 public class IdentityStore {
 
     private static final Logger log = LoggerFactory.getLogger(IdentityStore.class);
-    private static IdentityStoreConnector identityStoreConnector;
+    private IdentityStoreConnector identityStoreConnector;
 
     public void init() throws IOException, IdentityStoreException {
 

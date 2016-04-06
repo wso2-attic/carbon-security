@@ -27,6 +27,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Carbon security data holder
+ */
 public class CarbonSecurityDataHolder {
 
     private static CarbonSecurityDataHolder instance = new CarbonSecurityDataHolder();
@@ -52,12 +55,14 @@ public class CarbonSecurityDataHolder {
         if (callbackHandlerFactoryMap.get(callbackHandlerFactory.getSupportedLoginModuleType()) == null) {
             synchronized (callbackHandlerFactoryMap) {
                 if (callbackHandlerFactoryMap.get(callbackHandlerFactory.getSupportedLoginModuleType()) == null) {
-                    callbackHandlerFactoryMap.put(callbackHandlerFactory.getSupportedLoginModuleType(), Arrays.asList(callbackHandlerFactory));
+                    callbackHandlerFactoryMap.put(callbackHandlerFactory.getSupportedLoginModuleType(),
+                                                  Arrays.asList(callbackHandlerFactory));
                 }
             }
         } else {
             synchronized (callbackHandlerFactoryMap) {
-                callbackHandlerFactoryMap.get(callbackHandlerFactory.getSupportedLoginModuleType()).add(callbackHandlerFactory);
+                callbackHandlerFactoryMap.get(callbackHandlerFactory.getSupportedLoginModuleType()).add
+                        (callbackHandlerFactory);
             }
         }
     }
@@ -65,8 +70,8 @@ public class CarbonSecurityDataHolder {
     public void unregisterCallbackHandlerFactory(HTTPCallbackHandlerFactory callbackHandlerFactory) {
 
         synchronized (callbackHandlerFactoryMap) {
-            callbackHandlerFactoryMap.get(callbackHandlerFactory.getSupportedLoginModuleType())
-                    .remove(callbackHandlerFactory);
+            callbackHandlerFactoryMap.get(callbackHandlerFactory.getSupportedLoginModuleType()).remove
+                    (callbackHandlerFactory);
         }
     }
 
@@ -85,12 +90,12 @@ public class CarbonSecurityDataHolder {
         return this.carbonRealmService;
     }
 
-    public void registerLoginModule(long bundleId, String className) {
+    public void addLoginModule(long bundleId, String className) {
 
         loginModuleMap.put(className, bundleId);
     }
 
-    public void unRegisterLoginModule(long bundleId, String className) {
+    public void removeLoginModule(long bundleId, String className) {
 
         loginModuleMap.remove(className, bundleId);
     }

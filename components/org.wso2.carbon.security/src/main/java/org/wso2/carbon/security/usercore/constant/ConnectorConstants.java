@@ -28,6 +28,9 @@ public class ConnectorConstants {
     public static final String USERSTORE_NAME = "UserstoreName";
     public static final String HASH_ALGORITHM = "HashAlgorithm";
 
+    /**
+     * Query type related constants.
+     */
     public static final class QueryTypes {
 
         public static final String SQL_QUERY_GET_GROUP_FROM_NAME = "sql_query_get_group_from_name";
