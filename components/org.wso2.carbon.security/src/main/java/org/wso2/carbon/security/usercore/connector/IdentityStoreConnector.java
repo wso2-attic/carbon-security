@@ -81,7 +81,7 @@ public interface IdentityStoreConnector {
     List<User> listUsers(String filterPattern, int offset, int length) throws IdentityStoreException;
 
     /**
-     * Retrieve set of claims of the user with the given ID
+     * Retrieve set of claims of the user with the given ID.
      *
      * @param userID ID of the user whose claims are requested
      * @return Claims map of the user with given ID
@@ -99,7 +99,7 @@ public interface IdentityStoreConnector {
     Map<String, String> getUserClaimValues(String userID, List<String> claimURIs) throws IdentityStoreException;
 
     /**
-     * Retrieve group with given group ID
+     * Retrieve group with given group ID.
      * @param groupID Unique ID of the group
      * @return Group with the given GroupID
      * @throws IdentityStoreException
@@ -125,14 +125,15 @@ public interface IdentityStoreConnector {
     List<Group> listGroups(String filterPattern, int offset, int length) throws IdentityStoreException;
 
     /**
-     * @param userID Retrieve groups of a given User with unique ID
+     * Retrieve groups of a given User with unique ID.
+     * @param userID Id of the User.
      * @return List of Groups which this user is assigned to
      * @throws IdentityStoreException
      */
     List<Group> getGroupsOfUser(String userID) throws IdentityStoreException;
 
     /**
-     * Retrieve set of users belongs to a group
+     * Retrieve set of users belongs to a group.
      *
      * @param groupID Unique ID of the group
      * @return Set of IdentityObjects resides in Group
@@ -230,14 +231,14 @@ public interface IdentityStoreConnector {
     void deleteGroup(String groupId) throws IdentityStoreException;
 
     /**
-     * To check whether a user store is read only     *
+     * To check whether a user store is read only
      * @return True if the user store is read only, unless returns false
      * @throws IdentityStoreException
      */
     boolean isReadOnly() throws IdentityStoreException;
 
     /**
-     * Returns IdentityStoreConfig which consists of user store configurations.     *
+     * Returns IdentityStoreConfig which consists of user store configurations.
      * @return IdentityStoreConfig which consists of user store configurations
      */
     IdentityStoreConfig getIdentityStoreConfig();

@@ -30,7 +30,7 @@ import javax.security.auth.login.AppConfigurationEntry;
 import javax.security.auth.login.Configuration;
 
 /**
- * This contains the carbon implementation of the Configuration class
+ * This contains the carbon implementation of the Configuration class.
  */
 public class CarbonJAASConfiguration extends Configuration {
 
