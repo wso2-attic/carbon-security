@@ -56,7 +56,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * OSGi service component which handle authentication and authorization
+ * OSGi service component which handle authentication and authorization.
  */
 @Component(
         name = "org.wso2.carbon.security.internal.CarbonSecurityComponent",
@@ -223,7 +223,7 @@ public class CarbonSecurityComponent {
     }
 
     /**
-     * Set default permissions for all bundles using PermissionAdmin
+     * Set default permissions for all bundles using PermissionAdmin.
      *
      * @param context
      */

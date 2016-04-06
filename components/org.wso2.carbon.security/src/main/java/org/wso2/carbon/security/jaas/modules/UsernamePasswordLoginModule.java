@@ -18,6 +18,7 @@ package org.wso2.carbon.security.jaas.modules;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.wso2.carbon.kernel.context.PrivilegedCarbonContext;
 import org.wso2.carbon.security.internal.CarbonSecurityDataHolder;
 import org.wso2.carbon.security.jaas.CarbonPrincipal;
 import org.wso2.carbon.security.usercore.exception.AuthenticationFailure;
@@ -143,8 +144,9 @@ public class UsernamePasswordLoginModule implements LoginModule {
                 subject.getPrincipals().add(carbonPrincipal);
             }
 
-            // PrivilegedCarbonContext privilegedCarbonContext = PrivilegedCarbonContext.getCurrentContext();
-            // privilegedCarbonContext.setSubject(subject);
+            PrivilegedCarbonContext privilegedCarbonContext =
+                    (PrivilegedCarbonContext) PrivilegedCarbonContext.getCurrentContext();
+            privilegedCarbonContext.setUserPrincipal(carbonPrincipal);
 
             username = null;
             for (int i = 0; i < password.length; i++) {

@@ -17,7 +17,7 @@
 package org.wso2.carbon.security.usercore.util;
 
 import java.nio.CharBuffer;
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
@@ -44,7 +44,7 @@ public class UserCoreUtil {
         System.arraycopy(salt.toCharArray(), 0, saltedPassword, password.length, salt.length());
 
         MessageDigest messageDigest = MessageDigest.getInstance(hashAlgo);
-        byte [] hash = messageDigest.digest(Charset.defaultCharset().encode(CharBuffer.wrap(saltedPassword)).array());
+        byte [] hash = messageDigest.digest(StandardCharsets.UTF_8.encode(CharBuffer.wrap(saltedPassword)).array());
 
         // Hash is in hex binary. Convert and return.
         return DatatypeConverter.printHexBinary(hash);

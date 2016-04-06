@@ -28,7 +28,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Carbon security data holder
+ * Carbon security data holder.
  */
 public class CarbonSecurityDataHolder {
 
