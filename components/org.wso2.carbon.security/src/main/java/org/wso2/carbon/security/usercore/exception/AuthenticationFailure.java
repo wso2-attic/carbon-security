@@ -20,7 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * AuthenticationFailure
+ * This class is an extension of {@code Exception} class and used to indicate authentication failures.
  */
 public class AuthenticationFailure extends Exception {
 

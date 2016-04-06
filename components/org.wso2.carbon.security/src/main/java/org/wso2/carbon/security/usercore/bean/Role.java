@@ -36,7 +36,7 @@ public class Role {
     }
 
     /**
-     * Get the name of this Role
+     * Get the name of this Role.
      * @return Role name.
      */
     public String getName() {

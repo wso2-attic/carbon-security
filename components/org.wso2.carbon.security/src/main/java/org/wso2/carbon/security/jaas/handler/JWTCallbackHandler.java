@@ -32,7 +32,7 @@ import javax.security.auth.callback.UnsupportedCallbackException;
 
 /**
  * <p>
- * This class builds JWT from the Authorization header
+ * This class builds JWT from the Authorization header.
  * </p>
  */
 public class JWTCallbackHandler implements HTTPCallbackHandler {

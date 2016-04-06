@@ -31,7 +31,7 @@ import java.io.IOException;
 import javax.security.auth.callback.Callback;
 
 /**
- * CredentialStore
+ * This class represents a data store which contains user credentials.
  */
 public class CredentialStore {
 
@@ -62,6 +62,6 @@ public class CredentialStore {
         if (userId != null) {
             return new AuthenticationContext(new User(userId, credentialStoreConnector.getCredentialStoreId(), null));
         }
-        throw new AuthenticationFailure("Invalid user credentials");
+        throw new AuthenticationFailure("Invalid user credentials.");
     }
 }

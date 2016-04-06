@@ -33,7 +33,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * Builds DefaultPermissionInfoCollection from the permissions.yml
+ * Builds DefaultPermissionInfoCollection from the permissions.yml.
  */
 public class SecurityConfigBuilder {
 
@@ -43,7 +43,7 @@ public class SecurityConfigBuilder {
     }
 
     /**
-     * Parses &amp; creates the object model for the DefaultPermissionInfoCollection from the permissions.yml
+     * Parses &amp; creates the object model for the DefaultPermissionInfoCollection from the permissions.yml.
      *
      * @return DefaultPermissionInfoCollection
      */

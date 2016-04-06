@@ -19,7 +19,7 @@ package org.wso2.carbon.security.usercore.context;
 import org.wso2.carbon.security.usercore.bean.User;
 
 /**
- * AuthenticationContext
+ * This class represents AuthenticationContext which holds the information related to the authenticated user.
  */
 public class AuthenticationContext {
 
