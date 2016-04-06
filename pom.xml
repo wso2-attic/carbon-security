@@ -114,7 +114,6 @@
                 <artifactId>gson</artifactId>
                 <version>${gson.version}</version>
             </dependency>
-
             <dependency>
                 <groupId>org.wso2.msf4j</groupId>
                 <artifactId>msf4j-core</artifactId>
@@ -129,11 +128,6 @@
                 <groupId>net.minidev.wso2</groupId>
                 <artifactId>json-smart</artifactId>
                 <version>${json.smart.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.wso2.carbon.multitenancy</groupId>
-                <artifactId>org.wso2.carbon.context.api</artifactId>
-                <version>${org.wso2.carbon.context.api.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.wso2.orbit.org.yaml</groupId>
@@ -155,7 +149,6 @@
                 <artifactId>opensaml</artifactId>
                 <version>${opensaml.version}</version>
             </dependency>
-
             <dependency>
                 <groupId>org.osgi</groupId>
                 <artifactId>org.osgi.core</artifactId>
@@ -176,7 +169,6 @@
                 <artifactId>org.eclipse.equinox.ds</artifactId>
                 <version>${equinox.ds.version}</version>
             </dependency>
-
             <dependency>
                 <groupId>org.wso2.carbon</groupId>
                 <artifactId>org.wso2.carbon.launcher</artifactId>
@@ -193,6 +185,16 @@
                 <artifactId>org.wso2.carbon.core.runtime.feature</artifactId>
                 <version>${carbon.kernel.version}</version>
                 <type>zip</type>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon</groupId>
+                <artifactId>org.wso2.carbon.core</artifactId>
+                <version>${carbon.kernel.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>commons-dbcp</groupId>
+                <artifactId>commons-dbcp</artifactId>
+                <version>${commons.dbcp.version}</version>
             </dependency>
 
             <!-- OSGI Tests-->
@@ -290,13 +292,13 @@
         <carbon.security.version>1.0.0-SNAPSHOT</carbon.security.version>
         <carbon.security.boot.version>1.0.0-SNAPSHOT</carbon.security.boot.version>
 
-        <org.wso2.carbon.context.api.version>1.0.0-SNAPSHOT</org.wso2.carbon.context.api.version>
         <carbon.feature.plugin.version>2.1.0-SNAPSHOT</carbon.feature.plugin.version>
-        <carbon.kernel.version>5.1.0-m1</carbon.kernel.version>
-        <carbon.jndi.version>1.0.0-SNAPSHOT</carbon.jndi.version>
-        <carbon.datasources.version>1.0.0-SNAPSHOT</carbon.datasources.version>
-        <msf4j.version>1.0.0-SNAPSHOT</msf4j.version>
+        <carbon.kernel.version>5.1.0-m3</carbon.kernel.version>
+        <carbon.jndi.version>1.0.0-m1</carbon.jndi.version>
+        <carbon.datasources.version>1.0.0-m1</carbon.datasources.version>
+        <msf4j.version>1.0.0</msf4j.version>
         <opensaml.version>2.6.4.wso2v1</opensaml.version>
+        <commons.dbcp.version>1.4</commons.dbcp.version>
 
         <!-- Equinox dependency versions -->
         <osgi.core.api.version>6.0.0</osgi.core.api.version>

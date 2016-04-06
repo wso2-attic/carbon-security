@@ -54,8 +54,8 @@
             <artifactId>nimbus-jose-jwt</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.wso2.carbon.multitenancy</groupId>
-            <artifactId>org.wso2.carbon.context.api</artifactId>
+            <groupId>org.wso2.carbon</groupId>
+            <artifactId>org.wso2.carbon.core</artifactId>
         </dependency>
         <dependency>
             <groupId>org.testng</groupId>
@@ -76,7 +76,6 @@
         <dependency>
             <groupId>commons-dbcp</groupId>
             <artifactId>commons-dbcp</artifactId>
-            <version>1.4</version>
         </dependency>
         <!--<dependency>-->
         <!--<groupId>org.wso2.orbit.org.opensaml</groupId>-->

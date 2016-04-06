@@ -77,10 +77,6 @@
             <groupId>net.minidev.wso2</groupId>
             <artifactId>json-smart</artifactId>
         </dependency>
-        <dependency>
-            <groupId>org.wso2.carbon.multitenancy</groupId>
-            <artifactId>org.wso2.carbon.context.api</artifactId>
-        </dependency>
     </dependencies>
 
     <build>
