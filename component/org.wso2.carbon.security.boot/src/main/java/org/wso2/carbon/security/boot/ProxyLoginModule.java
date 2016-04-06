@@ -68,10 +68,10 @@ public class ProxyLoginModule implements LoginModule {
 
         try {
             Collection<ServiceReference<LoginModule>> serviceReferences = bundleContext.getServiceReferences
-                    (LoginModule.class, "(login.module.class.name=" + module + ")");
+                    (LoginModule.class, "(&(login.module.class.name=" + module + ")(service.scope=prototype))");
             if (serviceReferences != null) {
                 serviceReferences.forEach(
-                        serviceReference -> instance = bundleContext.getService(serviceReference)
+                        serviceReference -> instance = bundleContext.getServiceObjects(serviceReference).getService()
                 );
             }
         } catch (InvalidSyntaxException e) {
