@@ -107,6 +107,7 @@
                                         <include>conf/carbon-jaas.config</include>
                                         <include>conf/permissions.yml</include>
                                         <include>conf/security.policy</include>
+                                        <include>conf/primary-userstore.yml</include>
                                         <include>p2.inf</include>
                                         <include>build.properties</include>
                                     </includes>

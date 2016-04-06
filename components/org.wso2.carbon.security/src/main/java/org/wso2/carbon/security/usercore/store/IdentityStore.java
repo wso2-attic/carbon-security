@@ -18,15 +18,14 @@ package org.wso2.carbon.security.usercore.store;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.wso2.carbon.security.internal.config.IdentityStoreConfig;
+import org.wso2.carbon.security.internal.CarbonSecurityDataHolder;
 import org.wso2.carbon.security.internal.config.StoreConfigBuilder;
 import org.wso2.carbon.security.usercore.bean.Group;
 import org.wso2.carbon.security.usercore.bean.User;
+import org.wso2.carbon.security.usercore.config.IdentityStoreConfig;
 import org.wso2.carbon.security.usercore.connector.IdentityStoreConnector;
-import org.wso2.carbon.security.usercore.connector.jdbc.JDBCIdentityStoreConnector;
 import org.wso2.carbon.security.usercore.constant.UserStoreConstants;
 import org.wso2.carbon.security.usercore.exception.IdentityStoreException;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.io.IOException;
 import java.util.List;
@@ -45,7 +44,9 @@ public class IdentityStore {
         IdentityStoreConfig identityStoreConfig = StoreConfigBuilder
                 .buildIdentityStoreConfig(UserStoreConstants.USER_STORE_CONFIGURATION_FILE);
 
-        identityStoreConnector = new JDBCIdentityStoreConnector();
+        // TODO: Get the store id from the configuration file.
+        identityStoreConnector = CarbonSecurityDataHolder.getInstance().getIdentityStoreConnectorMap()
+                .get("JDBCIdentityStore");
         identityStoreConnector.init(identityStoreConfig);
     }
 
@@ -174,7 +175,7 @@ public class IdentityStore {
      */
     public User addUser(String username, Map<String, String> claims, Object credential, List<String> groupList)
             throws IdentityStoreException {
-        return identityStoreConnector.addUser(username, claims, credential, groupList);
+        throw new UnsupportedOperationException("This method is not supported in this version of user core");
     }
 
     /**
@@ -185,7 +186,7 @@ public class IdentityStore {
      * @throws IdentityStoreException
      */
     public Group addGroup(String groupName, List<String> users) throws IdentityStoreException {
-        return identityStoreConnector.addGroup(groupName, users);
+        throw new UnsupportedOperationException("This method is not supported in this version of user core");
     }
 
     /**
@@ -194,7 +195,7 @@ public class IdentityStore {
      * @throws IdentityStoreException
      */
     public void deleteUser(String userID) throws IdentityStoreException {
-        identityStoreConnector.deleteUser(userID);
+        throw new UnsupportedOperationException("This method is not supported in this version of user core");
     }
 
     /**
@@ -203,7 +204,7 @@ public class IdentityStore {
      * @throws IdentityStoreException
      */
     public void deleteGroup(String groupId) throws IdentityStoreException {
-        identityStoreConnector.deleteGroup(groupId);
+        throw new UnsupportedOperationException("This method is not supported in this version of user core");
     }
 
     /**
@@ -213,7 +214,7 @@ public class IdentityStore {
      * @throws IdentityStoreException
      */
     public void setUserAttributeValues(String userID, Map<String, String> attributes) throws IdentityStoreException {
-        identityStoreConnector.setUserAttributeValues(userID, attributes);
+        throw new UnsupportedOperationException("This method is not supported in this version of user core");
     }
 
     /**
@@ -223,7 +224,7 @@ public class IdentityStore {
      * @throws IdentityStoreException
      */
     public void deleteUserAttributeValues(String userID, List<String> attributes) throws IdentityStoreException {
-        identityStoreConnector.deleteUserAttributeValues(userID, attributes);
+        throw new UnsupportedOperationException("This method is not supported in this version of user core");
     }
 
     /**
@@ -232,7 +233,7 @@ public class IdentityStore {
      * @param newName New name.
      */
     public void renameUser(String userId, String newName) {
-        throw new NotImplementedException();
+        throw new UnsupportedOperationException("This method is not supported in this version of user core");
     }
 
     /**
@@ -241,7 +242,7 @@ public class IdentityStore {
      * @param groupsToBeAssign New group list that needs to replace the existing list.
      */
     public void updateGroupsInUser(String userId, List<String> groupsToBeAssign) throws IdentityStoreException {
-        identityStoreConnector.assignGroupsToUser(userId, groupsToBeAssign);
+        throw new UnsupportedOperationException("This method is not supported in this version of user core");
     }
 
     /**
@@ -252,14 +253,7 @@ public class IdentityStore {
      */
     public void updateGroupsInUser(String userId, List<String> groupsToBeAssign, List<String> groupsToBeUnAssign)
             throws IdentityStoreException {
-
-        if (groupsToBeAssign != null) {
-            identityStoreConnector.assignGroupsToUser(userId, groupsToBeAssign);
-        }
-
-        if (groupsToBeUnAssign != null) {
-            identityStoreConnector.removeGroupsFromUser(userId, groupsToBeUnAssign);
-        }
+        throw new UnsupportedOperationException("This method is not supported in this version of user core");
     }
 
     /**
@@ -268,7 +262,7 @@ public class IdentityStore {
      * @param usersToBeAssign List of Users needs to be assigned to this Group.
      */
     public void updateUsersInGroup(String groupId, List<String> usersToBeAssign) throws IdentityStoreException {
-        identityStoreConnector.assignUsersToGroup(groupId, usersToBeAssign);
+        throw new UnsupportedOperationException("This method is not supported in this version of user core");
     }
 
     /**
@@ -279,13 +273,6 @@ public class IdentityStore {
      */
     public void updateUsersInGroup(String groupId, List<String> usersToBeAssign, List<String> usersToBeUnAssign)
             throws IdentityStoreException {
-
-        if (usersToBeAssign != null) {
-            identityStoreConnector.assignUsersToGroup(groupId, usersToBeAssign);
-        }
-
-        if (usersToBeUnAssign != null) {
-            identityStoreConnector.removeUsersFromGroup(groupId, usersToBeUnAssign);
-        }
+        throw new UnsupportedOperationException("This method is not supported in this version of user core");
     }
 }

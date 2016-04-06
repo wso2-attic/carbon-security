@@ -28,7 +28,6 @@ import org.osgi.service.permissionadmin.PermissionAdmin;
 import org.osgi.service.permissionadmin.PermissionInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.wso2.carbon.datasource.core.api.DataSourceService;
 import org.wso2.carbon.security.boot.ProxyLoginModule;
 import org.wso2.carbon.security.internal.config.DefaultPermissionInfo;
 import org.wso2.carbon.security.internal.config.DefaultPermissionInfoCollection;
@@ -45,8 +44,10 @@ import org.wso2.carbon.security.jaas.modules.JWTLoginModule;
 import org.wso2.carbon.security.jaas.modules.SAML2LoginModule;
 import org.wso2.carbon.security.jaas.modules.UsernamePasswordLoginModule;
 import org.wso2.carbon.security.usercore.common.CarbonRealmServiceImpl;
+import org.wso2.carbon.security.usercore.connector.AuthorizationStoreConnector;
+import org.wso2.carbon.security.usercore.connector.CredentialStoreConnector;
+import org.wso2.carbon.security.usercore.connector.IdentityStoreConnector;
 import org.wso2.carbon.security.usercore.service.RealmService;
-import org.wso2.carbon.security.usercore.util.DatabaseUtil;
 
 import java.security.Policy;
 import java.util.ArrayList;
@@ -55,7 +56,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * OSGi service component which handle authentication and authorization
+ * OSGi service component which handle authentication and authorization.
  */
 @Component(
         name = "org.wso2.carbon.security.internal.CarbonSecurityComponent",
@@ -125,39 +126,72 @@ public class CarbonSecurityComponent {
     )
     protected void registerCallbackHandlerFactory(HTTPCallbackHandlerFactory callbackHandlerFactory,
                                                   Map<String, ?> ref) {
-
         CarbonSecurityDataHolder.getInstance().registerCallbackHandlerFactory(callbackHandlerFactory);
     }
 
     protected void unregisterCallbackHandlerFactory(HTTPCallbackHandlerFactory callbackHandlerFactory,
                                                     Map<String, ?> ref) {
-
         CarbonSecurityDataHolder.getInstance().unregisterCallbackHandlerFactory(callbackHandlerFactory);
     }
 
     @Reference(
-            name = "org.wso2.carbon.datasource.DataSourceService",
-            service = DataSourceService.class,
+            name = "org.wso2.carbon.security.usercore.connector.AuthorizationStoreConnector",
+            service = AuthorizationStoreConnector.class,
             cardinality = ReferenceCardinality.AT_LEAST_ONE,
             policy = ReferencePolicy.DYNAMIC,
-            unbind = "unregisterDataSourceService"
+            unbind = "unregisterAuthorizationStoreConnector"
     )
-    protected void registerDataSourceService(DataSourceService service) {
+    protected void registerAuthorizationConnector(AuthorizationStoreConnector authorizationStoreConnector,
+                                                  Map<String, String> properties) {
 
-        if (service == null) {
-            log.error("DataSourceService is null");
-            return;
-        }
-        DatabaseUtil.getInstance().setDataSourceService(service);
+        String connectorId = properties.get("connector-id");
+        CarbonSecurityDataHolder.getInstance().registerAuthorizationStoreConnector(connectorId,
+                authorizationStoreConnector);
     }
 
-    protected void unregisterDataSourceService(DataSourceService service) {
-
+    protected void unregisterAuthorizationStoreConnector(AuthorizationStoreConnector authorizationStoreConnector) {
     }
+
+    @Reference(
+            name = "org.wso2.carbon.security.usercore.connector.IdentityStoreConnector",
+            service = IdentityStoreConnector.class,
+            cardinality = ReferenceCardinality.AT_LEAST_ONE,
+            policy = ReferencePolicy.DYNAMIC,
+            unbind = "unregisterIdentityStoreConnector"
+    )
+    protected void registerIdentityConnector(IdentityStoreConnector identityStoreConnector,
+                                             Map<String, String> properties) {
+
+        String connectorId = properties.get("connector-id");
+        CarbonSecurityDataHolder.getInstance().registerIdentityStoreConnector(connectorId,
+                identityStoreConnector);
+    }
+
+    protected void unregisterIdentityStoreConnector(IdentityStoreConnector identityStoreConnector) {
+    }
+
+    @Reference(
+            name = "org.wso2.carbon.security.usercore.connector.CredentialStoreConnector",
+            service = CredentialStoreConnector.class,
+            cardinality = ReferenceCardinality.AT_LEAST_ONE,
+            policy = ReferencePolicy.DYNAMIC,
+            unbind = "unregisterCredentialStoreConnector"
+    )
+    protected void registerCredentialConnector(CredentialStoreConnector credentialStoreConnector,
+                                               Map<String, String> properties) {
+
+        String connectorId = properties.get("connector-id");
+        CarbonSecurityDataHolder.getInstance().registerCredentialStoreConnector(connectorId,
+                credentialStoreConnector);
+    }
+
+    protected void unregisterCredentialStoreConnector(CredentialStoreConnector credentialStoreConnector) {
+    }
+
 
     private void initAuthenticationConfigs(BundleContext bundleContext) {
 
-        //Initialize proxy login module
+        // Initialize proxy login module
         ProxyLoginModule.init(bundleContext);
 
         // Set CarbonJAASConfiguration as the implantation of Configuration
@@ -189,7 +223,7 @@ public class CarbonSecurityComponent {
     }
 
     /**
-     * Set default permissions for all bundles using PermissionAdmin
+     * Set default permissions for all bundles using PermissionAdmin.
      *
      * @param context
      */

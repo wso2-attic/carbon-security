@@ -18,13 +18,13 @@ package org.wso2.carbon.security.usercore.store;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.wso2.carbon.security.internal.CarbonSecurityDataHolder;
 import org.wso2.carbon.security.usercore.bean.Group;
 import org.wso2.carbon.security.usercore.bean.Permission;
 import org.wso2.carbon.security.usercore.bean.Role;
 import org.wso2.carbon.security.usercore.bean.User;
 import org.wso2.carbon.security.usercore.connector.AuthorizationStoreConnector;
-import org.wso2.carbon.security.usercore.connector.jdbc.JDBCAuthorizationConnector;
-import org.wso2.carbon.security.usercore.exception.AuthorizationFailure;
+import org.wso2.carbon.security.usercore.exception.AuthorizationException;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.util.List;
@@ -38,7 +38,10 @@ public class AuthorizationStore {
     private AuthorizationStoreConnector authorizationStore;
 
     public AuthorizationStore() {
-        authorizationStore = new JDBCAuthorizationConnector();
+
+        // TODO: Get the store id from the configuration file.
+        authorizationStore = CarbonSecurityDataHolder.getInstance().getAuthorizationStoreConnectorMap()
+                .get("JDBCAuthorizationStore");
     }
 
     /**
@@ -47,11 +50,11 @@ public class AuthorizationStore {
      * @param permission Permission that needs to check on.
      * @return True if the user has required permission.
      */
-    public boolean isUserAuthorized(String userId, Permission permission) throws AuthorizationFailure {
+    public boolean isUserAuthorized(String userId, Permission permission) throws AuthorizationException {
 
         List<Role> roles = authorizationStore.getRolesForUser(userId);
         if (roles == null) {
-            throw new AuthorizationFailure("No roles assigned for this user");
+            throw new AuthorizationException("No roles assigned for this user");
         }
 
         for (Role role : roles) {
@@ -75,7 +78,21 @@ public class AuthorizationStore {
      * @param permission Permission.
      * @return True if authorized.
      */
-    public boolean isRoleAuthorized(String roleId, Permission permission) {
+    public boolean isRoleAuthorized(String roleId, Permission permission) throws AuthorizationException {
+
+        Role role = authorizationStore.getRole(roleId);
+
+        List<Permission> permissions = authorizationStore.getPermissionsForRole(role.getName());
+
+        if (permissions == null) {
+            throw new AuthorizationException("No permissions assigned for this role");
+        }
+
+        for (Permission rolePermission : permissions) {
+            if (rolePermission.getPermissionString().equals(permission.getPermissionString())) {
+                return true;
+            }
+        }
         return false;
     }
 

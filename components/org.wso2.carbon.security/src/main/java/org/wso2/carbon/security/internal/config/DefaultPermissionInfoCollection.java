@@ -20,7 +20,7 @@ import java.util.Collections;
 import java.util.Set;
 
 /**
- * DefaultPermissionInfoCollection
+ * This class is used to DefaultPermissionInfoCollection.
  */
 public class DefaultPermissionInfoCollection {
 

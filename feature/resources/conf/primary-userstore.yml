@@ -1,8 +1,0 @@
-userStoreClass: "org.wso2.carbon.user.user.core.connector.inmemory.InMemoryUserStoreConnector"
-userStoreName: "PRIMARY"
-executionOrder: "1"
-readOnly: "true"
-userStoreID: "1"
-DataSource: "jdbc/WSO2CARBON_DB"
-DatabaseType: "MySQL"
-HashAlgorithm: "SHA-256"
