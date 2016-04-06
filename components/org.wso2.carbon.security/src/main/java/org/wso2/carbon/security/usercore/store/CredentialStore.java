@@ -27,8 +27,8 @@ import org.wso2.carbon.security.usercore.exception.AuthenticationFailure;
 import org.wso2.carbon.security.usercore.exception.CredentialStoreException;
 import org.wso2.carbon.security.usercore.exception.IdentityStoreException;
 
-import javax.security.auth.callback.Callback;
 import java.io.IOException;
+import javax.security.auth.callback.Callback;
 
 /**
  * CredentialStore

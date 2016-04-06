@@ -105,8 +105,7 @@ public class CarbonSecurityDataHolder {
         return loginModuleMap.get(className);
     }
 
-    public void registerAuthorizationStoreConnector(String key, AuthorizationStoreConnector authorizationStoreConnector)
-    {
+    public void registerAuthorizationStoreConnector(String key, AuthorizationStoreConnector authorizationStoreConnector) {
         authorizationStoreConnectorMap.put(key, authorizationStoreConnector);
     }
 
