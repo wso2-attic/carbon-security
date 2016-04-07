@@ -88,7 +88,7 @@ public class JWTLoginModule implements LoginModule {
     public boolean login() throws LoginException {
 
         CarbonCallback<SignedJWT> jwtCarbonCallback = new CarbonCallback<>(CarbonSecurityConstants
-                                                                                   .USERNAME_PASSWORD_LOGIN_MODULE);
+                                                                                   .JWT_LOGIN_MODULE);
         Callback[] callbacks = {jwtCarbonCallback};
 
         try {

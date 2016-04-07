@@ -37,13 +37,15 @@ import org.wso2.carbon.security.internal.osgi.SAML2LoginModuleFactory;
 import org.wso2.carbon.security.internal.osgi.UserNamePasswordLoginModuleFactory;
 import org.wso2.carbon.security.jaas.CarbonJAASConfiguration;
 import org.wso2.carbon.security.jaas.CarbonPolicy;
-import org.wso2.carbon.security.jaas.HTTPCallbackHandlerFactory;
-import org.wso2.carbon.security.jaas.handler.BasicAuthCallbackHandlerFactory;
-import org.wso2.carbon.security.jaas.handler.JWTCallbackHandlerFactory;
-import org.wso2.carbon.security.jaas.handler.SAMLCallbackHandlerFactory;
+import org.wso2.carbon.security.internal.osgi.UsernamePasswordCallbackHandlerFactory;
+import org.wso2.carbon.security.internal.osgi.JWTCallbackHandlerFactory;
+import org.wso2.carbon.security.internal.osgi.SAMLCallbackHandlerFactory;
+import org.wso2.carbon.security.jaas.HTTPCallbackHandler;
+import org.wso2.carbon.security.jaas.handler.UsernamePasswordCallbackHandler;
 import org.wso2.carbon.security.jaas.modules.JWTLoginModule;
 import org.wso2.carbon.security.jaas.modules.SAML2LoginModule;
 import org.wso2.carbon.security.jaas.modules.UsernamePasswordLoginModule;
+import org.wso2.carbon.security.jaas.util.CarbonSecurityConstants;
 import org.wso2.carbon.security.usercore.common.CarbonRealmServiceImpl;
 import org.wso2.carbon.security.usercore.connector.AuthorizationStoreConnector;
 import org.wso2.carbon.security.usercore.connector.CredentialStoreConnector;
@@ -114,23 +116,6 @@ public class CarbonSecurityComponent {
     }
 
     @Reference(
-            name = "httpCallbackHandlerFactories",
-            service = HTTPCallbackHandlerFactory.class,
-            cardinality = ReferenceCardinality.MULTIPLE,
-            policy = ReferencePolicy.DYNAMIC,
-            unbind = "unregisterCallbackHandlerFactory"
-    )
-    protected void registerCallbackHandlerFactory(HTTPCallbackHandlerFactory callbackHandlerFactory,
-                                                  Map<String, ?> ref) {
-        CarbonSecurityDataHolder.getInstance().registerCallbackHandlerFactory(callbackHandlerFactory);
-    }
-
-    protected void unregisterCallbackHandlerFactory(HTTPCallbackHandlerFactory callbackHandlerFactory,
-                                                    Map<String, ?> ref) {
-        CarbonSecurityDataHolder.getInstance().unregisterCallbackHandlerFactory(callbackHandlerFactory);
-    }
-
-    @Reference(
             name = "org.wso2.carbon.security.usercore.connector.AuthorizationStoreConnector",
             service = AuthorizationStoreConnector.class,
             cardinality = ReferenceCardinality.AT_LEAST_ONE,
@@ -190,6 +175,8 @@ public class CarbonSecurityComponent {
         // Initialize proxy login module
         ProxyLoginModule.init(bundleContext);
 
+        CarbonSecurityDataHolder.getInstance().setBundleContext(bundleContext);
+
         // Set CarbonJAASConfiguration as the implantation of Configuration
         CarbonJAASConfiguration configuration = new CarbonJAASConfiguration();
         configuration.init();
@@ -208,9 +195,17 @@ public class CarbonSecurityComponent {
         bundleContext.registerService(LoginModule.class, new SAML2LoginModuleFactory(), paramDictionary3);
 
         // Registering callback handler factories
-        CarbonSecurityDataHolder.getInstance().registerCallbackHandlerFactory(new BasicAuthCallbackHandlerFactory());
-        CarbonSecurityDataHolder.getInstance().registerCallbackHandlerFactory(new JWTCallbackHandlerFactory());
-        CarbonSecurityDataHolder.getInstance().registerCallbackHandlerFactory(new SAMLCallbackHandlerFactory());
+        Hashtable<String, String> paramDictionary4 = new Hashtable<>();
+        paramDictionary4.put("supported.login.module", CarbonSecurityConstants.USERNAME_PASSWORD_LOGIN_MODULE);
+        bundleContext.registerService(HTTPCallbackHandler.class, new UsernamePasswordCallbackHandlerFactory(), paramDictionary4);
+
+        Hashtable<String, String> paramDictionary5 = new Hashtable<>();
+        paramDictionary5.put("supported.login.module", CarbonSecurityConstants.JWT_LOGIN_MODULE);
+        bundleContext.registerService(HTTPCallbackHandler.class, new JWTCallbackHandlerFactory(), paramDictionary5);
+
+        Hashtable<String, String> paramDictionary6 = new Hashtable<>();
+        paramDictionary6.put("supported.login.module", CarbonSecurityConstants.SAML_LOGIN_MODULE);
+        bundleContext.registerService(HTTPCallbackHandler.class, new SAMLCallbackHandlerFactory(), paramDictionary6);
     }
 
     private void initAuthorizationConfigs(BundleContext bundleContext) {

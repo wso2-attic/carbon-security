@@ -22,13 +22,13 @@ import org.slf4j.LoggerFactory;
 import org.wso2.carbon.security.internal.CarbonSecurityDataHolder;
 import org.wso2.carbon.security.jaas.util.CarbonSecurityConstants;
 
-import java.io.IOException;
-import java.util.List;
 import javax.security.auth.callback.Callback;
 import javax.security.auth.callback.CallbackHandler;
 import javax.security.auth.callback.NameCallback;
 import javax.security.auth.callback.PasswordCallback;
 import javax.security.auth.callback.UnsupportedCallbackException;
+import java.io.IOException;
+import java.util.List;
 
 /**
  * The class {@code CarbonCallbackHandler} is an implementation {@code CarbonCallbackHandler}.
@@ -56,26 +56,14 @@ public class CarbonCallbackHandler implements CallbackHandler {
                 // Specially handle NameCallback and PasswordCallback, since they are available OOTB
                 if (callback instanceof NameCallback || callback instanceof PasswordCallback) {
                     if (!handled) {
-                        List<HTTPCallbackHandlerFactory> callbackHandlerFactories = CarbonSecurityDataHolder
-                                .getInstance().getCallbackHandlerFactory(CarbonSecurityConstants
-                                                                                 .USERNAME_PASSWORD_LOGIN_MODULE);
-                        if (callbackHandlerFactories != null && !callbackHandlerFactories.isEmpty()) {
-                            for (HTTPCallbackHandlerFactory callbackHandlerFactory : callbackHandlerFactories) {
-                                HTTPCallbackHandler handler;
-                                try {
-                                    handler = (HTTPCallbackHandler) callbackHandlerFactory
-                                            .getObjectInstance(null, null, null, null);
-                                } catch (Exception e) {
-                                    if (log.isDebugEnabled()) {
-                                        log.debug("Unable get a instance from the factory " + callbackHandlerFactory
-                                                .getClass().getName(), e);
-                                    }
-                                    throw new UnsupportedCallbackException(callback);
-                                }
-
-                                handler.setHTTPRequest(httpRequest);
-                                if (handler.canHandle()) {
-                                    handler.handle(callbacks);
+                        List<HTTPCallbackHandler> callbackHandlers = CarbonSecurityDataHolder
+                                .getInstance().getCallbackHandlers(CarbonSecurityConstants
+                                                                           .USERNAME_PASSWORD_LOGIN_MODULE);
+                        if (callbackHandlers != null && !callbackHandlers.isEmpty()) {
+                            for (HTTPCallbackHandler callbackHandler : callbackHandlers) {
+                                callbackHandler.setHTTPRequest(httpRequest);
+                                if (callbackHandler.canHandle()) {
+                                    callbackHandler.handle(callbacks);
                                     handled = true;
                                     break;
                                 }
@@ -86,24 +74,13 @@ public class CarbonCallbackHandler implements CallbackHandler {
                     }
                     // Handle CarbonCallbacks
                 } else if (callback instanceof CarbonCallback) {
-                    List<HTTPCallbackHandlerFactory> callbackHandlerFactories = CarbonSecurityDataHolder.getInstance()
-                            .getCallbackHandlerFactory(((CarbonCallback) callback).getLoginModuleType());
-                    if (callbackHandlerFactories != null && !callbackHandlerFactories.isEmpty()) {
-                        for (HTTPCallbackHandlerFactory callbackHandlerFactory : callbackHandlerFactories) {
-                            HTTPCallbackHandler handler;
-                            try {
-                                handler = (HTTPCallbackHandler) callbackHandlerFactory
-                                        .getObjectInstance(null, null, null, null);
-                            } catch (Exception e) {
-                                if (log.isDebugEnabled()) {
-                                    log.debug("Unable get a instance from the factory " + callbackHandlerFactory
-                                            .getClass().getName(), e);
-                                }
-                                throw new UnsupportedCallbackException(callback);
-                            }
-                            handler.setHTTPRequest(httpRequest);
-                            if (handler.canHandle()) {
-                                handler.handle(new Callback[]{callback});
+                    List<HTTPCallbackHandler> callbackHandlers = CarbonSecurityDataHolder.getInstance()
+                            .getCallbackHandlers(((CarbonCallback) callback).getLoginModuleType());
+                    if (callbackHandlers != null && !callbackHandlers.isEmpty()) {
+                        for (HTTPCallbackHandler callbackHandler : callbackHandlers) {
+                            callbackHandler.setHTTPRequest(httpRequest);
+                            if (callbackHandler.canHandle()) {
+                                callbackHandler.handle(new Callback[]{callback});
                                 break;
                             }
                         }

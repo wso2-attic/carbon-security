@@ -35,7 +35,7 @@ import javax.security.auth.callback.UnsupportedCallbackException;
  * This class extracts credentials from Basic Authorization header.
  * </p>
  */
-public class BasicAuthCallbackHandler implements HTTPCallbackHandler {
+public class UsernamePasswordCallbackHandler implements HTTPCallbackHandler {
 
     private HttpRequest httpRequest;
 
