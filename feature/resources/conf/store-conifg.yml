@@ -1,0 +1,8 @@
+credentialStore:
+  cretentialStoreType: "JDBCCredentialStore"
+  hashAlgorithm: "SHA-256"
+  databaseType: "MySQL"
+identityStore:
+  identityStoreType: "JDBCIdentityStore"
+authorizationStore:
+  authorizationStoreType: "JDBCAuthorizationStore"
