@@ -20,13 +20,13 @@ import org.osgi.framework.BundleContext;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceReference;
 
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 import javax.security.auth.Subject;
 import javax.security.auth.callback.CallbackHandler;
 import javax.security.auth.login.LoginException;
 import javax.security.auth.spi.LoginModule;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * <p>
@@ -39,8 +39,6 @@ import java.util.Map;
 public class ProxyLoginModule implements LoginModule {
 
     public static final String PROPERTY_LOGIN_MODULE = "LOGIN_MODULE";
-
-    public static final String PROPERTY_BUNDLE_ID = "BUNDLE_ID";
 
     private static BundleContext bundleContext;
 

@@ -16,13 +16,18 @@
 
 package org.wso2.carbon.security.internal;
 
-import org.wso2.carbon.security.jaas.HTTPCallbackHandlerFactory;
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.InvalidSyntaxException;
+import org.osgi.framework.ServiceReference;
+import org.wso2.carbon.security.jaas.HTTPCallbackHandler;
 import org.wso2.carbon.security.usercore.common.CarbonRealmServiceImpl;
 import org.wso2.carbon.security.usercore.connector.AuthorizationStoreConnector;
 import org.wso2.carbon.security.usercore.connector.CredentialStoreConnector;
 import org.wso2.carbon.security.usercore.connector.IdentityStoreConnector;
 
-import java.util.Arrays;
+import javax.security.auth.spi.LoginModule;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -33,51 +38,38 @@ import java.util.Map;
 public class CarbonSecurityDataHolder {
 
     private static CarbonSecurityDataHolder instance = new CarbonSecurityDataHolder();
-    private Map<String, List<HTTPCallbackHandlerFactory>> callbackHandlerFactoryMap;
-    private Map<String, Long> loginModuleMap;
     private CarbonRealmServiceImpl carbonRealmService;
     private Map<String, AuthorizationStoreConnector> authorizationStoreConnectorMap = new HashMap<>();
     private Map<String, CredentialStoreConnector> credentialStoreConnectorMap = new HashMap<>();
     private Map<String, IdentityStoreConnector> identityStoreConnectorMap = new HashMap<>();
+    private BundleContext bundleContext;
 
     private CarbonSecurityDataHolder() {
 
-        this.callbackHandlerFactoryMap = new HashMap<>();
-        this.loginModuleMap = new HashMap<>();
     }
 
     public static CarbonSecurityDataHolder getInstance() {
         return instance;
     }
 
-    public void registerCallbackHandlerFactory(HTTPCallbackHandlerFactory callbackHandlerFactory) {
+    public List<HTTPCallbackHandler> getCallbackHandlers(String supportedLoginModule) {
 
-        if (callbackHandlerFactoryMap.get(callbackHandlerFactory.getSupportedLoginModuleType()) == null) {
-            synchronized (callbackHandlerFactoryMap) {
-                if (callbackHandlerFactoryMap.get(callbackHandlerFactory.getSupportedLoginModuleType()) == null) {
-                    callbackHandlerFactoryMap.put(callbackHandlerFactory.getSupportedLoginModuleType(),
-                                                  Arrays.asList(callbackHandlerFactory));
-                }
+        List<HTTPCallbackHandler> callbackHandlers = new ArrayList<>();
+
+        try {
+            Collection<ServiceReference<HTTPCallbackHandler>> serviceReferences = bundleContext.getServiceReferences
+                    (HTTPCallbackHandler.class, "(&(supported.login.module=" + supportedLoginModule + ")(service" +
+                                                ".scope=prototype))");
+            if (serviceReferences != null) {
+                serviceReferences.forEach(
+                        serviceReference -> callbackHandlers.add(bundleContext.getServiceObjects(serviceReference)
+                                                                         .getService())
+                );
             }
-        } else {
-            synchronized (callbackHandlerFactoryMap) {
-                callbackHandlerFactoryMap.get(callbackHandlerFactory.getSupportedLoginModuleType()).add
-                        (callbackHandlerFactory);
-            }
+        } catch (InvalidSyntaxException e) {
+            throw new IllegalStateException("Unable to find callback handler reference for login module " + supportedLoginModule);
         }
-    }
-
-    public void unregisterCallbackHandlerFactory(HTTPCallbackHandlerFactory callbackHandlerFactory) {
-
-        synchronized (callbackHandlerFactoryMap) {
-            callbackHandlerFactoryMap.get(callbackHandlerFactory.getSupportedLoginModuleType()).remove
-                    (callbackHandlerFactory);
-        }
-    }
-
-    public List<HTTPCallbackHandlerFactory> getCallbackHandlerFactory(String type) {
-
-        return callbackHandlerFactoryMap.get(type);
+        return callbackHandlers;
     }
 
     public void registerCarbonRealmService(CarbonRealmServiceImpl carbonRealmService) {
@@ -88,21 +80,6 @@ public class CarbonSecurityDataHolder {
     public CarbonRealmServiceImpl getCarbonRealmService() {
 
         return this.carbonRealmService;
-    }
-
-    public void addLoginModule(long bundleId, String className) {
-
-        loginModuleMap.put(className, bundleId);
-    }
-
-    public void removeLoginModule(long bundleId, String className) {
-
-        loginModuleMap.remove(className, bundleId);
-    }
-
-    public Long getBundleIdOfLoginModule(String className) {
-
-        return loginModuleMap.get(className);
     }
 
     public void registerAuthorizationStoreConnector(String key, AuthorizationStoreConnector
@@ -128,5 +105,9 @@ public class CarbonSecurityDataHolder {
 
     public Map<String, IdentityStoreConnector> getIdentityStoreConnectorMap() {
         return identityStoreConnectorMap;
+    }
+
+    public void setBundleContext(BundleContext bundleContext) {
+        this.bundleContext = bundleContext;
     }
 }
