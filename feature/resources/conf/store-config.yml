@@ -1,0 +1,14 @@
+credentialStore:
+ connector: "#jdbc1-identity-store-connector"
+identityStore:
+ connector: "ldap-identity-store-connector,jdbc-identity-store-connector"
+authorizationStore:
+ connector: "jdbc-identity-store-connector"
+
+storeConnectors:
+ -
+  name: "jdbc1-identity-store-connector"
+  dataSource: "jdbc/WSO2CARBON_DB"
+ -
+  name: "jdbc2-identity-store-connector"
+  dataSource: "jdbc/WSO2CARBON_DB"

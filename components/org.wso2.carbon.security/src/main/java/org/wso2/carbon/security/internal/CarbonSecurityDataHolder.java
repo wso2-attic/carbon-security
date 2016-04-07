@@ -21,11 +21,14 @@ import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceReference;
 import org.wso2.carbon.security.jaas.HTTPCallbackHandler;
 import org.wso2.carbon.security.usercore.common.CarbonRealmServiceImpl;
+import org.wso2.carbon.security.usercore.config.AuthorizationStoreConfig;
+import org.wso2.carbon.security.usercore.config.CredentialStoreConfig;
+import org.wso2.carbon.security.usercore.config.IdentityStoreConfig;
 import org.wso2.carbon.security.usercore.connector.AuthorizationStoreConnector;
 import org.wso2.carbon.security.usercore.connector.CredentialStoreConnector;
 import org.wso2.carbon.security.usercore.connector.IdentityStoreConnector;
+import org.wso2.carbon.security.usercore.store.AuthorizationStore;
 
-import javax.security.auth.spi.LoginModule;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -42,6 +45,9 @@ public class CarbonSecurityDataHolder {
     private Map<String, AuthorizationStoreConnector> authorizationStoreConnectorMap = new HashMap<>();
     private Map<String, CredentialStoreConnector> credentialStoreConnectorMap = new HashMap<>();
     private Map<String, IdentityStoreConnector> identityStoreConnectorMap = new HashMap<>();
+    private Map<String, CredentialStoreConfig> credentialStoreConfigMap = new HashMap<>();
+    private Map<String, IdentityStoreConfig> identityStoreConfigMap = new HashMap<>();
+    private Map<String, AuthorizationStoreConfig> authorizationStoreConfigMap = new HashMap<>();
     private BundleContext bundleContext;
 
     private CarbonSecurityDataHolder() {
@@ -109,5 +115,29 @@ public class CarbonSecurityDataHolder {
 
     public void setBundleContext(BundleContext bundleContext) {
         this.bundleContext = bundleContext;
+    }
+
+    public Map<String, CredentialStoreConfig> getCredentialStoreConfigMap() {
+        return credentialStoreConfigMap;
+    }
+
+    public void addCredentialStoreConfig(String connectorName, CredentialStoreConfig storeConfig) {
+        this.credentialStoreConfigMap.put(connectorName, storeConfig);
+    }
+
+    public Map<String, IdentityStoreConfig> getIdentityStoreConfigMap() {
+        return identityStoreConfigMap;
+    }
+
+    public void addIdentityStoreConfig(String connectorName, IdentityStoreConfig storeConfig) {
+        this.identityStoreConfigMap.put(connectorName, storeConfig);
+    }
+
+    public Map<String, AuthorizationStoreConfig> getAuthorizationStoreConfigMap() {
+        return authorizationStoreConfigMap;
+    }
+
+    public void addAuthorizationStoreConfig(String connectorName, AuthorizationStoreConfig storeConfig) {
+        this.authorizationStoreConfigMap.put(connectorName, storeConfig);
     }
 }
