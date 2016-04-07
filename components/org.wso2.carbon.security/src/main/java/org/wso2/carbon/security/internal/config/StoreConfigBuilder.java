@@ -64,7 +64,10 @@ public class StoreConfigBuilder {
                     throw new IllegalArgumentException("Unable to read ");
                 }
 
-                if(values.get(CarbonSecurityConstants.STORE_CONNECTORS) != null) {
+                if(values.get(CarbonSecurityConstants.STORE_CONNECTORS) != null
+                   && values.get(CarbonSecurityConstants.STORE_CONNECTORS) instanceof List
+                        && (((List) values.get(CarbonSecurityConstants.STORE_CONNECTORS)).get(0) != null)) {
+
                     ((List<Map<String, String>>)values.get(CarbonSecurityConstants.STORE_CONNECTORS)).forEach(
                             localConnector -> {
                                 String connectorName = localConnector.get("name");
@@ -81,7 +84,9 @@ public class StoreConfigBuilder {
                     );
                 }
 
-                if(values.get(CarbonSecurityConstants.CREDENTIAL_STORE) != null) {
+                if(values.get(CarbonSecurityConstants.CREDENTIAL_STORE) != null
+                   && values.get(CarbonSecurityConstants.CREDENTIAL_STORE) instanceof Map) {
+
                     Map<String, Properties> credentialConnectorMap = getStoreConfig((Map<String,
                             String>) values.get(CarbonSecurityConstants.CREDENTIAL_STORE), connectors, localConnectors);
                     if(credentialConnectorMap.size() > 0) {
@@ -91,10 +96,12 @@ public class StoreConfigBuilder {
                         );
                     }
                 } else {
-                    log.warn("TODO");
+                    new RuntimePermission("Valid credentialStore configuration is not available in store-configure.yml");
                 }
 
-                if(values.get(CarbonSecurityConstants.IDENTITY_STORE) != null) {
+                if(values.get(CarbonSecurityConstants.IDENTITY_STORE) != null
+                   && values.get(CarbonSecurityConstants.IDENTITY_STORE) instanceof Map) {
+
                     Map<String, Properties> identityStoreConnectorMap = getStoreConfig((Map<String,
                             String>) values.get(CarbonSecurityConstants.IDENTITY_STORE), connectors, localConnectors);
                     if(identityStoreConnectorMap.size() > 0) {
@@ -104,10 +111,12 @@ public class StoreConfigBuilder {
                         );
                     }
                 } else {
-                    log.warn("TODO");
+                    new RuntimePermission("Valid identityStore configuration is not available in store-configure.yml");
                 }
 
-                if(values.get(CarbonSecurityConstants.AUTHORIZATION_STORE) != null) {
+                if(values.get(CarbonSecurityConstants.AUTHORIZATION_STORE) != null
+                   && values.get(CarbonSecurityConstants.AUTHORIZATION_STORE) instanceof Map) {
+
                     Map<String, Properties> credentialConnectorMap = getStoreConfig((Map<String,
                             String>) values.get(CarbonSecurityConstants.AUTHORIZATION_STORE), connectors, localConnectors);
                     if(credentialConnectorMap.size() > 0) {
@@ -117,12 +126,11 @@ public class StoreConfigBuilder {
                         );
                     }
                 } else {
-                    log.warn("TODO");
+                    new RuntimePermission("Valid authorizationStore configuration is not available in store-configure.yml");
                 }
 
             } catch (IOException e) {
-                String msg = "Error while loading store-config.yml configuration file";
-                throw new RuntimeException(msg, e);
+                throw new RuntimeException("Error while loading store-config.yml configuration file", e);
             }
         }
     }
@@ -133,7 +141,7 @@ public class StoreConfigBuilder {
         Map<String, Properties> connectorConfigMap = new HashMap<>();
         String connectorName = connectorProperties.get("connector");
 
-        if(connectorName != null) {
+        if(connectorName != null && !connectorName.trim().isEmpty()) {
             connectorProperties.remove("connector");
             Arrays.asList(connectorName.split(",")).forEach(
                     connector -> {
@@ -159,7 +167,7 @@ public class StoreConfigBuilder {
                     }
             );
         } else {
-            //TODO
+            log.warn("Connector name is not available");
         }
 
         return connectorConfigMap;
@@ -175,19 +183,18 @@ public class StoreConfigBuilder {
             try (DirectoryStream<Path> stream = Files.newDirectoryStream(path, "*-connector.yml")) {
                 for (Path entry : stream) {
                     Map<String, String> values = (Map<String, String>) new Yaml().load(Files.newInputStream(entry));
-
-                    String connectorName = values.get("name");
-                    if (connectorName == null && connectorName.trim().isEmpty()) {
-                        throw new IllegalArgumentException("Unable to find the 'name' entry in the file " + entry
-                                .toString());
+                    String connectorName = values != null ? values.get("name") : null;
+                    if (connectorName != null && !connectorName.trim().isEmpty()) {
+                        values.remove("name");
+                        Properties storeProperties = new Properties();
+                        values.forEach(storeProperties::put);
+                        connectorProperties.put(connectorName, storeProperties);
+                    } else {
+                        log.warn("Content is empty in the connector config file: " + entry.toString());
                     }
-                    values.remove("name");
-                    Properties storeProperties = new Properties();
-                    values.forEach(storeProperties::put);
-                    connectorProperties.put(connectorName, storeProperties);
                 }
             } catch (DirectoryIteratorException | IOException ex) {
-                // TODO
+                throw new RuntimeException("Failed to read connector files from path: " + path.toString(), ex);
             }
         }
 
