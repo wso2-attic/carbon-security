@@ -16,21 +16,23 @@
 
 package org.wso2.carbon.security.boot;
 
-import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.InvalidSyntaxException;
+import org.osgi.framework.ServiceReference;
 
-import java.util.HashMap;
-import java.util.Map;
 import javax.security.auth.Subject;
 import javax.security.auth.callback.CallbackHandler;
 import javax.security.auth.login.LoginException;
 import javax.security.auth.spi.LoginModule;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * <p>
  * Proxy login module which act as a wrapper for real login modules. Two properties must be set from the javax
  * .security.auth.login.Configuration implementation, the name of the login module and bundle id to be used to load it.
- *
+ * <p/>
  * This class MUST be available from all modules.
  * </p>
  */
@@ -64,23 +66,20 @@ public class ProxyLoginModule implements LoginModule {
                                             "javax.security.auth.login.Configuration implementation");
         }
 
-        String bundleId = (String) updatedOptions.remove(PROPERTY_BUNDLE_ID);
-        if (bundleId == null) {
-            throw new IllegalStateException("Option " + PROPERTY_BUNDLE_ID + " must be set to the name " +
-                                            "javax.security.auth.login.Configuration implementation");
-        }
-
-        Bundle bundle = bundleContext.getBundle(Long.parseLong(bundleId));
-        if (bundle == null) {
-            throw new IllegalStateException("No bundle found for id " + bundleId);
-        }
-
         try {
-            instance = (LoginModule) bundle.loadClass(module).newInstance();
-        } catch (InstantiationException | IllegalAccessException e) {
-            throw new IllegalStateException("Failed to instantiate " + module, e);
-        } catch (ClassNotFoundException e) {
-            throw new IllegalStateException("Unable to find login module " + module + " of the bundle " + bundleId, e);
+            Collection<ServiceReference<LoginModule>> serviceReferences = bundleContext.getServiceReferences
+                    (LoginModule.class, "(&(login.module.class.name=" + module + ")(service.scope=prototype))");
+            if (serviceReferences != null) {
+                serviceReferences.forEach(
+                        serviceReference -> instance = bundleContext.getServiceObjects(serviceReference).getService()
+                );
+            }
+        } catch (InvalidSyntaxException e) {
+            throw new IllegalStateException("Unable to find login module service reference for module " + module);
+        }
+
+        if (instance == null) {
+            throw new IllegalStateException("Unable to find login module " + module);
         }
 
         instance.initialize(subject, callbackHandler, sharedState, updatedOptions);
