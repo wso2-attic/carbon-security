@@ -32,11 +32,12 @@ import org.wso2.carbon.security.boot.ProxyLoginModule;
 import org.wso2.carbon.security.internal.config.DefaultPermissionInfo;
 import org.wso2.carbon.security.internal.config.DefaultPermissionInfoCollection;
 import org.wso2.carbon.security.internal.config.SecurityConfigBuilder;
+import org.wso2.carbon.security.internal.osgi.JWTLoginModuleFactory;
+import org.wso2.carbon.security.internal.osgi.SAML2LoginModuleFactory;
+import org.wso2.carbon.security.internal.osgi.UserNamePasswordLoginModuleFactory;
 import org.wso2.carbon.security.jaas.CarbonJAASConfiguration;
-import org.wso2.carbon.security.jaas.CarbonLoginModuleService;
 import org.wso2.carbon.security.jaas.CarbonPolicy;
 import org.wso2.carbon.security.jaas.HTTPCallbackHandlerFactory;
-import org.wso2.carbon.security.jaas.LoginModuleService;
 import org.wso2.carbon.security.jaas.handler.BasicAuthCallbackHandlerFactory;
 import org.wso2.carbon.security.jaas.handler.JWTCallbackHandlerFactory;
 import org.wso2.carbon.security.jaas.handler.SAMLCallbackHandlerFactory;
@@ -49,9 +50,11 @@ import org.wso2.carbon.security.usercore.connector.CredentialStoreConnector;
 import org.wso2.carbon.security.usercore.connector.IdentityStoreConnector;
 import org.wso2.carbon.security.usercore.service.RealmService;
 
+import javax.security.auth.spi.LoginModule;
 import java.security.Policy;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 
@@ -78,13 +81,6 @@ public class CarbonSecurityComponent {
         // if security manager is enabled init authorization configs
         if (System.getProperty("java.security.manager") != null) {
             initAuthorizationConfigs(bundleContext);
-        }
-
-        try {
-            loginModuleServiceRegistration = bundleContext.registerService(LoginModuleService.class.getName(),
-                                                                           new CarbonLoginModuleService(), null);
-        } catch (Throwable e) {
-            log.error("Failed to register LoginModuleService", e);
         }
 
         try {
@@ -199,12 +195,17 @@ public class CarbonSecurityComponent {
         configuration.init();
 
         //Registering login modules provided by the bundle
-        long bundleId = bundleContext.getBundle().getBundleId();
-        CarbonSecurityDataHolder.getInstance().addLoginModule(bundleId, UsernamePasswordLoginModule.class
-                .getName());
-        CarbonSecurityDataHolder.getInstance().addLoginModule(bundleId, JWTLoginModule.class.getName());
-        CarbonSecurityDataHolder.getInstance().addLoginModule(bundleId, SAML2LoginModule.class.getName());
+        Hashtable<String, String> paramDictionary1 = new Hashtable<>();
+        paramDictionary1.put("login.module.class.name", UsernamePasswordLoginModule.class.getName());
+        bundleContext.registerService(LoginModule.class, new UserNamePasswordLoginModuleFactory(), paramDictionary1);
 
+        Hashtable<String, String> paramDictionary2 = new Hashtable<>();
+        paramDictionary2.put("login.module.class.name", JWTLoginModule.class.getName());
+        bundleContext.registerService(LoginModule.class, new JWTLoginModuleFactory(), paramDictionary2);
+
+        Hashtable<String, String> paramDictionary3 = new Hashtable<>();
+        paramDictionary3.put("login.module.class.name", SAML2LoginModule.class.getName());
+        bundleContext.registerService(LoginModule.class, new SAML2LoginModuleFactory(), paramDictionary3);
 
         // Registering callback handler factories
         CarbonSecurityDataHolder.getInstance().registerCallbackHandlerFactory(new BasicAuthCallbackHandlerFactory());
