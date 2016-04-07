@@ -29,9 +29,16 @@ public class CarbonSecurityConstants {
     public static final String HTTP_AUTHORIZATION_PREFIX_BEARER = "Bearer";
     public static final String HTTP_AUTHORIZATION_PREFIX_BASIC = "Basic";
 
+    // Supported Login Modules
     public static final String USERNAME_PASSWORD_LOGIN_MODULE = "USERNAME_PASSWORD_LM";
     public static final String JWT_LOGIN_MODULE = "JWT_LM";
     public static final String SAML_LOGIN_MODULE = "SAML_LM";
+
+    // Store Names
+    public static final String CREDENTIAL_STORE = "credentialStore";
+    public static final String IDENTITY_STORE = "identityStore";
+    public static final String AUTHORIZATION_STORE = "authorizationStore";
+    public static final String STORE_CONNECTORS = "storeConnectors";
 
     public static Path getCarbonHomeDirectory() {
         return Paths.get(System.getProperty(CARBON_HOME));

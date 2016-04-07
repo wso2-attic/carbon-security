@@ -32,6 +32,7 @@ import org.wso2.carbon.security.boot.ProxyLoginModule;
 import org.wso2.carbon.security.internal.config.DefaultPermissionInfo;
 import org.wso2.carbon.security.internal.config.DefaultPermissionInfoCollection;
 import org.wso2.carbon.security.internal.config.SecurityConfigBuilder;
+import org.wso2.carbon.security.internal.config.StoreConfigBuilder;
 import org.wso2.carbon.security.internal.osgi.JWTLoginModuleFactory;
 import org.wso2.carbon.security.internal.osgi.SAML2LoginModuleFactory;
 import org.wso2.carbon.security.internal.osgi.UserNamePasswordLoginModuleFactory;
@@ -84,6 +85,8 @@ public class CarbonSecurityComponent {
         if (System.getProperty("java.security.manager") != null) {
             initAuthorizationConfigs(bundleContext);
         }
+
+        StoreConfigBuilder.buildStoreConfig();
 
         try {
             CarbonRealmServiceImpl carbonRealmService = new CarbonRealmServiceImpl();
