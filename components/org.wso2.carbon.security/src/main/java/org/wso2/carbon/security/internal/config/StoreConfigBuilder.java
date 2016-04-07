@@ -232,4 +232,23 @@ public class StoreConfigBuilder {
 
         return new CredentialStoreConfig(storeProperties);
     }
+
+    /**
+     * Build a AuthorizationStoreConfig from a file.
+     * @param fileName Name of the configuration file.
+     * @return Instance of CredentialStoreConfig.
+     */
+    public static AuthorizationStoreConfig buildAuthorizationStoreConfig(String fileName) throws IOException {
+
+        Path file = Paths.get(CarbonSecurityConstants.getCarbonHomeDirectory().toString(), "conf", "security",
+                fileName);
+
+        Yaml yaml = new Yaml();
+        Map<String, String> values = (Map<String, String>) yaml.load(Files.newInputStream(file));
+
+        Properties storeProperties = new Properties();
+        values.forEach(storeProperties::put);
+
+        return new AuthorizationStoreConfig(storeProperties);
+    }
 }

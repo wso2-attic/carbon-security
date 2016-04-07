@@ -18,6 +18,7 @@ package org.wso2.carbon.security.usercore.connector;
 
 import org.wso2.carbon.security.usercore.bean.Permission;
 import org.wso2.carbon.security.usercore.bean.Role;
+import org.wso2.carbon.security.usercore.config.AuthorizationStoreConfig;
 import org.wso2.carbon.security.usercore.exception.AuthorizationStoreException;
 
 import java.util.List;
@@ -27,19 +28,21 @@ import java.util.List;
  */
 public interface AuthorizationStoreConnector {
 
+    void init(AuthorizationStoreConfig authorizationStoreConfig) throws AuthorizationStoreException;
+
     /**
      * Get the role of from role id.
      * @param roleId Id of the Role
      * @return Role.
      */
-    public Role getRole(String roleId);
+    Role getRole(String roleId) throws AuthorizationStoreException;
 
     /**
      * Get permission from the permission id.
      * @param permissionId Id of the permission.
      * @return Permission.
      */
-    public Permission getPermission(String permissionId);
+    Permission getPermission(String permissionId) throws AuthorizationStoreException;
 
     /**
      * List the roles.
@@ -47,7 +50,7 @@ public interface AuthorizationStoreConnector {
      * @param filter
      * @return
      */
-    public List<Role> listRoles(String atribute, String filter);
+    List<Role> listRoles(String atribute, String filter) throws AuthorizationStoreException;
 
     /**
      * List the permissions.
@@ -55,35 +58,35 @@ public interface AuthorizationStoreConnector {
      * @param filter
      * @return
      */
-    public List<Permission> listPermissions(String atribute, String filter);
+    List<Permission> listPermissions(String atribute, String filter) throws AuthorizationStoreException;
 
     /**
      * Get roles for the user id.
      * @param userId User id of the user.
      * @return Roles associated to the user.
      */
-    public List<Role> getRolesForUser(String userId);
+    List<Role> getRolesForUser(String userId) throws AuthorizationStoreException;
 
     /**
      * Get roles associated to the group.
-     * @param roleName Role name of the role.
+     * @param groupName Name of the group.
      * @return Roles associated to the group.
      */
-    public List<Role> getRolesForGroup(String roleName);
+    List<Role> getRolesForGroup(String groupName) throws AuthorizationStoreException;
 
     /**
      * Get permissions associated to the role.
      * @param roleName Role name of the required role.
      * @return List of permissions associated to the user.
      */
-    public List<Permission> getPermissionsForRole(String roleName);
+    List<Permission> getPermissionsForRole(String roleName) throws AuthorizationStoreException;
 
     /**
      * Add a user against a role.
      * @param userId Id of the user.
      * @param roleName Name of the role.
      */
-    public void assignUserRole(String userId, String roleName) throws AuthorizationStoreException;
+    void assignUserRole(String userId, String roleName) throws AuthorizationStoreException;
 
     /**
      * Add a permission to a role.
@@ -91,5 +94,5 @@ public interface AuthorizationStoreConnector {
      * @param permissionName Name of the permission.
      * @throws AuthorizationStoreException
      */
-    public void addRolePermission(String roleName, String permissionName) throws AuthorizationStoreException;
+    void addRolePermission(String roleName, String permissionName) throws AuthorizationStoreException;
 }

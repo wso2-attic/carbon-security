@@ -16,6 +16,7 @@
 
 package org.wso2.carbon.security.usercore.connector;
 
+import org.wso2.carbon.security.usercore.bean.User;
 import org.wso2.carbon.security.usercore.config.CredentialStoreConfig;
 import org.wso2.carbon.security.usercore.exception.AuthenticationFailure;
 import org.wso2.carbon.security.usercore.exception.CredentialStoreException;
@@ -43,10 +44,10 @@ public interface CredentialStoreConnector {
     /**
      * Authenticate user using callbacks.
      * @param callbacks Callbacks to get the user attributes.
-     * @return Authentication result, User id if success, null otherwise.
+     * @return Authentication result, User if success, null otherwise.
      * @throws CredentialStoreException
      */
-    String authenticate(Callback[] callbacks) throws CredentialStoreException, AuthenticationFailure;
+    User authenticate(Callback[] callbacks) throws CredentialStoreException, AuthenticationFailure;
 
     /**
      * Add new credential to the User.

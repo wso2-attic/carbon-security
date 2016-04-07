@@ -26,11 +26,15 @@ import org.testng.annotations.Listeners;
 import org.testng.annotations.Test;
 import org.wso2.carbon.osgi.test.util.CarbonSysPropConfiguration;
 import org.wso2.carbon.osgi.test.util.OSGiTestConfigurationUtils;
+import org.wso2.carbon.security.usercore.bean.Permission;
 import org.wso2.carbon.security.usercore.bean.User;
 import org.wso2.carbon.security.usercore.exception.AuthenticationFailure;
+import org.wso2.carbon.security.usercore.exception.AuthorizationException;
+import org.wso2.carbon.security.usercore.exception.AuthorizationStoreException;
 import org.wso2.carbon.security.usercore.exception.CredentialStoreException;
 import org.wso2.carbon.security.usercore.exception.IdentityStoreException;
 import org.wso2.carbon.security.usercore.service.RealmService;
+import org.wso2.carbon.security.usercore.store.AuthorizationStore;
 import org.wso2.carbon.security.usercore.store.CredentialStore;
 import org.wso2.carbon.security.usercore.store.IdentityStore;
 
@@ -58,7 +62,10 @@ import static org.testng.Assert.assertTrue;
 public class UsercoreTests {
 
     private static final String DEFAULT_USERNAME = "admin";
+    private static final String DEFAULT_ROLE = "admin";
+    private static final String DEFAULT_GROUP = "is";
     private static final String DEFAULT_USER_ID = "41dadd2aea6e11e59ce95e5517507c66";
+    private static final String DEFAULT_ROLE_ID = "985b79ecfcdf11e586aa5e5517507c66";
     private static final String DEFAULT_GROUP_ID = "a422aa98ecf411e59ce95e5517507c66";
 
     @Inject
@@ -164,6 +171,18 @@ public class UsercoreTests {
         CredentialStore authManager = realmService.getCredentialStore();
 
         assertNotNull(authManager.authenticate(callbacks));
+    }
+
+    /* Authorization flow */
+
+    @Test
+    public void testIsUserAuthorizedValid() throws AuthorizationException, AuthorizationStoreException,
+            IdentityStoreException {
+
+        Permission permission = new Permission("root/resource/id", "add");
+
+        AuthorizationStore authorizationStore = realmService.getAuthorizationStore();
+        assertTrue(authorizationStore.isUserAuthorized(DEFAULT_USER_ID, permission));
     }
 
     /* Identity management flow */

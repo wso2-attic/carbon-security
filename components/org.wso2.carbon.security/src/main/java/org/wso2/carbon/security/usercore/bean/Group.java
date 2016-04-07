@@ -16,6 +16,7 @@
 
 package org.wso2.carbon.security.usercore.bean;
 
+import org.wso2.carbon.security.usercore.exception.AuthorizationStoreException;
 import org.wso2.carbon.security.usercore.exception.IdentityStoreException;
 import org.wso2.carbon.security.usercore.store.AuthorizationStore;
 import org.wso2.carbon.security.usercore.store.IdentityStore;
@@ -48,6 +49,14 @@ public class Group {
     }
 
     /**
+     * Get the group id.
+     * @return Group id.
+     */
+    public String getGroupID() {
+        return groupID;
+    }
+
+    /**
      * Get the users assigned to this group.
      * @return List of users assigned to this group.
      */
@@ -67,7 +76,7 @@ public class Group {
      * Get Roles assigned to this Group.
      * @return List of Roles.
      */
-    public List<Role> getRoles() {
+    public List<Role> getRoles() throws AuthorizationStoreException {
         return authorizationStore.getRolesOfGroup(groupID);
     }
 
