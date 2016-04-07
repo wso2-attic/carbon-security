@@ -17,6 +17,7 @@
 package org.wso2.carbon.security.usercore.bean;
 
 import org.wso2.carbon.security.usercore.exception.AuthorizationException;
+import org.wso2.carbon.security.usercore.exception.AuthorizationStoreException;
 import org.wso2.carbon.security.usercore.exception.IdentityStoreException;
 import org.wso2.carbon.security.usercore.store.AuthorizationStore;
 import org.wso2.carbon.security.usercore.store.IdentityStore;
@@ -38,7 +39,7 @@ public class User {
     private IdentityStore identityStore = new IdentityStore();
     private AuthorizationStore authorizationStore = new AuthorizationStore();
 
-    public User(String userID, String userStoreID, String userName) throws IdentityStoreException {
+    public User(String userID, String userStoreID, String userName) {
 
         this.userID = userID;
         this.userStoreID = userStoreID;
@@ -119,7 +120,8 @@ public class User {
      * @return True if authorized.
      * @throws AuthorizationException
      */
-    public boolean isAuthorized(Permission permission) throws AuthorizationException {
+    public boolean isAuthorized(Permission permission) throws AuthorizationException, AuthorizationStoreException,
+            IdentityStoreException {
         return authorizationStore.isUserAuthorized(userID, permission);
     }
 

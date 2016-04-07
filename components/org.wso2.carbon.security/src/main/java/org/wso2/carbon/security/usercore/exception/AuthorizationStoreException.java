@@ -28,4 +28,8 @@ public class AuthorizationStoreException extends Exception {
     public AuthorizationStoreException(String message) {
         super(message);
     }
+
+    public AuthorizationStoreException(String messgae, Throwable cause) {
+        super(messgae, cause);
+    }
 }

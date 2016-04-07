@@ -19,14 +19,22 @@ package org.wso2.carbon.security.usercore.store;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.wso2.carbon.security.internal.CarbonSecurityDataHolder;
+import org.wso2.carbon.security.internal.config.StoreConfigBuilder;
 import org.wso2.carbon.security.usercore.bean.Group;
 import org.wso2.carbon.security.usercore.bean.Permission;
 import org.wso2.carbon.security.usercore.bean.Role;
 import org.wso2.carbon.security.usercore.bean.User;
+import org.wso2.carbon.security.usercore.config.AuthorizationStoreConfig;
+import org.wso2.carbon.security.usercore.config.CredentialStoreConfig;
 import org.wso2.carbon.security.usercore.connector.AuthorizationStoreConnector;
+import org.wso2.carbon.security.usercore.constant.UserStoreConstants;
 import org.wso2.carbon.security.usercore.exception.AuthorizationException;
+import org.wso2.carbon.security.usercore.exception.AuthorizationStoreException;
+import org.wso2.carbon.security.usercore.exception.IdentityStoreException;
+import org.wso2.carbon.security.usercore.service.RealmService;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
+import java.io.IOException;
 import java.util.List;
 
 /**
@@ -34,14 +42,21 @@ import java.util.List;
  */
 public class AuthorizationStore {
 
+    private RealmService realmService;
     private static Logger log = LoggerFactory.getLogger(AuthorizationStore.class);
-    private AuthorizationStoreConnector authorizationStore;
+    private AuthorizationStoreConnector authorizationStoreConnector;
 
-    public AuthorizationStore() {
+    public void init(RealmService realmService) throws IOException, AuthorizationStoreException {
+
+        this.realmService = realmService;
+
+        AuthorizationStoreConfig authorizationStoreConfig = StoreConfigBuilder
+                .buildAuthorizationStoreConfig(UserStoreConstants.USER_STORE_CONFIGURATION_FILE);
 
         // TODO: Get the store id from the configuration file.
-        authorizationStore = CarbonSecurityDataHolder.getInstance().getAuthorizationStoreConnectorMap()
+        authorizationStoreConnector = CarbonSecurityDataHolder.getInstance().getAuthorizationStoreConnectorMap()
                 .get("JDBCAuthorizationStore");
+        authorizationStoreConnector.init(authorizationStoreConfig);
     }
 
     /**
@@ -50,15 +65,25 @@ public class AuthorizationStore {
      * @param permission Permission that needs to check on.
      * @return True if the user has required permission.
      */
-    public boolean isUserAuthorized(String userId, Permission permission) throws AuthorizationException {
+    public boolean isUserAuthorized(String userId, Permission permission) throws AuthorizationException,
+            AuthorizationStoreException, IdentityStoreException {
 
-        List<Role> roles = authorizationStore.getRolesForUser(userId);
+        // Get the roles directly associated to the user.
+        List<Role> roles = authorizationStoreConnector.getRolesForUser(userId);
+
+        // Get the roles associated through groups.
+        List<Group> groups = realmService.getIdentityStore().getGroupsOfUser(userId);
+
+        for (Group group : groups) {
+            roles.addAll(getRolesOfGroup(group.getGroupID()));
+        }
+
         if (roles == null) {
             throw new AuthorizationException("No roles assigned for this user");
         }
 
         for (Role role : roles) {
-            List<Permission> permissions = authorizationStore.getPermissionsForRole(role.getName());
+            List<Permission> permissions = authorizationStoreConnector.getPermissionsForRole(role.getRoleId());
             if (permissions == null) {
                 continue;
             }
@@ -78,11 +103,12 @@ public class AuthorizationStore {
      * @param permission Permission.
      * @return True if authorized.
      */
-    public boolean isRoleAuthorized(String roleId, Permission permission) throws AuthorizationException {
+    public boolean isRoleAuthorized(String roleId, Permission permission) throws AuthorizationException,
+            AuthorizationStoreException {
 
-        Role role = authorizationStore.getRole(roleId);
+        Role role = authorizationStoreConnector.getRole(roleId);
 
-        List<Permission> permissions = authorizationStore.getPermissionsForRole(role.getName());
+        List<Permission> permissions = authorizationStoreConnector.getPermissionsForRole(role.getName());
 
         if (permissions == null) {
             throw new AuthorizationException("No permissions assigned for this role");
@@ -158,8 +184,9 @@ public class AuthorizationStore {
      * @param groupId Group id.
      * @return List of Roles.
      */
-    public List<Role> getRolesOfGroup(String groupId) {
-        throw new NotImplementedException();
+    public List<Role> getRolesOfGroup(String groupId) throws AuthorizationStoreException {
+
+        return authorizationStoreConnector.getRolesForGroup(groupId);
     }
 
     /**

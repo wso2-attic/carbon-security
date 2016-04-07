@@ -26,6 +26,7 @@ import org.wso2.carbon.security.usercore.config.IdentityStoreConfig;
 import org.wso2.carbon.security.usercore.connector.IdentityStoreConnector;
 import org.wso2.carbon.security.usercore.constant.UserStoreConstants;
 import org.wso2.carbon.security.usercore.exception.IdentityStoreException;
+import org.wso2.carbon.security.usercore.service.RealmService;
 
 import java.io.IOException;
 import java.util.List;
@@ -36,10 +37,18 @@ import java.util.Map;
  */
 public class IdentityStore {
 
+    private RealmService realmService;
     private static final Logger log = LoggerFactory.getLogger(IdentityStore.class);
     private IdentityStoreConnector identityStoreConnector;
 
-    public void init() throws IOException, IdentityStoreException {
+    /**
+     * Initialize this instance.
+     * @throws IOException
+     * @throws IdentityStoreException
+     */
+    public void init(RealmService realmService) throws IOException, IdentityStoreException {
+
+        this.realmService = realmService;
 
         IdentityStoreConfig identityStoreConfig = StoreConfigBuilder
                 .buildIdentityStoreConfig(UserStoreConstants.USER_STORE_CONFIGURATION_FILE);

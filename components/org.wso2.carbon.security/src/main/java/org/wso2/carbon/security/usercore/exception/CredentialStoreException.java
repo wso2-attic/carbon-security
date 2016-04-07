@@ -25,7 +25,7 @@ public class CredentialStoreException extends Exception {
         super(message);
     }
 
-    public CredentialStoreException(String message, Exception e) {
-        super(message, e);
+    public CredentialStoreException(String message, Throwable cause) {
+        super(message, cause);
     }
 }

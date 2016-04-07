@@ -26,6 +26,7 @@ import org.wso2.carbon.security.usercore.context.AuthenticationContext;
 import org.wso2.carbon.security.usercore.exception.AuthenticationFailure;
 import org.wso2.carbon.security.usercore.exception.CredentialStoreException;
 import org.wso2.carbon.security.usercore.exception.IdentityStoreException;
+import org.wso2.carbon.security.usercore.service.RealmService;
 
 import java.io.IOException;
 import javax.security.auth.callback.Callback;
@@ -35,9 +36,12 @@ import javax.security.auth.callback.Callback;
  */
 public class CredentialStore {
 
+    private RealmService realmService;
     private CredentialStoreConnector credentialStoreConnector;
 
-    public void init() throws IOException, CredentialStoreException {
+    public void init(RealmService realmService) throws IOException, CredentialStoreException {
+
+        this.realmService = realmService;
 
         CredentialStoreConfig credentialStoreConfig = StoreConfigBuilder
                 .buildCredentialStoreConfig(UserStoreConstants.USER_STORE_CONFIGURATION_FILE);
@@ -58,9 +62,9 @@ public class CredentialStore {
     public AuthenticationContext authenticate(Callback[] callbacks) throws AuthenticationFailure,
             CredentialStoreException, IdentityStoreException {
 
-        String userId = credentialStoreConnector.authenticate(callbacks);
-        if (userId != null) {
-            return new AuthenticationContext(new User(userId, credentialStoreConnector.getCredentialStoreId(), null));
+        User user = credentialStoreConnector.authenticate(callbacks);
+        if (user != null) {
+            return new AuthenticationContext(user);
         }
         throw new AuthenticationFailure("Invalid user credentials.");
     }
