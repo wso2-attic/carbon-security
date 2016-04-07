@@ -20,6 +20,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.wso2.carbon.security.internal.CarbonSecurityDataHolder;
 import org.wso2.carbon.security.jaas.util.CarbonSecurityConstants;
+import org.wso2.carbon.security.usercore.config.AuthorizationStoreConfig;
 import org.wso2.carbon.security.usercore.config.CredentialStoreConfig;
 import org.wso2.carbon.security.usercore.config.IdentityStoreConfig;
 import org.yaml.snakeyaml.Yaml;
@@ -72,6 +73,7 @@ public class StoreConfigBuilder {
                                                                        + localConnector
                                             .toString());
                                 }
+                                localConnector.remove("name");
                                 Properties storeProperties = new Properties();
                                 localConnector.forEach(storeProperties::put);
                                 localConnectors.put(connectorName, storeProperties);
@@ -107,11 +109,11 @@ public class StoreConfigBuilder {
 
                 if(values.get(CarbonSecurityConstants.AUTHORIZATION_STORE) != null) {
                     Map<String, Properties> credentialConnectorMap = getStoreConfig((Map<String,
-                            String>) values.get(CarbonSecurityConstants.CREDENTIAL_STORE), connectors, localConnectors);
+                            String>) values.get(CarbonSecurityConstants.AUTHORIZATION_STORE), connectors, localConnectors);
                     if(credentialConnectorMap.size() > 0) {
                         credentialConnectorMap.entrySet().forEach(
-                                entry -> CarbonSecurityDataHolder.getInstance().addCredentialStoreConfig(entry.getKey
-                                        (), new CredentialStoreConfig(entry.getValue()))
+                                entry -> CarbonSecurityDataHolder.getInstance().addAuthorizationStoreConfig(entry.getKey
+                                        (), new AuthorizationStoreConfig(entry.getValue()))
                         );
                     }
                 } else {

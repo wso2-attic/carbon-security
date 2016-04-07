@@ -21,11 +21,13 @@ import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceReference;
 import org.wso2.carbon.security.jaas.HTTPCallbackHandler;
 import org.wso2.carbon.security.usercore.common.CarbonRealmServiceImpl;
+import org.wso2.carbon.security.usercore.config.AuthorizationStoreConfig;
 import org.wso2.carbon.security.usercore.config.CredentialStoreConfig;
 import org.wso2.carbon.security.usercore.config.IdentityStoreConfig;
 import org.wso2.carbon.security.usercore.connector.AuthorizationStoreConnector;
 import org.wso2.carbon.security.usercore.connector.CredentialStoreConnector;
 import org.wso2.carbon.security.usercore.connector.IdentityStoreConnector;
+import org.wso2.carbon.security.usercore.store.AuthorizationStore;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -45,7 +47,7 @@ public class CarbonSecurityDataHolder {
     private Map<String, IdentityStoreConnector> identityStoreConnectorMap = new HashMap<>();
     private Map<String, CredentialStoreConfig> credentialStoreConfigMap = new HashMap<>();
     private Map<String, IdentityStoreConfig> identityStoreConfigMap = new HashMap<>();
-    private Map<String, CredentialStoreConfig> authorizationStoreConfigMap = new HashMap<>();
+    private Map<String, AuthorizationStoreConfig> authorizationStoreConfigMap = new HashMap<>();
     private BundleContext bundleContext;
 
     private CarbonSecurityDataHolder() {
@@ -131,11 +133,11 @@ public class CarbonSecurityDataHolder {
         this.identityStoreConfigMap.put(connectorName, storeConfig);
     }
 
-    public Map<String, CredentialStoreConfig> getAuthorizationStoreConfigMap() {
+    public Map<String, AuthorizationStoreConfig> getAuthorizationStoreConfigMap() {
         return authorizationStoreConfigMap;
     }
 
-    public void setAuthorizationStoreConfigMap(Map<String, CredentialStoreConfig> authorizationStoreConfigMap) {
-        this.authorizationStoreConfigMap = authorizationStoreConfigMap;
+    public void addAuthorizationStoreConfig(String connectorName, AuthorizationStoreConfig storeConfig) {
+        this.authorizationStoreConfigMap.put(connectorName, storeConfig);
     }
 }
