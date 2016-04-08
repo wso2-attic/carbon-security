@@ -19,12 +19,10 @@ package org.wso2.carbon.security.usercore.store;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.wso2.carbon.security.internal.CarbonSecurityDataHolder;
-import org.wso2.carbon.security.internal.config.StoreConfigBuilder;
 import org.wso2.carbon.security.usercore.bean.Group;
 import org.wso2.carbon.security.usercore.bean.User;
 import org.wso2.carbon.security.usercore.config.IdentityStoreConfig;
 import org.wso2.carbon.security.usercore.connector.IdentityStoreConnector;
-import org.wso2.carbon.security.usercore.constant.UserStoreConstants;
 import org.wso2.carbon.security.usercore.exception.IdentityStoreException;
 import org.wso2.carbon.security.usercore.service.RealmService;
 
@@ -50,12 +48,16 @@ public class IdentityStore {
 
         this.realmService = realmService;
 
-        IdentityStoreConfig identityStoreConfig = StoreConfigBuilder
-                .buildIdentityStoreConfig(UserStoreConstants.USER_STORE_CONFIGURATION_FILE);
+        // TODO: Handle multiple user stores.
 
-        // TODO: Get the store id from the configuration file.
+        Map.Entry<String, IdentityStoreConfig> firstEntry = CarbonSecurityDataHolder.getInstance()
+                .getIdentityStoreConfigMap().entrySet().iterator().next();
+
+        String identityStoreId = firstEntry.getKey();
+        IdentityStoreConfig identityStoreConfig = firstEntry.getValue();
+
         identityStoreConnector = CarbonSecurityDataHolder.getInstance().getIdentityStoreConnectorMap()
-                .get("JDBCIdentityStore");
+                .get(identityStoreId);
         identityStoreConnector.init(identityStoreConfig);
     }
 

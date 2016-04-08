@@ -1,0 +1,21 @@
+credentialStore:
+ connector: "#JDBCCredentialStore"
+identityStore:
+ connector: "#JDBCIdentityStore"
+authorizationStore:
+ connector: "#JDBCAuthorizationStore"
+
+storeConnectors:
+ -
+  name: "JDBCCredentialStore"
+  dataSource: "WSO2_CARBON_DB"
+  hashAlgorithm: "SHA-256"
+  databaseType: "MySQL"
+ -
+  name: "JDBCIdentityStore"
+  dataSource: "WSO2_CARBON_DB"
+  databaseType: "MySQL"
+ -
+  name: "JDBCAuthorizationStore"
+  dataSource: "WSO2_CARBON_DB"
+  databaseType: "MySQL"

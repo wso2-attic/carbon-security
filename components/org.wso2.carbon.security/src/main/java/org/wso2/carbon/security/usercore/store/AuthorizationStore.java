@@ -19,14 +19,12 @@ package org.wso2.carbon.security.usercore.store;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.wso2.carbon.security.internal.CarbonSecurityDataHolder;
-import org.wso2.carbon.security.internal.config.StoreConfigBuilder;
 import org.wso2.carbon.security.usercore.bean.Group;
 import org.wso2.carbon.security.usercore.bean.Permission;
 import org.wso2.carbon.security.usercore.bean.Role;
 import org.wso2.carbon.security.usercore.bean.User;
 import org.wso2.carbon.security.usercore.config.AuthorizationStoreConfig;
 import org.wso2.carbon.security.usercore.connector.AuthorizationStoreConnector;
-import org.wso2.carbon.security.usercore.constant.UserStoreConstants;
 import org.wso2.carbon.security.usercore.exception.AuthorizationException;
 import org.wso2.carbon.security.usercore.exception.AuthorizationStoreException;
 import org.wso2.carbon.security.usercore.exception.IdentityStoreException;
@@ -35,6 +33,7 @@ import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Connector for the Authorization store.
@@ -49,13 +48,17 @@ public class AuthorizationStore {
 
         this.realmService = realmService;
 
-        AuthorizationStoreConfig authorizationStoreConfig = StoreConfigBuilder
-                .buildAuthorizationStoreConfig(UserStoreConstants.USER_STORE_CONFIGURATION_FILE);
+        // TODO: Handle multiple user stores.
 
-        // TODO: Get the store id from the configuration file.
+        Map.Entry<String, AuthorizationStoreConfig> firstEntry = CarbonSecurityDataHolder.getInstance()
+                .getAuthorizationStoreConfigMap().entrySet().iterator().next();
+
+        String authorizationStoreId = firstEntry.getKey();
+        AuthorizationStoreConfig credentialStoreConfig = firstEntry.getValue();
+
         authorizationStoreConnector = CarbonSecurityDataHolder.getInstance().getAuthorizationStoreConnectorMap()
-                .get("JDBCAuthorizationStore");
-        authorizationStoreConnector.init(authorizationStoreConfig);
+                .get(authorizationStoreId);
+        authorizationStoreConnector.init(credentialStoreConfig);
     }
 
     /**
