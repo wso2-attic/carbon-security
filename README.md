@@ -16,7 +16,12 @@ Carbon Security project provides authentication and authorization implementation
 
 Following are the steps to authenticate a user with an in-built login module.
 
-Configure `carbon-jaas.config` file at `` to specify the login module to be used for authentication. For example if you wish to use the Username Password login module, `carbon-jaas.config` should look like below.
+Add following entry to the `bin/carbon.sh` file to enable JAAS based authentication,
+```
+    -Djava.security.auth.login.config="$CARBON_HOME/conf/security/carbon-jaas.config"\
+```
+
+Configure `carbon-jaas.config` file at `conf/security` to specify the login module to be used for authentication. For example if you wish to use the Username Password login module, `carbon-jaas.config` should look like below.
 
 ```
 CarbonSecurityConfig {
@@ -43,6 +48,44 @@ try {
 } catch (LoginException e) {
     //logic if login fails.
 }
+```
+
+### Authorization
+
+Following are the steps to authorize a principle from carbon authorization store.
+
+Add following entries to the `bin/carbon.sh` file to enable JAAS based authentication,
+```
+    -Djava.security.manager \
+    -Djava.security.policy="$CARBON_HOME/conf/security/security.policy" \
+```
+
+The following code snippet shows how to perfrom a authorization.
+
+```java
+    private boolean isAuthorized(Subject subject, final CarbonPermission requiredPermission) {
+
+        final SecurityManager securityManager;
+
+        if (System.getSecurityManager() == null) {
+            securityManager = new SecurityManager();
+        } else {
+            securityManager = System.getSecurityManager();
+        }
+
+        try {
+            Subject.doAsPrivileged(subject, (PrivilegedExceptionAction) () -> {
+                securityManager.checkPermission(requiredPermission);
+                return null;
+            }, null);
+            return true;
+        } catch (AccessControlException ace) {
+            return false;
+        } catch (PrivilegedActionException pae) {
+            return false;
+        }
+    }
+```
 
 ## Download
 
