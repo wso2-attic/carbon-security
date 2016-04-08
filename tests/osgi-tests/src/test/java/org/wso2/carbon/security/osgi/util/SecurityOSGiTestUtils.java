@@ -90,6 +90,10 @@ public class SecurityOSGiTestUtils {
                                       .artifactId("org.wso2.carbon.security")
                                       .versionAsInProject());
         defaultOptionList.add(mavenBundle()
+                                      .groupId("org.wso2.carbon.security.connector")
+                                      .artifactId("org.wso2.carbon.security.connector.jdbc")
+                                      .version("1.0.0-SNAPSHOT"));
+        defaultOptionList.add(mavenBundle()
                                       .groupId("commons-io.wso2")
                                       .artifactId("commons-io")
                                       .version("2.4.0.wso2v1"));

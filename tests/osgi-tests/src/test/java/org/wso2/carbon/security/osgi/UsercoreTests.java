@@ -24,6 +24,7 @@ import org.ops4j.pax.exam.testng.listener.PaxExam;
 import org.osgi.framework.BundleContext;
 import org.testng.annotations.Listeners;
 import org.testng.annotations.Test;
+import org.wso2.carbon.kernel.utils.CarbonServerInfo;
 import org.wso2.carbon.osgi.test.util.CarbonSysPropConfiguration;
 import org.wso2.carbon.osgi.test.util.OSGiTestConfigurationUtils;
 import org.wso2.carbon.security.usercore.bean.Permission;
@@ -38,16 +39,16 @@ import org.wso2.carbon.security.usercore.store.AuthorizationStore;
 import org.wso2.carbon.security.usercore.store.CredentialStore;
 import org.wso2.carbon.security.usercore.store.IdentityStore;
 
-import javax.inject.Inject;
-import javax.security.auth.callback.Callback;
-import javax.security.auth.callback.NameCallback;
-import javax.security.auth.callback.PasswordCallback;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import javax.inject.Inject;
+import javax.security.auth.callback.Callback;
+import javax.security.auth.callback.NameCallback;
+import javax.security.auth.callback.PasswordCallback;
 
 import static org.ops4j.pax.exam.CoreOptions.mavenBundle;
 import static org.testng.Assert.assertNotNull;
@@ -73,6 +74,9 @@ public class UsercoreTests {
 
     @Inject
     private RealmService realmService;
+
+    @Inject
+    private CarbonServerInfo carbonServerInfo;
 
     @Configuration
     public Option[] createConfiguration() {

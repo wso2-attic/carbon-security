@@ -27,7 +27,6 @@ import org.wso2.carbon.security.usercore.config.IdentityStoreConfig;
 import org.wso2.carbon.security.usercore.connector.AuthorizationStoreConnector;
 import org.wso2.carbon.security.usercore.connector.CredentialStoreConnector;
 import org.wso2.carbon.security.usercore.connector.IdentityStoreConnector;
-import org.wso2.carbon.security.usercore.store.AuthorizationStore;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -48,7 +47,7 @@ public class CarbonSecurityDataHolder {
     private Map<String, CredentialStoreConfig> credentialStoreConfigMap = new HashMap<>();
     private Map<String, IdentityStoreConfig> identityStoreConfigMap = new HashMap<>();
     private Map<String, AuthorizationStoreConfig> authorizationStoreConfigMap = new HashMap<>();
-    private BundleContext bundleContext;
+    private BundleContext bundleContext = null;
 
     private CarbonSecurityDataHolder() {
 
@@ -73,7 +72,8 @@ public class CarbonSecurityDataHolder {
                 );
             }
         } catch (InvalidSyntaxException e) {
-            throw new IllegalStateException("Unable to find callback handler reference for login module " + supportedLoginModule);
+            throw new IllegalStateException("Unable to find callback handler reference for login module " +
+                                            supportedLoginModule);
         }
         return callbackHandlers;
     }

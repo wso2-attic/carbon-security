@@ -29,6 +29,8 @@ import org.osgi.framework.BundleContext;
 import org.testng.Assert;
 import org.testng.annotations.Listeners;
 import org.testng.annotations.Test;
+import org.wso2.carbon.kernel.context.PrivilegedCarbonContext;
+import org.wso2.carbon.kernel.utils.CarbonServerInfo;
 import org.wso2.carbon.security.jaas.CarbonCallbackHandler;
 import org.wso2.carbon.security.osgi.util.SecurityOSGiTestUtils;
 
@@ -39,6 +41,7 @@ import javax.inject.Inject;
 import javax.security.auth.login.LoginContext;
 import javax.security.auth.login.LoginException;
 
+import static org.ops4j.pax.exam.CoreOptions.mavenBundle;
 import static org.ops4j.pax.exam.CoreOptions.systemProperty;
 
 /**
@@ -52,18 +55,40 @@ public class JAASTests {
     @Inject
     private BundleContext bundleContext;
 
+    @Inject
+    private CarbonServerInfo carbonServerInfo;
+
     @Configuration
     public Option[] createConfiguration() {
 
         List<Option> optionList = SecurityOSGiTestUtils.getDefaultSecurityPAXOptions();
+
+        optionList.add(mavenBundle()
+                               .groupId("org.wso2.carbon")
+                               .artifactId("org.wso2.carbon.core")
+                               .versionAsInProject());
+        optionList.add(mavenBundle()
+                               .groupId("net.minidev.wso2")
+                               .artifactId("json-smart")
+                               .versionAsInProject());
+        optionList.add(mavenBundle()
+                               .groupId("org.wso2.orbit.com.nimbusds")
+                               .artifactId("nimbus-jose-jwt")
+                               .versionAsInProject());
+        optionList.add(mavenBundle()
+                               .groupId("net.minidev")
+                               .artifactId("asm")
+                               .versionAsInProject());
         optionList.add(systemProperty("java.security.auth.login.config").value(Paths.get(
                 SecurityOSGiTestUtils.getCarbonHome(), "conf", "security", "carbon-jaas.config").toString()));
+
         return optionList.toArray(new Option[optionList.size()]);
     }
 
     @Test
     public void testBasicLogin() throws LoginException {
 
+        PrivilegedCarbonContext.destroyCurrentContext();
         HttpRequest httpRequest = getHTTPRequestWithAuthzHeader("Basic " + Base64.getEncoder().encodeToString
                 ("admin:admin".getBytes()));
 
@@ -78,10 +103,11 @@ public class JAASTests {
     @Test
     public void testJWTLogin() throws LoginException {
 
-        String encodedJWT = "eyJhbGciOiJSUzI1NiJ9.eyJzdWIiOiJ0ZXN0IiwiZXhwIjoxNDU5ODc2NzQ3fQ" +
-                            ".D5CxKrcdSFRM5QFKj-FZNxiwnjSUovebjIt5OQTcHh5wfIT5svR6cvu_yIEZRFcMBjTu_Ddk" +
-                            "-wwlXzZIzE2gHHI3rmkr8pXEBJGRpOz7Tll1f3w-oF32B40bLG2zBMmcZJnLq79Y13Xn3YO3Lfq0b3Y" +
-                            "-o6oHZL8tKkuG7OkvTf8";
+        PrivilegedCarbonContext.destroyCurrentContext();
+        String encodedJWT = "eyJhbGciOiJSUzI1NiJ9.eyJzdWIiOiJ0ZXN0IiwiZXhwIjo0MTAyNDI1MDAwfQ.UGwW7DmszZ-a2_YkNVgh9Ss-" +
+                            "fIJ5rAAQj9z9d8WNdJw1D_qQKDFbYztuorXl45iUIgjkQA1gIqgVUDd8ERuhpegiELevGi-_W0cQAawy2GRV5A2k" +
+                            "-y4EhQ-H065sJol4Npaw7dCTBYEbXzHYrxfcSkjXb92i8m-7mMK6pMJs5lo";
+
         HttpRequest httpRequest = getHTTPRequestWithAuthzHeader("Bearer " + encodedJWT);
 
         CarbonCallbackHandler callbackHandler = new CarbonCallbackHandler(httpRequest);
@@ -91,12 +117,8 @@ public class JAASTests {
         Assert.assertTrue(true);
     }
 
-    @Test
-    public void testSAMLLogin() {
-        //TODO
-    }
 
-
+    //curl --header "Authorization: Bearer a503faf9-45b5-4fec-8334-337284a66ea4" http://localhost:9001/rest/v1/electronics/custoers/current
     private static HttpRequest getHTTPRequestWithAuthzHeader(String headerContent) {
 
         HttpRequest httpRequest = new DefaultHttpRequest(HttpVersion.HTTP_1_1, HttpMethod.GET, "");

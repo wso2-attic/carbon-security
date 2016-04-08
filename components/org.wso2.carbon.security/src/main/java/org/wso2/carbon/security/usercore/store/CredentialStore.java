@@ -36,12 +36,9 @@ import javax.security.auth.callback.Callback;
  */
 public class CredentialStore {
 
-    private RealmService realmService;
     private CredentialStoreConnector credentialStoreConnector;
 
     public void init(RealmService realmService) throws IOException, CredentialStoreException {
-
-        this.realmService = realmService;
 
         CredentialStoreConfig credentialStoreConfig = StoreConfigBuilder
                 .buildCredentialStoreConfig(UserStoreConstants.USER_STORE_CONFIGURATION_FILE);
