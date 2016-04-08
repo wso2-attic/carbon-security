@@ -117,8 +117,6 @@ public class JAASTests {
         Assert.assertTrue(true);
     }
 
-
-    //curl --header "Authorization: Bearer a503faf9-45b5-4fec-8334-337284a66ea4" http://localhost:9001/rest/v1/electronics/custoers/current
     private static HttpRequest getHTTPRequestWithAuthzHeader(String headerContent) {
 
         HttpRequest httpRequest = new DefaultHttpRequest(HttpVersion.HTTP_1_1, HttpMethod.GET, "");
