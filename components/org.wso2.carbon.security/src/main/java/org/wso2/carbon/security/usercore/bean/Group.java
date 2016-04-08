@@ -16,6 +16,7 @@
 
 package org.wso2.carbon.security.usercore.bean;
 
+import org.wso2.carbon.security.usercore.exception.AuthorizationException;
 import org.wso2.carbon.security.usercore.exception.AuthorizationStoreException;
 import org.wso2.carbon.security.usercore.exception.IdentityStoreException;
 import org.wso2.carbon.security.usercore.store.AuthorizationStore;
@@ -85,7 +86,7 @@ public class Group {
      * @param permission Permission to be checked.
      * @return True if authorized.
      */
-    public boolean isAuthorized(Permission permission) {
+    public boolean isAuthorized(Permission permission) throws AuthorizationException, AuthorizationStoreException {
         return authorizationStore.isGroupAuthorized(groupID, permission);
     }
 
