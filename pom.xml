@@ -196,6 +196,11 @@
                 <artifactId>commons-dbcp</artifactId>
                 <version>${commons.dbcp.version}</version>
             </dependency>
+            <dependency>
+                <groupId>net.minidev</groupId>
+                <artifactId>asm</artifactId>
+                <version>${net.minidev.asm.version}</version>
+            </dependency>
 
             <!-- OSGI Tests-->
             <dependency>
@@ -315,6 +320,7 @@
         <org.snakeyaml.version>1.16.0.wso2v1</org.snakeyaml.version>
         <rs-api.version>2.0</rs-api.version>
         <gson.version>2.2.4</gson.version>
+        <net.minidev.asm.version>1.0.2</net.minidev.asm.version>
 
         <!-- OSGI Test related -->
         <testng.version>6.9.4</testng.version>
