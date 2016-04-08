@@ -33,17 +33,18 @@ public class User {
 
     private String userID;
     private String userStoreID;
-    private String tenantId;
+    private long tenantId;
     private String userName;
 
     private IdentityStore identityStore = new IdentityStore();
     private AuthorizationStore authorizationStore = new AuthorizationStore();
 
-    public User(String userID, String userStoreID, String userName) {
+    public User(String userName, String userID, String userStoreID, long tenantId) {
 
         this.userID = userID;
         this.userStoreID = userStoreID;
         this.userName = userName;
+        this.tenantId = tenantId;
     }
 
     /**
@@ -74,7 +75,7 @@ public class User {
      * Get tenant id.
      * @return Tenant id.
      */
-    public String getTenantId() {
+    public long getTenantId() {
         return tenantId;
     }
 

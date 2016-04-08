@@ -25,7 +25,6 @@ import org.wso2.carbon.security.usercore.bean.Permission;
 import org.wso2.carbon.security.usercore.bean.Role;
 import org.wso2.carbon.security.usercore.bean.User;
 import org.wso2.carbon.security.usercore.config.AuthorizationStoreConfig;
-import org.wso2.carbon.security.usercore.config.CredentialStoreConfig;
 import org.wso2.carbon.security.usercore.connector.AuthorizationStoreConnector;
 import org.wso2.carbon.security.usercore.constant.UserStoreConstants;
 import org.wso2.carbon.security.usercore.exception.AuthorizationException;
@@ -83,14 +82,8 @@ public class AuthorizationStore {
         }
 
         for (Role role : roles) {
-            List<Permission> permissions = authorizationStoreConnector.getPermissionsForRole(role.getRoleId());
-            if (permissions == null) {
-                continue;
-            }
-            for (Permission rolePermission : permissions) {
-                if (rolePermission.getPermissionString().equals(permission.getPermissionString())) {
-                    return true;
-                }
+            if (isRoleAuthorized(role.getRoleId(), permission)) {
+                return true;
             }
         }
 
@@ -106,9 +99,7 @@ public class AuthorizationStore {
     public boolean isRoleAuthorized(String roleId, Permission permission) throws AuthorizationException,
             AuthorizationStoreException {
 
-        Role role = authorizationStoreConnector.getRole(roleId);
-
-        List<Permission> permissions = authorizationStoreConnector.getPermissionsForRole(role.getName());
+        List<Permission> permissions = authorizationStoreConnector.getPermissionsForRole(roleId);
 
         if (permissions == null) {
             throw new AuthorizationException("No permissions assigned for this role");
@@ -119,6 +110,7 @@ public class AuthorizationStore {
                 return true;
             }
         }
+
         return false;
     }
 
@@ -128,8 +120,18 @@ public class AuthorizationStore {
      * @param permission Permission.
      * @return True if authorized.
      */
-    public boolean isGroupAuthorized(String groupId, Permission permission) {
-        throw new NotImplementedException();
+    public boolean isGroupAuthorized(String groupId, Permission permission) throws AuthorizationStoreException,
+            AuthorizationException {
+
+        List<Role> roles = getRolesOfGroup(groupId);
+
+        for (Role role : roles) {
+            if (isRoleAuthorized(role.getRoleId(), permission)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**
