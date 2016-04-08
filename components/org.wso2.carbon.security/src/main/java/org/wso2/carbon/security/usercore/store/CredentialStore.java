@@ -17,11 +17,9 @@
 package org.wso2.carbon.security.usercore.store;
 
 import org.wso2.carbon.security.internal.CarbonSecurityDataHolder;
-import org.wso2.carbon.security.internal.config.StoreConfigBuilder;
 import org.wso2.carbon.security.usercore.bean.User;
 import org.wso2.carbon.security.usercore.config.CredentialStoreConfig;
 import org.wso2.carbon.security.usercore.connector.CredentialStoreConnector;
-import org.wso2.carbon.security.usercore.constant.UserStoreConstants;
 import org.wso2.carbon.security.usercore.context.AuthenticationContext;
 import org.wso2.carbon.security.usercore.exception.AuthenticationFailure;
 import org.wso2.carbon.security.usercore.exception.CredentialStoreException;
@@ -29,6 +27,7 @@ import org.wso2.carbon.security.usercore.exception.IdentityStoreException;
 import org.wso2.carbon.security.usercore.service.RealmService;
 
 import java.io.IOException;
+import java.util.Map;
 import javax.security.auth.callback.Callback;
 
 /**
@@ -40,12 +39,16 @@ public class CredentialStore {
 
     public void init(RealmService realmService) throws IOException, CredentialStoreException {
 
-        CredentialStoreConfig credentialStoreConfig = StoreConfigBuilder
-                .buildCredentialStoreConfig(UserStoreConstants.USER_STORE_CONFIGURATION_FILE);
+        // TODO: Handle multiple user stores.
 
-        // TODO: Get the store connector id from configuration file.
+        Map.Entry<String, CredentialStoreConfig> firstEntry = CarbonSecurityDataHolder.getInstance()
+                .getCredentialStoreConfigMap().entrySet().iterator().next();
+
+        String credentialStoreId = firstEntry.getKey();
+        CredentialStoreConfig credentialStoreConfig = firstEntry.getValue();
+
         credentialStoreConnector = CarbonSecurityDataHolder.getInstance().getCredentialStoreConnectorMap()
-                .get("JDBCCredentialStore");
+                .get(credentialStoreId);
         credentialStoreConnector.init(credentialStoreConfig);
     }
 
