@@ -25,7 +25,6 @@ import org.wso2.carbon.security.usercore.bean.Permission;
 import org.wso2.carbon.security.usercore.bean.Role;
 import org.wso2.carbon.security.usercore.bean.User;
 import org.wso2.carbon.security.usercore.config.AuthorizationStoreConfig;
-import org.wso2.carbon.security.usercore.config.CredentialStoreConfig;
 import org.wso2.carbon.security.usercore.connector.AuthorizationStoreConnector;
 import org.wso2.carbon.security.usercore.constant.UserStoreConstants;
 import org.wso2.carbon.security.usercore.exception.AuthorizationException;

@@ -60,21 +60,20 @@ public class StoreConfigBuilder {
                 Yaml yaml = new Yaml();
                 yaml.setBeanAccess(BeanAccess.FIELD);
                 Map<String, ?> values = (Map<String, ?>) new Yaml().load(in);
-                if(values == null) {
+                if (values == null) {
                     throw new IllegalArgumentException("Unable to read ");
                 }
 
-                if(values.get(CarbonSecurityConstants.STORE_CONNECTORS) != null
-                   && values.get(CarbonSecurityConstants.STORE_CONNECTORS) instanceof List
-                        && (((List) values.get(CarbonSecurityConstants.STORE_CONNECTORS)).get(0) != null)) {
+                if (values.get(CarbonSecurityConstants.STORE_CONNECTORS) != null
+                    && values.get(CarbonSecurityConstants.STORE_CONNECTORS) instanceof List
+                    && (((List) values.get(CarbonSecurityConstants.STORE_CONNECTORS)).get(0) != null)) {
 
-                    ((List<Map<String, String>>)values.get(CarbonSecurityConstants.STORE_CONNECTORS)).forEach(
+                    ((List<Map<String, String>>) values.get(CarbonSecurityConstants.STORE_CONNECTORS)).forEach(
                             localConnector -> {
                                 String connectorName = localConnector.get("name");
                                 if (connectorName == null && connectorName.trim().isEmpty()) {
                                     throw new IllegalArgumentException("Unable to find the 'name' entry in the file "
-                                                                       + localConnector
-                                            .toString());
+                                                                       + localConnector.toString());
                                 }
                                 localConnector.remove("name");
                                 Properties storeProperties = new Properties();
@@ -84,27 +83,30 @@ public class StoreConfigBuilder {
                     );
                 }
 
-                if(values.get(CarbonSecurityConstants.CREDENTIAL_STORE) != null
-                   && values.get(CarbonSecurityConstants.CREDENTIAL_STORE) instanceof Map) {
+                if (values.get(CarbonSecurityConstants.CREDENTIAL_STORE) != null
+                    && values.get(CarbonSecurityConstants.CREDENTIAL_STORE) instanceof Map) {
 
-                    Map<String, Properties> credentialConnectorMap = getStoreConfig((Map<String,
-                            String>) values.get(CarbonSecurityConstants.CREDENTIAL_STORE), connectors, localConnectors);
-                    if(credentialConnectorMap.size() > 0) {
+                    Map<String, Properties> credentialConnectorMap = getStoreConfig(
+                            (Map<String, String>) values.get(CarbonSecurityConstants.CREDENTIAL_STORE), connectors,
+                                                                                    localConnectors);
+                    if (credentialConnectorMap.size() > 0) {
                         credentialConnectorMap.entrySet().forEach(
                                 entry -> CarbonSecurityDataHolder.getInstance().addCredentialStoreConfig(entry.getKey
                                         (), new CredentialStoreConfig(entry.getValue()))
                         );
                     }
                 } else {
-                    new RuntimePermission("Valid credentialStore configuration is not available in store-configure.yml");
+                    new RuntimePermission("Valid credentialStore configuration is not available " +
+                                          "in store-configure.yml");
                 }
 
-                if(values.get(CarbonSecurityConstants.IDENTITY_STORE) != null
-                   && values.get(CarbonSecurityConstants.IDENTITY_STORE) instanceof Map) {
+                if (values.get(CarbonSecurityConstants.IDENTITY_STORE) != null
+                    && values.get(CarbonSecurityConstants.IDENTITY_STORE) instanceof Map) {
 
-                    Map<String, Properties> identityStoreConnectorMap = getStoreConfig((Map<String,
-                            String>) values.get(CarbonSecurityConstants.IDENTITY_STORE), connectors, localConnectors);
-                    if(identityStoreConnectorMap.size() > 0) {
+                    Map<String, Properties> identityStoreConnectorMap = getStoreConfig(
+                            (Map<String, String>) values.get(CarbonSecurityConstants.IDENTITY_STORE), connectors,
+                            localConnectors);
+                    if (identityStoreConnectorMap.size() > 0) {
                         identityStoreConnectorMap.entrySet().forEach(
                                 entry -> CarbonSecurityDataHolder.getInstance().addIdentityStoreConfig(entry.getKey
                                         (), new IdentityStoreConfig(entry.getValue()))
@@ -114,19 +116,21 @@ public class StoreConfigBuilder {
                     new RuntimePermission("Valid identityStore configuration is not available in store-configure.yml");
                 }
 
-                if(values.get(CarbonSecurityConstants.AUTHORIZATION_STORE) != null
-                   && values.get(CarbonSecurityConstants.AUTHORIZATION_STORE) instanceof Map) {
+                if (values.get(CarbonSecurityConstants.AUTHORIZATION_STORE) != null
+                    && values.get(CarbonSecurityConstants.AUTHORIZATION_STORE) instanceof Map) {
 
-                    Map<String, Properties> credentialConnectorMap = getStoreConfig((Map<String,
-                            String>) values.get(CarbonSecurityConstants.AUTHORIZATION_STORE), connectors, localConnectors);
-                    if(credentialConnectorMap.size() > 0) {
+                    Map<String, Properties> credentialConnectorMap = getStoreConfig(
+                            (Map<String, String>) values.get(CarbonSecurityConstants.AUTHORIZATION_STORE), connectors,
+                                                                                    localConnectors);
+                    if (credentialConnectorMap.size() > 0) {
                         credentialConnectorMap.entrySet().forEach(
                                 entry -> CarbonSecurityDataHolder.getInstance().addAuthorizationStoreConfig(entry.getKey
                                         (), new AuthorizationStoreConfig(entry.getValue()))
                         );
                     }
                 } else {
-                    new RuntimePermission("Valid authorizationStore configuration is not available in store-configure.yml");
+                    new RuntimePermission("Valid authorizationStore configuration is not available in store-configure" +
+                                          ".yml");
                 }
 
             } catch (IOException e) {
@@ -135,21 +139,21 @@ public class StoreConfigBuilder {
         }
     }
 
-    private static  Map<String, Properties> getStoreConfig(Map<String, String> connectorProperties, Map<String,
+    private static Map<String, Properties> getStoreConfig(Map<String, String> connectorProperties, Map<String,
             Properties> connectors, Map<String, Properties> localConnectors) {
 
         Map<String, Properties> connectorConfigMap = new HashMap<>();
         String connectorName = connectorProperties.get("connector");
 
-        if(connectorName != null && !connectorName.trim().isEmpty()) {
+        if (connectorName != null && !connectorName.trim().isEmpty()) {
             connectorProperties.remove("connector");
             Arrays.asList(connectorName.split(",")).forEach(
                     connector -> {
-                        if(connector.startsWith("#")) {
+                        if (connector.startsWith("#")) {
                             Properties properties = localConnectors.get(connector.substring(1));
                             Properties updatedProperties = new Properties();
                             properties.forEach(updatedProperties::put);
-                            if(connectorProperties.size() > 0) {
+                            if (connectorProperties.size() > 0) {
                                 connectorProperties.forEach(updatedProperties::put);
                             }
 
@@ -158,7 +162,7 @@ public class StoreConfigBuilder {
                             Properties properties = connectors.get(connector);
                             Properties updatedProperties = new Properties();
                             properties.forEach(updatedProperties::put);
-                            if(connectorProperties.size() > 0) {
+                            if (connectorProperties.size() > 0) {
                                 connectorProperties.forEach(updatedProperties::put);
                             }
 
@@ -204,6 +208,7 @@ public class StoreConfigBuilder {
 
     /**
      * Build a IdentityStoreConfig from a file.
+     *
      * @param fileName Name of the configuration file.
      * @return Instance of IdentityStoreConfig.
      */
@@ -223,6 +228,7 @@ public class StoreConfigBuilder {
 
     /**
      * Build a CredentialStoreConfig from a file.
+     *
      * @param fileName Name of the configuration file.
      * @return Instance of CredentialStoreConfig.
      */
@@ -242,13 +248,14 @@ public class StoreConfigBuilder {
 
     /**
      * Build a AuthorizationStoreConfig from a file.
+     *
      * @param fileName Name of the configuration file.
      * @return Instance of CredentialStoreConfig.
      */
     public static AuthorizationStoreConfig buildAuthorizationStoreConfig(String fileName) throws IOException {
 
         Path file = Paths.get(CarbonSecurityConstants.getCarbonHomeDirectory().toString(), "conf", "security",
-                fileName);
+                              fileName);
 
         Yaml yaml = new Yaml();
         Map<String, String> values = (Map<String, String>) yaml.load(Files.newInputStream(file));

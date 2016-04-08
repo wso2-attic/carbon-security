@@ -70,6 +70,10 @@
         <!--<artifactId>opensaml</artifactId>-->
         <!--</dependency>-->
         <dependency>
+            <groupId>net.minidev</groupId>
+            <artifactId>asm</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.wso2.carbon.security</groupId>
             <artifactId>org.wso2.carbon.security.boot</artifactId>
             <version>1.0.0-SNAPSHOT</version>
@@ -96,7 +100,9 @@
             javax.naming.*,
             javax.xml.*,
             org.osgi.service.component.annotations.*;version="${org.osgi.service.component.annotations.version.range}",
-            org.wso2.carbon.security.boot.*
+            net.minidev.asm.*;version="${asm.package.version.range}",
+            org.wso2.carbon.security.boot.*,
+            org.wso2.carbon.kernel.*,
         </import.package>
 
         <dsannotations>*</dsannotations>
@@ -111,6 +117,7 @@
         <!-- Dependency package version ranges -->
         <io.netty.package.import.version.range>[4.0,5)</io.netty.package.import.version.range>
         <com.nimbusds.package.import.version.range>[2.26.1, 2.27)</com.nimbusds.package.import.version.range>
+        <asm.package.version.range>[1.0.2, 2.0.0)</asm.package.version.range>
 
         <!--Logging API version range-->
         <slf4j.logging.package.import.version.range>[1.7.1, 2.0.0)</slf4j.logging.package.import.version.range>

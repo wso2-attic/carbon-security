@@ -33,16 +33,15 @@ import org.wso2.carbon.security.internal.config.DefaultPermissionInfo;
 import org.wso2.carbon.security.internal.config.DefaultPermissionInfoCollection;
 import org.wso2.carbon.security.internal.config.SecurityConfigBuilder;
 import org.wso2.carbon.security.internal.config.StoreConfigBuilder;
+import org.wso2.carbon.security.internal.osgi.JWTCallbackHandlerFactory;
 import org.wso2.carbon.security.internal.osgi.JWTLoginModuleFactory;
 import org.wso2.carbon.security.internal.osgi.SAML2LoginModuleFactory;
+import org.wso2.carbon.security.internal.osgi.SAMLCallbackHandlerFactory;
 import org.wso2.carbon.security.internal.osgi.UserNamePasswordLoginModuleFactory;
+import org.wso2.carbon.security.internal.osgi.UsernamePasswordCallbackHandlerFactory;
 import org.wso2.carbon.security.jaas.CarbonJAASConfiguration;
 import org.wso2.carbon.security.jaas.CarbonPolicy;
-import org.wso2.carbon.security.internal.osgi.UsernamePasswordCallbackHandlerFactory;
-import org.wso2.carbon.security.internal.osgi.JWTCallbackHandlerFactory;
-import org.wso2.carbon.security.internal.osgi.SAMLCallbackHandlerFactory;
 import org.wso2.carbon.security.jaas.HTTPCallbackHandler;
-import org.wso2.carbon.security.jaas.handler.UsernamePasswordCallbackHandler;
 import org.wso2.carbon.security.jaas.modules.JWTLoginModule;
 import org.wso2.carbon.security.jaas.modules.SAML2LoginModule;
 import org.wso2.carbon.security.jaas.modules.UsernamePasswordLoginModule;
@@ -53,13 +52,13 @@ import org.wso2.carbon.security.usercore.connector.CredentialStoreConnector;
 import org.wso2.carbon.security.usercore.connector.IdentityStoreConnector;
 import org.wso2.carbon.security.usercore.service.RealmService;
 
-import javax.security.auth.spi.LoginModule;
 import java.security.Policy;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
+import javax.security.auth.spi.LoginModule;
 
 /**
  * OSGi service component which handle authentication and authorization.
@@ -73,8 +72,6 @@ public class CarbonSecurityComponent {
     private static final Logger log = LoggerFactory.getLogger(CarbonSecurityComponent.class);
 
     private ServiceRegistration realmServiceRegistration;
-
-    private ServiceRegistration loginModuleServiceRegistration;
 
     @Activate
     public void registerCarbonSecurityProvider(BundleContext bundleContext) {
@@ -105,12 +102,6 @@ public class CarbonSecurityComponent {
 
         try {
             bundleContext.ungetService(realmServiceRegistration.getReference());
-        } catch (Exception e) {
-            log.error(e.getMessage(), e);
-        }
-
-        try {
-            bundleContext.ungetService(loginModuleServiceRegistration.getReference());
         } catch (Exception e) {
             log.error(e.getMessage(), e);
         }
@@ -200,7 +191,8 @@ public class CarbonSecurityComponent {
         // Registering callback handler factories
         Hashtable<String, String> paramDictionary4 = new Hashtable<>();
         paramDictionary4.put("supported.login.module", CarbonSecurityConstants.USERNAME_PASSWORD_LOGIN_MODULE);
-        bundleContext.registerService(HTTPCallbackHandler.class, new UsernamePasswordCallbackHandlerFactory(), paramDictionary4);
+        bundleContext.registerService(HTTPCallbackHandler.class, new UsernamePasswordCallbackHandlerFactory(),
+                                      paramDictionary4);
 
         Hashtable<String, String> paramDictionary5 = new Hashtable<>();
         paramDictionary5.put("supported.login.module", CarbonSecurityConstants.JWT_LOGIN_MODULE);

@@ -22,13 +22,13 @@ import org.slf4j.LoggerFactory;
 import org.wso2.carbon.security.internal.CarbonSecurityDataHolder;
 import org.wso2.carbon.security.jaas.util.CarbonSecurityConstants;
 
+import java.io.IOException;
+import java.util.List;
 import javax.security.auth.callback.Callback;
 import javax.security.auth.callback.CallbackHandler;
 import javax.security.auth.callback.NameCallback;
 import javax.security.auth.callback.PasswordCallback;
 import javax.security.auth.callback.UnsupportedCallbackException;
-import java.io.IOException;
-import java.util.List;
 
 /**
  * The class {@code CarbonCallbackHandler} is an implementation {@code CarbonCallbackHandler}.
@@ -59,7 +59,7 @@ public class CarbonCallbackHandler implements CallbackHandler {
                         List<HTTPCallbackHandler> callbackHandlers = CarbonSecurityDataHolder
                                 .getInstance().getCallbackHandlers(CarbonSecurityConstants
                                                                            .USERNAME_PASSWORD_LOGIN_MODULE);
-                        if (callbackHandlers != null && !callbackHandlers.isEmpty()) {
+                        if (!callbackHandlers.isEmpty()) {
                             for (HTTPCallbackHandler callbackHandler : callbackHandlers) {
                                 callbackHandler.setHTTPRequest(httpRequest);
                                 if (callbackHandler.canHandle()) {
@@ -76,7 +76,7 @@ public class CarbonCallbackHandler implements CallbackHandler {
                 } else if (callback instanceof CarbonCallback) {
                     List<HTTPCallbackHandler> callbackHandlers = CarbonSecurityDataHolder.getInstance()
                             .getCallbackHandlers(((CarbonCallback) callback).getLoginModuleType());
-                    if (callbackHandlers != null && !callbackHandlers.isEmpty()) {
+                    if (!callbackHandlers.isEmpty()) {
                         for (HTTPCallbackHandler callbackHandler : callbackHandlers) {
                             callbackHandler.setHTTPRequest(httpRequest);
                             if (callbackHandler.canHandle()) {

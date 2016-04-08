@@ -29,7 +29,8 @@ public class UsernamePasswordCallbackHandlerFactory implements PrototypeServiceF
 
     @Override
     public HTTPCallbackHandler getService(Bundle bundle,
-                                          ServiceRegistration<HTTPCallbackHandler> httpCallbackHandlerServiceRegistration) {
+                                          ServiceRegistration<HTTPCallbackHandler>
+                                                  httpCallbackHandlerServiceRegistration) {
         return new UsernamePasswordCallbackHandler();
     }
 

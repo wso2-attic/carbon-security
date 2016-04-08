@@ -17,7 +17,6 @@
 package org.wso2.carbon.security.jaas;
 
 import org.wso2.carbon.security.boot.ProxyLoginModule;
-import org.wso2.carbon.security.internal.CarbonSecurityDataHolder;
 import sun.security.provider.ConfigFile.Spi;
 
 import java.net.URI;
