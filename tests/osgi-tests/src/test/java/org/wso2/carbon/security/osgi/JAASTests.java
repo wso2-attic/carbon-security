@@ -45,7 +45,7 @@ import static org.ops4j.pax.exam.CoreOptions.mavenBundle;
 import static org.ops4j.pax.exam.CoreOptions.systemProperty;
 
 /**
- * JAAS OSGI Tests
+ * JAAS OSGI Tests.
  */
 
 @Listeners(PaxExam.class)
