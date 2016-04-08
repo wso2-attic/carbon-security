@@ -23,7 +23,7 @@ import org.wso2.carbon.security.jaas.HTTPCallbackHandler;
 import org.wso2.carbon.security.jaas.handler.UsernamePasswordCallbackHandler;
 
 /**
- * UsernamePasswordCallbackHandler factory implementation
+ * UsernamePasswordCallbackHandler factory implementation.
  */
 public class UsernamePasswordCallbackHandlerFactory implements PrototypeServiceFactory<HTTPCallbackHandler> {
 
