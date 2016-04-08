@@ -16,8 +16,7 @@
 
 package org.wso2.carbon.security.usercore.sample;
 
- import org.wso2.carbon.security.usercore.common.CarbonRealmServiceImpl;
- import org.wso2.carbon.security.usercore.service.RealmService;
+import org.wso2.carbon.security.usercore.service.RealmService;
 
 /**
  * Data holder for identity gateway sample.
