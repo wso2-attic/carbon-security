@@ -24,7 +24,7 @@ import org.wso2.carbon.security.jaas.modules.UsernamePasswordLoginModule;
 import javax.security.auth.spi.LoginModule;
 
 /**
- * UsernamePasswordLoginModule factory implementation
+ * UsernamePasswordLoginModule factory implementation.
  */
 public class UserNamePasswordLoginModuleFactory implements PrototypeServiceFactory<LoginModule> {
 
