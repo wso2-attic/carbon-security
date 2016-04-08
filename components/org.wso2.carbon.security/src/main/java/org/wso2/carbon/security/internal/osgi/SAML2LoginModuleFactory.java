@@ -24,7 +24,7 @@ import org.wso2.carbon.security.jaas.modules.SAML2LoginModule;
 import javax.security.auth.spi.LoginModule;
 
 /**
- *
+ * SAML2LoginModule factory implementation
  */
 public class SAML2LoginModuleFactory implements PrototypeServiceFactory<LoginModule> {
     @Override

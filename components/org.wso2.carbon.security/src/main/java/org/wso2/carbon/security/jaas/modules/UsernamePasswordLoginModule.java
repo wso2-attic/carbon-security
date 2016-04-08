@@ -21,6 +21,8 @@ import org.slf4j.LoggerFactory;
 import org.wso2.carbon.kernel.context.PrivilegedCarbonContext;
 import org.wso2.carbon.security.internal.CarbonSecurityDataHolder;
 import org.wso2.carbon.security.jaas.CarbonPrincipal;
+import org.wso2.carbon.security.usercore.bean.User;
+import org.wso2.carbon.security.usercore.context.AuthenticationContext;
 import org.wso2.carbon.security.usercore.exception.AuthenticationFailure;
 import org.wso2.carbon.security.usercore.exception.CredentialStoreException;
 import org.wso2.carbon.security.usercore.exception.IdentityStoreException;
@@ -55,6 +57,7 @@ public class UsernamePasswordLoginModule implements LoginModule {
     private boolean success = false;
     private boolean commitSuccess = false;
     private CarbonPrincipal carbonPrincipal;
+    private User user;
 
     /**
      * <p>
@@ -107,7 +110,9 @@ public class UsernamePasswordLoginModule implements LoginModule {
         password = passwordCallback.getPassword();
 
         try {
-            CarbonSecurityDataHolder.getInstance().getCarbonRealmService().getCredentialStore().authenticate(callbacks);
+            AuthenticationContext authenticationContext = CarbonSecurityDataHolder.getInstance().getCarbonRealmService()
+                    .getCredentialStore().authenticate(callbacks);
+            user = authenticationContext.getUser();
         } catch (AuthenticationFailure authenticationFailure) {
             throw new LoginException("Authentication failure");
         } catch (IdentityStoreException e) {
@@ -138,8 +143,7 @@ public class UsernamePasswordLoginModule implements LoginModule {
         if (!success) {
             commitSuccess = false;
         } else {
-            // TODO username is set as role name temporally
-            carbonPrincipal = new CarbonPrincipal(username);
+            carbonPrincipal = new CarbonPrincipal(user);
             if (!subject.getPrincipals().contains(carbonPrincipal)) {
                 subject.getPrincipals().add(carbonPrincipal);
             }
