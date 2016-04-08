@@ -17,6 +17,7 @@
 package org.wso2.carbon.security.jaas;
 
 import org.wso2.carbon.security.jaas.util.InMemoryUserStoreManager;
+import org.wso2.carbon.security.usercore.bean.User;
 
 import java.io.Serializable;
 import java.security.Principal;
@@ -29,37 +30,28 @@ public class CarbonPrincipal implements Principal, Serializable {
 
     private static final long serialVersionUID = 6056209529374720080L;
 
-    private String name;
+    private User user;
 
     public CarbonPrincipal() {
 
     }
 
-    public CarbonPrincipal(String name) {
-
-        this.name = name;
-    }
-
-    @Override
-    public boolean equals(Object another) {
-
-        if (another instanceof CarbonPrincipal) {
-            //TODO add logic to compare
-            return true;
-        }
-        return false;
+    public CarbonPrincipal(User user) {
+        this.user = user;
     }
 
     @Override
     public int hashCode() {
-
         return 0;
     }
 
     @Override
     public String getName() {
+        return this.user.getUserName();
+    }
 
-        return this.name;
+    public User getUser() {
+        return user;
     }
 
     /**
@@ -68,7 +60,6 @@ public class CarbonPrincipal implements Principal, Serializable {
      * @return true if authorized.
      */
     public boolean isAuthorized(CarbonPermission carbonPermission) {
-
         if (carbonPermission == null) {
             throw new IllegalArgumentException("Permission object cannot be null");
         }

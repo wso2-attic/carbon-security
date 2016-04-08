@@ -24,7 +24,7 @@ import org.wso2.carbon.security.jaas.modules.JWTLoginModule;
 import javax.security.auth.spi.LoginModule;
 
 /**
- *
+ * JWTLoginModule factory implementation
  */
 public class JWTLoginModuleFactory implements PrototypeServiceFactory<LoginModule> {
 

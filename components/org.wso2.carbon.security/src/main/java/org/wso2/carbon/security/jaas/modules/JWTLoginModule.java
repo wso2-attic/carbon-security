@@ -27,6 +27,7 @@ import org.wso2.carbon.kernel.context.PrivilegedCarbonContext;
 import org.wso2.carbon.security.jaas.CarbonCallback;
 import org.wso2.carbon.security.jaas.CarbonPrincipal;
 import org.wso2.carbon.security.jaas.util.CarbonSecurityConstants;
+import org.wso2.carbon.security.usercore.bean.User;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -115,8 +116,8 @@ public class JWTLoginModule implements LoginModule {
 
             try {
                 ReadOnlyJWTClaimsSet claimsSet = signedJWT.getJWTClaimsSet();
-                String username = claimsSet.getSubject();
-                carbonPrincipal = new CarbonPrincipal(username);
+                User user = new User(claimsSet.getSubject(), null, null, -1);
+                carbonPrincipal = new CarbonPrincipal(user);
 
                 //TODO Populate the CarbonPrincipal with claims once the CarbonPrincipal class is finalized.
 

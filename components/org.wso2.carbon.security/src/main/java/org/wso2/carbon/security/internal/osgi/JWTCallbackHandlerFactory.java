@@ -23,7 +23,7 @@ import org.wso2.carbon.security.jaas.HTTPCallbackHandler;
 import org.wso2.carbon.security.jaas.handler.JWTCallbackHandler;
 
 /**
- *
+ * JWTCallbackHandler factory implementation
  */
 public class JWTCallbackHandlerFactory implements PrototypeServiceFactory<HTTPCallbackHandler> {
 
