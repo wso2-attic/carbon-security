@@ -29,6 +29,8 @@ import org.wso2.carbon.security.usercore.service.RealmService;
 import org.wso2.carbon.security.usercore.store.IdentityStore;
 import org.wso2.msf4j.Microservice;
 
+import java.util.List;
+import java.util.Map;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -37,8 +39,6 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import java.util.List;
-import java.util.Map;
 
 /**
  * Sample application to use identity management APIs in user core.
