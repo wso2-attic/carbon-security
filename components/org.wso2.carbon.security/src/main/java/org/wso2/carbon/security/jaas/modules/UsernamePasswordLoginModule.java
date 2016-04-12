@@ -79,6 +79,11 @@ public class UsernamePasswordLoginModule implements LoginModule {
     @Override
     public void initialize(Subject subject, CallbackHandler callbackHandler, Map<String, ?> sharedState,
                            Map<String, ?> options) {
+        // TODO Remove this check
+        if (username != null || password != null) {
+            log.warn("PrototypeServiceFactory failed to deliver new UsernamePasswordLoginModule object");
+        }
+
         this.subject = subject;
         this.callbackHandler = callbackHandler;
         this.sharedState = sharedState;
@@ -127,7 +132,7 @@ public class UsernamePasswordLoginModule implements LoginModule {
 
     /**
      * This method is called if the LoginContext's  overall authentication success.
-     * <p/>
+     * <p>
      * <p> If this LoginModule's own authentication attempt
      * success (checked by retrieving the private state saved by the <code>login</code> method), then this method
      * associates a <code>SamplePrincipal</code> with the <code>Subject</code> located in the
@@ -165,7 +170,7 @@ public class UsernamePasswordLoginModule implements LoginModule {
 
     /**
      * This method is called if the LoginContext's overall authentication failed.
-     * <p/>
+     * <p>
      * <p> If this LoginModule's own authentication attempt success (checked by retrieving the private state saved
      * by the <code>login</code> and <code>commit</code> methods), then this method cleans up any state that was
      * originally saved.
