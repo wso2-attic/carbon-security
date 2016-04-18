@@ -18,7 +18,6 @@ limitations under the License.
     <test name="carbon-security-tests" preserve-order="true" parallel="false">
         <classes>
             <!--<class name="org.wso2.carbon.security.osgi.JAASTests"/>-->
-            <class name="org.wso2.carbon.security.osgi.UsercoreTests"/>
         </classes>
     </test>
 </suite>
