@@ -297,7 +297,7 @@
         <carbon.security.version>1.0.0-SNAPSHOT</carbon.security.version>
         <carbon.security.boot.version>1.0.0-SNAPSHOT</carbon.security.boot.version>
 
-        <carbon.feature.plugin.version>2.1.0-SNAPSHOT</carbon.feature.plugin.version>
+        <carbon.feature.plugin.version>2.0.1</carbon.feature.plugin.version>
         <carbon.kernel.version>5.1.0-m3</carbon.kernel.version>
         <carbon.jndi.version>1.0.0-m1</carbon.jndi.version>
         <carbon.datasources.version>1.0.0-m1</carbon.datasources.version>
