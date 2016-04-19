@@ -127,9 +127,7 @@ public class JWTLoginModule implements LoginModule {
                 }
 
                 carbonPrincipal = new CarbonPrincipal(user);
-
-                //TODO Populate the CarbonPrincipal with claims once the CarbonPrincipal class is finalized.
-
+                
                 if (!subject.getPrincipals().contains(carbonPrincipal)) {
                     subject.getPrincipals().add(carbonPrincipal);
                 }
