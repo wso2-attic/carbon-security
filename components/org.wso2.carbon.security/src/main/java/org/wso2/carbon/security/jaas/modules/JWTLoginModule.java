@@ -24,10 +24,12 @@ import com.nimbusds.jwt.SignedJWT;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.wso2.carbon.kernel.context.PrivilegedCarbonContext;
+import org.wso2.carbon.security.internal.CarbonSecurityDataHolder;
 import org.wso2.carbon.security.jaas.CarbonCallback;
 import org.wso2.carbon.security.jaas.CarbonPrincipal;
 import org.wso2.carbon.security.jaas.util.CarbonSecurityConstants;
 import org.wso2.carbon.security.usercore.bean.User;
+import org.wso2.carbon.security.usercore.exception.IdentityStoreException;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -116,7 +118,14 @@ public class JWTLoginModule implements LoginModule {
 
             try {
                 ReadOnlyJWTClaimsSet claimsSet = signedJWT.getJWTClaimsSet();
-                User user = new User(claimsSet.getSubject(), null, null, -1);
+                User user;
+                try {
+                    user = CarbonSecurityDataHolder.getInstance().getCarbonRealmService().getIdentityStore()
+                            .getUser(claimsSet.getSubject());
+                } catch (IdentityStoreException e) {
+                    throw new LoginException("User with name '" + claimsSet.getSubject() + "' is not available");
+                }
+
                 carbonPrincipal = new CarbonPrincipal(user);
 
                 //TODO Populate the CarbonPrincipal with claims once the CarbonPrincipal class is finalized.
@@ -193,12 +202,11 @@ public class JWTLoginModule implements LoginModule {
     }
 
     /**
-     *
      * Returns public key from a certificate when provided key store path, key store password and certificate alias.
      *
-     * @param keyStorePath Absolute path to the key store.
+     * @param keyStorePath     Absolute path to the key store.
      * @param keyStorePassword Password of the key store.
-     * @param alias Alias of the public key certificate that needed be extracted.
+     * @param alias            Alias of the public key certificate that needed be extracted.
      * @return PublicKey extracted public key.
      * @throws IOException
      * @throws KeyStoreException
@@ -223,7 +231,6 @@ public class JWTLoginModule implements LoginModule {
 
 
     /**
-     *
      * Retrieves the file path of the client trust store.
      *
      * @return String representing the trust store path.
@@ -231,6 +238,6 @@ public class JWTLoginModule implements LoginModule {
     private String getTrustStorePath() {
         //TODO Get the key store from a System Property or a util.
         return Paths.get(System.getProperty("carbon.home"), "conf", "data-bridge",
-                                      "client-truststore.jks").toString();
+                         "client-truststore.jks").toString();
     }
 }
