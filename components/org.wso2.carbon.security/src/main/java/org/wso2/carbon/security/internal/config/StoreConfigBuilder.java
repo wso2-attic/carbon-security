@@ -54,14 +54,15 @@ public class StoreConfigBuilder {
         Map<String, Properties> localConnectors = new HashMap<>();
 
         Path file = Paths.get(CarbonSecurityConstants.getCarbonHomeDirectory().toString(), "conf", "security",
-                              "store-config.yml");
+                              CarbonSecurityConstants.STORE_CONFIG_FILE);
         if (Files.exists(file)) {
             try (Reader in = new InputStreamReader(Files.newInputStream(file), StandardCharsets.ISO_8859_1)) {
                 Yaml yaml = new Yaml();
                 yaml.setBeanAccess(BeanAccess.FIELD);
                 Map<String, ?> values = (Map<String, ?>) new Yaml().load(in);
                 if (values == null) {
-                    throw new IllegalArgumentException("Unable to read ");
+                    throw new IllegalArgumentException("Unable to read configuration values in the " +
+                                                       CarbonSecurityConstants.STORE_CONFIG_FILE);
                 }
 
                 if (values.get(CarbonSecurityConstants.STORE_CONNECTORS) != null
@@ -96,8 +97,8 @@ public class StoreConfigBuilder {
                         );
                     }
                 } else {
-                    new RuntimePermission("Valid credentialStore configuration is not available " +
-                                          "in store-configure.yml");
+                    new RuntimePermission("Valid credentialStore configuration is not available in " +
+                                          CarbonSecurityConstants.STORE_CONFIG_FILE);
                 }
 
                 if (values.get(CarbonSecurityConstants.IDENTITY_STORE) != null
@@ -113,7 +114,8 @@ public class StoreConfigBuilder {
                         );
                     }
                 } else {
-                    new RuntimePermission("Valid identityStore configuration is not available in store-configure.yml");
+                    new RuntimePermission("Valid identityStore configuration is not available in " +
+                                          CarbonSecurityConstants.STORE_CONFIG_FILE);
                 }
 
                 if (values.get(CarbonSecurityConstants.AUTHORIZATION_STORE) != null
@@ -129,12 +131,13 @@ public class StoreConfigBuilder {
                         );
                     }
                 } else {
-                    new RuntimePermission("Valid authorizationStore configuration is not available in store-configure" +
-                                          ".yml");
+                    new RuntimePermission("Valid authorizationStore configuration is not available in " +
+                                          CarbonSecurityConstants.STORE_CONFIG_FILE);
                 }
 
             } catch (IOException e) {
-                throw new RuntimeException("Error while loading store-config.yml configuration file", e);
+                throw new RuntimeException("Error while loading " + CarbonSecurityConstants.STORE_CONFIG_FILE + " " +
+                                           "configuration file", e);
             }
         }
     }

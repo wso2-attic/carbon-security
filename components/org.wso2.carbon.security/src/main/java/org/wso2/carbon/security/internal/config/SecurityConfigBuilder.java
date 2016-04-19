@@ -52,14 +52,15 @@ public class SecurityConfigBuilder {
         DefaultPermissionInfoCollection permissionInfoCollection;
 
         Path file = Paths.get(CarbonSecurityConstants.getCarbonHomeDirectory().toString(), "conf", "security",
-                              "permissions.yml");
+                              CarbonSecurityConstants.PERMISSION_CONFIG_FILE);
         if (Files.exists(file)) {
             try (Reader in = new InputStreamReader(Files.newInputStream(file), StandardCharsets.ISO_8859_1)) {
                 Yaml yaml = new Yaml();
                 yaml.setBeanAccess(BeanAccess.FIELD);
                 permissionInfoCollection = yaml.loadAs(in, DefaultPermissionInfoCollection.class);
             } catch (IOException e) {
-                String msg = "Error while loading permissions.yml configuration file";
+                String msg = "Error while loading " + CarbonSecurityConstants.PERMISSION_CONFIG_FILE + " " +
+                             "configuration file";
                 throw new RuntimeException(msg, e);
             }
         } else {
@@ -75,7 +76,7 @@ public class SecurityConfigBuilder {
         Set<DefaultPermissionInfo> permissionInfoSet = new HashSet<>();
         permissionInfoSet.add(new DefaultPermissionInfo("javax.security.auth.AuthPermission", "createLoginContext",
                                                         null));
-        permissionInfoSet.add(new DefaultPermissionInfo("javax.security.auth.AuthPermission", "doAsPrivileged",  null));
+        permissionInfoSet.add(new DefaultPermissionInfo("javax.security.auth.AuthPermission", "doAsPrivileged", null));
         permissionInfoSet.add(new DefaultPermissionInfo("javax.security.auth.AuthPermission", "modifyPrincipals",
                                                         null));
         permissionInfoSet.add(new DefaultPermissionInfo("javax.security.auth.AuthPermission",
@@ -87,7 +88,7 @@ public class SecurityConfigBuilder {
         permissionInfoSet.add(new DefaultPermissionInfo("java.lang.RuntimePermission", "createSecurityManager", null));
         permissionInfoSet.add(new DefaultPermissionInfo("java.lang.RuntimePermission", "setSecurityManager", null));
         permissionInfoSet.add(new DefaultPermissionInfo("java.lang.RuntimePermission", "getClassLoader", null));
-        permissionInfoSet.add(new DefaultPermissionInfo("java.lang.RuntimePermission", "accessDeclaredMembers",  null));
+        permissionInfoSet.add(new DefaultPermissionInfo("java.lang.RuntimePermission", "accessDeclaredMembers", null));
         permissionInfoSet.add(new DefaultPermissionInfo("java.lang.RuntimePermission", "setContextClassLoader", null));
         permissionInfoSet.add(new DefaultPermissionInfo("java.lang.RuntimePermission",
                                                         "accessClassInPackage.sun.reflect.generics" +
@@ -95,17 +96,17 @@ public class SecurityConfigBuilder {
         permissionInfoSet.add(new DefaultPermissionInfo("java.io.FilePermission", "<<ALL FILES>>", "read,write," +
                                                                                                    "delete,execute"));
         permissionInfoSet.add(new DefaultPermissionInfo("org.osgi.framework.AdaptPermission",
-                                                        "(adaptClass=org.osgi.framework.wiring.*)",  "adapt"));
+                                                        "(adaptClass=org.osgi.framework.wiring.*)", "adapt"));
         permissionInfoSet.add(new DefaultPermissionInfo("org.osgi.framework.AdaptPermission",
                                                         "(adaptClass=org.eclipse.osgi.container.Module)", "adapt"));
         permissionInfoSet.add(new DefaultPermissionInfo("javax.management.MBeanServerPermission",
-                                                        "createMBeanServer",  null));
+                                                        "createMBeanServer", null));
         permissionInfoSet.add(new DefaultPermissionInfo("javax.management.MBeanPermission", "-#-[-]", "queryNames"));
         permissionInfoSet.add(new DefaultPermissionInfo("java.net.SocketPermission", "*", "accept,connect,listen," +
                                                                                           "resolve"));
         permissionInfoSet.add(new DefaultPermissionInfo("java.net.NetPermission", "specifyStreamHandler", null));
         permissionInfoSet.add(new DefaultPermissionInfo("java.lang.reflect.ReflectPermission",
-                                                        "suppressAccessChecks",  null));
+                                                        "suppressAccessChecks", null));
         permissionInfoSet.add(new DefaultPermissionInfo("org.osgi.framework.AdminPermission", "*", "*"));
         permissionInfoSet.add(new DefaultPermissionInfo("org.osgi.framework.BundlePermission", "*", "host,provide," +
                                                                                                     "fragment"));
