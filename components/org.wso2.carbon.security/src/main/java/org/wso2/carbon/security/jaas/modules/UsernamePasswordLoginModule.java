@@ -121,13 +121,13 @@ public class UsernamePasswordLoginModule implements LoginModule {
                     .getCredentialStore().authenticate(callbacks);
             user = authenticationContext.getUser();
         } catch (AuthenticationFailure authenticationFailure) {
-            throw new LoginException("Authentication failure");
+            throw new LoginException("Authentication failure.");
         } catch (IdentityStoreException | CredentialStoreException e) {
-            log.error("Internal error occurred while authenticating a user", e);
-            throw new LoginException("Internal error occurred");
+            log.error("Internal error occurred while authenticating a user.", e);
+            throw new LoginException("Internal error occurred.");
         }
 
-        //TODO Add Audit logs
+        //TODO Add Audit logs CARBON-15870
         success = true;
         return true;
     }
@@ -147,9 +147,7 @@ public class UsernamePasswordLoginModule implements LoginModule {
     @Override
     public boolean commit() throws LoginException {
 
-        if (!success) {
-            commitSuccess = false;
-        } else {
+        if (success) {
             carbonPrincipal = new CarbonPrincipal(user);
             if (!subject.getPrincipals().contains(carbonPrincipal)) {
                 subject.getPrincipals().add(carbonPrincipal);
@@ -166,6 +164,8 @@ public class UsernamePasswordLoginModule implements LoginModule {
             password = null;
 
             commitSuccess = true;
+        } else {
+            commitSuccess = false;
         }
         return commitSuccess;
     }

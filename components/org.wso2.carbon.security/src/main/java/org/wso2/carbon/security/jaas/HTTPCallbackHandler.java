@@ -13,8 +13,18 @@ public interface HTTPCallbackHandler extends CallbackHandler {
 
     String SUPPORTED_LOGIN_MODULE = "supported.login.module";
 
+    /**
+     * Set HTTPRequest
+     *
+     * @param httpRequest
+     */
     void setHTTPRequest(HttpRequest httpRequest);
 
+    /**
+     * Evaluate whether callback handler can process the callbacks
+     *
+     * @return True if Callback handler can handle callbacks
+     */
     boolean canHandle();
 
 }
