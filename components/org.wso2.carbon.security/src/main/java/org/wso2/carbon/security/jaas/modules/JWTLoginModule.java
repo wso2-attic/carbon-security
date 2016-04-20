@@ -27,7 +27,7 @@ import org.wso2.carbon.kernel.context.PrivilegedCarbonContext;
 import org.wso2.carbon.security.jaas.CarbonCallback;
 import org.wso2.carbon.security.jaas.CarbonPrincipal;
 import org.wso2.carbon.security.jaas.util.CarbonSecurityConstants;
-import org.wso2.carbon.security.usercore.bean.User;
+import org.wso2.carbon.security.user.core.bean.User;
 
 import java.io.FileInputStream;
 import java.io.IOException;
