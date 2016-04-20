@@ -35,7 +35,7 @@ public class CarbonPermission extends BasicPermission {
         super(name);
 
         if (name.trim().isEmpty()) {
-            throw new IllegalArgumentException("Permission name cannot be empty");
+            throw new IllegalArgumentException("Permission name cannot be empty.");
         }
 
         if (actions != null && !actions.isEmpty()) {

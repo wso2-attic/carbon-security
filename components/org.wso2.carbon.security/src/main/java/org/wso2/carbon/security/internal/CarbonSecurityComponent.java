@@ -243,7 +243,7 @@ public class CarbonSecurityComponent {
         DefaultPermissionInfoCollection permissionInfoCollection = SecurityConfigBuilder
                 .buildDefaultPermissionInfoCollection();
         if (Collections.EMPTY_SET.equals(permissionInfoCollection.getPermissions())) {
-            throw new RuntimeException("Default permission info collection can't be empty");
+            throw new RuntimeException("Default permission info collection can't be empty.");
         }
 
         List<PermissionInfo> permissionInfoList = new ArrayList<>();
@@ -251,11 +251,11 @@ public class CarbonSecurityComponent {
         for (DefaultPermissionInfo permissionInfo : permissionInfoCollection.getPermissions()) {
 
             if (permissionInfo.getType() == null || permissionInfo.getType().trim().isEmpty()) {
-                throw new IllegalArgumentException("type can't be null or empty");
+                throw new IllegalArgumentException("type can't be null or empty.");
 
             }
             if (permissionInfo.getName() == null || permissionInfo.getName().trim().isEmpty()) {
-                throw new IllegalArgumentException("name can't be null or empty");
+                throw new IllegalArgumentException("name can't be null or empty.");
             }
 
             permissionInfoList.add(new PermissionInfo(permissionInfo.getType(), permissionInfo.getName(),

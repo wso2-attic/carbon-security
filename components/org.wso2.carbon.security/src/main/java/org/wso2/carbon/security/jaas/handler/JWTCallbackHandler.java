@@ -68,7 +68,7 @@ public class JWTCallbackHandler implements HTTPCallbackHandler {
                     singedJWT = SignedJWT.parse(jwt);
 
                     if (log.isDebugEnabled()) {
-                        log.debug("JWTCallbackHandler will handle the request");
+                        log.debug("JWTCallbackHandler will handle the request.");
                     }
                     return true;
                 } catch (ParseException e) {
