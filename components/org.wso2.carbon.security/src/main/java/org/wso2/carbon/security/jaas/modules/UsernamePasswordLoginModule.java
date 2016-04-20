@@ -44,6 +44,8 @@ import javax.security.auth.spi.LoginModule;
  * Upon successful authentication, <code>CarbonPrincipal</code> with user information is added to the subject.
  * This LoginModule does not recognize any options defined in the login configuration.
  * </p>
+ *
+ * @since 1.0.0
  */
 public class UsernamePasswordLoginModule implements LoginModule {
 
@@ -120,12 +122,12 @@ public class UsernamePasswordLoginModule implements LoginModule {
             user = authenticationContext.getUser();
         } catch (AuthenticationFailure authenticationFailure) {
             throw new LoginException("Authentication failure");
-        } catch (IdentityStoreException e) {
-            throw new RuntimeException("Identity store exception occurred", e);
-        } catch (CredentialStoreException e) {
-            throw new RuntimeException("Credential store exception occurred", e);
+        } catch (IdentityStoreException | CredentialStoreException e) {
+            log.error("Internal error occurred while authenticating a user", e);
+            throw new LoginException("Internal error occurred");
         }
 
+        //TODO Add Audit logs
         success = true;
         return true;
     }

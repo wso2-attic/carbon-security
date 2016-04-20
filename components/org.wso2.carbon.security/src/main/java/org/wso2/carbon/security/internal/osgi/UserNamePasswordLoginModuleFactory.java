@@ -25,6 +25,8 @@ import javax.security.auth.spi.LoginModule;
 
 /**
  * UsernamePasswordLoginModule factory implementation.
+ *
+ * @since 1.0.0
  */
 public class UserNamePasswordLoginModuleFactory implements PrototypeServiceFactory<LoginModule> {
 

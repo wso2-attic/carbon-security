@@ -60,6 +60,8 @@ import javax.security.auth.spi.LoginModule;
  * Upon successful authentication, <code>CarbonPrincipal</code> with user information is added to the subject.
  * This LoginModule does not recognize any options defined in the login configuration.
  * </p>
+ *
+ * @since 1.0.0
  */
 public class JWTLoginModule implements LoginModule {
 
@@ -90,8 +92,7 @@ public class JWTLoginModule implements LoginModule {
     @Override
     public boolean login() throws LoginException {
 
-        CarbonCallback<SignedJWT> jwtCarbonCallback = new CarbonCallback<>(CarbonSecurityConstants
-                                                                                   .JWT_LOGIN_MODULE);
+        CarbonCallback<SignedJWT> jwtCarbonCallback = new CarbonCallback<>(CarbonSecurityConstants.JWT_LOGIN_MODULE);
         Callback[] callbacks = {jwtCarbonCallback};
 
         try {
@@ -107,6 +108,7 @@ public class JWTLoginModule implements LoginModule {
         } else {
             succeeded = false;
         }
+        //TODO Add Audit logs
         return succeeded;
     }
 
@@ -127,8 +129,6 @@ public class JWTLoginModule implements LoginModule {
                 }
 
                 carbonPrincipal = new CarbonPrincipal(user);
-
-                //TODO Populate the CarbonPrincipal with claims once the CarbonPrincipal class is finalized.
 
                 if (!subject.getPrincipals().contains(carbonPrincipal)) {
                     subject.getPrincipals().add(carbonPrincipal);

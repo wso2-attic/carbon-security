@@ -21,6 +21,8 @@ import java.nio.file.Paths;
 
 /**
  * This class holds the constants used by the security module.
+ *
+ * @since 1.0.0
  */
 public final class CarbonSecurityConstants {
 

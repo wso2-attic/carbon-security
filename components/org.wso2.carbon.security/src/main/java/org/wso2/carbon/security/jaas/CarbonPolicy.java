@@ -31,6 +31,7 @@ import javax.security.auth.Subject;
  * This class's {@code implies} method is overridden to specially handle {@code CarbonPermission} and uses the carbon
  * authorization implementation to check authorization.
  *
+ * @since 1.0.0
  */
 public class CarbonPolicy extends PolicyFile {
 

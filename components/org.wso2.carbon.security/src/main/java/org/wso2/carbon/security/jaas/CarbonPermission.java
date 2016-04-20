@@ -22,6 +22,8 @@ import java.security.Permission;
 /**
  * The {@code CarbonPermission} class is an extension of {@code BasicPermission}.
  * This is the permission representation used for principal based authorization in carbon environment.
+ *
+ * @since 1.0.0
  */
 public class CarbonPermission extends BasicPermission {
 

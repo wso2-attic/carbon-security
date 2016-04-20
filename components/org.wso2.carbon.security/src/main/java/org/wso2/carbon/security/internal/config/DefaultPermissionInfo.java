@@ -18,6 +18,8 @@ package org.wso2.carbon.security.internal.config;
 
 /**
  * This class is used to the default permission information.
+ *
+ * @since 1.0.0
  */
 public class DefaultPermissionInfo {
 
