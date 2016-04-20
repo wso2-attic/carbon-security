@@ -75,7 +75,6 @@ public class AuthorizationStore {
 
         // Get the roles associated through groups.
         List<Group> groups = realmService.getIdentityStore().getGroupsOfUser(userId);
-
         for (Group group : groups) {
             roles.addAll(getRolesOfGroup(group.getGroupID()));
         }
@@ -218,7 +217,7 @@ public class AuthorizationStore {
      * @param permissions List of permissions to be assign.
      * @return New Role.
      */
-    public Role addRole(String roleName, List<Permission> permissions) {
+    public Role addNewRole(String roleName, List<Permission> permissions) {
         throw new NotImplementedException();
     }
 
@@ -228,6 +227,25 @@ public class AuthorizationStore {
      */
     public void deleteRole(Role role) {
         throw new NotImplementedException();
+    }
+
+    /**
+     * Add new permission.
+     * @param resourceId Resource id.
+     * @param action Action name.
+     * @return Created Permission.
+     */
+    public Permission addNewPermission(String resourceId, String action) {
+
+        Permission permission = new Permission(resourceId, action);
+        return permission;
+    }
+
+    /**
+     * Delete the given permission.
+     * @param permission Permission to be delete.
+     */
+    public void deletePermission(Permission permission) {
     }
 
     /**
