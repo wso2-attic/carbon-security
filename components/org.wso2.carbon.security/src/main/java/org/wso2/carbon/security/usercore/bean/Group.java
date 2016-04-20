@@ -113,7 +113,7 @@ public class Group {
      * @param newUserList List of User names needs to be assigned to this Group.
      */
     public void updateUsers(List<String> newUserList) throws IdentityStoreException {
-        identityStore.updateUsersInGroup(groupID, newUserList);
+        throw new UnsupportedOperationException("This operation is not supported in platform level");
     }
 
     /**
@@ -122,7 +122,7 @@ public class Group {
      * @param unAssignList List to be removed from the existing list.
      */
     public void updateUsers(List<String> assignList, List<String> unAssignList) throws IdentityStoreException {
-        identityStore.updateUsersInGroup(groupID, assignList, unAssignList);
+        throw new UnsupportedOperationException("This operation is not supported in platform level");
     }
 
     /**

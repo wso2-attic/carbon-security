@@ -149,7 +149,7 @@ public class User {
      * @param newUsername New user name.
      */
     public void rename(String newUsername) {
-        identityStore.renameUser(userID, newUsername);
+        throw new UnsupportedOperationException("This operation is not supported in platform level");
     }
 
     /**
@@ -157,7 +157,7 @@ public class User {
      * @param claims List of claims to be set.
      */
     public void setClaims(Map<String, String> claims) throws IdentityStoreException {
-        identityStore.setUserAttributeValues(userID, claims);
+        throw new UnsupportedOperationException("This operation is not supported in platform level");
     }
 
     /**
@@ -165,7 +165,7 @@ public class User {
      * @param newGroupList New group list names that needs to replace the existing list.
      */
     public void updateGroups(List<String> newGroupList) throws IdentityStoreException {
-        identityStore.updateGroupsInUser(userID, newGroupList);
+        throw new UnsupportedOperationException("This operation is not supported in platform level");
     }
 
     /**
@@ -174,7 +174,7 @@ public class User {
      * @param unAssignList List to be removed from the existing list.
      */
     public void updateGroups(List<String> assignList, List<String> unAssignList) throws IdentityStoreException {
-        identityStore.updateGroupsInUser(userID, assignList, unAssignList);
+        throw new UnsupportedOperationException("This operation is not supported in platform level");
     }
 
     /**

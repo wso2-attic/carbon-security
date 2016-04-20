@@ -89,6 +89,7 @@ public class IdentityStore {
      * @throws IdentityStoreException
      */
     public List<User> getUsersOfGroup(String groupID, String userStoreId) throws IdentityStoreException {
+        // TODO: Why do we need user store id here?
         return identityStoreConnector.getUsersOfGroup(groupID);
     }
 
@@ -173,117 +174,5 @@ public class IdentityStore {
      */
     public List<Group> listGroups(String filterPattern, int offset, int length) throws IdentityStoreException {
         return identityStoreConnector.listGroups(filterPattern, offset, length);
-    }
-
-    /**
-     * Add an user to the user store.
-     * @param username Login name or claim that can be used to uniquely identify the user.
-     * @param claims User claims.
-     * @param credential User credentials.
-     * @param groupList List of Groups of the user.
-     * @return Added user.
-     * @throws IdentityStoreException
-     */
-    public User addUser(String username, Map<String, String> claims, Object credential, List<String> groupList)
-            throws IdentityStoreException {
-        throw new UnsupportedOperationException("This method is not supported in this version of user core");
-    }
-
-    /**
-     * Add a group to the user store.
-     * @param groupName Name of the group.
-     * @param users List of users to be added to this group.
-     * @return Added group.
-     * @throws IdentityStoreException
-     */
-    public Group addGroup(String groupName, List<String> users) throws IdentityStoreException {
-        throw new UnsupportedOperationException("This method is not supported in this version of user core");
-    }
-
-    /**
-     * Delete an existing user.
-     * @param userID ID of the user.
-     * @throws IdentityStoreException
-     */
-    public void deleteUser(String userID) throws IdentityStoreException {
-        throw new UnsupportedOperationException("This method is not supported in this version of user core");
-    }
-
-    /**
-     * Delete a group.
-     * @param groupId ID of the Group.
-     * @throws IdentityStoreException
-     */
-    public void deleteGroup(String groupId) throws IdentityStoreException {
-        throw new UnsupportedOperationException("This method is not supported in this version of user core");
-    }
-
-    /**
-     * Set user attributes.
-     * @param userID User id.
-     * @param attributes Attributes.
-     * @throws IdentityStoreException
-     */
-    public void setUserAttributeValues(String userID, Map<String, String> attributes) throws IdentityStoreException {
-        throw new UnsupportedOperationException("This method is not supported in this version of user core");
-    }
-
-    /**
-     * Delete user attribute/s of user.
-     * @param userID Id of the user.
-     * @param attributes Attributes.
-     * @throws IdentityStoreException
-     */
-    public void deleteUserAttributeValues(String userID, List<String> attributes) throws IdentityStoreException {
-        throw new UnsupportedOperationException("This method is not supported in this version of user core");
-    }
-
-    /**
-     * Rename the user.
-     * @param userId Id of the user.
-     * @param newName New name.
-     */
-    public void renameUser(String userId, String newName) {
-        throw new UnsupportedOperationException("This method is not supported in this version of user core");
-    }
-
-    /**
-     * Add a new Group list by <b>replacing</b> the existing group list. (PUT)
-     * @param userId Id of the user.
-     * @param groupsToBeAssign New group list that needs to replace the existing list.
-     */
-    public void updateGroupsInUser(String userId, List<String> groupsToBeAssign) throws IdentityStoreException {
-        throw new UnsupportedOperationException("This method is not supported in this version of user core");
-    }
-
-    /**
-     * Assign a new list of Groups to existing list and/or un-assign Groups from existing Groups. (PATCH)
-     * @param userId Id of the user.
-     * @param groupsToBeAssign List to be added to the new list.
-     * @param groupsToBeUnAssign List to be removed from the existing list.
-     */
-    public void updateGroupsInUser(String userId, List<String> groupsToBeAssign, List<String> groupsToBeUnAssign)
-            throws IdentityStoreException {
-        throw new UnsupportedOperationException("This method is not supported in this version of user core");
-    }
-
-    /**
-     * Add a new User list by <b>replacing</b> the existing User list. (PUT)
-     * @param groupId Id of the group.
-     * @param usersToBeAssign List of Users needs to be assigned to this Group.
-     */
-    public void updateUsersInGroup(String groupId, List<String> usersToBeAssign) throws IdentityStoreException {
-        throw new UnsupportedOperationException("This method is not supported in this version of user core");
-    }
-
-    /**
-     * Assign a new list of Users to existing list and/or un-assign Users from existing list. (PATCH)
-     * @param groupId Id of the group.
-     * @param usersToBeAssign List to be added to the new list.
-     * @param usersToBeUnAssign List to be removed from the existing list.
-     */
-    public void updateUsersInGroup(String groupId, List<String> usersToBeAssign, List<String> usersToBeUnAssign)
-            throws IdentityStoreException {
-        throw new UnsupportedOperationException("This method is not supported in this version of user core");
     }
 }
