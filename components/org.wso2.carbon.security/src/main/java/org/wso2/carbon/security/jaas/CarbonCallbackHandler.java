@@ -62,7 +62,7 @@ public class CarbonCallbackHandler implements CallbackHandler {
                         List<HTTPCallbackHandler> callbackHandlers = CarbonSecurityUtils
                                 .getCallbackHandlers(CarbonSecurityConstants.USERNAME_PASSWORD_LOGIN_MODULE);
                         if (!callbackHandlers.isEmpty()) {
-                            doHandle(callbackHandlers, callback);
+                            doHandle(callbackHandlers, callbacks);
                         } else {
                             throw new UnsupportedCallbackException(callback);
                         }
@@ -72,7 +72,7 @@ public class CarbonCallbackHandler implements CallbackHandler {
                     List<HTTPCallbackHandler> callbackHandlers = CarbonSecurityUtils
                             .getCallbackHandlers(((CarbonCallback) callback).getLoginModuleType());
                     if (!callbackHandlers.isEmpty()) {
-                        doHandle(callbackHandlers, callback);
+                        doHandle(callbackHandlers, new Callback[]{callback});
                     } else {
                         throw new UnsupportedCallbackException(callback);
                     }
@@ -83,7 +83,7 @@ public class CarbonCallbackHandler implements CallbackHandler {
         }
     }
 
-    private void doHandle(List<HTTPCallbackHandler> callbackHandlers, Callback callback) {
+    private void doHandle(List<HTTPCallbackHandler> callbackHandlers, Callback[] callbacks) {
         callbackHandlers
                 .stream()
                 .filter((handler) -> {
@@ -93,7 +93,7 @@ public class CarbonCallbackHandler implements CallbackHandler {
                 .findFirst()
                 .ifPresent(handler -> {
                     try {
-                        handler.handle(new Callback[]{callback});
+                        handler.handle(callbacks);
                     } catch (IOException | UnsupportedCallbackException e) {
                         //TODO Throw UnsupportedCallbackException
                         if (log.isDebugEnabled()) {

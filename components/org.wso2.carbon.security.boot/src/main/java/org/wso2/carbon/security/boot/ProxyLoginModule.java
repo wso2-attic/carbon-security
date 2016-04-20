@@ -22,6 +22,7 @@ import org.osgi.framework.ServiceReference;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 import javax.security.auth.Subject;
 import javax.security.auth.callback.CallbackHandler;
@@ -59,7 +60,9 @@ public class ProxyLoginModule implements LoginModule {
             throw new IllegalStateException("ProxyLoginModule is not initialized.");
         }
 
-        String module = (String) options.remove(LOGIN_MODULE_OPTION_KEY);
+        Map<String, ?> updatedOptions = new HashMap<>(options);
+
+        String module = (String) updatedOptions.remove(LOGIN_MODULE_OPTION_KEY);
         if (module == null) {
             throw new IllegalStateException("Option '" + LOGIN_MODULE_OPTION_KEY + "' must be set from the " +
                                             "javax.security.auth.login.Configuration implementation");
@@ -81,7 +84,7 @@ public class ProxyLoginModule implements LoginModule {
             throw new IllegalStateException("Unable to find login module " + module);
         }
 
-        instance.initialize(subject, callbackHandler, sharedState, Collections.unmodifiableMap(options));
+        instance.initialize(subject, callbackHandler, sharedState, Collections.unmodifiableMap(updatedOptions));
     }
 
     @Override
