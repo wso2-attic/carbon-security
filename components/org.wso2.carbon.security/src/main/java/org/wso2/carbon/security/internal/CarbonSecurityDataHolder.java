@@ -17,9 +17,6 @@
 package org.wso2.carbon.security.internal;
 
 import org.osgi.framework.BundleContext;
-import org.osgi.framework.InvalidSyntaxException;
-import org.osgi.framework.ServiceReference;
-import org.wso2.carbon.security.jaas.HTTPCallbackHandler;
 import org.wso2.carbon.security.usercore.common.CarbonRealmServiceImpl;
 import org.wso2.carbon.security.usercore.config.AuthorizationStoreConfig;
 import org.wso2.carbon.security.usercore.config.CredentialStoreConfig;
@@ -28,14 +25,12 @@ import org.wso2.carbon.security.usercore.connector.AuthorizationStoreConnector;
 import org.wso2.carbon.security.usercore.connector.CredentialStoreConnector;
 import org.wso2.carbon.security.usercore.connector.IdentityStoreConnector;
 
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
  * Carbon security data holder.
+ * @since 1.0.0
  */
 public class CarbonSecurityDataHolder {
 
@@ -55,27 +50,6 @@ public class CarbonSecurityDataHolder {
 
     public static CarbonSecurityDataHolder getInstance() {
         return instance;
-    }
-
-    public List<HTTPCallbackHandler> getCallbackHandlers(String supportedLoginModule) {
-
-        List<HTTPCallbackHandler> callbackHandlers = new ArrayList<>();
-
-        try {
-            Collection<ServiceReference<HTTPCallbackHandler>> serviceReferences = bundleContext.getServiceReferences
-                    (HTTPCallbackHandler.class, "(&(supported.login.module=" + supportedLoginModule + ")(service" +
-                                                ".scope=prototype))");
-            if (serviceReferences != null) {
-                serviceReferences.forEach(
-                        serviceReference -> callbackHandlers.add(bundleContext.getServiceObjects(serviceReference)
-                                                                         .getService())
-                );
-            }
-        } catch (InvalidSyntaxException e) {
-            throw new IllegalStateException("Unable to find callback handler reference for login module " +
-                                            supportedLoginModule);
-        }
-        return callbackHandlers;
     }
 
     public void registerCarbonRealmService(CarbonRealmServiceImpl carbonRealmService) {
@@ -139,5 +113,9 @@ public class CarbonSecurityDataHolder {
 
     public void addAuthorizationStoreConfig(String connectorName, AuthorizationStoreConfig storeConfig) {
         this.authorizationStoreConfigMap.put(connectorName, storeConfig);
+    }
+
+    public BundleContext getBundleContext() {
+        return bundleContext;
     }
 }

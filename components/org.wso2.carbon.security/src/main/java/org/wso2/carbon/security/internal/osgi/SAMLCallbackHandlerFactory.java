@@ -24,6 +24,8 @@ import org.wso2.carbon.security.jaas.handler.SAMLCallbackHandler;
 
 /**
  * SAMLCallbackHandler factory implementation.
+ *
+ * @since 1.0.0
  */
 public class SAMLCallbackHandlerFactory implements PrototypeServiceFactory<HTTPCallbackHandler> {
 

@@ -43,6 +43,8 @@ import java.util.Properties;
 
 /**
  * Configuration builder for stores.
+ *
+ * @since 1.0.0
  */
 public class StoreConfigBuilder {
 
@@ -72,7 +74,7 @@ public class StoreConfigBuilder {
                     ((List<Map<String, String>>) values.get(CarbonSecurityConstants.STORE_CONNECTORS)).forEach(
                             localConnector -> {
                                 String connectorName = localConnector.get("name");
-                                if (connectorName == null && connectorName.trim().isEmpty()) {
+                                if (connectorName == null || connectorName.trim().isEmpty()) {
                                     throw new IllegalArgumentException("Unable to find the 'name' entry in the file "
                                                                        + localConnector.toString());
                                 }

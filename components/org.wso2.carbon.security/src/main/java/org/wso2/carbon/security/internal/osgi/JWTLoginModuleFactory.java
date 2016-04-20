@@ -25,6 +25,8 @@ import javax.security.auth.spi.LoginModule;
 
 /**
  * JWTLoginModule factory implementation.
+ *
+ * @since 1.0.0
  */
 public class JWTLoginModuleFactory implements PrototypeServiceFactory<LoginModule> {
 

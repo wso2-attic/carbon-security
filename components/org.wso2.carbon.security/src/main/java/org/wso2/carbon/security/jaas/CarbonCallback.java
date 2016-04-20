@@ -26,7 +26,9 @@ import javax.security.auth.callback.Callback;
  * {@code NameCallback} to the {@code handle}
  * method of a {@code CallbackHandler} to retrieve HttpRequest information.
  * </p>
+ *
  * @param <T> This describes the type handled by the callback
+ * @since 1.0.0
  */
 public class CarbonCallback<T> implements Callback, Serializable {
 

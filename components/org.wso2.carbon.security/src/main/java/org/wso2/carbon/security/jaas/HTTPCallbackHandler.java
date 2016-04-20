@@ -6,8 +6,12 @@ import javax.security.auth.callback.CallbackHandler;
 
 /**
  * This interface is extended by all the carbon security callback handlers which relies on HTTP requests.
+ *
+ * @since 1.0.0
  */
 public interface HTTPCallbackHandler extends CallbackHandler {
+
+    String SUPPORTED_LOGIN_MODULE = "supported.login.module";
 
     void setHTTPRequest(HttpRequest httpRequest);
 

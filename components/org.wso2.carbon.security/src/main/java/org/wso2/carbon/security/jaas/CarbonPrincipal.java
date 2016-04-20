@@ -31,6 +31,8 @@ import java.util.Objects;
 /**
  * This class {@code CarbonPrincipal} is the principal representation of the carbon platform.
  * This is an implementation of {@code Principal}.
+ *
+ * @since 1.0.0
  */
 public class CarbonPrincipal implements Principal {
 

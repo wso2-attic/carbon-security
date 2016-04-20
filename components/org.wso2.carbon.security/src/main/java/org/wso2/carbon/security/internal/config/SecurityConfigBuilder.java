@@ -34,6 +34,8 @@ import java.util.Set;
 
 /**
  * Builds DefaultPermissionInfoCollection from the permissions.yml.
+ *
+ * @since 1.0.0
  */
 public class SecurityConfigBuilder {
 
