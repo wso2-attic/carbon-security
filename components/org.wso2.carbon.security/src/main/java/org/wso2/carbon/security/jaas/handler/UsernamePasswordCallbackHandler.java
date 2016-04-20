@@ -75,7 +75,7 @@ public class UsernamePasswordCallbackHandler implements HTTPCallbackHandler {
                 password = authParts[1].toCharArray();
 
                 if (log.isDebugEnabled()) {
-                    log.debug("UsernamePasswordCallbackHandler will handle the request");
+                    log.debug("UsernamePasswordCallbackHandler will handle the request.");
                 }
                 return true;
             }

@@ -65,7 +65,7 @@ public class ProxyLoginModule implements LoginModule {
         String module = (String) updatedOptions.remove(LOGIN_MODULE_OPTION_KEY);
         if (module == null) {
             throw new IllegalStateException("Option '" + LOGIN_MODULE_OPTION_KEY + "' must be set from the " +
-                                            "javax.security.auth.login.Configuration implementation");
+                                            "javax.security.auth.login.Configuration implementation.");
         }
 
         Collection<ServiceReference<LoginModule>> serviceReferences;

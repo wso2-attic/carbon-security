@@ -21,6 +21,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.wso2.carbon.security.jaas.util.CarbonSecurityConstants;
 import org.wso2.carbon.security.jaas.util.CarbonSecurityUtils;
+import org.wso2.carbon.security.jaas.util.LambdaExceptionUtils;
 
 import java.io.IOException;
 import java.util.List;
@@ -91,16 +92,9 @@ public class CarbonCallbackHandler implements CallbackHandler {
                     return handler.canHandle();
                 })
                 .findFirst()
-                .ifPresent(handler -> {
-                    try {
-                        handler.handle(callbacks);
-                    } catch (IOException | UnsupportedCallbackException e) {
-                        //TODO Throw UnsupportedCallbackException
-                        if (log.isDebugEnabled()) {
-                            log.error("Error while handling CarbonCallback", e);
-                        }
-                    }
-                });
+                .ifPresent(LambdaExceptionUtils.rethrowConsumer(handler -> {
+                    handler.handle(callbacks);
+                }));
     }
 
 }
