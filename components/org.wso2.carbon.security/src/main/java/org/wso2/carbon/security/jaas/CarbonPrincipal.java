@@ -16,8 +16,14 @@
 
 package org.wso2.carbon.security.jaas;
 
-import org.wso2.carbon.security.jaas.util.InMemoryUserStoreManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.wso2.carbon.security.internal.CarbonSecurityDataHolder;
+import org.wso2.carbon.security.user.core.bean.Permission;
 import org.wso2.carbon.security.user.core.bean.User;
+import org.wso2.carbon.security.user.core.exception.AuthorizationException;
+import org.wso2.carbon.security.user.core.exception.AuthorizationStoreException;
+import org.wso2.carbon.security.user.core.exception.IdentityStoreException;
 
 import java.security.Principal;
 import java.util.Objects;
@@ -25,8 +31,12 @@ import java.util.Objects;
 /**
  * This class {@code CarbonPrincipal} is the principal representation of the carbon platform.
  * This is an implementation of {@code Principal}.
+ *
+ * @since 1.0.0
  */
 public class CarbonPrincipal implements Principal {
+
+    private static final Logger log = LoggerFactory.getLogger(CarbonPrincipal.class);
 
     private User user;
 
@@ -59,15 +69,21 @@ public class CarbonPrincipal implements Principal {
 
     /**
      * Checks whether the current principal has a given {@code CarbonPermission}.
+     *
      * @param carbonPermission CarbonPermission which needs to be checked with principal instance.
      * @return true if authorized.
      */
     public boolean isAuthorized(CarbonPermission carbonPermission) {
-        if (carbonPermission == null) {
-            throw new IllegalArgumentException("Permission object cannot be null.");
-        }
 
-        return (InMemoryUserStoreManager.getInstance().authorizePrincipal(this.getName(), carbonPermission));
+        try {
+            return CarbonSecurityDataHolder.getInstance().getCarbonRealmService().getAuthorizationStore()
+                    .isUserAuthorized(user.getUserID(), new Permission(carbonPermission.getName(),
+                                                                       carbonPermission.getActions()));
+        } catch (AuthorizationException | AuthorizationStoreException | IdentityStoreException e) {
+            log.error("Access denied for permission " + carbonPermission.getName() + " for user " + user.getUserID()
+                      + " due to a server error", e);
+            return false;
+        }
 
     }
 

@@ -25,6 +25,8 @@ import javax.security.auth.spi.LoginModule;
 
 /**
  * SAML2LoginModule factory implementation.
+ *
+ * @since 1.0.0
  */
 public class SAML2LoginModuleFactory implements PrototypeServiceFactory<LoginModule> {
     @Override

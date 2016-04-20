@@ -21,8 +21,10 @@ import java.nio.file.Paths;
 
 /**
  * This class holds the constants used by the security module.
+ *
+ * @since 1.0.0
  */
-public class CarbonSecurityConstants {
+public final class CarbonSecurityConstants {
 
     public static final String CARBON_HOME = "carbon.home";
 
@@ -39,6 +41,10 @@ public class CarbonSecurityConstants {
     public static final String IDENTITY_STORE = "identityStore";
     public static final String AUTHORIZATION_STORE = "authorizationStore";
     public static final String STORE_CONNECTORS = "storeConnectors";
+
+    //Config file names
+    public static final String STORE_CONFIG_FILE = "store-config.yml";
+    public static final String PERMISSION_CONFIG_FILE = "permissions.yml";
 
     public static Path getCarbonHomeDirectory() {
         return Paths.get(System.getProperty(CARBON_HOME));

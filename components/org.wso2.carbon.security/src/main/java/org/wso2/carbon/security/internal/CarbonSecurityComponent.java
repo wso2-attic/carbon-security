@@ -35,15 +35,12 @@ import org.wso2.carbon.security.internal.config.SecurityConfigBuilder;
 import org.wso2.carbon.security.internal.config.StoreConfigBuilder;
 import org.wso2.carbon.security.internal.osgi.JWTCallbackHandlerFactory;
 import org.wso2.carbon.security.internal.osgi.JWTLoginModuleFactory;
-import org.wso2.carbon.security.internal.osgi.SAML2LoginModuleFactory;
-import org.wso2.carbon.security.internal.osgi.SAMLCallbackHandlerFactory;
 import org.wso2.carbon.security.internal.osgi.UserNamePasswordLoginModuleFactory;
 import org.wso2.carbon.security.internal.osgi.UsernamePasswordCallbackHandlerFactory;
 import org.wso2.carbon.security.jaas.CarbonJAASConfiguration;
 import org.wso2.carbon.security.jaas.CarbonPolicy;
 import org.wso2.carbon.security.jaas.HTTPCallbackHandler;
 import org.wso2.carbon.security.jaas.modules.JWTLoginModule;
-import org.wso2.carbon.security.jaas.modules.SAML2LoginModule;
 import org.wso2.carbon.security.jaas.modules.UsernamePasswordLoginModule;
 import org.wso2.carbon.security.jaas.util.CarbonSecurityConstants;
 import org.wso2.carbon.security.user.core.common.CarbonRealmServiceImpl;
@@ -62,6 +59,8 @@ import javax.security.auth.spi.LoginModule;
 
 /**
  * OSGi service component which handle authentication and authorization.
+ *
+ * @since 1.0.0
  */
 @Component(
         name = "org.wso2.carbon.security.internal.CarbonSecurityComponent",
@@ -121,7 +120,7 @@ public class CarbonSecurityComponent {
 
         String connectorId = properties.get("connector-id");
         CarbonSecurityDataHolder.getInstance().registerAuthorizationStoreConnector(connectorId,
-                authorizationStoreConnector);
+                                                                                   authorizationStoreConnector);
     }
 
     protected void unregisterAuthorizationStoreConnector(AuthorizationStoreConnector authorizationStoreConnector) {
@@ -139,7 +138,7 @@ public class CarbonSecurityComponent {
 
         String connectorId = properties.get("connector-id");
         CarbonSecurityDataHolder.getInstance().registerIdentityStoreConnector(connectorId,
-                identityStoreConnector);
+                                                                              identityStoreConnector);
     }
 
     protected void unregisterIdentityStoreConnector(IdentityStoreConnector identityStoreConnector) {
@@ -157,13 +156,16 @@ public class CarbonSecurityComponent {
 
         String connectorId = properties.get("connector-id");
         CarbonSecurityDataHolder.getInstance().registerCredentialStoreConnector(connectorId,
-                credentialStoreConnector);
+                                                                                credentialStoreConnector);
     }
 
     protected void unregisterCredentialStoreConnector(CredentialStoreConnector credentialStoreConnector) {
     }
 
-
+    /**
+     * Initialize authentication related configs
+     * @param bundleContext
+     */
     private void initAuthenticationConfigs(BundleContext bundleContext) {
 
         // Initialize proxy login module
@@ -176,33 +178,46 @@ public class CarbonSecurityComponent {
         configuration.init();
 
         //Registering login modules provided by the bundle
-        Hashtable<String, String> paramDictionary1 = new Hashtable<>();
-        paramDictionary1.put("login.module.class.name", UsernamePasswordLoginModule.class.getName());
-        bundleContext.registerService(LoginModule.class, new UserNamePasswordLoginModuleFactory(), paramDictionary1);
+        Hashtable<String, String> usernamePasswordLoginModuleProps = new Hashtable<>();
+        usernamePasswordLoginModuleProps.put(ProxyLoginModule.LOGIN_MODULE_SEARCH_KEY,
+                                             UsernamePasswordLoginModule.class.getName());
+        bundleContext.registerService(LoginModule.class, new UserNamePasswordLoginModuleFactory(),
+                                      usernamePasswordLoginModuleProps);
 
-        Hashtable<String, String> paramDictionary2 = new Hashtable<>();
-        paramDictionary2.put("login.module.class.name", JWTLoginModule.class.getName());
-        bundleContext.registerService(LoginModule.class, new JWTLoginModuleFactory(), paramDictionary2);
+        Hashtable<String, String> jwtLoginModuleProps = new Hashtable<>();
+        jwtLoginModuleProps.put(ProxyLoginModule.LOGIN_MODULE_SEARCH_KEY, JWTLoginModule.class.getName());
+        bundleContext.registerService(LoginModule.class, new JWTLoginModuleFactory(), jwtLoginModuleProps);
 
-        Hashtable<String, String> paramDictionary3 = new Hashtable<>();
-        paramDictionary3.put("login.module.class.name", SAML2LoginModule.class.getName());
-        bundleContext.registerService(LoginModule.class, new SAML2LoginModuleFactory(), paramDictionary3);
+        // TODO Uncomment when SAML2LoginModule is fixed
+//        Hashtable<String, String> samlLoginModuleProps = new Hashtable<>();
+//        samlLoginModuleProps.put(ProxyLoginModule.LOGIN_MODULE_SEARCH_KEY, SAML2LoginModule.class.getName());
+//        bundleContext.registerService(LoginModule.class, new SAML2LoginModuleFactory(), samlLoginModuleProps);
 
         // Registering callback handler factories
-        Hashtable<String, String> paramDictionary4 = new Hashtable<>();
-        paramDictionary4.put("supported.login.module", CarbonSecurityConstants.USERNAME_PASSWORD_LOGIN_MODULE);
+        Hashtable<String, String> usernamePasswordCallbackHandlerProps = new Hashtable<>();
+        usernamePasswordCallbackHandlerProps.put(HTTPCallbackHandler.SUPPORTED_LOGIN_MODULE,
+                                                 CarbonSecurityConstants.USERNAME_PASSWORD_LOGIN_MODULE);
         bundleContext.registerService(HTTPCallbackHandler.class, new UsernamePasswordCallbackHandlerFactory(),
-                                      paramDictionary4);
+                                      usernamePasswordCallbackHandlerProps);
 
-        Hashtable<String, String> paramDictionary5 = new Hashtable<>();
-        paramDictionary5.put("supported.login.module", CarbonSecurityConstants.JWT_LOGIN_MODULE);
-        bundleContext.registerService(HTTPCallbackHandler.class, new JWTCallbackHandlerFactory(), paramDictionary5);
+        Hashtable<String, String> jwtCallbackHandlerProps = new Hashtable<>();
+        jwtCallbackHandlerProps.put(HTTPCallbackHandler.SUPPORTED_LOGIN_MODULE,
+                                    CarbonSecurityConstants.JWT_LOGIN_MODULE);
+        bundleContext.registerService(HTTPCallbackHandler.class, new JWTCallbackHandlerFactory(),
+                                      jwtCallbackHandlerProps);
 
-        Hashtable<String, String> paramDictionary6 = new Hashtable<>();
-        paramDictionary6.put("supported.login.module", CarbonSecurityConstants.SAML_LOGIN_MODULE);
-        bundleContext.registerService(HTTPCallbackHandler.class, new SAMLCallbackHandlerFactory(), paramDictionary6);
+        // TODO Uncomment when SAML2LoginModule is fixed
+//        Hashtable<String, String> samlCallbackHandlerProps = new Hashtable<>();
+//        samlCallbackHandlerProps.put(HTTPCallbackHandler.SUPPORTED_LOGIN_MODULE,
+//                                     CarbonSecurityConstants.SAML_LOGIN_MODULE);
+//        bundleContext.registerService(HTTPCallbackHandler.class, new SAMLCallbackHandlerFactory(),
+//                                      samlCallbackHandlerProps);
     }
 
+    /**
+     * Initialize authorization related configs
+     * @param bundleContext
+     */
     private void initAuthorizationConfigs(BundleContext bundleContext) {
 
         // Set default permissions for all bundles
@@ -221,38 +236,43 @@ public class CarbonSecurityComponent {
     private void setDefaultPermissions(BundleContext context) {
 
         PermissionAdmin permissionAdmin = getPermissionAdmin(context);
-        if (permissionAdmin != null) {
+        if (permissionAdmin == null) {
+            return;
+        }
 
-            DefaultPermissionInfoCollection permissionInfoCollection = SecurityConfigBuilder
-                    .buildDefaultPermissionInfoCollection();
-            List<PermissionInfo> permissionInfoList = new ArrayList<>();
-            if (!Collections.EMPTY_SET.equals(permissionInfoCollection.getPermissions())) {
+        DefaultPermissionInfoCollection permissionInfoCollection = SecurityConfigBuilder
+                .buildDefaultPermissionInfoCollection();
+        if (Collections.EMPTY_SET.equals(permissionInfoCollection.getPermissions())) {
+            throw new RuntimeException("Default permission info collection can't be empty.");
+        }
 
-                for (DefaultPermissionInfo permissionInfo : permissionInfoCollection.getPermissions()) {
+        List<PermissionInfo> permissionInfoList = new ArrayList<>();
 
-                    if (permissionInfo.getType() == null || permissionInfo.getType().trim().isEmpty()) {
-                        throw new IllegalArgumentException("type can't be null or empty");
+        for (DefaultPermissionInfo permissionInfo : permissionInfoCollection.getPermissions()) {
 
-                    }
+            if (permissionInfo.getType() == null || permissionInfo.getType().trim().isEmpty()) {
+                throw new IllegalArgumentException("type can't be null or empty.");
 
-                    if (permissionInfo.getName() == null || permissionInfo.getName().trim().isEmpty()) {
-                        throw new IllegalArgumentException("name can't be null or empty");
-                    }
-
-                    permissionInfoList.add(new PermissionInfo(permissionInfo.getType(), permissionInfo.getName(),
-                                                              (permissionInfo.getActions() != null && !permissionInfo
-                                                                      .getActions().trim().isEmpty()) ?
-                                                              permissionInfo.getActions().trim() : null));
-                }
-            } else {
-                throw new RuntimeException("Default permission info collection can't be empty");
+            }
+            if (permissionInfo.getName() == null || permissionInfo.getName().trim().isEmpty()) {
+                throw new IllegalArgumentException("name can't be null or empty.");
             }
 
-            permissionAdmin.setDefaultPermissions(permissionInfoList
-                                                          .toArray(new PermissionInfo[permissionInfoList.size()]));
+            permissionInfoList.add(new PermissionInfo(permissionInfo.getType(), permissionInfo.getName(),
+                                                      (permissionInfo.getActions() != null && !permissionInfo
+                                                              .getActions().trim().isEmpty()) ?
+                                                      permissionInfo.getActions().trim() : null));
         }
+
+        permissionAdmin.setDefaultPermissions(permissionInfoList.toArray(new PermissionInfo[permissionInfoList.size()
+                                                                                 ]));
     }
 
+    /**
+     * Get PermissionAdmin
+     * @param context
+     * @return
+     */
     private PermissionAdmin getPermissionAdmin(BundleContext context) {
         return (PermissionAdmin) context.getService(context.getServiceReference(PermissionAdmin.class.getName()));
     }

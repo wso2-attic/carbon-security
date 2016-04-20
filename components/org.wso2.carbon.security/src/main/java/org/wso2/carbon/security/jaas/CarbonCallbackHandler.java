@@ -19,8 +19,9 @@ package org.wso2.carbon.security.jaas;
 import io.netty.handler.codec.http.HttpRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.wso2.carbon.security.internal.CarbonSecurityDataHolder;
 import org.wso2.carbon.security.jaas.util.CarbonSecurityConstants;
+import org.wso2.carbon.security.jaas.util.CarbonSecurityUtils;
+import org.wso2.carbon.security.jaas.util.LambdaExceptionUtils;
 
 import java.io.IOException;
 import java.util.List;
@@ -33,6 +34,8 @@ import javax.security.auth.callback.UnsupportedCallbackException;
 /**
  * The class {@code CarbonCallbackHandler} is an implementation {@code CarbonCallbackHandler}.
  * This callback handler is used for handling {@code CarbonCallback} type callbacks.
+ *
+ * @since 1.0.0
  */
 public class CarbonCallbackHandler implements CallbackHandler {
 
@@ -56,43 +59,42 @@ public class CarbonCallbackHandler implements CallbackHandler {
                 // Specially handle NameCallback and PasswordCallback, since they are available OOTB
                 if (callback instanceof NameCallback || callback instanceof PasswordCallback) {
                     if (!handled) {
-                        List<HTTPCallbackHandler> callbackHandlers = CarbonSecurityDataHolder
-                                .getInstance().getCallbackHandlers(CarbonSecurityConstants
-                                                                           .USERNAME_PASSWORD_LOGIN_MODULE);
+                        handled = true;
+                        List<HTTPCallbackHandler> callbackHandlers = CarbonSecurityUtils
+                                .getCallbackHandlers(CarbonSecurityConstants.USERNAME_PASSWORD_LOGIN_MODULE);
                         if (!callbackHandlers.isEmpty()) {
-                            for (HTTPCallbackHandler callbackHandler : callbackHandlers) {
-                                callbackHandler.setHTTPRequest(httpRequest);
-                                if (callbackHandler.canHandle()) {
-                                    callbackHandler.handle(callbacks);
-                                    handled = true;
-                                    break;
-                                }
-                            }
+                            doHandle(callbackHandlers, callbacks);
                         } else {
                             throw new UnsupportedCallbackException(callback);
                         }
                     }
                     // Handle CarbonCallbacks
                 } else if (callback instanceof CarbonCallback) {
-                    List<HTTPCallbackHandler> callbackHandlers = CarbonSecurityDataHolder.getInstance()
+                    List<HTTPCallbackHandler> callbackHandlers = CarbonSecurityUtils
                             .getCallbackHandlers(((CarbonCallback) callback).getLoginModuleType());
                     if (!callbackHandlers.isEmpty()) {
-                        for (HTTPCallbackHandler callbackHandler : callbackHandlers) {
-                            callbackHandler.setHTTPRequest(httpRequest);
-                            if (callbackHandler.canHandle()) {
-                                callbackHandler.handle(new Callback[]{callback});
-                                break;
-                            }
-                        }
+                        doHandle(callbackHandlers, new Callback[]{callback});
                     } else {
                         throw new UnsupportedCallbackException(callback);
                     }
-
                 } else {
                     throw new UnsupportedCallbackException(callback);
                 }
             }
         }
+    }
+
+    private void doHandle(List<HTTPCallbackHandler> callbackHandlers, Callback[] callbacks) {
+        callbackHandlers
+                .stream()
+                .filter((handler) -> {
+                    handler.setHTTPRequest(httpRequest);
+                    return handler.canHandle();
+                })
+                .findFirst()
+                .ifPresent(LambdaExceptionUtils.rethrowConsumer(handler -> {
+                    handler.handle(callbacks);
+                }));
     }
 
 }

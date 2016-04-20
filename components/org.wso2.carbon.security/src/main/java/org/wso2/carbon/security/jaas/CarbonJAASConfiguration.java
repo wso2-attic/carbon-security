@@ -20,16 +20,17 @@ import org.wso2.carbon.security.boot.ProxyLoginModule;
 import sun.security.provider.ConfigFile.Spi;
 
 import java.net.URI;
-import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 import javax.security.auth.login.AppConfigurationEntry;
 import javax.security.auth.login.Configuration;
 
 /**
  * This contains the carbon implementation of the Configuration class.
+ *
+ * @since 1.0.0
  */
 public class CarbonJAASConfiguration extends Configuration {
 
@@ -56,20 +57,17 @@ public class CarbonJAASConfiguration extends Configuration {
             return configurationEntries;
         }
 
-        List<AppConfigurationEntry> updatedConfigurationEntries = new ArrayList<>();
+        return Arrays.asList(configurationEntries)
+                .stream()
+                .map(this::createProxyEntry)
+                .collect(Collectors.toList())
+                .toArray(new AppConfigurationEntry[configurationEntries.length]);
+    }
 
-        for (AppConfigurationEntry appConfigurationEntry : configurationEntries) {
-
-            Map options = new HashMap<>(appConfigurationEntry.getOptions());
-            options.put(ProxyLoginModule.PROPERTY_LOGIN_MODULE, appConfigurationEntry.getLoginModuleName());
-
-            updatedConfigurationEntries.add(new AppConfigurationEntry(ProxyLoginModule.class.getName(),
-                                                                      appConfigurationEntry.getControlFlag(),
-                                                                      Collections.unmodifiableMap(options)));
-
-        }
-
-        return updatedConfigurationEntries.toArray(new AppConfigurationEntry[updatedConfigurationEntries.size()]);
+    private AppConfigurationEntry createProxyEntry(AppConfigurationEntry entry) {
+        Map<String, Object> options = new HashMap<>(entry.getOptions());
+        options.put(ProxyLoginModule.LOGIN_MODULE_OPTION_KEY, entry.getLoginModuleName());
+        return new AppConfigurationEntry(ProxyLoginModule.class.getName(), entry.getControlFlag(), options);
     }
 
     @Override

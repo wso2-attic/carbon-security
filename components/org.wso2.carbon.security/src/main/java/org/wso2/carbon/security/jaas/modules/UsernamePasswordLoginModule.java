@@ -44,6 +44,8 @@ import javax.security.auth.spi.LoginModule;
  * Upon successful authentication, <code>CarbonPrincipal</code> with user information is added to the subject.
  * This LoginModule does not recognize any options defined in the login configuration.
  * </p>
+ *
+ * @since 1.0.0
  */
 public class UsernamePasswordLoginModule implements LoginModule {
 
@@ -79,6 +81,11 @@ public class UsernamePasswordLoginModule implements LoginModule {
     @Override
     public void initialize(Subject subject, CallbackHandler callbackHandler, Map<String, ?> sharedState,
                            Map<String, ?> options) {
+        // TODO Remove this check
+        if (username != null || password != null) {
+            log.warn("PrototypeServiceFactory failed to deliver new UsernamePasswordLoginModule object");
+        }
+
         this.subject = subject;
         this.callbackHandler = callbackHandler;
         this.sharedState = sharedState;
@@ -114,20 +121,20 @@ public class UsernamePasswordLoginModule implements LoginModule {
                     .getCredentialStore().authenticate(callbacks);
             user = authenticationContext.getUser();
         } catch (AuthenticationFailure authenticationFailure) {
-            throw new LoginException("Authentication failure");
-        } catch (IdentityStoreException e) {
-            throw new RuntimeException("Identity store exception occurred", e);
-        } catch (CredentialStoreException e) {
-            throw new RuntimeException("Credential store exception occurred", e);
+            throw new LoginException("Authentication failure.");
+        } catch (IdentityStoreException | CredentialStoreException e) {
+            log.error("Internal error occurred while authenticating a user.", e);
+            throw new LoginException("Internal error occurred.");
         }
 
+        //TODO Add Audit logs CARBON-15870
         success = true;
         return true;
     }
 
     /**
      * This method is called if the LoginContext's  overall authentication success.
-     * <p/>
+     * <p>
      * <p> If this LoginModule's own authentication attempt
      * success (checked by retrieving the private state saved by the <code>login</code> method), then this method
      * associates a <code>SamplePrincipal</code> with the <code>Subject</code> located in the
@@ -140,9 +147,7 @@ public class UsernamePasswordLoginModule implements LoginModule {
     @Override
     public boolean commit() throws LoginException {
 
-        if (!success) {
-            commitSuccess = false;
-        } else {
+        if (success) {
             carbonPrincipal = new CarbonPrincipal(user);
             if (!subject.getPrincipals().contains(carbonPrincipal)) {
                 subject.getPrincipals().add(carbonPrincipal);
@@ -159,13 +164,15 @@ public class UsernamePasswordLoginModule implements LoginModule {
             password = null;
 
             commitSuccess = true;
+        } else {
+            commitSuccess = false;
         }
         return commitSuccess;
     }
 
     /**
      * This method is called if the LoginContext's overall authentication failed.
-     * <p/>
+     * <p>
      * <p> If this LoginModule's own authentication attempt success (checked by retrieving the private state saved
      * by the <code>login</code> and <code>commit</code> methods), then this method cleans up any state that was
      * originally saved.

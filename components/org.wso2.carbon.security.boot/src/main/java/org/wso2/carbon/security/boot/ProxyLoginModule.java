@@ -21,6 +21,7 @@ import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceReference;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import javax.security.auth.Subject;
@@ -35,10 +36,13 @@ import javax.security.auth.spi.LoginModule;
  * <p/>
  * This class MUST be available from all modules.
  * </p>
+ *
+ * @since 1.0.0
  */
 public class ProxyLoginModule implements LoginModule {
 
-    public static final String PROPERTY_LOGIN_MODULE = "LOGIN_MODULE";
+    public static final String LOGIN_MODULE_OPTION_KEY = "LOGIN_MODULE";
+    public static final String LOGIN_MODULE_SEARCH_KEY = "login.module.class.name";
 
     private static BundleContext bundleContext;
 
@@ -53,34 +57,34 @@ public class ProxyLoginModule implements LoginModule {
                            Map<String, ?> options) {
 
         if (bundleContext == null) {
-            throw new IllegalStateException("ProxyLoginModule not initialized.");
+            throw new IllegalStateException("ProxyLoginModule is not initialized.");
         }
 
         Map<String, ?> updatedOptions = new HashMap<>(options);
 
-        String module = (String) updatedOptions.remove(PROPERTY_LOGIN_MODULE);
+        String module = (String) updatedOptions.remove(LOGIN_MODULE_OPTION_KEY);
         if (module == null) {
-            throw new IllegalStateException("Option " + PROPERTY_LOGIN_MODULE + " must be set from the " +
-                                            "javax.security.auth.login.Configuration implementation");
+            throw new IllegalStateException("Option '" + LOGIN_MODULE_OPTION_KEY + "' must be set from the " +
+                                            "javax.security.auth.login.Configuration implementation.");
         }
 
+        Collection<ServiceReference<LoginModule>> serviceReferences;
         try {
-            Collection<ServiceReference<LoginModule>> serviceReferences = bundleContext.getServiceReferences
-                    (LoginModule.class, "(&(login.module.class.name=" + module + ")(service.scope=prototype))");
-            if (serviceReferences != null) {
-                serviceReferences.forEach(
-                        serviceReference -> instance = bundleContext.getServiceObjects(serviceReference).getService()
-                );
-            }
+            serviceReferences = bundleContext.getServiceReferences(
+                    LoginModule.class, "(&(" + LOGIN_MODULE_SEARCH_KEY + "=" + module + ")(service.scope=prototype))");
         } catch (InvalidSyntaxException e) {
-            throw new IllegalStateException("Unable to find login module service reference for module " + module);
+            throw new IllegalStateException("Invalid syntax found while searching login module " + module);
         }
+
+        serviceReferences.forEach(
+                serviceReference -> instance = bundleContext.getServiceObjects(serviceReference).getService()
+        );
 
         if (instance == null) {
             throw new IllegalStateException("Unable to find login module " + module);
         }
 
-        instance.initialize(subject, callbackHandler, sharedState, updatedOptions);
+        instance.initialize(subject, callbackHandler, sharedState, Collections.unmodifiableMap(updatedOptions));
     }
 
     @Override

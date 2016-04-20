@@ -34,6 +34,8 @@ import javax.security.auth.callback.UnsupportedCallbackException;
  * <p>
  * This class builds JWT from the Authorization header.
  * </p>
+ *
+ * @since 1.0.0
  */
 public class JWTCallbackHandler implements HTTPCallbackHandler {
 
@@ -50,27 +52,28 @@ public class JWTCallbackHandler implements HTTPCallbackHandler {
 
     @Override
     public boolean canHandle() {
-        if (httpRequest != null) {
 
-            HttpHeaders headers = httpRequest.headers();
-            if (headers != null) {
+        if (httpRequest == null || httpRequest.headers() == null
+            || httpRequest.headers().get(HttpHeaders.Names.AUTHORIZATION) == null) {
+            return false;
+        }
 
-                String authorizationHeader = headers.get(HttpHeaders.Names.AUTHORIZATION);
-                if (authorizationHeader != null && !authorizationHeader.isEmpty()) {
-                    if (authorizationHeader.trim().startsWith(CarbonSecurityConstants
-                                                                      .HTTP_AUTHORIZATION_PREFIX_BEARER)) {
+        String authorizationHeader = httpRequest.headers().get(HttpHeaders.Names.AUTHORIZATION).trim();
 
-                        String jwt = authorizationHeader.trim().split(" ")[1];
-                        if (jwt != null && !jwt.trim().isEmpty()) {
-                            try {
-                                singedJWT = SignedJWT.parse(jwt);
-                                return true;
-                            } catch (ParseException e) {
-                                if (log.isDebugEnabled()) {
-                                    log.debug("Error while parsing the JWT token.", e);
-                                }
-                            }
-                        }
+        if (authorizationHeader.startsWith(CarbonSecurityConstants.HTTP_AUTHORIZATION_PREFIX_BEARER)) {
+
+            String jwt = authorizationHeader.split(" ")[1];
+            if (jwt != null && !jwt.trim().isEmpty()) {
+                try {
+                    singedJWT = SignedJWT.parse(jwt);
+
+                    if (log.isDebugEnabled()) {
+                        log.debug("JWTCallbackHandler will handle the request.");
+                    }
+                    return true;
+                } catch (ParseException e) {
+                    if (log.isDebugEnabled()) {
+                        log.debug("Error while parsing the JWT token.", e);
                     }
                 }
             }

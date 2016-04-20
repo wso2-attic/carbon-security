@@ -18,6 +18,8 @@ package org.wso2.carbon.security.jaas.handler;
 
 import io.netty.handler.codec.http.HttpHeaders;
 import io.netty.handler.codec.http.HttpRequest;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.wso2.carbon.security.jaas.HTTPCallbackHandler;
 import org.wso2.carbon.security.jaas.util.CarbonSecurityConstants;
 
@@ -29,13 +31,16 @@ import javax.security.auth.callback.Callback;
 import javax.security.auth.callback.NameCallback;
 import javax.security.auth.callback.PasswordCallback;
 import javax.security.auth.callback.UnsupportedCallbackException;
-
 /**
  * <p>
  * This class extracts credentials from Basic Authorization header.
  * </p>
+ *
+ * @since 1.0.0
  */
 public class UsernamePasswordCallbackHandler implements HTTPCallbackHandler {
+
+    private static final Logger log = LoggerFactory.getLogger(UsernamePasswordCallbackHandler.class);
 
     private HttpRequest httpRequest;
 
@@ -51,29 +56,28 @@ public class UsernamePasswordCallbackHandler implements HTTPCallbackHandler {
     @Override
     public boolean canHandle() {
 
-        if (httpRequest != null) {
+        if (httpRequest == null || httpRequest.headers() == null
+            || httpRequest.headers().get(HttpHeaders.Names.AUTHORIZATION) == null) {
+            return false;
+        }
 
-            HttpHeaders headers = httpRequest.headers();
-            if (headers != null) {
+        String authorizationHeader = httpRequest.headers().get(HttpHeaders.Names.AUTHORIZATION).trim();
 
-                String authorizationHeader = headers.get(HttpHeaders.Names.AUTHORIZATION);
-                if (authorizationHeader != null && !authorizationHeader.isEmpty()) {
+        if (authorizationHeader.startsWith(CarbonSecurityConstants.HTTP_AUTHORIZATION_PREFIX_BASIC)) {
 
-                    if (authorizationHeader.trim().startsWith(CarbonSecurityConstants
-                                                                      .HTTP_AUTHORIZATION_PREFIX_BASIC)) {
+            String credentials = authorizationHeader.split("\\s")[1];
+            byte[] decodedByte = credentials.getBytes(Charset.forName(StandardCharsets.UTF_8.name()));
+            String authDecoded = new String(Base64.getDecoder().decode(decodedByte),
+                                            Charset.forName(StandardCharsets.UTF_8.name()));
+            String[] authParts = authDecoded.split(":");
+            if (authParts.length == 2) {
+                username = authParts[0];
+                password = authParts[1].toCharArray();
 
-                        String credentials = authorizationHeader.trim().split(" ")[1];
-                        byte[] decodedByte = credentials.getBytes(Charset.forName(StandardCharsets.UTF_8.name()));
-                        String authDecoded = new String(Base64.getDecoder().decode(decodedByte),
-                                                        Charset.forName(StandardCharsets.UTF_8.name()));
-                        String[] authParts = authDecoded.split(":");
-                        if (authParts.length == 2) {
-                            username = authParts[0];
-                            password = authParts[1].toCharArray();
-                            return true;
-                        }
-                    }
+                if (log.isDebugEnabled()) {
+                    log.debug("UsernamePasswordCallbackHandler will handle the request.");
                 }
+                return true;
             }
         }
         return false;
