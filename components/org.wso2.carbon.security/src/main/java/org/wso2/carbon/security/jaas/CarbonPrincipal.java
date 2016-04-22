@@ -18,7 +18,6 @@ package org.wso2.carbon.security.jaas;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.wso2.carbon.security.internal.CarbonSecurityDataHolder;
 import org.wso2.carbon.security.user.core.bean.Permission;
 import org.wso2.carbon.security.user.core.bean.User;
 import org.wso2.carbon.security.user.core.exception.AuthorizationException;
@@ -76,9 +75,7 @@ public class CarbonPrincipal implements Principal {
     public boolean isAuthorized(CarbonPermission carbonPermission) {
 
         try {
-            return CarbonSecurityDataHolder.getInstance().getCarbonRealmService().getAuthorizationStore()
-                    .isUserAuthorized(user.getUserID(), new Permission(carbonPermission.getName(),
-                                                                       carbonPermission.getActions()));
+            return user.isAuthorized(new Permission(carbonPermission.getName(), carbonPermission.getActions()));
         } catch (AuthorizationException | AuthorizationStoreException | IdentityStoreException e) {
             log.error("Access denied for permission " + carbonPermission.getName() + " for user " + user.getUserID()
                       + " due to a server error", e);
