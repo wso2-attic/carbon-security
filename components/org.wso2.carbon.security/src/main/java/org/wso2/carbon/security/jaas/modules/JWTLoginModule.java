@@ -28,8 +28,8 @@ import org.wso2.carbon.security.internal.CarbonSecurityDataHolder;
 import org.wso2.carbon.security.jaas.CarbonCallback;
 import org.wso2.carbon.security.jaas.CarbonPrincipal;
 import org.wso2.carbon.security.jaas.util.CarbonSecurityConstants;
-import org.wso2.carbon.security.usercore.bean.User;
-import org.wso2.carbon.security.usercore.exception.IdentityStoreException;
+import org.wso2.carbon.security.user.core.bean.User;
+import org.wso2.carbon.security.user.core.exception.IdentityStoreException;
 
 import java.io.FileInputStream;
 import java.io.IOException;

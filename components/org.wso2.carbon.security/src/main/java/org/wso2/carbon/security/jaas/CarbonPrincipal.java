@@ -19,11 +19,11 @@ package org.wso2.carbon.security.jaas;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.wso2.carbon.security.internal.CarbonSecurityDataHolder;
-import org.wso2.carbon.security.usercore.bean.Permission;
-import org.wso2.carbon.security.usercore.bean.User;
-import org.wso2.carbon.security.usercore.exception.AuthorizationException;
-import org.wso2.carbon.security.usercore.exception.AuthorizationStoreException;
-import org.wso2.carbon.security.usercore.exception.IdentityStoreException;
+import org.wso2.carbon.security.user.core.bean.Permission;
+import org.wso2.carbon.security.user.core.bean.User;
+import org.wso2.carbon.security.user.core.exception.AuthorizationException;
+import org.wso2.carbon.security.user.core.exception.AuthorizationStoreException;
+import org.wso2.carbon.security.user.core.exception.IdentityStoreException;
 
 import java.security.Principal;
 import java.util.Objects;

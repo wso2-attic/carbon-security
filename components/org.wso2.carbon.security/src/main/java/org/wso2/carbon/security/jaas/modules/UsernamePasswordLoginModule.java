@@ -21,11 +21,11 @@ import org.slf4j.LoggerFactory;
 import org.wso2.carbon.kernel.context.PrivilegedCarbonContext;
 import org.wso2.carbon.security.internal.CarbonSecurityDataHolder;
 import org.wso2.carbon.security.jaas.CarbonPrincipal;
-import org.wso2.carbon.security.usercore.bean.User;
-import org.wso2.carbon.security.usercore.context.AuthenticationContext;
-import org.wso2.carbon.security.usercore.exception.AuthenticationFailure;
-import org.wso2.carbon.security.usercore.exception.CredentialStoreException;
-import org.wso2.carbon.security.usercore.exception.IdentityStoreException;
+import org.wso2.carbon.security.user.core.bean.User;
+import org.wso2.carbon.security.user.core.context.AuthenticationContext;
+import org.wso2.carbon.security.user.core.exception.AuthenticationFailure;
+import org.wso2.carbon.security.user.core.exception.CredentialStoreException;
+import org.wso2.carbon.security.user.core.exception.IdentityStoreException;
 
 import java.io.IOException;
 import java.util.Map;

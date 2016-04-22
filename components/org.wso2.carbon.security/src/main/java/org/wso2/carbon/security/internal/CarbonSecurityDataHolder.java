@@ -17,13 +17,13 @@
 package org.wso2.carbon.security.internal;
 
 import org.osgi.framework.BundleContext;
-import org.wso2.carbon.security.usercore.common.CarbonRealmServiceImpl;
-import org.wso2.carbon.security.usercore.config.AuthorizationStoreConfig;
-import org.wso2.carbon.security.usercore.config.CredentialStoreConfig;
-import org.wso2.carbon.security.usercore.config.IdentityStoreConfig;
-import org.wso2.carbon.security.usercore.connector.AuthorizationStoreConnector;
-import org.wso2.carbon.security.usercore.connector.CredentialStoreConnector;
-import org.wso2.carbon.security.usercore.connector.IdentityStoreConnector;
+import org.wso2.carbon.security.user.core.common.CarbonRealmServiceImpl;
+import org.wso2.carbon.security.user.core.config.AuthorizationStoreConfig;
+import org.wso2.carbon.security.user.core.config.CredentialStoreConfig;
+import org.wso2.carbon.security.user.core.config.IdentityStoreConfig;
+import org.wso2.carbon.security.user.core.store.connector.AuthorizationStoreConnector;
+import org.wso2.carbon.security.user.core.store.connector.CredentialStoreConnector;
+import org.wso2.carbon.security.user.core.store.connector.IdentityStoreConnector;
 
 import java.util.HashMap;
 import java.util.Map;

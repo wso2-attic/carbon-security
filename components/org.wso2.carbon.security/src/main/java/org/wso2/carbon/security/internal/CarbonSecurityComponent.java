@@ -43,11 +43,11 @@ import org.wso2.carbon.security.jaas.HTTPCallbackHandler;
 import org.wso2.carbon.security.jaas.modules.JWTLoginModule;
 import org.wso2.carbon.security.jaas.modules.UsernamePasswordLoginModule;
 import org.wso2.carbon.security.jaas.util.CarbonSecurityConstants;
-import org.wso2.carbon.security.usercore.common.CarbonRealmServiceImpl;
-import org.wso2.carbon.security.usercore.connector.AuthorizationStoreConnector;
-import org.wso2.carbon.security.usercore.connector.CredentialStoreConnector;
-import org.wso2.carbon.security.usercore.connector.IdentityStoreConnector;
-import org.wso2.carbon.security.usercore.service.RealmService;
+import org.wso2.carbon.security.user.core.common.CarbonRealmServiceImpl;
+import org.wso2.carbon.security.user.core.service.RealmService;
+import org.wso2.carbon.security.user.core.store.connector.AuthorizationStoreConnector;
+import org.wso2.carbon.security.user.core.store.connector.CredentialStoreConnector;
+import org.wso2.carbon.security.user.core.store.connector.IdentityStoreConnector;
 
 import java.security.Policy;
 import java.util.ArrayList;
@@ -109,7 +109,7 @@ public class CarbonSecurityComponent {
     }
 
     @Reference(
-            name = "org.wso2.carbon.security.usercore.connector.AuthorizationStoreConnector",
+            name = "AuthorizationStoreConnector",
             service = AuthorizationStoreConnector.class,
             cardinality = ReferenceCardinality.AT_LEAST_ONE,
             policy = ReferencePolicy.DYNAMIC,
@@ -127,7 +127,7 @@ public class CarbonSecurityComponent {
     }
 
     @Reference(
-            name = "org.wso2.carbon.security.usercore.connector.IdentityStoreConnector",
+            name = "IdentityStoreConnector",
             service = IdentityStoreConnector.class,
             cardinality = ReferenceCardinality.AT_LEAST_ONE,
             policy = ReferencePolicy.DYNAMIC,
@@ -145,7 +145,7 @@ public class CarbonSecurityComponent {
     }
 
     @Reference(
-            name = "org.wso2.carbon.security.usercore.connector.CredentialStoreConnector",
+            name = "CredentialStoreConnector",
             service = CredentialStoreConnector.class,
             cardinality = ReferenceCardinality.AT_LEAST_ONE,
             policy = ReferencePolicy.DYNAMIC,
