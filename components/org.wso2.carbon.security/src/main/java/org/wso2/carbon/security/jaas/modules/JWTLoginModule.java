@@ -34,6 +34,7 @@ import org.wso2.carbon.security.user.core.exception.IdentityStoreException;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
@@ -66,8 +67,13 @@ import javax.security.auth.spi.LoginModule;
 public class JWTLoginModule implements LoginModule {
 
     private static final Logger log = LoggerFactory.getLogger(JWTLoginModule.class);
-    private static final String ALIAS = "wso2carbon";
-    private static final String KEYSTORE_PASSWORD = "wso2carbon";
+    private static final String DEFAULT_TRUSTSTORE_PASSWORD = "wso2carbon";
+    private static final String DEFAULT_CERTIFICATE_ALIAS = "wso2carbon";
+
+    //String constants used as parameters in the options passed to the loginModule.
+    private static final String OPT_TRUSTSTORE_PATH = "truststorepath";
+    public static final String OPT_TRUSTSTORE_PW = "truststorepassword";
+    public static final String OPT_IDP_CERT_ALIAS = "alias";
 
     private Subject subject;
     private CallbackHandler callbackHandler;
@@ -77,6 +83,9 @@ public class JWTLoginModule implements LoginModule {
     private boolean commitSucceeded;
     private SignedJWT signedJWT;
     private CarbonPrincipal carbonPrincipal;
+    private String trustStorePath;
+    private String trustStorePassword;
+    private String certificateAlias;
 
     @Override
     public void initialize(Subject subject, CallbackHandler callbackHandler, Map<String, ?> sharedState,
@@ -87,6 +96,19 @@ public class JWTLoginModule implements LoginModule {
         this.sharedState = sharedState;
         this.options = options;
 
+        if (options != null && options.containsKey(OPT_TRUSTSTORE_PATH) && options.containsKey(OPT_TRUSTSTORE_PW)
+            && options.containsKey(OPT_IDP_CERT_ALIAS)) {
+            trustStorePath = (String) options.get(OPT_TRUSTSTORE_PATH);
+            if (!Paths.get(trustStorePath).isAbsolute()) {
+                trustStorePath = getAbsolutePath(trustStorePath).toString();
+            }
+            trustStorePassword = (String) options.get(OPT_TRUSTSTORE_PW);
+            certificateAlias = (String) options.get(OPT_IDP_CERT_ALIAS);
+        } else {
+            trustStorePath = getDefaultTrustStorePath().toString();
+            trustStorePassword = DEFAULT_TRUSTSTORE_PASSWORD;
+            certificateAlias = DEFAULT_CERTIFICATE_ALIAS;
+        }
     }
 
     @Override
@@ -187,8 +209,8 @@ public class JWTLoginModule implements LoginModule {
             if (signedJWT != null) {
                 if (new Date().before(signedJWT.getJWTClaimsSet().getExpirationTime())) {
                     JWSVerifier verifier =
-                            new RSASSAVerifier((RSAPublicKey) getPublicKey(getTrustStorePath(), KEYSTORE_PASSWORD,
-                                                                           ALIAS));
+                            new RSASSAVerifier((RSAPublicKey) getPublicKey(trustStorePath, trustStorePassword,
+                                                                           certificateAlias));
                     return signedJWT.verify(verifier);
                 } else {
                     log.warn("Token has expired.");
@@ -235,9 +257,18 @@ public class JWTLoginModule implements LoginModule {
      *
      * @return String representing the trust store path.
      */
-    private String getTrustStorePath() {
-        //TODO Get the key store from a System Property or a util.
-        return Paths.get(System.getProperty("carbon.home"), "conf", "data-bridge",
-                         "client-truststore.jks").toString();
+    private Path getDefaultTrustStorePath() {
+        //TODO Get the key store from a util.
+        return Paths.get(System.getProperty("carbon.home"), "conf", "data-bridge", "client-truststore.jks");
+    }
+
+    /**
+     * Returns the absolute path for a given relative path to $CARBON_HOME.
+     *
+     * @param relativePath path of the file relative to $CARBON_HOME.
+     * @return absolute path.
+     */
+    private Path getAbsolutePath(String relativePath) {
+        return Paths.get(System.getProperty("carbon.home")).resolve(Paths.get(relativePath)).normalize();
     }
 }
