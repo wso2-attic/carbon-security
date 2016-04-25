@@ -77,7 +77,7 @@ public class CarbonPrincipal implements Principal {
         try {
             return user.isAuthorized(new Permission(carbonPermission.getName(), carbonPermission.getActions()));
         } catch (AuthorizationException | AuthorizationStoreException | IdentityStoreException e) {
-            log.error("Access denied for permission " + carbonPermission.getName() + " for user " + user.getUserID()
+            log.error("Access denied for permission " + carbonPermission.getName() + " for user " + user.getUserId()
                       + " due to a server error", e);
             return false;
         }

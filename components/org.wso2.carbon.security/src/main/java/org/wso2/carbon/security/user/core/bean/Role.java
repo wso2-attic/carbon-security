@@ -29,11 +29,13 @@ public class Role {
 
     private String roleName;
     private String roleId;
-    private AuthorizationStore authorizationStore = new AuthorizationStore();
+    private AuthorizationStore authorizationStore;
 
-    public Role(String roleName, String roleId) {
+    private Role(String roleName, String roleId, AuthorizationStore authorizationStore) {
+
         this.roleName = roleName;
         this.roleId = roleId;
+        this.authorizationStore = authorizationStore;
     }
 
     /**
@@ -152,5 +154,35 @@ public class Role {
      */
     public void updateGroups(List<Group> assignList, List<Group> unAssignList) {
         authorizationStore.updateGroupsInRole(roleName, assignList, unAssignList);
+    }
+
+    /**
+     * Builder for role bean.
+     */
+    public static class RoleBuilder {
+
+        private String roleName;
+        private String roleId;
+
+        private AuthorizationStore authorizationStore;
+
+        public RoleBuilder(String roleName, String roleId) {
+            this.roleName = roleName;
+            this.roleId = roleId;
+        }
+
+        public RoleBuilder setAuthorizationStore(AuthorizationStore authorizationStore) {
+            this.authorizationStore = authorizationStore;
+            return this;
+        }
+
+        public Role build() {
+
+            if (authorizationStore == null) {
+                return null;
+            }
+
+            return new Role(roleName, roleId, authorizationStore);
+        }
     }
 }

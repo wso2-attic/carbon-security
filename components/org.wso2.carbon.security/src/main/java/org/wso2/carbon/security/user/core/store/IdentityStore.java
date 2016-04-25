@@ -22,39 +22,59 @@ import org.wso2.carbon.security.internal.CarbonSecurityDataHolder;
 import org.wso2.carbon.security.user.core.bean.Group;
 import org.wso2.carbon.security.user.core.bean.User;
 import org.wso2.carbon.security.user.core.config.IdentityStoreConfig;
+import org.wso2.carbon.security.user.core.constant.UserStoreConstants;
 import org.wso2.carbon.security.user.core.exception.IdentityStoreException;
+import org.wso2.carbon.security.user.core.exception.StoreException;
 import org.wso2.carbon.security.user.core.service.RealmService;
 import org.wso2.carbon.security.user.core.store.connector.IdentityStoreConnector;
+import org.wso2.carbon.security.user.core.store.connector.IdentityStoreConnectorFactory;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
- * Represents a virtual identity store to abstract the underlying user connector.
+ * Represents a virtual identity store to abstract the underlying stores.
  * @since 1.0.0
  */
 public class IdentityStore {
 
     private static final Logger log = LoggerFactory.getLogger(IdentityStore.class);
+
+    private RealmService realmService;
     private Map<String, IdentityStoreConnector> identityStoreConnectors = new HashMap<>();
 
     /**
      * Initialize this instance.
-     * @throws IOException
      * @throws IdentityStoreException
      */
-    public void init(RealmService realmService) throws IOException, IdentityStoreException {
+    public void init(RealmService realmService) throws IdentityStoreException {
+
+        this.realmService = realmService;
 
         Map<String, IdentityStoreConfig> storeConfigs = CarbonSecurityDataHolder.getInstance()
                 .getIdentityStoreConfigMap();
 
+        if (storeConfigs.isEmpty()) {
+            throw new StoreException("At least one identity store configuration must present.");
+        }
+
         for (Map.Entry<String, IdentityStoreConfig> connectorConfig : storeConfigs.entrySet()) {
-            IdentityStoreConnector identityStoreConnector = CarbonSecurityDataHolder.getInstance()
-                    .getIdentityStoreConnectorMap().get(connectorConfig.getKey());
+
+            String connectorType = (String) connectorConfig.getValue().getStoreProperties()
+                    .get(UserStoreConstants.CONNECTOR_TYPE);
+            IdentityStoreConnectorFactory identityStoreConnectorFactory = CarbonSecurityDataHolder.getInstance()
+                    .getIdentityStoreConnectorFactoryMap().get(connectorType);
+
+            if (identityStoreConnectorFactory == null) {
+                throw new StoreException("No identity store connector factory found for given type.");
+            }
+
+            IdentityStoreConnector identityStoreConnector = identityStoreConnectorFactory.getInstance();
             identityStoreConnector.init(connectorConfig.getValue());
+
             identityStoreConnectors.put(connectorConfig.getKey(), identityStoreConnector);
         }
 
@@ -87,7 +107,13 @@ public class IdentityStore {
     public List<Group> getGroupsOfUser(String userId, String userStoreId) throws IdentityStoreException {
 
         IdentityStoreConnector identityStoreConnector = identityStoreConnectors.get(userStoreId);
-        return identityStoreConnector.getGroupsOfUser(userId);
+        return identityStoreConnector.getGroupsOfUser(userId)
+                .stream()
+                .map(groupBuilder -> groupBuilder
+                        .setAuthorizationStore(realmService.getAuthorizationStore())
+                        .setIdentityStore(realmService.getIdentityStore())
+                        .build())
+                .collect(Collectors.toList());
     }
 
     /**
@@ -100,7 +126,13 @@ public class IdentityStore {
     public List<User> getUsersOfGroup(String groupID, String userStoreId) throws IdentityStoreException {
 
         IdentityStoreConnector identityStoreConnector = identityStoreConnectors.get(userStoreId);
-        return identityStoreConnector.getUsersOfGroup(groupID);
+        return identityStoreConnector.getUsersOfGroup(groupID)
+                .stream()
+                .map(userBuilder -> userBuilder
+                        .setIdentityStore(realmService.getIdentityStore())
+                        .setAuthorizationStore(realmService.getAuthorizationStore())
+                        .build())
+                .collect(Collectors.toList());
     }
 
     /**
@@ -112,9 +144,13 @@ public class IdentityStore {
     public User getUser(String username) throws IdentityStoreException {
 
         for (IdentityStoreConnector identityStoreConnector : identityStoreConnectors.values()) {
-            User user = identityStoreConnector.getUser(username);
-            if (user != null) {
-                return user;
+            User.UserBuilder userBuilder = identityStoreConnector.getUser(username);
+
+            if (userBuilder != null) {
+                return userBuilder
+                        .setIdentityStore(realmService.getIdentityStore())
+                        .setAuthorizationStore(realmService.getAuthorizationStore())
+                        .build();
             }
         }
 
@@ -130,9 +166,13 @@ public class IdentityStore {
     public User getUserfromId(String userId) throws IdentityStoreException {
 
         for (IdentityStoreConnector identityStoreConnector : identityStoreConnectors.values()) {
-            User user = identityStoreConnector.getUserFromId(userId);
-            if (user != null) {
-                return user;
+            User.UserBuilder userBuilder = identityStoreConnector.getUserFromId(userId);
+
+            if (userBuilder != null) {
+                return userBuilder
+                        .setIdentityStore(realmService.getIdentityStore())
+                        .setAuthorizationStore(realmService.getAuthorizationStore())
+                        .build();
             }
         }
 
@@ -141,15 +181,19 @@ public class IdentityStore {
 
     /**
      * Get the group from name.
-     * @param groupName
+     * @param groupName Name of the group.
      * @return Group
      */
     public Group getGroup(String groupName) throws IdentityStoreException {
 
         for (IdentityStoreConnector identityStoreConnector : identityStoreConnectors.values()) {
-            Group group = identityStoreConnector.getGroup(groupName);
-            if (group != null) {
-                return group;
+            Group.GroupBuilder groupBuilder = identityStoreConnector.getGroup(groupName);
+
+            if (groupBuilder != null) {
+                return groupBuilder
+                        .setIdentityStore(realmService.getIdentityStore())
+                        .setAuthorizationStore(realmService.getAuthorizationStore())
+                        .build();
             }
         }
 
@@ -164,9 +208,13 @@ public class IdentityStore {
     public Group getGroupFromId(String groupId) throws IdentityStoreException {
 
         for (IdentityStoreConnector identityStoreConnector : identityStoreConnectors.values()) {
-            Group group = identityStoreConnector.getGroupById(groupId);
-            if (group != null) {
-                return group;
+            Group.GroupBuilder groupBuilder = identityStoreConnector.getGroupById(groupId);
+
+            if (groupBuilder != null) {
+                return groupBuilder
+                        .setIdentityStore(realmService.getIdentityStore())
+                        .setAuthorizationStore(realmService.getAuthorizationStore())
+                        .build();
             }
         }
 
@@ -214,7 +262,13 @@ public class IdentityStore {
         List<User> users = new ArrayList<>();
 
         for (IdentityStoreConnector identityStoreConnector : identityStoreConnectors.values()) {
-            users.addAll(identityStoreConnector.listUsers(filterPattern, offset, length));
+            users.addAll(identityStoreConnector.listUsers(filterPattern, offset, length)
+                    .stream()
+                    .map(userBuilder -> userBuilder
+                            .setIdentityStore(realmService.getIdentityStore())
+                            .setAuthorizationStore(realmService.getAuthorizationStore())
+                            .build())
+                    .collect(Collectors.toList()));
         }
 
         return users;
@@ -233,7 +287,13 @@ public class IdentityStore {
         List<Group> groups = new ArrayList<>();
 
         for (IdentityStoreConnector identityStoreConnector : identityStoreConnectors.values()) {
-            groups.addAll(identityStoreConnector.listGroups(filterPattern, offset, length));
+            groups.addAll(identityStoreConnector.listGroups(filterPattern, offset, length)
+                    .stream()
+                    .map(groupBuilder -> groupBuilder
+                            .setIdentityStore(realmService.getIdentityStore())
+                            .setAuthorizationStore(realmService.getAuthorizationStore())
+                            .build())
+                    .collect(Collectors.toList()));
         }
 
         return groups;

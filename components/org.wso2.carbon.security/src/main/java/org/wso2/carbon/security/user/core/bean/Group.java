@@ -32,13 +32,17 @@ public class Group {
     private String groupID;
     private String userStoreID;
     private String groupName;
-    private IdentityStore identityStore = new IdentityStore();
-    private AuthorizationStore authorizationStore = new AuthorizationStore();
+    private IdentityStore identityStore;
+    private AuthorizationStore authorizationStore;
 
-    public Group(String groupID, String userStoreID, String groupName) throws IdentityStoreException {
+    private Group(String groupID, String userStoreID, String groupName, IdentityStore identityStore,
+                 AuthorizationStore authorizationStore) {
+
         this.groupID = groupID;
         this.userStoreID = userStoreID;
         this.groupName = groupName;
+        this.identityStore = identityStore;
+        this.authorizationStore = authorizationStore;
     }
 
     /**
@@ -53,7 +57,7 @@ public class Group {
      * Get the group id.
      * @return Group id.
      */
-    public String getGroupID() {
+    public String getGroupId() {
         return groupID;
     }
 
@@ -140,5 +144,43 @@ public class Group {
      */
     public void updateRoles(List<Role> assignList, List<Role> unAssignList) {
         authorizationStore.updateRolesInGroup(groupID, assignList, unAssignList);
+    }
+
+    /**
+     * Builder for group bean.
+     */
+    public static class GroupBuilder {
+
+        private String groupId;
+        private String userStoreId;
+        private String groupName;
+
+        private IdentityStore identityStore;
+        private AuthorizationStore authorizationStore;
+
+        public GroupBuilder(String groupId, String userStoreId, String groupName) {
+            this.groupId = groupId;
+            this.groupName = groupName;
+            this.userStoreId = userStoreId;
+        }
+
+        public GroupBuilder setIdentityStore(IdentityStore identityStore) {
+            this.identityStore = identityStore;
+            return this;
+        }
+
+        public GroupBuilder setAuthorizationStore(AuthorizationStore authorizationStore) {
+            this.authorizationStore = authorizationStore;
+            return this;
+        }
+
+        public Group build() {
+
+            if (identityStore == null || authorizationStore == null) {
+                return null;
+            }
+
+            return new Group(groupId, userStoreId, groupName, identityStore, authorizationStore);
+        }
     }
 }

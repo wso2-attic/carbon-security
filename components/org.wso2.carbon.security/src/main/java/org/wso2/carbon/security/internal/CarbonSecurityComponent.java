@@ -45,9 +45,9 @@ import org.wso2.carbon.security.jaas.modules.UsernamePasswordLoginModule;
 import org.wso2.carbon.security.jaas.util.CarbonSecurityConstants;
 import org.wso2.carbon.security.user.core.common.CarbonRealmServiceImpl;
 import org.wso2.carbon.security.user.core.service.RealmService;
-import org.wso2.carbon.security.user.core.store.connector.AuthorizationStoreConnector;
-import org.wso2.carbon.security.user.core.store.connector.CredentialStoreConnector;
-import org.wso2.carbon.security.user.core.store.connector.IdentityStoreConnector;
+import org.wso2.carbon.security.user.core.store.connector.AuthorizationStoreConnectorFactory;
+import org.wso2.carbon.security.user.core.store.connector.CredentialStoreConnectorFactory;
+import org.wso2.carbon.security.user.core.store.connector.IdentityStoreConnectorFactory;
 
 import java.security.Policy;
 import java.util.ArrayList;
@@ -59,7 +59,6 @@ import javax.security.auth.spi.LoginModule;
 
 /**
  * OSGi service component which handle authentication and authorization.
- *
  * @since 1.0.0
  */
 @Component(
@@ -109,57 +108,60 @@ public class CarbonSecurityComponent {
     }
 
     @Reference(
-            name = "AuthorizationStoreConnector",
-            service = AuthorizationStoreConnector.class,
+            name = "AuthorizationStoreConnectorFactory",
+            service = AuthorizationStoreConnectorFactory.class,
             cardinality = ReferenceCardinality.AT_LEAST_ONE,
             policy = ReferencePolicy.DYNAMIC,
-            unbind = "unregisterAuthorizationStoreConnector"
+            unbind = "unregisterAuthorizationStoreConnectorFactory"
     )
-    protected void registerAuthorizationConnector(AuthorizationStoreConnector authorizationStoreConnector,
-                                                  Map<String, String> properties) {
+    protected void registerAuthorizationStoreConnectorFactory(
+            AuthorizationStoreConnectorFactory authorizationStoreConnectorFactory, Map<String, String> properties) {
 
-        String connectorId = properties.get("connector-id");
-        CarbonSecurityDataHolder.getInstance().registerAuthorizationStoreConnector(connectorId,
-                                                                                   authorizationStoreConnector);
+        String connectorId = properties.get("connector-type");
+        CarbonSecurityDataHolder.getInstance()
+                .registerAuthorizationStoreConnectorFactory(connectorId, authorizationStoreConnectorFactory);
     }
 
-    protected void unregisterAuthorizationStoreConnector(AuthorizationStoreConnector authorizationStoreConnector) {
+    protected void unregisterAuthorizationStoreConnectorFactory(
+            AuthorizationStoreConnectorFactory authorizationStoreConnectorFactory) {
     }
 
     @Reference(
-            name = "IdentityStoreConnector",
-            service = IdentityStoreConnector.class,
+            name = "IdentityStoreConnectorFactory",
+            service = IdentityStoreConnectorFactory.class,
             cardinality = ReferenceCardinality.AT_LEAST_ONE,
             policy = ReferencePolicy.DYNAMIC,
-            unbind = "unregisterIdentityStoreConnector"
+            unbind = "unregisterIdentityStoreConnectorFactory"
     )
-    protected void registerIdentityConnector(IdentityStoreConnector identityStoreConnector,
+    protected void registerIdentityStoreConnectorFactory(IdentityStoreConnectorFactory identityStoreConnectorFactory,
                                              Map<String, String> properties) {
 
-        String connectorId = properties.get("connector-id");
-        CarbonSecurityDataHolder.getInstance().registerIdentityStoreConnector(connectorId,
-                                                                              identityStoreConnector);
+        String connectorId = properties.get("connector-type");
+        CarbonSecurityDataHolder.getInstance()
+                .registerIdentityStoreConnectorFactory(connectorId, identityStoreConnectorFactory);
     }
 
-    protected void unregisterIdentityStoreConnector(IdentityStoreConnector identityStoreConnector) {
+    protected void unregisterIdentityStoreConnectorFactory(
+            IdentityStoreConnectorFactory identityStoreConnectorFactory) {
     }
 
     @Reference(
-            name = "CredentialStoreConnector",
-            service = CredentialStoreConnector.class,
+            name = "CredentialStoreConnectorFactory",
+            service = CredentialStoreConnectorFactory.class,
             cardinality = ReferenceCardinality.AT_LEAST_ONE,
             policy = ReferencePolicy.DYNAMIC,
-            unbind = "unregisterCredentialStoreConnector"
+            unbind = "unregisterCredentialStoreConnectorFactory"
     )
-    protected void registerCredentialConnector(CredentialStoreConnector credentialStoreConnector,
-                                               Map<String, String> properties) {
+    protected void registerCredentialStoreConnectorFactory(
+            CredentialStoreConnectorFactory credentialStoreConnectorFactory, Map<String, String> properties) {
 
-        String connectorId = properties.get("connector-id");
-        CarbonSecurityDataHolder.getInstance().registerCredentialStoreConnector(connectorId,
-                                                                                credentialStoreConnector);
+        String connectorId = properties.get("connector-type");
+        CarbonSecurityDataHolder.getInstance()
+                .registerCredentialStoreConnectorFactory(connectorId, credentialStoreConnectorFactory);
     }
 
-    protected void unregisterCredentialStoreConnector(CredentialStoreConnector credentialStoreConnector) {
+    protected void unregisterCredentialStoreConnectorFactory(
+            CredentialStoreConnectorFactory credentialStoreConnectorFactory) {
     }
 
     /**

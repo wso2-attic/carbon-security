@@ -24,11 +24,14 @@ import org.wso2.carbon.security.user.core.bean.Permission;
 import org.wso2.carbon.security.user.core.bean.Role;
 import org.wso2.carbon.security.user.core.bean.User;
 import org.wso2.carbon.security.user.core.config.AuthorizationStoreConfig;
+import org.wso2.carbon.security.user.core.constant.UserStoreConstants;
 import org.wso2.carbon.security.user.core.exception.AuthorizationException;
 import org.wso2.carbon.security.user.core.exception.AuthorizationStoreException;
 import org.wso2.carbon.security.user.core.exception.IdentityStoreException;
+import org.wso2.carbon.security.user.core.exception.StoreException;
 import org.wso2.carbon.security.user.core.service.RealmService;
 import org.wso2.carbon.security.user.core.store.connector.AuthorizationStoreConnector;
+import org.wso2.carbon.security.user.core.store.connector.AuthorizationStoreConnectorFactory;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.io.IOException;
@@ -36,14 +39,17 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
- * Connector for the Authorization store.
+ * Represents a virtual authorization store to abstract the underlying stores.
+ * @since 1.0.0
  */
 public class AuthorizationStore {
 
+    private static final Logger log = LoggerFactory.getLogger(AuthorizationStore.class);
+
     private RealmService realmService;
-    private static Logger log = LoggerFactory.getLogger(AuthorizationStore.class);
     private Map<String, AuthorizationStoreConnector> authorizationStoreConnectors = new HashMap<>();
 
     public void init(RealmService realmService) throws IOException, AuthorizationStoreException {
@@ -53,11 +59,25 @@ public class AuthorizationStore {
         Map<String, AuthorizationStoreConfig> authorizationStoreConfigs = CarbonSecurityDataHolder.getInstance()
                 .getAuthorizationStoreConfigMap();
 
+        if (authorizationStoreConfigs.isEmpty()) {
+            throw new AuthorizationStoreException("At least one authorization store configuration must present.");
+        }
+
         for (Map.Entry<String, AuthorizationStoreConfig> authorizationStoreConfig :
                 authorizationStoreConfigs.entrySet()) {
-            AuthorizationStoreConnector authorizationStoreConnector = CarbonSecurityDataHolder
-                    .getInstance().getAuthorizationStoreConnectorMap().get(authorizationStoreConfig.getKey());
+
+            String connectorType = (String) authorizationStoreConfig.getValue().getStoreProperties()
+                    .get(UserStoreConstants.CONNECTOR_TYPE);
+            AuthorizationStoreConnectorFactory authorizationStoreConnectorFactory = CarbonSecurityDataHolder
+                    .getInstance().getAuthorizationStoreConnectorFactoryMap().get(connectorType);
+
+            if (authorizationStoreConnectorFactory == null) {
+                throw new StoreException("No credential store connector factory found for given type.");
+            }
+
+            AuthorizationStoreConnector authorizationStoreConnector = authorizationStoreConnectorFactory.getInstance();
             authorizationStoreConnector.init(authorizationStoreConfig.getValue());
+
             authorizationStoreConnectors.put(authorizationStoreConfig.getKey(), authorizationStoreConnector);
         }
 
@@ -79,13 +99,18 @@ public class AuthorizationStore {
         // Get the roles directly associated to the user.
         List<Role> roles = new ArrayList<>();
         for (AuthorizationStoreConnector authorizationStoreConnector : authorizationStoreConnectors.values()) {
-            roles.addAll(authorizationStoreConnector.getRolesForUser(userId));
+            roles.addAll(authorizationStoreConnector.getRolesForUser(userId)
+                    .stream()
+                    .map(roleBuilder -> roleBuilder
+                            .setAuthorizationStore(realmService.getAuthorizationStore())
+                            .build())
+                    .collect(Collectors.toList()));
         }
 
         // Get the roles associated through groups.
         List<Group> groups = realmService.getIdentityStore().getGroupsOfUser(userId, userStoreId);
         for (Group group : groups) {
-            roles.addAll(getRolesOfGroup(group.getGroupID()));
+            roles.addAll(getRolesOfGroup(group.getGroupId()));
         }
 
         if (roles.isEmpty()) {
@@ -205,7 +230,12 @@ public class AuthorizationStore {
         List<Role> roles = new ArrayList<>();
 
         for (AuthorizationStoreConnector authorizationStoreConnector : authorizationStoreConnectors.values()) {
-            roles.addAll(authorizationStoreConnector.getRolesForGroup(groupId));
+            roles.addAll(authorizationStoreConnector.getRolesForGroup(groupId)
+                    .stream()
+                    .map(roleBuilder -> roleBuilder
+                            .setAuthorizationStore(realmService.getAuthorizationStore())
+                            .build())
+                    .collect(Collectors.toList()));
         }
 
         return roles;
@@ -233,10 +263,27 @@ public class AuthorizationStore {
      * Add a new Role.
      * @param roleName Name of the Role.
      * @param permissions List of permissions to be assign.
+     * @param authorizationStoreId Id of the authorizations store where the role should be stored.
      * @return New Role.
+     * @throws AuthorizationStoreException
      */
-    public Role addNewRole(String roleName, List<Permission> permissions) {
-        throw new NotImplementedException();
+    public Role addNewRole(String roleName, List<Permission> permissions, String authorizationStoreId)
+            throws AuthorizationStoreException {
+
+        AuthorizationStoreConnector authorizationStoreConnector = authorizationStoreConnectors
+                .get(authorizationStoreId);
+
+        if (authorizationStoreConnector == null) {
+            throw new AuthorizationStoreException("Invalid authorization store id.");
+        }
+
+        Role.RoleBuilder roleBuilder = authorizationStoreConnector.addNewRole(roleName, permissions);
+
+        if (roleBuilder == null) {
+            throw new AuthorizationStoreException("Role builder is null.");
+        }
+
+        return roleBuilder.setAuthorizationStore(realmService.getAuthorizationStore()).build();
     }
 
     /**
@@ -251,12 +298,21 @@ public class AuthorizationStore {
      * Add new permission.
      * @param resourceId Resource id.
      * @param action Action name.
+     * @param authorizationStoreId Id of the authorizations store where the permission should store.
      * @return Created Permission.
+     * @throws AuthorizationStoreException
      */
-    public Permission addNewPermission(String resourceId, String action) {
+    public Permission addNewPermission(String resourceId, String action, String authorizationStoreId)
+            throws AuthorizationStoreException {
 
-        Permission permission = new Permission(resourceId, action);
-        return permission;
+        AuthorizationStoreConnector authorizationStoreConnector = authorizationStoreConnectors
+                .get(authorizationStoreId);
+
+        if (authorizationStoreConnector == null) {
+            throw new AuthorizationStoreException("Invalid authorization store id.");
+        }
+
+        return authorizationStoreConnector.addNewPermission(resourceId, action);
     }
 
     /**

@@ -14,19 +14,16 @@
  * limitations under the License.
  */
 
-package org.wso2.carbon.security.user.core.constant;
+package org.wso2.carbon.security.user.core.store.connector;
 
 /**
- * User store constants.
+ * Factory to create @see AuthorizationStoreConnector instances.
  */
-public class UserStoreConstants {
+public interface AuthorizationStoreConnectorFactory {
 
-    public static final String USER_STORE_NAME = "userStoreName";
-    public static final String EXECUTION_ORDER = "executionOrder";
-    public static final String READ_ONLY = "readOnly";
-    public static final String USER_STORE_CLASS = "userStoreClass";
-    public static final String PRIMARY = "PRIMARY";
-    public static final String USER_STORE_ID = "userStoreID";
-    public static final String USER_STORE_CONFIGURATION_FILE = "primary-userstore.yml";
-    public static final String CONNECTOR_TYPE = "connectorType";
+    /**
+     * Get @see AuthorizationStoreConnector instance.
+     * @return AuthorizationStoreConnector.
+     */
+    AuthorizationStoreConnector getInstance();
 }

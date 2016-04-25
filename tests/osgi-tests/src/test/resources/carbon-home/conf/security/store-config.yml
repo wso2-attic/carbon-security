@@ -12,6 +12,11 @@ storeConnectors:
   hashAlgorithm: "SHA-256"
   databaseType: "MySQL"
  -
+  name: "JDBCCredentialStore2"
+  dataSource: "WSO2_CARBON_DB2"
+  hashAlgorithm: "SHA-256"
+  databaseType: "Orcale"
+ -
   name: "JDBCIdentityStore"
   dataSource: "WSO2_CARBON_DB"
   databaseType: "MySQL"

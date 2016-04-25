@@ -36,15 +36,18 @@ public class User {
     private long tenantId;
     private String userName;
 
-    private IdentityStore identityStore = new IdentityStore();
-    private AuthorizationStore authorizationStore = new AuthorizationStore();
+    private IdentityStore identityStore;
+    private AuthorizationStore authorizationStore;
 
-    public User(String userName, String userID, String userStoreID, long tenantId) {
+    private User(String userName, String userID, String userStoreID, long tenantId, IdentityStore identityStore,
+                AuthorizationStore authorizationStore) {
 
         this.userID = userID;
         this.userStoreID = userStoreID;
         this.userName = userName;
         this.tenantId = tenantId;
+        this.identityStore = identityStore;
+        this.authorizationStore = authorizationStore;
     }
 
     /**
@@ -59,7 +62,7 @@ public class User {
      * Get user id.
      * @return User id.
      */
-    public String getUserID() {
+    public String getUserId() {
         return userID;
     }
 
@@ -67,7 +70,7 @@ public class User {
      * Get user store id.
      * @return User store id.
      */
-    public String getUserStoreID() {
+    public String getUserStoreId() {
         return userStoreID;
     }
 
@@ -192,5 +195,44 @@ public class User {
      */
     public void updateRoles(List<Role> assignList, List<Role> unAssignList) {
         authorizationStore.updateRolesInUser(userID, assignList, unAssignList);
+    }
+
+    /**
+     * Builder for user bean.
+     */
+    public static class UserBuilder {
+
+        private String userName;
+        private String userId;
+        private String userStoreId;
+        private long tenantId;
+
+        private IdentityStore identityStore;
+        private AuthorizationStore authorizationStore;
+
+        public UserBuilder(String userName, String userId, String userStoreId, long tenantId) {
+            this.userName = userName;
+            this.userId = userId;
+            this.userStoreId = userStoreId;
+            this.tenantId = tenantId;
+        }
+
+        public UserBuilder setIdentityStore(IdentityStore identityStore) {
+            this.identityStore = identityStore;
+            return this;
+        }
+
+        public UserBuilder setAuthorizationStore(AuthorizationStore authorizationStore) {
+            this.authorizationStore = authorizationStore;
+            return this;
+        }
+
+        public User build() {
+
+            if (identityStore == null || authorizationStore == null) {
+                return null;
+            }
+            return new User(userName, userId, userStoreId, tenantId, identityStore, authorizationStore);
+        }
     }
 }

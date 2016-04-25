@@ -58,7 +58,7 @@ public interface IdentityStoreConnector {
      * @return User Object with
      * @throws IdentityStoreException
      */
-    User getUserFromId(String userID) throws IdentityStoreException;
+    User.UserBuilder getUserFromId(String userID) throws IdentityStoreException;
 
     /**
      * Get user from the user name.
@@ -66,7 +66,7 @@ public interface IdentityStoreConnector {
      * @return
      * @throws IdentityStoreException
      */
-    User getUser(String username) throws IdentityStoreException;
+    User.UserBuilder getUser(String username) throws IdentityStoreException;
 
     /**
      * List all users in User Store according to the filter pattern.
@@ -78,7 +78,7 @@ public interface IdentityStoreConnector {
      *         no identities to match.
      * @throws IdentityStoreException
      */
-    List<User> listUsers(String filterPattern, int offset, int length) throws IdentityStoreException;
+    List<User.UserBuilder> listUsers(String filterPattern, int offset, int length) throws IdentityStoreException;
 
     /**
      * Retrieve set of claims of the user with the given ID.
@@ -104,7 +104,7 @@ public interface IdentityStoreConnector {
      * @return Group with the given GroupID
      * @throws IdentityStoreException
      */
-    Group getGroupById(String groupID) throws IdentityStoreException;
+    Group.GroupBuilder getGroupById(String groupID) throws IdentityStoreException;
 
     /**
      * Retrieve group from the group name.
@@ -112,7 +112,7 @@ public interface IdentityStoreConnector {
      * @return Group with the given group name.
      * @throws IdentityStoreException
      */
-    Group getGroup(String groupName) throws IdentityStoreException;
+    Group.GroupBuilder getGroup(String groupName) throws IdentityStoreException;
 
     /**
      * List groups according to the filter pattern.
@@ -122,7 +122,7 @@ public interface IdentityStoreConnector {
      * @return List of groups that matches the filter pattern.
      * @throws IdentityStoreException
      */
-    List<Group> listGroups(String filterPattern, int offset, int length) throws IdentityStoreException;
+    List<Group.GroupBuilder> listGroups(String filterPattern, int offset, int length) throws IdentityStoreException;
 
     /**
      * Retrieve groups of a given User with unique ID.
@@ -130,7 +130,7 @@ public interface IdentityStoreConnector {
      * @return List of Groups which this user is assigned to
      * @throws IdentityStoreException
      */
-    List<Group> getGroupsOfUser(String userID) throws IdentityStoreException;
+    List<Group.GroupBuilder> getGroupsOfUser(String userID) throws IdentityStoreException;
 
     /**
      * Retrieve set of users belongs to a group.
@@ -139,7 +139,7 @@ public interface IdentityStoreConnector {
      * @return Set of IdentityObjects resides in Group
      * @throws IdentityStoreException
      */
-    List<User> getUsersOfGroup(String groupID) throws IdentityStoreException;
+    List<User.UserBuilder> getUsersOfGroup(String groupID) throws IdentityStoreException;
 
     /**
      * Checks whether the user is in the group.

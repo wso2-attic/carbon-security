@@ -24,8 +24,6 @@ import org.wso2.carbon.security.jaas.CarbonPrincipal;
 import org.wso2.carbon.security.user.core.bean.User;
 import org.wso2.carbon.security.user.core.context.AuthenticationContext;
 import org.wso2.carbon.security.user.core.exception.AuthenticationFailure;
-import org.wso2.carbon.security.user.core.exception.CredentialStoreException;
-import org.wso2.carbon.security.user.core.exception.IdentityStoreException;
 
 import java.io.IOException;
 import java.util.Map;
@@ -122,9 +120,6 @@ public class UsernamePasswordLoginModule implements LoginModule {
             user = authenticationContext.getUser();
         } catch (AuthenticationFailure authenticationFailure) {
             throw new LoginException("Authentication failure.");
-        } catch (IdentityStoreException | CredentialStoreException e) {
-            log.error("Internal error occurred while authenticating a user.", e);
-            throw new LoginException("Internal error occurred.");
         }
 
         //TODO Add Audit logs CARBON-15870
