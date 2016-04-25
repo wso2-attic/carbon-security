@@ -24,48 +24,48 @@ import java.util.List;
  *
  * @since 1.0.0
  */
-public class StoreConfigs {
+public class StoreConfigFile {
 
-    private StoreConfig credentialStore;
+    private StoreConfigEntry credentialStore;
 
-    private StoreConfig identityStore;
+    private StoreConfigEntry identityStore;
 
-    private StoreConfig authorizationStore;
+    private StoreConfigEntry authorizationStore;
 
-    private List<StoreConnectorConfig> storeConnectors;
+    private List<StoreConnectorConfigEntry> storeConnectors;
 
-    public StoreConfig getCredentialStore() {
+    public StoreConfigEntry getCredentialStore() {
         return credentialStore;
     }
 
-    public void setCredentialStore(StoreConfig credentialStore) {
+    public void setCredentialStore(StoreConfigEntry credentialStore) {
         this.credentialStore = credentialStore;
     }
 
-    public StoreConfig getIdentityStore() {
+    public StoreConfigEntry getIdentityStore() {
         return identityStore;
     }
 
-    public void setIdentityStore(StoreConfig identityStore) {
+    public void setIdentityStore(StoreConfigEntry identityStore) {
         this.identityStore = identityStore;
     }
 
-    public StoreConfig getAuthorizationStore() {
+    public StoreConfigEntry getAuthorizationStore() {
         return authorizationStore;
     }
 
-    public void setAuthorizationStore(StoreConfig authorizationStore) {
+    public void setAuthorizationStore(StoreConfigEntry authorizationStore) {
         this.authorizationStore = authorizationStore;
     }
 
-    public List<StoreConnectorConfig> getStoreConnectors() {
+    public List<StoreConnectorConfigEntry> getStoreConnectors() {
         if (storeConnectors == null) {
             return Collections.EMPTY_LIST;
         }
         return storeConnectors;
     }
 
-    public void setStoreConnectors(List<StoreConnectorConfig> storeConnectors) {
+    public void setStoreConnectors(List<StoreConnectorConfigEntry> storeConnectors) {
         this.storeConnectors = storeConnectors;
     }
 

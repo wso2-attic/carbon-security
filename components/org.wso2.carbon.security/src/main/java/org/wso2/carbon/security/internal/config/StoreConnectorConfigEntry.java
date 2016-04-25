@@ -23,7 +23,7 @@ import java.util.Properties;
  *
  * @since 1.0.0
  */
-public class StoreConnectorConfig {
+public class StoreConnectorConfigEntry {
 
     private String name;
 

@@ -60,7 +60,7 @@ Add following entries to the `bin/carbon.sh` file to enable JAAS based authentic
     -Djava.security.policy="$CARBON_HOME/conf/security/security.policy" \
 ```
 
-The following code snippet shows how to perfrom a authorization.
+The following code snippet shows how to perform a authorization.
 
 ```java
     private boolean isAuthorized(Subject subject, final CarbonPermission requiredPermission) {
