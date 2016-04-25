@@ -65,7 +65,7 @@ public class UsernamePasswordCallbackHandler implements HTTPCallbackHandler {
 
         if (authorizationHeader.startsWith(CarbonSecurityConstants.HTTP_AUTHORIZATION_PREFIX_BASIC)) {
 
-            String credentials = authorizationHeader.split("\\s")[1];
+            String credentials = authorizationHeader.split("\\s+")[1];
             byte[] decodedByte = credentials.getBytes(Charset.forName(StandardCharsets.UTF_8.name()));
             String authDecoded = new String(Base64.getDecoder().decode(decodedByte),
                                             Charset.forName(StandardCharsets.UTF_8.name()));

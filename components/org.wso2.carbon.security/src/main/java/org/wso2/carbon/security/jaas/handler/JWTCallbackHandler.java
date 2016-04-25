@@ -62,7 +62,7 @@ public class JWTCallbackHandler implements HTTPCallbackHandler {
 
         if (authorizationHeader.startsWith(CarbonSecurityConstants.HTTP_AUTHORIZATION_PREFIX_BEARER)) {
 
-            String jwt = authorizationHeader.split(" ")[1];
+            String jwt = authorizationHeader.split("\\s+")[1];
             if (jwt != null && !jwt.trim().isEmpty()) {
                 try {
                     singedJWT = SignedJWT.parse(jwt);

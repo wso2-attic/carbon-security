@@ -21,7 +21,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.wso2.carbon.security.jaas.util.CarbonSecurityConstants;
 import org.wso2.carbon.security.jaas.util.CarbonSecurityUtils;
-import org.wso2.carbon.security.jaas.util.LambdaExceptionUtils;
 
 import java.io.IOException;
 import java.util.List;
@@ -30,6 +29,8 @@ import javax.security.auth.callback.CallbackHandler;
 import javax.security.auth.callback.NameCallback;
 import javax.security.auth.callback.PasswordCallback;
 import javax.security.auth.callback.UnsupportedCallbackException;
+
+import static org.wso2.carbon.security.jaas.util.LambdaExceptionUtils.rethrowConsumer;
 
 /**
  * The class {@code CarbonCallbackHandler} is an implementation {@code CarbonCallbackHandler}.
@@ -92,7 +93,7 @@ public class CarbonCallbackHandler implements CallbackHandler {
                     return handler.canHandle();
                 })
                 .findFirst()
-                .ifPresent(LambdaExceptionUtils.rethrowConsumer(handler -> {
+                .ifPresent(rethrowConsumer(handler -> {
                     handler.handle(callbacks);
                 }));
     }

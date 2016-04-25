@@ -60,6 +60,10 @@ public class CarbonSecurityDataHolder {
     }
 
     public CarbonRealmServiceImpl getCarbonRealmService() {
+
+        if (this.carbonRealmService == null) {
+            throw new IllegalStateException("Carbon Realm Service is null.");
+        }
         return this.carbonRealmService;
     }
 
