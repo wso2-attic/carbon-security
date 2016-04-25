@@ -16,36 +16,51 @@
 
 package org.wso2.carbon.security.user.core.config;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * Represents a complete configurations of the stores.
  */
 public class StoreConfig {
 
-    private AuthorizationStoreConfig authorizationStoreConfig;
-    private IdentityStoreConfig identityStoreConfig;
-    private CredentialStoreConfig credentialStoreConfig;
+    private Map<String, AuthorizationStoreConfig> authorizationStoreConfigMap = new HashMap<>();
+    private Map<String, IdentityStoreConfig> identityStoreConfigMap = new HashMap<>();
+    private Map<String, CredentialStoreConfig> credentialStoreConfigMap = new HashMap<>();
 
-    public AuthorizationStoreConfig getAuthorizationStoreConfig() {
-        return authorizationStoreConfig;
+    public Map<String, AuthorizationStoreConfig> getAuthorizationStoreConfigMap() {
+        return authorizationStoreConfigMap;
     }
 
-    public void setAuthorizationStoreConfig(AuthorizationStoreConfig authorizationStoreConfig) {
-        this.authorizationStoreConfig = authorizationStoreConfig;
+    public void setAuthorizationStoreConfigMap(Map<String, AuthorizationStoreConfig> authorizationStoreConfigMap) {
+        this.authorizationStoreConfigMap = authorizationStoreConfigMap;
     }
 
-    public IdentityStoreConfig getIdentityStoreConfig() {
-        return identityStoreConfig;
+    public void addAuthorizationStoreConfig(String name, AuthorizationStoreConfig authorizationStoreConfig) {
+        this.authorizationStoreConfigMap.put(name, authorizationStoreConfig);
     }
 
-    public void setIdentityStoreConfig(IdentityStoreConfig identityStoreConfig) {
-        this.identityStoreConfig = identityStoreConfig;
+    public Map<String, IdentityStoreConfig> getIdentityStoreConfigMap() {
+        return identityStoreConfigMap;
     }
 
-    public CredentialStoreConfig getCredentialStoreConfig() {
-        return credentialStoreConfig;
+    public void setIdentityStoreConfigMap(Map<String, IdentityStoreConfig> identityStoreConfigMap) {
+        this.identityStoreConfigMap = identityStoreConfigMap;
     }
 
-    public void setCredentialStoreConfig(CredentialStoreConfig credentialStoreConfig) {
-        this.credentialStoreConfig = credentialStoreConfig;
+    public void addIdentityStoreConfig(String name, IdentityStoreConfig identityStoreConfig) {
+        this.identityStoreConfigMap.put(name, identityStoreConfig);
+    }
+
+    public Map<String, CredentialStoreConfig> getCredentialStoreConfigMap() {
+        return credentialStoreConfigMap;
+    }
+
+    public void setCredentialStoreConfigMap(Map<String, CredentialStoreConfig> credentialStoreConfigMap) {
+        this.credentialStoreConfigMap = credentialStoreConfigMap;
+    }
+
+    public void addCredentialStoreConfig(String name, CredentialStoreConfig credentialStoreConfig) {
+        this.credentialStoreConfigMap.put(name, credentialStoreConfig);
     }
 }

@@ -18,11 +18,11 @@ package org.wso2.carbon.security.internal.config;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.wso2.carbon.security.internal.CarbonSecurityDataHolder;
 import org.wso2.carbon.security.jaas.util.CarbonSecurityConstants;
 import org.wso2.carbon.security.user.core.config.AuthorizationStoreConfig;
 import org.wso2.carbon.security.user.core.config.CredentialStoreConfig;
 import org.wso2.carbon.security.user.core.config.IdentityStoreConfig;
+import org.wso2.carbon.security.user.core.config.StoreConfig;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.introspector.BeanAccess;
 
@@ -50,19 +50,20 @@ public class StoreConfigBuilder {
 
     private static final Logger log = LoggerFactory.getLogger(StoreConfigBuilder.class);
 
-    public static void buildStoreConfig() {
+    public static StoreConfig buildStoreConfigs() {
 
+        StoreConfig storeConfig = new StoreConfig();
         Map<String, Properties> connectors = getAllConnectors();
 
         Path file = Paths.get(CarbonSecurityConstants.getCarbonHomeDirectory().toString(), "conf", "security",
                               CarbonSecurityConstants.STORE_CONFIG_FILE);
 
-        StoreConfigs storeConfigs;
+        StoreConfigFile storeConfigFile;
         if (Files.exists(file)) {
             try (Reader in = new InputStreamReader(Files.newInputStream(file), StandardCharsets.ISO_8859_1)) {
                 Yaml yaml = new Yaml();
                 yaml.setBeanAccess(BeanAccess.FIELD);
-                storeConfigs = new Yaml().loadAs(in, StoreConfigs.class);
+                storeConfigFile = new Yaml().loadAs(in, StoreConfigFile.class);
             } catch (IOException e) {
                 throw new RuntimeException("Error while loading " + CarbonSecurityConstants.STORE_CONFIG_FILE + " " +
                                            "configuration file", e);
@@ -72,24 +73,24 @@ public class StoreConfigBuilder {
                                        "available.");
         }
 
-        if (storeConfigs == null || storeConfigs.getCredentialStore() == null
-            || storeConfigs.getAuthorizationStore() == null || storeConfigs.getIdentityStore() == null) {
+        if (storeConfigFile == null || storeConfigFile.getCredentialStore() == null
+            || storeConfigFile.getAuthorizationStore() == null || storeConfigFile.getIdentityStore() == null) {
             throw new IllegalArgumentException("Invalid or missing configurations in the file - " +
                                                CarbonSecurityConstants.STORE_CONFIG_FILE);
         }
 
 
-        if (storeConfigs.getCredentialStore().getConnector() != null && !storeConfigs.getCredentialStore()
+        if (storeConfigFile.getCredentialStore().getConnector() != null && !storeConfigFile.getCredentialStore()
                 .getConnector().trim().isEmpty()) {
 
             Map<String, Properties> credentialConnectorMap =
-                    getStoreConfig(storeConfigs.getCredentialStore().getConnector(),
-                                   storeConfigs.getCredentialStore(), connectors,
-                                   storeConfigs.getStoreConnectors());
+                    getStoreConnectorsMap(storeConfigFile.getCredentialStore().getConnector(),
+                                          storeConfigFile.getCredentialStore(), connectors,
+                                          storeConfigFile.getStoreConnectors());
 
             if (credentialConnectorMap.size() > 0) {
                 credentialConnectorMap.entrySet().forEach(
-                        entry -> CarbonSecurityDataHolder.getInstance().addCredentialStoreConfig(entry.getKey
+                        entry -> storeConfig.addCredentialStoreConfig(entry.getKey
                                 (), new CredentialStoreConfig(entry.getValue()))
                 );
             }
@@ -98,17 +99,17 @@ public class StoreConfigBuilder {
                                   CarbonSecurityConstants.STORE_CONFIG_FILE);
         }
 
-        if (storeConfigs.getIdentityStore().getConnector() != null && !storeConfigs.getIdentityStore().getConnector()
-                .trim().isEmpty()) {
+        if (storeConfigFile.getIdentityStore().getConnector() != null && !storeConfigFile.getIdentityStore()
+                .getConnector().trim().isEmpty()) {
 
             Map<String, Properties> identityStoreConnectorMap =
-                    getStoreConfig(storeConfigs.getIdentityStore().getConnector(),
-                                   storeConfigs.getIdentityStore(), connectors,
-                                   storeConfigs.getStoreConnectors());
+                    getStoreConnectorsMap(storeConfigFile.getIdentityStore().getConnector(),
+                                          storeConfigFile.getIdentityStore(), connectors,
+                                          storeConfigFile.getStoreConnectors());
 
             if (identityStoreConnectorMap.size() > 0) {
                 identityStoreConnectorMap.entrySet().forEach(
-                        entry -> CarbonSecurityDataHolder.getInstance().addIdentityStoreConfig(entry.getKey
+                        entry -> storeConfig.addIdentityStoreConfig(entry.getKey
                                 (), new IdentityStoreConfig(entry.getValue()))
                 );
             }
@@ -117,17 +118,17 @@ public class StoreConfigBuilder {
                                   CarbonSecurityConstants.STORE_CONFIG_FILE);
         }
 
-        if (storeConfigs.getAuthorizationStore().getConnector() != null && !storeConfigs.getAuthorizationStore()
+        if (storeConfigFile.getAuthorizationStore().getConnector() != null && !storeConfigFile.getAuthorizationStore()
                 .getConnector().trim().isEmpty()) {
 
             Map<String, Properties> authorizationStoreConnectorMap =
-                    getStoreConfig(storeConfigs.getAuthorizationStore().getConnector(),
-                                   storeConfigs.getAuthorizationStore(), connectors,
-                                   storeConfigs.getStoreConnectors());
+                    getStoreConnectorsMap(storeConfigFile.getAuthorizationStore().getConnector(),
+                                          storeConfigFile.getAuthorizationStore(), connectors,
+                                          storeConfigFile.getStoreConnectors());
 
             if (authorizationStoreConnectorMap.size() > 0) {
                 authorizationStoreConnectorMap.entrySet().forEach(
-                        entry -> CarbonSecurityDataHolder.getInstance().addAuthorizationStoreConfig(entry.getKey
+                        entry -> storeConfig.addAuthorizationStoreConfig(entry.getKey
                                 (), new AuthorizationStoreConfig(entry.getValue()))
                 );
             }
@@ -135,10 +136,14 @@ public class StoreConfigBuilder {
             new RuntimePermission("Valid authorizationStore configuration is not available in " +
                                   CarbonSecurityConstants.STORE_CONFIG_FILE);
         }
+
+        return storeConfig;
     }
 
-    private static Map<String, Properties> getStoreConfig(String connector, StoreConfig storeConfig, Map<String,
-            Properties> connectors, List<StoreConnectorConfig> storeConnectorConfigs) {
+    private static Map<String, Properties> getStoreConnectorsMap(String connector, StoreConfigEntry storeConfigEntry,
+                                                                 Map<String, Properties> connectors,
+                                                                 List<StoreConnectorConfigEntry>
+                                                                         storeConnectorConfigEntries) {
 
         Map<String, Properties> connectorConfigMap = new HashMap<>();
         Arrays.asList(connector.split(",")).forEach(
@@ -146,7 +151,7 @@ public class StoreConfigBuilder {
                     if (name.startsWith("#")) {
                         String nameWithoutHash = name.substring(1);
                         Properties updatedProperties = new Properties();
-                        storeConnectorConfigs.stream()
+                        storeConnectorConfigEntries.stream()
                                 .filter(config -> nameWithoutHash.equals(config.getName())
                                                   && config.getProperties() != null
                                                   && !config.getProperties().isEmpty())
@@ -155,8 +160,8 @@ public class StoreConfigBuilder {
                                     config.getProperties().forEach(updatedProperties::put);
                                 });
 
-                        if (storeConfig.getProperties() != null && !storeConfig.getProperties().isEmpty()) {
-                            storeConfig.getProperties().forEach(updatedProperties::put);
+                        if (storeConfigEntry.getProperties() != null && !storeConfigEntry.getProperties().isEmpty()) {
+                            storeConfigEntry.getProperties().forEach(updatedProperties::put);
                         }
                         connectorConfigMap.put(nameWithoutHash, updatedProperties);
                     } else {
@@ -165,8 +170,8 @@ public class StoreConfigBuilder {
                         if (properties != null && !properties.isEmpty()) {
                             properties.forEach(updatedProperties::put);
                         }
-                        if (storeConfig.getProperties() != null && !storeConfig.getProperties().isEmpty()) {
-                            storeConfig.getProperties().forEach(updatedProperties::put);
+                        if (storeConfigEntry.getProperties() != null && !storeConfigEntry.getProperties().isEmpty()) {
+                            storeConfigEntry.getProperties().forEach(updatedProperties::put);
                         }
                         connectorConfigMap.put(name, updatedProperties);
                     }
@@ -184,8 +189,8 @@ public class StoreConfigBuilder {
         if (Files.exists(path)) {
             try (DirectoryStream<Path> stream = Files.newDirectoryStream(path, "*-connector.yml")) {
                 for (Path filePath : stream) {
-                    StoreConnectorConfig config = new Yaml().loadAs(Files.newInputStream(filePath),
-                                                                    StoreConnectorConfig.class);
+                    StoreConnectorConfigEntry config = new Yaml().loadAs(Files.newInputStream(filePath),
+                                                                         StoreConnectorConfigEntry.class);
 
                     String name = config != null && config.getName() != null && !config.getName().trim().isEmpty() ?
                                   config.getName().trim() : null;

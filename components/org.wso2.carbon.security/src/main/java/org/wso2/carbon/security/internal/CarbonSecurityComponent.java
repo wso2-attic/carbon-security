@@ -44,6 +44,7 @@ import org.wso2.carbon.security.jaas.modules.JWTLoginModule;
 import org.wso2.carbon.security.jaas.modules.UsernamePasswordLoginModule;
 import org.wso2.carbon.security.jaas.util.CarbonSecurityConstants;
 import org.wso2.carbon.security.user.core.common.CarbonRealmServiceImpl;
+import org.wso2.carbon.security.user.core.config.StoreConfig;
 import org.wso2.carbon.security.user.core.service.RealmService;
 import org.wso2.carbon.security.user.core.store.connector.AuthorizationStoreConnectorFactory;
 import org.wso2.carbon.security.user.core.store.connector.CredentialStoreConnectorFactory;
@@ -81,10 +82,10 @@ public class CarbonSecurityComponent {
             initAuthorizationConfigs(bundleContext);
         }
 
-        StoreConfigBuilder.buildStoreConfig();
+        StoreConfig storeConfig = StoreConfigBuilder.buildStoreConfigs();
 
         try {
-            CarbonRealmServiceImpl carbonRealmService = new CarbonRealmServiceImpl();
+            CarbonRealmServiceImpl carbonRealmService = new CarbonRealmServiceImpl(storeConfig);
             CarbonSecurityDataHolder.getInstance().registerCarbonRealmService(carbonRealmService);
             realmServiceRegistration = bundleContext.registerService(RealmService.class.getName(),
                                                                      carbonRealmService, null);
