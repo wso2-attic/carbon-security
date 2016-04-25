@@ -35,7 +35,7 @@ public interface AuthorizationStoreConnector {
      * @param roleId Id of the Role
      * @return Role.
      */
-    Role getRole(String roleId) throws AuthorizationStoreException;
+    Role.RoleBuilder getRole(String roleId) throws AuthorizationStoreException;
 
     /**
      * Get permission from the permission id.
@@ -50,7 +50,7 @@ public interface AuthorizationStoreConnector {
      * @param filter
      * @return
      */
-    List<Role> listRoles(String atribute, String filter) throws AuthorizationStoreException;
+    List<Role.RoleBuilder> listRoles(String atribute, String filter) throws AuthorizationStoreException;
 
     /**
      * List the permissions.
@@ -65,14 +65,14 @@ public interface AuthorizationStoreConnector {
      * @param userId User id of the user.
      * @return Roles associated to the user.
      */
-    List<Role> getRolesForUser(String userId) throws AuthorizationStoreException;
+    List<Role.RoleBuilder> getRolesForUser(String userId) throws AuthorizationStoreException;
 
     /**
      * Get roles associated to the group.
      * @param groupName Name of the group.
      * @return Roles associated to the group.
      */
-    List<Role> getRolesForGroup(String groupName) throws AuthorizationStoreException;
+    List<Role.RoleBuilder> getRolesForGroup(String groupName) throws AuthorizationStoreException;
 
     /**
      * Get permissions associated to the role.
@@ -80,6 +80,24 @@ public interface AuthorizationStoreConnector {
      * @return List of permissions associated to the user.
      */
     List<Permission> getPermissionsForRole(String roleName) throws AuthorizationStoreException;
+
+    /**
+     * Add new permission.
+     * @param resourceId Resource id.
+     * @param action Action name.
+     * @return New permission.
+     * @throws AuthorizationStoreException
+     */
+    Permission addNewPermission(String resourceId, String action) throws AuthorizationStoreException;
+
+    /**
+     * Add new role.
+     * @param roleName Name of the new role.
+     * @param permissions List of permissions to be assign.
+     * @return New Role.
+     * @throws AuthorizationStoreException
+     */
+    Role.RoleBuilder addNewRole(String roleName, List<Permission> permissions) throws AuthorizationStoreException;
 
     /**
      * Add a user against a role.

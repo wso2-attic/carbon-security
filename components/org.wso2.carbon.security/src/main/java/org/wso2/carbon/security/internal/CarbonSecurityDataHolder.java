@@ -21,9 +21,9 @@ import org.wso2.carbon.security.user.core.common.CarbonRealmServiceImpl;
 import org.wso2.carbon.security.user.core.config.AuthorizationStoreConfig;
 import org.wso2.carbon.security.user.core.config.CredentialStoreConfig;
 import org.wso2.carbon.security.user.core.config.IdentityStoreConfig;
-import org.wso2.carbon.security.user.core.store.connector.AuthorizationStoreConnector;
-import org.wso2.carbon.security.user.core.store.connector.CredentialStoreConnector;
-import org.wso2.carbon.security.user.core.store.connector.IdentityStoreConnector;
+import org.wso2.carbon.security.user.core.store.connector.AuthorizationStoreConnectorFactory;
+import org.wso2.carbon.security.user.core.store.connector.CredentialStoreConnectorFactory;
+import org.wso2.carbon.security.user.core.store.connector.IdentityStoreConnectorFactory;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -36,55 +36,73 @@ public class CarbonSecurityDataHolder {
 
     private static CarbonSecurityDataHolder instance = new CarbonSecurityDataHolder();
     private CarbonRealmServiceImpl carbonRealmService;
-    private Map<String, AuthorizationStoreConnector> authorizationStoreConnectorMap = new HashMap<>();
-    private Map<String, CredentialStoreConnector> credentialStoreConnectorMap = new HashMap<>();
-    private Map<String, IdentityStoreConnector> identityStoreConnectorMap = new HashMap<>();
+    private Map<String, AuthorizationStoreConnectorFactory> authorizationStoreConnectorFactoryMap = new HashMap<>();
+    private Map<String, CredentialStoreConnectorFactory> credentialStoreConnectorFactoryMap = new HashMap<>();
+    private Map<String, IdentityStoreConnectorFactory> identityStoreConnectorFactoryMap = new HashMap<>();
     private Map<String, CredentialStoreConfig> credentialStoreConfigMap = new HashMap<>();
     private Map<String, IdentityStoreConfig> identityStoreConfigMap = new HashMap<>();
     private Map<String, AuthorizationStoreConfig> authorizationStoreConfigMap = new HashMap<>();
     private BundleContext bundleContext = null;
 
     private CarbonSecurityDataHolder() {
-
     }
 
+    /**
+     * Get the instance of this class.
+     * @return CarbonSecurityDataHolder.
+     */
     public static CarbonSecurityDataHolder getInstance() {
         return instance;
     }
 
     public void registerCarbonRealmService(CarbonRealmServiceImpl carbonRealmService) {
-
         this.carbonRealmService = carbonRealmService;
     }
 
     public CarbonRealmServiceImpl getCarbonRealmService() {
-
         return this.carbonRealmService;
     }
 
-    public void registerAuthorizationStoreConnector(String key, AuthorizationStoreConnector
-            authorizationStoreConnector) {
-        authorizationStoreConnectorMap.put(key, authorizationStoreConnector);
+    /**
+     * Register authorization store connector factory.
+     * @param key Id of the factory.
+     * @param authorizationStoreConnectorFactory AuthorizationStoreConnectorFactory.
+     */
+    public void registerAuthorizationStoreConnectorFactory(String key, AuthorizationStoreConnectorFactory
+            authorizationStoreConnectorFactory) {
+        authorizationStoreConnectorFactoryMap.put(key, authorizationStoreConnectorFactory);
     }
 
-    public void registerCredentialStoreConnector(String key, CredentialStoreConnector credentialStoreConnector) {
-        credentialStoreConnectorMap.put(key, credentialStoreConnector);
+    /**
+     * Register credential store connector factory.
+     * @param key Id of the factory.
+     * @param credentialStoreConnectorFactory CredentialStoreConnectorFactory.
+     */
+    public void registerCredentialStoreConnectorFactory(String key,
+                                                 CredentialStoreConnectorFactory credentialStoreConnectorFactory) {
+        credentialStoreConnectorFactoryMap.put(key, credentialStoreConnectorFactory);
     }
 
-    public void registerIdentityStoreConnector(String key, IdentityStoreConnector identityStoreConnector) {
-        identityStoreConnectorMap.put(key, identityStoreConnector);
+    /**
+     * Register identity store connector factory.
+     * @param key Id of the factory.
+     * @param identityStoreConnectorFactory IdentityStoreConnectorFactory.
+     */
+    public void registerIdentityStoreConnectorFactory(String key,
+                                               IdentityStoreConnectorFactory identityStoreConnectorFactory) {
+        identityStoreConnectorFactoryMap.put(key, identityStoreConnectorFactory);
     }
 
-    public Map<String, AuthorizationStoreConnector> getAuthorizationStoreConnectorMap() {
-        return authorizationStoreConnectorMap;
+    public Map<String, AuthorizationStoreConnectorFactory> getAuthorizationStoreConnectorFactoryMap() {
+        return authorizationStoreConnectorFactoryMap;
     }
 
-    public Map<String, CredentialStoreConnector> getCredentialStoreConnectorMap() {
-        return credentialStoreConnectorMap;
+    public Map<String, CredentialStoreConnectorFactory> getCredentialStoreConnectorFactoryMap() {
+        return credentialStoreConnectorFactoryMap;
     }
 
-    public Map<String, IdentityStoreConnector> getIdentityStoreConnectorMap() {
-        return identityStoreConnectorMap;
+    public Map<String, IdentityStoreConnectorFactory> getIdentityStoreConnectorFactoryMap() {
+        return identityStoreConnectorFactoryMap;
     }
 
     public void setBundleContext(BundleContext bundleContext) {

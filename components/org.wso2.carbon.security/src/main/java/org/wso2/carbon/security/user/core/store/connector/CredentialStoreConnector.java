@@ -47,7 +47,7 @@ public interface CredentialStoreConnector {
      * @return Authentication result, User if success, null otherwise.
      * @throws CredentialStoreException
      */
-    User authenticate(Callback[] callbacks) throws CredentialStoreException, AuthenticationFailure;
+    User.UserBuilder authenticate(Callback[] callbacks) throws CredentialStoreException, AuthenticationFailure;
 
     /**
      *

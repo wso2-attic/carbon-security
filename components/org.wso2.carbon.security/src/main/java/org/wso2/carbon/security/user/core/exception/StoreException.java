@@ -14,19 +14,18 @@
  * limitations under the License.
  */
 
-package org.wso2.carbon.security.user.core.constant;
+package org.wso2.carbon.security.user.core.exception;
 
 /**
- * User store constants.
+ * This exception is used to represent all store related runtime exceptions.
  */
-public class UserStoreConstants {
+public class StoreException extends RuntimeException {
 
-    public static final String USER_STORE_NAME = "userStoreName";
-    public static final String EXECUTION_ORDER = "executionOrder";
-    public static final String READ_ONLY = "readOnly";
-    public static final String USER_STORE_CLASS = "userStoreClass";
-    public static final String PRIMARY = "PRIMARY";
-    public static final String USER_STORE_ID = "userStoreID";
-    public static final String USER_STORE_CONFIGURATION_FILE = "primary-userstore.yml";
-    public static final String CONNECTOR_TYPE = "connectorType";
+    public StoreException(String message) {
+        super(message);
+    }
+
+    public StoreException(String message, Throwable t) {
+        super(message, t);
+    }
 }
