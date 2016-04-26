@@ -31,29 +31,20 @@ public interface IdentityStoreConnector {
 
     /**
      * Initialize identity store by passing identity store configurations read from files.
-     *
-     * @param identityStoreConfig UserStoreConfigurations.
+     * @param identityStoreConfig IdentityStoreConfig for this connector.
+     * @param storeId Id of this store.
      * @throws IdentityStoreException
      */
-    void init(IdentityStoreConfig identityStoreConfig) throws IdentityStoreException;
-
-    /**
-     * Get the name of the user store.
-     *
-     * @return Name of the user store.
-     */
-    String getUserStoreName();
+    void init(String storeId, IdentityStoreConfig identityStoreConfig) throws IdentityStoreException;
 
     /**
      * Get user store ID which is unique for a user store.
-     *
      * @return returns the unique id for the user store
      */
-    String getUserStoreId();
+    String getIdentityStoreId();
 
     /**
      * Search user from user id.
-     *
      * @param userID User Id of the user
      * @return User Object with
      * @throws IdentityStoreException
@@ -62,15 +53,14 @@ public interface IdentityStoreConnector {
 
     /**
      * Get user from the user name.
-     * @param username
-     * @return
+     * @param username Name of the user.
+     * @return @see User.UserBuilder.
      * @throws IdentityStoreException
      */
     User.UserBuilder getUser(String username) throws IdentityStoreException;
 
     /**
      * List all users in User Store according to the filter pattern.
-     *
      * @param filterPattern Filter pattern to be used.
      * @param offset        Offset to get the Users.
      * @param length        Number of users from the offset.
@@ -81,22 +71,23 @@ public interface IdentityStoreConnector {
     List<User.UserBuilder> listUsers(String filterPattern, int offset, int length) throws IdentityStoreException;
 
     /**
-     * Retrieve set of claims of the user with the given ID.
+     * Retrieve attributes of the user with the given ID.
      *
      * @param userID ID of the user whose claims are requested
-     * @return Claims map of the user with given ID
+     * @return Attribute map of the user with given ID
      * @throws IdentityStoreException
      */
-    Map<String, String> getUserClaimValues(String userID) throws IdentityStoreException;
+    Map<String, String> getUserAttributeValues(String userID) throws IdentityStoreException;
 
     /**
-     * Get user claim values for given URIs.
+     * Get user attributes for given attribute names.
      * @param userID Unique id of the user.
-     * @param claimURIs claim uris.
-     * @return Map of user claims.
+     * @param attributeNames User attribute names.
+     * @return Map of user attributes.
      * @throws IdentityStoreException
      */
-    Map<String, String> getUserClaimValues(String userID, List<String> claimURIs) throws IdentityStoreException;
+    Map<String, String> getUserAttributeValues(String userID, List<String> attributeNames)
+            throws IdentityStoreException;
 
     /**
      * Retrieve group with given group ID.
@@ -134,7 +125,6 @@ public interface IdentityStoreConnector {
 
     /**
      * Retrieve set of users belongs to a group.
-     *
      * @param groupID Unique ID of the group
      * @return Set of IdentityObjects resides in Group
      * @throws IdentityStoreException
@@ -156,7 +146,7 @@ public interface IdentityStoreConnector {
 
     /**
      * Returns IdentityStoreConfig which consists of user store configurations.
-     * @return IdentityStoreConfig which consists of user store configurations
+     * @return @see IdentityStoreConfig which consists of user store configurations
      */
     IdentityStoreConfig getIdentityStoreConfig();
 }

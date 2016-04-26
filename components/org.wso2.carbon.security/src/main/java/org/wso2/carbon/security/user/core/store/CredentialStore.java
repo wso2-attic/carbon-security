@@ -66,7 +66,7 @@ public class CredentialStore {
             }
 
             CredentialStoreConnector credentialStoreConnector = credentialStoreConnectorFactory.getInstance();
-            credentialStoreConnector.init(credentialStoreConfig.getValue());
+            credentialStoreConnector.init(credentialStoreConfig.getKey(), credentialStoreConfig.getValue());
 
             credentialStoreConnectors.put(credentialStoreConfig.getKey(), credentialStoreConnector);
         }

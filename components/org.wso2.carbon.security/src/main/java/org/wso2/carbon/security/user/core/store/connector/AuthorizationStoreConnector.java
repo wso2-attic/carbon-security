@@ -28,7 +28,19 @@ import java.util.List;
  */
 public interface AuthorizationStoreConnector {
 
-    void init(AuthorizationStoreConfig authorizationStoreConfig) throws AuthorizationStoreException;
+    /**
+     * Initialize the authorization store.
+     * @param storeId Id of this store.
+     * @param authorizationStoreConfig Authorization store configurations for this connector.
+     * @throws AuthorizationStoreException
+     */
+    void init(String storeId, AuthorizationStoreConfig authorizationStoreConfig) throws AuthorizationStoreException;
+
+    /**
+     * Get the id of this authorization store.
+     * @return Id of the authorization store.
+     */
+    String getAuthorizationStoreId();
 
     /**
      * Get the role of from role id.
@@ -113,4 +125,10 @@ public interface AuthorizationStoreConnector {
      * @throws AuthorizationStoreException
      */
     void addRolePermission(String roleName, String permissionName) throws AuthorizationStoreException;
+
+    /**
+     * Get the authorization store config.
+     * @return @see AuthorizationStoreConfig.
+     */
+    AuthorizationStoreConfig getAuthorizationStoreConfig();
 }

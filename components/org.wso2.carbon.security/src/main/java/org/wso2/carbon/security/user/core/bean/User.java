@@ -88,7 +88,7 @@ public class User {
      * @throws IdentityStoreException
      */
     public Map<String, String> getClaims() throws IdentityStoreException {
-        return identityStore.getUserClaimValues(userID, userStoreID);
+        return identityStore.getUserAttributeValues(userID, userStoreID);
     }
 
     /**
@@ -98,7 +98,7 @@ public class User {
      * @throws IdentityStoreException
      */
     public Map<String, String> getClaims(List<String> claimURIs) throws IdentityStoreException {
-        return identityStore.getUserClaimValues(userID, claimURIs, userStoreID);
+        return identityStore.getUserAttributeValues(userID, claimURIs, userStoreID);
     }
 
     /**
