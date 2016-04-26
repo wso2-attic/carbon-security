@@ -20,7 +20,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.wso2.carbon.security.user.core.bean.Permission;
 import org.wso2.carbon.security.user.core.bean.User;
-import org.wso2.carbon.security.user.core.exception.AuthorizationException;
 import org.wso2.carbon.security.user.core.exception.AuthorizationStoreException;
 import org.wso2.carbon.security.user.core.exception.IdentityStoreException;
 
@@ -76,7 +75,7 @@ public class CarbonPrincipal implements Principal {
 
         try {
             return user.isAuthorized(new Permission(carbonPermission.getName(), carbonPermission.getActions()));
-        } catch (AuthorizationException | AuthorizationStoreException | IdentityStoreException e) {
+        } catch (AuthorizationStoreException | IdentityStoreException e) {
             log.error("Access denied for permission " + carbonPermission.getName() + " for user " + user.getUserId()
                       + " due to a server error", e);
             return false;

@@ -16,7 +16,6 @@
 
 package org.wso2.carbon.security.user.core.bean;
 
-import org.wso2.carbon.security.user.core.exception.AuthorizationException;
 import org.wso2.carbon.security.user.core.exception.AuthorizationStoreException;
 import org.wso2.carbon.security.user.core.store.AuthorizationStore;
 
@@ -93,7 +92,7 @@ public class Role {
      * @param permission Permission to be checked.
      * @return True if authorized.
      */
-    public boolean isAuthorized(Permission permission) throws AuthorizationException, AuthorizationStoreException {
+    public boolean isAuthorized(Permission permission) throws AuthorizationStoreException {
         return authorizationStore.isRoleAuthorized(roleId, authorizationStoreId, permission);
     }
 
