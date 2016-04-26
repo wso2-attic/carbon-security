@@ -45,12 +45,10 @@ public class CredentialStore {
     private RealmService realmService;
     private Map<String, CredentialStoreConnector> credentialStoreConnectors = new HashMap<>();
 
-    public void init(RealmService realmService) throws CredentialStoreException {
+    public void init(RealmService realmService, Map<String, CredentialStoreConfig> credentialStoreConfigs)
+            throws CredentialStoreException {
 
         this.realmService = realmService;
-
-        Map<String, CredentialStoreConfig> credentialStoreConfigs = CarbonSecurityDataHolder.getInstance()
-                .getCredentialStoreConfigMap();
 
         if (credentialStoreConfigs.isEmpty()) {
             throw new StoreException("At least one credential store configuration must present.");

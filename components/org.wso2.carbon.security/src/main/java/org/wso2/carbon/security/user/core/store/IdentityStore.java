@@ -50,18 +50,16 @@ public class IdentityStore {
      * Initialize this instance.
      * @throws IdentityStoreException
      */
-    public void init(RealmService realmService) throws IdentityStoreException {
+    public void init(RealmService realmService, Map<String, IdentityStoreConfig> identityStoreConfigs) 
+            throws IdentityStoreException {
 
         this.realmService = realmService;
 
-        Map<String, IdentityStoreConfig> storeConfigs = CarbonSecurityDataHolder.getInstance()
-                .getIdentityStoreConfigMap();
-
-        if (storeConfigs.isEmpty()) {
+        if (identityStoreConfigs.isEmpty()) {
             throw new StoreException("At least one identity store configuration must present.");
         }
 
-        for (Map.Entry<String, IdentityStoreConfig> connectorConfig : storeConfigs.entrySet()) {
+        for (Map.Entry<String, IdentityStoreConfig> connectorConfig : identityStoreConfigs.entrySet()) {
 
             String connectorType = (String) connectorConfig.getValue().getStoreProperties()
                     .get(UserStoreConstants.CONNECTOR_TYPE);
@@ -81,58 +79,6 @@ public class IdentityStore {
         if (log.isDebugEnabled()) {
             log.debug("Identity store successfully initialized.");
         }
-    }
-
-    /**
-     * Checks whether the user is in the group.
-     * @param userId Id of the user.
-     * @param groupId Id of the group.
-     * @param userStoreId Id of the user store which this user belongs.
-     * @return True if the user is in the group.
-     */
-    public boolean isUserInGroup(String userId, String groupId, String userStoreId) throws IdentityStoreException {
-
-        IdentityStoreConnector identityStoreConnector = identityStoreConnectors.get(userStoreId);
-        return identityStoreConnector.isUserInGroup(userId, groupId);
-    }
-
-
-    /**
-     * Get the groups assigned to the specified user.
-     * @param userId Id of the user.
-     * @param userStoreId Id of the user store which this user belongs.
-     * @return List of Group assigned to the user.
-     * @throws IdentityStoreException
-     */
-    public List<Group> getGroupsOfUser(String userId, String userStoreId) throws IdentityStoreException {
-
-        IdentityStoreConnector identityStoreConnector = identityStoreConnectors.get(userStoreId);
-        return identityStoreConnector.getGroupsOfUser(userId)
-                .stream()
-                .map(groupBuilder -> groupBuilder
-                        .setAuthorizationStore(realmService.getAuthorizationStore())
-                        .setIdentityStore(realmService.getIdentityStore())
-                        .build())
-                .collect(Collectors.toList());
-    }
-
-    /**
-     * Get the users assigned to the specified group.
-     * @param groupID Id of the group.
-     * @param userStoreId User store id of this group.
-     * @return List of users assigned to the group.
-     * @throws IdentityStoreException
-     */
-    public List<User> getUsersOfGroup(String groupID, String userStoreId) throws IdentityStoreException {
-
-        IdentityStoreConnector identityStoreConnector = identityStoreConnectors.get(userStoreId);
-        return identityStoreConnector.getUsersOfGroup(groupID)
-                .stream()
-                .map(userBuilder -> userBuilder
-                        .setIdentityStore(realmService.getIdentityStore())
-                        .setAuthorizationStore(realmService.getAuthorizationStore())
-                        .build())
-                .collect(Collectors.toList());
     }
 
     /**
@@ -157,6 +103,7 @@ public class IdentityStore {
         throw new IdentityStoreException("No user found for the given name.");
     }
 
+
     /**
      * Get the user from user Id.
      * @param userId Id of the user.
@@ -177,6 +124,59 @@ public class IdentityStore {
         }
 
         throw new IdentityStoreException("No user found for the given user id.");
+    }
+
+    /**
+     * List all users in User Store according to the filter pattern.
+     * @param filterPattern Filter patter to filter users.
+     * @param offset Offset for list of users.
+     * @param length Length from the offset.
+     * @return List of users match the filter pattern.
+     * @throws IdentityStoreException
+     */
+    public List<User> listUsers(String filterPattern, int offset, int length) throws IdentityStoreException {
+
+        List<User> users = new ArrayList<>();
+
+        for (IdentityStoreConnector identityStoreConnector : identityStoreConnectors.values()) {
+            users.addAll(identityStoreConnector.listUsers(filterPattern, offset, length)
+                    .stream()
+                    .map(userBuilder -> userBuilder
+                            .setIdentityStore(realmService.getIdentityStore())
+                            .setAuthorizationStore(realmService.getAuthorizationStore())
+                            .build())
+                    .collect(Collectors.toList()));
+        }
+
+        return users;
+    }
+
+    /**
+     * Get user claim values.
+     * @param userID Id of the user.
+     * @param userStoreId Id of the user store which this user belongs.
+     * @return Map of user claims.
+     * @throws IdentityStoreException
+     */
+    public Map<String, String> getUserClaimValues(String userID, String userStoreId) throws IdentityStoreException {
+
+        IdentityStoreConnector identityStoreConnector = identityStoreConnectors.get(userStoreId);
+        return identityStoreConnector.getUserClaimValues(userID);
+    }
+
+    /**
+     * Get user's claim values for the given URIs.
+     * @param userID Id of the user.
+     * @param claimURIs Claim URIs.
+     * @param userStoreId Id of the user store which this user belongs.
+     * @return Map of claims.
+     * @throws IdentityStoreException
+     */
+    public Map<String, String> getUserClaimValues(String userID, List<String> claimURIs, String userStoreId)
+            throws IdentityStoreException {
+
+        IdentityStoreConnector identityStoreConnector = identityStoreConnectors.get(userStoreId);
+        return identityStoreConnector.getUserClaimValues(userID, claimURIs);
     }
 
     /**
@@ -222,59 +222,6 @@ public class IdentityStore {
     }
 
     /**
-     * Get user claim values.
-     * @param userID Id of the user.
-     * @param userStoreId Id of the user store which this user belongs.
-     * @return Map of user claims.
-     * @throws IdentityStoreException
-     */
-    public Map<String, String> getUserClaimValues(String userID, String userStoreId) throws IdentityStoreException {
-
-        IdentityStoreConnector identityStoreConnector = identityStoreConnectors.get(userStoreId);
-        return identityStoreConnector.getUserClaimValues(userID);
-    }
-
-    /**
-     * Get user's claim values for the given URIs.
-     * @param userID Id of the user.
-     * @param claimURIs Claim URIs.
-     * @param userStoreId Id of the user store which this user belongs.
-     * @return Map of claims.
-     * @throws IdentityStoreException
-     */
-    public Map<String, String> getUserClaimValues(String userID, List<String> claimURIs, String userStoreId)
-            throws IdentityStoreException {
-
-        IdentityStoreConnector identityStoreConnector = identityStoreConnectors.get(userStoreId);
-        return identityStoreConnector.getUserClaimValues(userID, claimURIs);
-    }
-
-    /**
-     * List all users in User Store according to the filter pattern.
-     * @param filterPattern Filter patter to filter users.
-     * @param offset Offset for list of users.
-     * @param length Length from the offset.
-     * @return List of users match the filter pattern.
-     * @throws IdentityStoreException
-     */
-    public List<User> listUsers(String filterPattern, int offset, int length) throws IdentityStoreException {
-
-        List<User> users = new ArrayList<>();
-
-        for (IdentityStoreConnector identityStoreConnector : identityStoreConnectors.values()) {
-            users.addAll(identityStoreConnector.listUsers(filterPattern, offset, length)
-                    .stream()
-                    .map(userBuilder -> userBuilder
-                            .setIdentityStore(realmService.getIdentityStore())
-                            .setAuthorizationStore(realmService.getAuthorizationStore())
-                            .build())
-                    .collect(Collectors.toList()));
-        }
-
-        return users;
-    }
-
-    /**
      * List groups according to the filter pattern.
      * @param filterPattern Filter pattern for to list groups.
      * @param offset Offset for the group list.
@@ -297,5 +244,56 @@ public class IdentityStore {
         }
 
         return groups;
+    }
+
+    /**
+     * Get the groups assigned to the specified user.
+     * @param userId Id of the user.
+     * @param userStoreId Id of the user store which this user belongs.
+     * @return List of Group assigned to the user.
+     * @throws IdentityStoreException
+     */
+    public List<Group> getGroupsOfUser(String userId, String userStoreId) throws IdentityStoreException {
+
+        IdentityStoreConnector identityStoreConnector = identityStoreConnectors.get(userStoreId);
+        return identityStoreConnector.getGroupsOfUser(userId)
+                .stream()
+                .map(groupBuilder -> groupBuilder
+                        .setAuthorizationStore(realmService.getAuthorizationStore())
+                        .setIdentityStore(realmService.getIdentityStore())
+                        .build())
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * Get the users assigned to the specified group.
+     * @param groupID Id of the group.
+     * @param userStoreId User store id of this group.
+     * @return List of users assigned to the group.
+     * @throws IdentityStoreException
+     */
+    public List<User> getUsersOfGroup(String groupID, String userStoreId) throws IdentityStoreException {
+
+        IdentityStoreConnector identityStoreConnector = identityStoreConnectors.get(userStoreId);
+        return identityStoreConnector.getUsersOfGroup(groupID)
+                .stream()
+                .map(userBuilder -> userBuilder
+                        .setIdentityStore(realmService.getIdentityStore())
+                        .setAuthorizationStore(realmService.getAuthorizationStore())
+                        .build())
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * Checks whether the user is in the group.
+     * @param userId Id of the user.
+     * @param groupId Id of the group.
+     * @param userStoreId Id of the user store which this user belongs.
+     * @return True if the user is in the group.
+     */
+    public boolean isUserInGroup(String userId, String groupId, String userStoreId) throws IdentityStoreException {
+
+        IdentityStoreConnector identityStoreConnector = identityStoreConnectors.get(userStoreId);
+        return identityStoreConnector.isUserInGroup(userId, groupId);
     }
 }

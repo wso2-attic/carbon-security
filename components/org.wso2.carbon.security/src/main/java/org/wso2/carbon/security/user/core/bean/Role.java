@@ -59,7 +59,7 @@ public class Role {
      * @return List of users assigned to this role.
      */
     public List<User> getUsers() {
-        return authorizationStore.getUsersForRole(roleId);
+        return authorizationStore.getUsersOfRole(roleId);
     }
 
     /**
@@ -67,7 +67,7 @@ public class Role {
      * @return List of Permission.
      */
     public List<Permission> getPermissions() {
-        return authorizationStore.getPermissionsForRole(roleId);
+        return authorizationStore.getPermissionsOfRole(roleId);
     }
 
     /**

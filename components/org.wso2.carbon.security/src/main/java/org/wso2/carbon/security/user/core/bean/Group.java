@@ -70,14 +70,6 @@ public class Group {
     }
 
     /**
-     * Get Permissions assigned to this Group.
-     * @return List of Permissions.
-     */
-    public List<Permission> getPermissions() {
-        return authorizationStore.getPermissionsForGroup(groupID);
-    }
-
-    /**
      * Get Roles assigned to this Group.
      * @return List of Roles.
      */

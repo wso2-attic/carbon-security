@@ -115,7 +115,7 @@ public class User {
      * @return List of Roles assigned to this user.
      */
     public List<Role> getRoles() {
-        return authorizationStore.getRolesForUser(userID);
+        return authorizationStore.getRolesOfUser(userID);
     }
 
     /**
