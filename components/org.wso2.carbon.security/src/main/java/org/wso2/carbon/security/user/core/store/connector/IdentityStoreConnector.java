@@ -81,22 +81,23 @@ public interface IdentityStoreConnector {
     List<User.UserBuilder> listUsers(String filterPattern, int offset, int length) throws IdentityStoreException;
 
     /**
-     * Retrieve set of claims of the user with the given ID.
+     * Retrieve attributes of the user with the given ID.
      *
      * @param userID ID of the user whose claims are requested
-     * @return Claims map of the user with given ID
+     * @return Attribute map of the user with given ID
      * @throws IdentityStoreException
      */
-    Map<String, String> getUserClaimValues(String userID) throws IdentityStoreException;
+    Map<String, String> getUserAttributeValues(String userID) throws IdentityStoreException;
 
     /**
-     * Get user claim values for given URIs.
+     * Get user attributes for given attribute names.
      * @param userID Unique id of the user.
-     * @param claimURIs claim uris.
-     * @return Map of user claims.
+     * @param attributeNames User attribute names.
+     * @return Map of user attributes.
      * @throws IdentityStoreException
      */
-    Map<String, String> getUserClaimValues(String userID, List<String> claimURIs) throws IdentityStoreException;
+    Map<String, String> getUserAttributeValues(String userID, List<String> attributeNames)
+            throws IdentityStoreException;
 
     /**
      * Retrieve group with given group ID.

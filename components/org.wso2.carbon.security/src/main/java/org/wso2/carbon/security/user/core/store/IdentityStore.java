@@ -152,31 +152,31 @@ public class IdentityStore {
     }
 
     /**
-     * Get user claim values.
+     * Get user attribute values.
      * @param userID Id of the user.
      * @param userStoreId Id of the user store which this user belongs.
-     * @return Map of user claims.
+     * @return Map of user attributes.
      * @throws IdentityStoreException
      */
-    public Map<String, String> getUserClaimValues(String userID, String userStoreId) throws IdentityStoreException {
+    public Map<String, String> getUserAttributeValues(String userID, String userStoreId) throws IdentityStoreException {
 
         IdentityStoreConnector identityStoreConnector = identityStoreConnectors.get(userStoreId);
-        return identityStoreConnector.getUserClaimValues(userID);
+        return identityStoreConnector.getUserAttributeValues(userID);
     }
 
     /**
      * Get user's claim values for the given URIs.
      * @param userID Id of the user.
-     * @param claimURIs Claim URIs.
+     * @param attributeNames Attribute names.
      * @param userStoreId Id of the user store which this user belongs.
-     * @return Map of claims.
+     * @return Map of user attributes.
      * @throws IdentityStoreException
      */
-    public Map<String, String> getUserClaimValues(String userID, List<String> claimURIs, String userStoreId)
+    public Map<String, String> getUserAttributeValues(String userID, List<String> attributeNames, String userStoreId)
             throws IdentityStoreException {
 
         IdentityStoreConnector identityStoreConnector = identityStoreConnectors.get(userStoreId);
-        return identityStoreConnector.getUserClaimValues(userID, claimURIs);
+        return identityStoreConnector.getUserAttributeValues(userID, attributeNames);
     }
 
     /**
