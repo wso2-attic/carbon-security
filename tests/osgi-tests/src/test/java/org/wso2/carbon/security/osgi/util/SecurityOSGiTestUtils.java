@@ -105,6 +105,22 @@ public class SecurityOSGiTestUtils {
                                       .groupId("com.h2database")
                                       .artifactId("h2")
                                       .version("1.4.191"));
+        defaultOptionList.add(mavenBundle()
+                               .groupId("org.wso2.carbon")
+                               .artifactId("org.wso2.carbon.core")
+                               .versionAsInProject());
+        defaultOptionList.add(mavenBundle()
+                               .groupId("net.minidev.wso2")
+                               .artifactId("json-smart")
+                               .versionAsInProject());
+        defaultOptionList.add(mavenBundle()
+                               .groupId("org.wso2.orbit.com.nimbusds")
+                               .artifactId("nimbus-jose-jwt")
+                               .versionAsInProject());
+        defaultOptionList.add(mavenBundle()
+                               .groupId("net.minidev")
+                               .artifactId("asm")
+                               .versionAsInProject());
 
         CarbonSysPropConfiguration sysPropConfiguration = new CarbonSysPropConfiguration();
         sysPropConfiguration.setCarbonHome(getCarbonHome());

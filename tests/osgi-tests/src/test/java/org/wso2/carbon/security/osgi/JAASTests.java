@@ -41,7 +41,6 @@ import javax.inject.Inject;
 import javax.security.auth.login.LoginContext;
 import javax.security.auth.login.LoginException;
 
-import static org.ops4j.pax.exam.CoreOptions.mavenBundle;
 import static org.ops4j.pax.exam.CoreOptions.systemProperty;
 
 /**
@@ -63,22 +62,6 @@ public class JAASTests {
 
         List<Option> optionList = SecurityOSGiTestUtils.getDefaultSecurityPAXOptions();
 
-        optionList.add(mavenBundle()
-                               .groupId("org.wso2.carbon")
-                               .artifactId("org.wso2.carbon.core")
-                               .versionAsInProject());
-        optionList.add(mavenBundle()
-                               .groupId("net.minidev.wso2")
-                               .artifactId("json-smart")
-                               .versionAsInProject());
-        optionList.add(mavenBundle()
-                               .groupId("org.wso2.orbit.com.nimbusds")
-                               .artifactId("nimbus-jose-jwt")
-                               .versionAsInProject());
-        optionList.add(mavenBundle()
-                               .groupId("net.minidev")
-                               .artifactId("asm")
-                               .versionAsInProject());
         optionList.add(systemProperty("java.security.auth.login.config").value(Paths.get(
                 SecurityOSGiTestUtils.getCarbonHome(), "conf", "security", "carbon-jaas.config").toString()));
 
