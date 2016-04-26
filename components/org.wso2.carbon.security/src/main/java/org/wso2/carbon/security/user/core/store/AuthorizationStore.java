@@ -25,7 +25,6 @@ import org.wso2.carbon.security.user.core.bean.Role;
 import org.wso2.carbon.security.user.core.bean.User;
 import org.wso2.carbon.security.user.core.config.AuthorizationStoreConfig;
 import org.wso2.carbon.security.user.core.constant.UserStoreConstants;
-import org.wso2.carbon.security.user.core.exception.AuthorizationException;
 import org.wso2.carbon.security.user.core.exception.AuthorizationStoreException;
 import org.wso2.carbon.security.user.core.exception.IdentityStoreException;
 import org.wso2.carbon.security.user.core.exception.StoreException;
@@ -91,7 +90,7 @@ public class AuthorizationStore {
      * @return True if the user has required permission.
      */
     public boolean isUserAuthorized(String userId, Permission permission, String userStoreId)
-            throws AuthorizationException, AuthorizationStoreException, IdentityStoreException {
+            throws AuthorizationStoreException, IdentityStoreException {
 
         // Get the roles directly associated to the user.
         List<Role> roles = new ArrayList<>();
@@ -111,7 +110,7 @@ public class AuthorizationStore {
         }
 
         if (roles.isEmpty()) {
-            throw new AuthorizationException("No roles assigned for this user");
+            throw new StoreException("No roles assigned for this user");
         }
 
         for (Role role : roles) {
@@ -129,8 +128,7 @@ public class AuthorizationStore {
      * @param permission Permission.
      * @return True if authorized.
      */
-    public boolean isGroupAuthorized(String groupId, Permission permission) throws AuthorizationStoreException,
-            AuthorizationException {
+    public boolean isGroupAuthorized(String groupId, Permission permission) throws AuthorizationStoreException {
 
         List<Role> roles = getRolesOfGroup(groupId);
 
@@ -150,7 +148,7 @@ public class AuthorizationStore {
      * @return True if authorized.
      */
     public boolean isRoleAuthorized(String roleId, String authorizationStoreId, Permission permission)
-            throws AuthorizationException, AuthorizationStoreException {
+            throws AuthorizationStoreException {
 
         AuthorizationStoreConnector authorizationStoreConnector = authorizationStoreConnectors
                 .get(authorizationStoreId);
@@ -158,7 +156,7 @@ public class AuthorizationStore {
         List<Permission> permissions = authorizationStoreConnector.getPermissionsForRole(roleId);
 
         if (permissions.isEmpty()) {
-            throw new AuthorizationException("No permissions assigned for this role");
+            throw new StoreException("No permissions assigned for this role");
         }
 
         for (Permission rolePermission : permissions) {
