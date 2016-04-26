@@ -73,7 +73,7 @@ public class AuthorizationStore {
             }
 
             AuthorizationStoreConnector authorizationStoreConnector = authorizationStoreConnectorFactory.getInstance();
-            authorizationStoreConnector.init(authorizationStoreConfig.getValue());
+            authorizationStoreConnector.init(authorizationStoreConfig.getKey(), authorizationStoreConfig.getValue());
 
             authorizationStoreConnectors.put(authorizationStoreConfig.getKey(), authorizationStoreConnector);
         }
@@ -115,7 +115,7 @@ public class AuthorizationStore {
         }
 
         for (Role role : roles) {
-            if (isRoleAuthorized(role.getRoleId(), permission)) {
+            if (isRoleAuthorized(role.getRoleId(), role.getAuthorizationStoreId(), permission)) {
                 return true;
             }
         }
@@ -135,7 +135,7 @@ public class AuthorizationStore {
         List<Role> roles = getRolesOfGroup(groupId);
 
         for (Role role : roles) {
-            if (isRoleAuthorized(role.getRoleId(), permission)) {
+            if (isRoleAuthorized(role.getRoleId(), role.getAuthorizationStoreId(), permission)) {
                 return true;
             }
         }
@@ -149,13 +149,13 @@ public class AuthorizationStore {
      * @param permission Permission.
      * @return True if authorized.
      */
-    public boolean isRoleAuthorized(String roleId, Permission permission) throws AuthorizationException,
-            AuthorizationStoreException {
+    public boolean isRoleAuthorized(String roleId, String authorizationStoreId, Permission permission)
+            throws AuthorizationException, AuthorizationStoreException {
 
-        List<Permission> permissions = new ArrayList<>();
-        for (AuthorizationStoreConnector authorizationStoreConnector : authorizationStoreConnectors.values()) {
-             permissions.addAll(authorizationStoreConnector.getPermissionsForRole(roleId));
-        }
+        AuthorizationStoreConnector authorizationStoreConnector = authorizationStoreConnectors
+                .get(authorizationStoreId);
+
+        List<Permission> permissions = authorizationStoreConnector.getPermissionsForRole(roleId);
 
         if (permissions.isEmpty()) {
             throw new AuthorizationException("No permissions assigned for this role");

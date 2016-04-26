@@ -59,9 +59,9 @@ public class IdentityStore {
             throw new StoreException("At least one identity store configuration must present.");
         }
 
-        for (Map.Entry<String, IdentityStoreConfig> connectorConfig : identityStoreConfigs.entrySet()) {
+        for (Map.Entry<String, IdentityStoreConfig> identityStoreConfig : identityStoreConfigs.entrySet()) {
 
-            String connectorType = (String) connectorConfig.getValue().getStoreProperties()
+            String connectorType = (String) identityStoreConfig.getValue().getStoreProperties()
                     .get(UserStoreConstants.CONNECTOR_TYPE);
             IdentityStoreConnectorFactory identityStoreConnectorFactory = CarbonSecurityDataHolder.getInstance()
                     .getIdentityStoreConnectorFactoryMap().get(connectorType);
@@ -71,9 +71,9 @@ public class IdentityStore {
             }
 
             IdentityStoreConnector identityStoreConnector = identityStoreConnectorFactory.getInstance();
-            identityStoreConnector.init(connectorConfig.getValue());
+            identityStoreConnector.init(identityStoreConfig.getKey(), identityStoreConfig.getValue());
 
-            identityStoreConnectors.put(connectorConfig.getKey(), identityStoreConnector);
+            identityStoreConnectors.put(identityStoreConfig.getKey(), identityStoreConnector);
         }
 
         if (log.isDebugEnabled()) {

@@ -29,12 +29,14 @@ public class Role {
 
     private String roleName;
     private String roleId;
+    private String authorizationStoreId;
     private AuthorizationStore authorizationStore;
 
-    private Role(String roleName, String roleId, AuthorizationStore authorizationStore) {
+    private Role(String roleName, String roleId, String authorizationStoreId, AuthorizationStore authorizationStore) {
 
         this.roleName = roleName;
         this.roleId = roleId;
+        this.authorizationStoreId = authorizationStoreId;
         this.authorizationStore = authorizationStore;
     }
 
@@ -52,6 +54,14 @@ public class Role {
      */
     public String getRoleId() {
         return roleId;
+    }
+
+    /**
+     * Get the authorization store id.
+     * @return Id of the authorization store.
+     */
+    public String getAuthorizationStoreId() {
+        return authorizationStoreId;
     }
 
     /**
@@ -84,7 +94,7 @@ public class Role {
      * @return True if authorized.
      */
     public boolean isAuthorized(Permission permission) throws AuthorizationException, AuthorizationStoreException {
-        return authorizationStore.isRoleAuthorized(roleId, permission);
+        return authorizationStore.isRoleAuthorized(roleId, authorizationStoreId, permission);
     }
 
     /**
@@ -163,12 +173,14 @@ public class Role {
 
         private String roleName;
         private String roleId;
+        private String authorizationStoreId;
 
         private AuthorizationStore authorizationStore;
 
-        public RoleBuilder(String roleName, String roleId) {
+        public RoleBuilder(String roleName, String roleId, String authorizationStoreId) {
             this.roleName = roleName;
             this.roleId = roleId;
+            this.authorizationStoreId = authorizationStoreId;
         }
 
         public RoleBuilder setAuthorizationStore(AuthorizationStore authorizationStore) {
@@ -182,7 +194,7 @@ public class Role {
                 return null;
             }
 
-            return new Role(roleName, roleId, authorizationStore);
+            return new Role(roleName, roleId, authorizationStoreId, authorizationStore);
         }
     }
 }
