@@ -25,8 +25,6 @@ import org.wso2.carbon.security.user.core.store.AuthorizationStore;
 import org.wso2.carbon.security.user.core.store.CredentialStore;
 import org.wso2.carbon.security.user.core.store.IdentityStore;
 
-import java.io.IOException;
-
 /**
  * Basic user realm service.
  */
@@ -36,14 +34,13 @@ public class CarbonRealmServiceImpl implements RealmService {
     private AuthorizationStore authorizationStore = new AuthorizationStore();
     private IdentityStore identityStore = new IdentityStore();
 
-    public CarbonRealmServiceImpl(StoreConfig storeConfig)
-            throws IOException, IdentityStoreException, CredentialStoreException,
-                   AuthorizationStoreException {
+    public CarbonRealmServiceImpl(StoreConfig storeConfig) throws IdentityStoreException, AuthorizationStoreException,
+            CredentialStoreException {
 
         super();
-        credentialStore.init(this);
-        authorizationStore.init(this);
-        identityStore.init(this);
+        credentialStore.init(this, storeConfig.getCredentialStoreConfigMap());
+        authorizationStore.init(this, storeConfig.getAuthorizationStoreConfigMap());
+        identityStore.init(this, storeConfig.getIdentityStoreConfigMap());
     }
 
     /**
