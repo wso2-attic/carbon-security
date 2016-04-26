@@ -1,26 +1,21 @@
 credentialStore:
- connector: "#JDBCCredentialStore"
+ connector: "#InMemoryCredentialStore"
 identityStore:
- connector: "#JDBCIdentityStore"
+ connector: "#InMemoryIdentityStore"
 authorizationStore:
- connector: "#JDBCAuthorizationStore"
+ connector: "#InMemoryAuthorizationStore"
 
 storeConnectors:
  -
-  name: "JDBCCredentialStore"
-  dataSource: "WSO2_CARBON_DB"
-  hashAlgorithm: "SHA-256"
-  databaseType: "MySQL"
+  name: "InMemoryCredentialStore"
+  properties:
+   connectorType: "InMemoryCredentialStore"
+   hashAlgorithm: "SHA-256"
  -
-  name: "JDBCCredentialStore2"
-  dataSource: "WSO2_CARBON_DB2"
-  hashAlgorithm: "SHA-256"
-  databaseType: "Orcale"
+  name: "InMemoryIdentityStore"
+  properties:
+   connectorType: "InMemoryIdentityStore"
  -
-  name: "JDBCIdentityStore"
-  dataSource: "WSO2_CARBON_DB"
-  databaseType: "MySQL"
- -
-  name: "JDBCAuthorizationStore"
-  dataSource: "WSO2_CARBON_DB"
-  databaseType: "MySQL"
+  name: "InMemoryAuthorizationStore"
+  properties:
+   connectorType: "InMemoryAuthorizationStore"
