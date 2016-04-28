@@ -23,13 +23,28 @@ import java.util.Properties;
  */
 public class AuthorizationStoreConfig {
 
+    String connectorType;
+
     private Properties storeProperties;
 
-    public AuthorizationStoreConfig(Properties properties) {
+    public AuthorizationStoreConfig(String connectorType, Properties properties) {
+        this.connectorType = connectorType;
         this.storeProperties = properties;
     }
 
     public Properties getStoreProperties() {
         return storeProperties;
+    }
+
+    public String getConnectorType() {
+        return connectorType;
+    }
+
+    public void setConnectorType(String connectorType) {
+        this.connectorType = connectorType;
+    }
+
+    public void setStoreProperties(Properties storeProperties) {
+        this.storeProperties = storeProperties;
     }
 }

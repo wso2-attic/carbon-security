@@ -53,7 +53,7 @@ public class StoreConfigBuilder {
     public static StoreConfig buildStoreConfigs() {
 
         StoreConfig storeConfig = new StoreConfig();
-        Map<String, Properties> connectors = getAllConnectors();
+        Map<String, StoreConnectorConfigEntry> externalConfigEntries = getExternalConfigEntries();
 
         Path file = Paths.get(CarbonSecurityConstants.getCarbonHomeDirectory().toString(), "conf", "security",
                               CarbonSecurityConstants.STORE_CONFIG_FILE);
@@ -83,15 +83,16 @@ public class StoreConfigBuilder {
         if (storeConfigFile.getCredentialStore().getConnector() != null && !storeConfigFile.getCredentialStore()
                 .getConnector().trim().isEmpty()) {
 
-            Map<String, Properties> credentialConnectorMap =
+            Map<String, StoreConnectorConfigEntry> credentialConnectorMap =
                     getStoreConnectorsMap(storeConfigFile.getCredentialStore().getConnector(),
-                                          storeConfigFile.getCredentialStore(), connectors,
+                                          storeConfigFile.getCredentialStore(), externalConfigEntries,
                                           storeConfigFile.getStoreConnectors());
 
             if (credentialConnectorMap.size() > 0) {
                 credentialConnectorMap.entrySet().forEach(
                         entry -> storeConfig.addCredentialStoreConfig(entry.getKey
-                                (), new CredentialStoreConfig(entry.getValue()))
+                                (), new CredentialStoreConfig(entry.getValue().getConnectorType(),
+                                                              entry.getValue().getProperties()))
                 );
             }
         } else {
@@ -102,15 +103,16 @@ public class StoreConfigBuilder {
         if (storeConfigFile.getIdentityStore().getConnector() != null && !storeConfigFile.getIdentityStore()
                 .getConnector().trim().isEmpty()) {
 
-            Map<String, Properties> identityStoreConnectorMap =
+            Map<String, StoreConnectorConfigEntry> identityStoreConnectorMap =
                     getStoreConnectorsMap(storeConfigFile.getIdentityStore().getConnector(),
-                                          storeConfigFile.getIdentityStore(), connectors,
+                                          storeConfigFile.getIdentityStore(), externalConfigEntries,
                                           storeConfigFile.getStoreConnectors());
 
             if (identityStoreConnectorMap.size() > 0) {
                 identityStoreConnectorMap.entrySet().forEach(
                         entry -> storeConfig.addIdentityStoreConfig(entry.getKey
-                                (), new IdentityStoreConfig(entry.getValue()))
+                                (), new IdentityStoreConfig(entry.getValue().getConnectorType(),
+                                                            entry.getValue().getProperties()))
                 );
             }
         } else {
@@ -121,15 +123,16 @@ public class StoreConfigBuilder {
         if (storeConfigFile.getAuthorizationStore().getConnector() != null && !storeConfigFile.getAuthorizationStore()
                 .getConnector().trim().isEmpty()) {
 
-            Map<String, Properties> authorizationStoreConnectorMap =
+            Map<String, StoreConnectorConfigEntry> authorizationStoreConnectorMap =
                     getStoreConnectorsMap(storeConfigFile.getAuthorizationStore().getConnector(),
-                                          storeConfigFile.getAuthorizationStore(), connectors,
+                                          storeConfigFile.getAuthorizationStore(), externalConfigEntries,
                                           storeConfigFile.getStoreConnectors());
 
             if (authorizationStoreConnectorMap.size() > 0) {
                 authorizationStoreConnectorMap.entrySet().forEach(
                         entry -> storeConfig.addAuthorizationStoreConfig(entry.getKey
-                                (), new AuthorizationStoreConfig(entry.getValue()))
+                                (), new AuthorizationStoreConfig(entry.getValue().getConnectorType(),
+                                                                 entry.getValue().getProperties()))
                 );
             }
         } else {
@@ -140,50 +143,57 @@ public class StoreConfigBuilder {
         return storeConfig;
     }
 
-    private static Map<String, Properties> getStoreConnectorsMap(String connector, StoreConfigEntry storeConfigEntry,
-                                                                 Map<String, Properties> connectors,
-                                                                 List<StoreConnectorConfigEntry>
-                                                                         storeConnectorConfigEntries) {
+    private static Map<String, StoreConnectorConfigEntry> getStoreConnectorsMap(
+            String connector, StoreConfigEntry storeConfigEntry, Map<String,
+            StoreConnectorConfigEntry> externalConfigEntries,
+            List<StoreConnectorConfigEntry> storeConnectorConfigEntries) {
 
-        Map<String, Properties> connectorConfigMap = new HashMap<>();
+        Map<String, StoreConnectorConfigEntry> mergedConfigEntryMap = new HashMap<>();
         Arrays.asList(connector.split(",")).forEach(
                 name -> {
                     if (name.startsWith("#")) {
                         String nameWithoutHash = name.substring(1);
                         Properties updatedProperties = new Properties();
+                        StoreConnectorConfigEntry mergedConfigEntry = new StoreConnectorConfigEntry();
                         storeConnectorConfigEntries.stream()
-                                .filter(config -> nameWithoutHash.equals(config.getName())
-                                                  && config.getProperties() != null
-                                                  && !config.getProperties().isEmpty())
+                                .filter(configEntry -> nameWithoutHash.equals(configEntry.getName())
+                                                  && configEntry.getProperties() != null
+                                                  && !configEntry.getProperties().isEmpty())
                                 .findFirst()
                                 .ifPresent(config -> {
+                                    mergedConfigEntry.setConnectorType(config.getConnectorType());
                                     config.getProperties().forEach(updatedProperties::put);
                                 });
 
                         if (storeConfigEntry.getProperties() != null && !storeConfigEntry.getProperties().isEmpty()) {
                             storeConfigEntry.getProperties().forEach(updatedProperties::put);
                         }
-                        connectorConfigMap.put(nameWithoutHash, updatedProperties);
+                        mergedConfigEntry.setProperties(updatedProperties);
+                        mergedConfigEntryMap.put(nameWithoutHash, mergedConfigEntry);
                     } else {
-                        Properties properties = connectors.get(name);
+                        StoreConnectorConfigEntry configEntry = externalConfigEntries.get(name);
                         Properties updatedProperties = new Properties();
-                        if (properties != null && !properties.isEmpty()) {
-                            properties.forEach(updatedProperties::put);
+                        if (configEntry != null && configEntry.getProperties() != null && !configEntry.getProperties()
+                                .isEmpty()) {
+                            configEntry.getProperties().forEach(updatedProperties::put);
                         }
                         if (storeConfigEntry.getProperties() != null && !storeConfigEntry.getProperties().isEmpty()) {
                             storeConfigEntry.getProperties().forEach(updatedProperties::put);
                         }
-                        connectorConfigMap.put(name, updatedProperties);
+                        StoreConnectorConfigEntry mergedConfigEntry = new StoreConnectorConfigEntry();
+                        mergedConfigEntry.setConnectorType(configEntry != null ? configEntry.getConnectorType() : null);
+                        mergedConfigEntry.setProperties(updatedProperties);
+                        mergedConfigEntryMap.put(name, mergedConfigEntry);
                     }
                 }
         );
 
-        return connectorConfigMap;
+        return mergedConfigEntryMap;
     }
 
-    private static Map<String, Properties> getAllConnectors() {
+    private static Map<String, StoreConnectorConfigEntry> getExternalConfigEntries() {
 
-        Map<String, Properties> connectorProperties = new HashMap<>();
+        Map<String, StoreConnectorConfigEntry> configEntryMap = new HashMap<>();
         Path path = Paths.get(CarbonSecurityConstants.getCarbonHomeDirectory().toString(), "conf", "security");
 
         if (Files.exists(path)) {
@@ -195,7 +205,7 @@ public class StoreConfigBuilder {
                     String name = config != null && config.getName() != null && !config.getName().trim().isEmpty() ?
                                   config.getName().trim() : null;
                     if (name != null) {
-                        connectorProperties.put(name, config.getProperties());
+                        configEntryMap.put(name, config);
                     } else {
                         log.warn("Connector name is not available in the connector config file: "
                                  + filePath.toString());
@@ -206,6 +216,6 @@ public class StoreConfigBuilder {
             }
         }
 
-        return connectorProperties;
+        return configEntryMap;
     }
 }

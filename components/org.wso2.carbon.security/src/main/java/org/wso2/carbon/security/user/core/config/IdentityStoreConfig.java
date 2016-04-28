@@ -23,13 +23,28 @@ import java.util.Properties;
  */
 public class IdentityStoreConfig {
 
+    String connectorType;
+
     private Properties storeProperties;
 
-    public IdentityStoreConfig(Properties properties) {
+    public IdentityStoreConfig(String connectorType, Properties properties) {
+        this.connectorType = connectorType;
         this.storeProperties = properties;
     }
 
     public Properties getStoreProperties() {
         return storeProperties;
+    }
+
+    public String getConnectorType() {
+        return connectorType;
+    }
+
+    public void setConnectorType(String connectorType) {
+        this.connectorType = connectorType;
+    }
+
+    public void setStoreProperties(Properties storeProperties) {
+        this.storeProperties = storeProperties;
     }
 }
