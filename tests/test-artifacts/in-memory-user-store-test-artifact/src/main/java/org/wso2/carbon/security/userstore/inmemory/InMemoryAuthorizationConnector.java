@@ -31,8 +31,14 @@ import java.util.List;
 public class InMemoryAuthorizationConnector implements AuthorizationStoreConnector {
 
     @Override
-    public void init(AuthorizationStoreConfig authorizationStoreConfig) throws AuthorizationStoreException {
+    public void init(String storeId, AuthorizationStoreConfig authorizationStoreConfig)
+            throws AuthorizationStoreException {
 
+    }
+
+    @Override
+    public String getAuthorizationStoreId() {
+        return null;
     }
 
     @Override
@@ -89,5 +95,10 @@ public class InMemoryAuthorizationConnector implements AuthorizationStoreConnect
     @Override
     public void addRolePermission(String roleName, String permissionName) throws AuthorizationStoreException {
 
+    }
+
+    @Override
+    public AuthorizationStoreConfig getAuthorizationStoreConfig() {
+        return null;
     }
 }

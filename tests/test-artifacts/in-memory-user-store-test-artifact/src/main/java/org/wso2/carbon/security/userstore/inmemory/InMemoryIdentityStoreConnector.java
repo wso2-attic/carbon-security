@@ -35,17 +35,12 @@ import java.util.UUID;
 public class InMemoryIdentityStoreConnector implements IdentityStoreConnector {
 
     @Override
-    public void init(IdentityStoreConfig identityStoreConfig) throws IdentityStoreException {
+    public void init(String storeId, IdentityStoreConfig identityStoreConfig) throws IdentityStoreException {
 
     }
 
     @Override
-    public String getUserStoreName() {
-        return null;
-    }
-
-    @Override
-    public String getUserStoreId() {
+    public String getIdentityStoreId() {
         return null;
     }
 
@@ -57,7 +52,7 @@ public class InMemoryIdentityStoreConnector implements IdentityStoreConnector {
     @Override
     public User.UserBuilder getUser(String username) throws IdentityStoreException {
         if (InMemoryStoreUtil.getPassword(username) != null) {
-            return new User.UserBuilder(username, UUID.randomUUID().toString(), "PRIMARY", -1);
+            return new User.UserBuilder(username, UUID.randomUUID().toString(), "PRIMARY", "carbon.super");
         }
         return null;
     }
@@ -69,12 +64,13 @@ public class InMemoryIdentityStoreConnector implements IdentityStoreConnector {
     }
 
     @Override
-    public Map<String, String> getUserClaimValues(String userID) throws IdentityStoreException {
+    public Map<String, String> getUserAttributeValues(String userID) throws IdentityStoreException {
         return null;
     }
 
     @Override
-    public Map<String, String> getUserClaimValues(String userID, List<String> claimURIs) throws IdentityStoreException {
+    public Map<String, String> getUserAttributeValues(String userID, List<String> attributeNames)
+            throws IdentityStoreException {
         return null;
     }
 

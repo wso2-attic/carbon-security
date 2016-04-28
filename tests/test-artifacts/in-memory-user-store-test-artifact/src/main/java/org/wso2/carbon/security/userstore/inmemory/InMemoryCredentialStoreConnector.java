@@ -36,10 +36,9 @@ import javax.security.auth.callback.PasswordCallback;
  */
 public class InMemoryCredentialStoreConnector implements CredentialStoreConnector {
 
-
     @Override
-    public void init(CredentialStoreConfig credentialStoreConfig) throws CredentialStoreException {
-
+    public void init(String storeId, CredentialStoreConfig credentialStoreConfig) throws CredentialStoreException {
+        
     }
 
     @Override
@@ -70,7 +69,7 @@ public class InMemoryCredentialStoreConnector implements CredentialStoreConnecto
 
         char[] storedPassword = InMemoryStoreUtil.getPassword(username);
         if (storedPassword != null && Arrays.equals(storedPassword, password)) {
-            return new User.UserBuilder(username, UUID.randomUUID().toString(), "PRIMARY", -1);
+            return new User.UserBuilder(username, UUID.randomUUID().toString(), "PRIMARY", "carbon.super");
         } else {
             throw new AuthenticationFailure("Invalid credentials");
         }
@@ -79,5 +78,10 @@ public class InMemoryCredentialStoreConnector implements CredentialStoreConnecto
     @Override
     public boolean canHandle(Callback[] callbacks) {
         return false;
+    }
+
+    @Override
+    public CredentialStoreConfig getCredentialStoreConfig() {
+        return null;
     }
 }
