@@ -17,6 +17,8 @@
 package org.wso2.carbon.security.user.core.bean;
 
 import org.wso2.carbon.security.user.core.exception.AuthorizationStoreException;
+import org.wso2.carbon.security.user.core.exception.IdentityStoreException;
+import org.wso2.carbon.security.user.core.exception.StoreException;
 import org.wso2.carbon.security.user.core.store.AuthorizationStore;
 
 import java.util.List;
@@ -67,24 +69,24 @@ public class Role {
      * Get the users assigned to this role.
      * @return List of users assigned to this role.
      */
-    public List<User> getUsers() {
-        return authorizationStore.getUsersOfRole(roleId);
+    public List<User> getUsers() throws AuthorizationStoreException, IdentityStoreException {
+        return authorizationStore.getUsersOfRole(roleId, authorizationStoreId);
     }
 
     /**
      * Get all Permissions assign to this Role.
      * @return List of Permission.
      */
-    public List<Permission> getPermissions() {
-        return authorizationStore.getPermissionsOfRole(roleId);
+    public List<Permission> getPermissions() throws AuthorizationStoreException {
+        return authorizationStore.getPermissionsOfRole(roleId, authorizationStoreId);
     }
 
     /**
      * Get all Groups assigned to this Role.
      * @return List of Group.
      */
-    public List<Group> getGroups() {
-        return authorizationStore.getGroupsOfRole(roleId);
+    public List<Group> getGroups() throws AuthorizationStoreException, IdentityStoreException {
+        return authorizationStore.getGroupsOfRole(roleId, authorizationStoreId);
     }
 
     /**
@@ -101,7 +103,7 @@ public class Role {
      * @param userId Id of the User to be checked.
      * @return True if User exists.
      */
-    public boolean hasUser(String userId) {
+    public boolean hasUser(String userId) throws AuthorizationStoreException {
         return authorizationStore.isUserInRole(userId, roleName);
     }
 
@@ -110,7 +112,7 @@ public class Role {
      * @param groupId Id of the Group to be checked.
      * @return True if the Group exists.
      */
-    public boolean hasGroup(String groupId) {
+    public boolean hasGroup(String groupId) throws AuthorizationStoreException {
         return authorizationStore.isGroupInRole(groupId, roleName);
     }
 
@@ -176,10 +178,19 @@ public class Role {
 
         private AuthorizationStore authorizationStore;
 
-        public RoleBuilder(String roleName, String roleId, String authorizationStoreId) {
+        public RoleBuilder setRoleName(String roleName) {
             this.roleName = roleName;
+            return this;
+        }
+
+        public RoleBuilder setRoleId(String roleId) {
             this.roleId = roleId;
+            return this;
+        }
+
+        public RoleBuilder setAuthorizationStoreId(String authorizationStoreId) {
             this.authorizationStoreId = authorizationStoreId;
+            return this;
         }
 
         public RoleBuilder setAuthorizationStore(AuthorizationStore authorizationStore) {
@@ -189,8 +200,8 @@ public class Role {
 
         public Role build() {
 
-            if (authorizationStore == null) {
-                return null;
+            if (roleName == null || roleId == null || authorizationStoreId == null || authorizationStore == null) {
+                throw new StoreException("Required data is missing for building role.");
             }
 
             return new Role(roleName, roleId, authorizationStoreId, authorizationStore);

@@ -16,8 +16,10 @@
 
 package org.wso2.carbon.security.userstore.inmemory;
 
+import org.wso2.carbon.security.user.core.bean.Group;
 import org.wso2.carbon.security.user.core.bean.Permission;
 import org.wso2.carbon.security.user.core.bean.Role;
+import org.wso2.carbon.security.user.core.bean.User;
 import org.wso2.carbon.security.user.core.config.AuthorizationStoreConfig;
 import org.wso2.carbon.security.user.core.exception.AuthorizationStoreException;
 import org.wso2.carbon.security.user.core.store.connector.AuthorizationStoreConnector;
@@ -77,7 +79,7 @@ public class InMemoryAuthorizationConnector implements AuthorizationStoreConnect
     }
 
     @Override
-    public Permission addNewPermission(String resourceId, String action) throws AuthorizationStoreException {
+    public Permission addPermission(String resourceId, String action) throws AuthorizationStoreException {
         return null;
     }
 
@@ -94,11 +96,38 @@ public class InMemoryAuthorizationConnector implements AuthorizationStoreConnect
 
     @Override
     public void addRolePermission(String roleName, String permissionName) throws AuthorizationStoreException {
-
     }
 
     @Override
     public AuthorizationStoreConfig getAuthorizationStoreConfig() {
         return null;
+    }
+
+    @Override
+    public boolean isUserInRole(String userId, String roleName) {
+        return false;
+    }
+
+    @Override
+    public boolean isGroupInRole(String groupId, String roleName) {
+        return false;
+    }
+
+    @Override
+    public List<User.UserBuilder> getUsersOfRole(String roleId) {
+        return null;
+    }
+
+    @Override
+    public List<Group.GroupBuilder> getGroupsOfRole(String roleId) {
+        return null;
+    }
+
+    @Override
+    public void deleteRole(String roleId) {
+    }
+
+    @Override
+    public void deletePermission(String permissionId) {
     }
 }

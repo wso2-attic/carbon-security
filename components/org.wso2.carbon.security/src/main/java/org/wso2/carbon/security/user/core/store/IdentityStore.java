@@ -22,7 +22,6 @@ import org.wso2.carbon.security.internal.CarbonSecurityDataHolder;
 import org.wso2.carbon.security.user.core.bean.Group;
 import org.wso2.carbon.security.user.core.bean.User;
 import org.wso2.carbon.security.user.core.config.IdentityStoreConfig;
-import org.wso2.carbon.security.user.core.constant.UserStoreConstants;
 import org.wso2.carbon.security.user.core.exception.IdentityStoreException;
 import org.wso2.carbon.security.user.core.exception.StoreException;
 import org.wso2.carbon.security.user.core.service.RealmService;
@@ -47,7 +46,9 @@ public class IdentityStore {
     private Map<String, IdentityStoreConnector> identityStoreConnectors = new HashMap<>();
 
     /**
-     * Initialize this instance.
+     * Initialize the identity store instance.
+     * @param realmService Parent realm service instance.
+     * @param identityStoreConfigs Store configs related to the identity store.
      * @throws IdentityStoreException
      */
     public void init(RealmService realmService, Map<String, IdentityStoreConfig> identityStoreConfigs) 
@@ -61,8 +62,7 @@ public class IdentityStore {
 
         for (Map.Entry<String, IdentityStoreConfig> identityStoreConfig : identityStoreConfigs.entrySet()) {
 
-            String connectorType = (String) identityStoreConfig.getValue().getStoreProperties()
-                    .get(UserStoreConstants.CONNECTOR_TYPE);
+            String connectorType = identityStoreConfig.getValue().getConnectorType();
             IdentityStoreConnectorFactory identityStoreConnectorFactory = CarbonSecurityDataHolder.getInstance()
                     .getIdentityStoreConnectorFactoryMap().get(connectorType);
 
@@ -102,7 +102,6 @@ public class IdentityStore {
 
         throw new IdentityStoreException("No user found for the given name.");
     }
-
 
     /**
      * Get the user from user Id.

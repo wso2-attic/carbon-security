@@ -21,12 +21,38 @@ package org.wso2.carbon.security.user.core.bean;
  */
 public class Permission {
 
+    private String authorizationStoreId;
+    private String permissionId;
+
     private String resourceId;
     private String action;
 
     public Permission(String resourceId, String action) {
         this.resourceId = resourceId;
         this.action = action;
+    }
+
+    private Permission(String resourceId, String action, String permissionId, String authorizationStoreId) {
+        this.resourceId = resourceId;
+        this.action = action;
+        this.permissionId = permissionId;
+        this.authorizationStoreId = authorizationStoreId;
+    }
+
+    /**
+     * Get the unique id of this permission.
+     * @return Permission id.
+     */
+    public String getPermissionId() {
+        return permissionId;
+    }
+
+    /**
+     * Get the authorization store id.
+     * @return Authorization store id.
+     */
+    public String getAuthorizationStoreId() {
+        return authorizationStoreId;
     }
 
     /**
@@ -62,5 +88,40 @@ public class Permission {
     @Override
     public int hashCode() {
         return getPermissionString().hashCode();
+    }
+
+    /**
+     *
+     */
+    public static class PermissionBuilder {
+
+        private String resourceId;
+        private String action;
+        private String permissionId;
+        private String authorizationStoreId;
+
+        public PermissionBuilder(String resourceId, String action) {
+            this.resourceId = resourceId;
+            this.action = action;
+        }
+
+        public PermissionBuilder setPermissionId(String permissionId) {
+            this.permissionId = permissionId;
+            return this;
+        }
+
+        public PermissionBuilder setAuthorizationStore(String authorizationStoreId) {
+            this.authorizationStoreId = authorizationStoreId;
+            return this;
+        }
+
+        public Permission build() {
+
+            if (permissionId == null || authorizationStoreId == null) {
+                return null;
+            }
+
+            return new Permission(resourceId, action, permissionId, authorizationStoreId);
+        }
     }
 }

@@ -16,8 +16,10 @@
 
 package org.wso2.carbon.security.user.core.store.connector;
 
+import org.wso2.carbon.security.user.core.bean.Group;
 import org.wso2.carbon.security.user.core.bean.Permission;
 import org.wso2.carbon.security.user.core.bean.Role;
+import org.wso2.carbon.security.user.core.bean.User;
 import org.wso2.carbon.security.user.core.config.AuthorizationStoreConfig;
 import org.wso2.carbon.security.user.core.exception.AuthorizationStoreException;
 
@@ -100,7 +102,7 @@ public interface AuthorizationStoreConnector {
      * @return New permission.
      * @throws AuthorizationStoreException
      */
-    Permission addNewPermission(String resourceId, String action) throws AuthorizationStoreException;
+    Permission addPermission(String resourceId, String action) throws AuthorizationStoreException;
 
     /**
      * Add new role.
@@ -131,4 +133,16 @@ public interface AuthorizationStoreConnector {
      * @return @see AuthorizationStoreConfig.
      */
     AuthorizationStoreConfig getAuthorizationStoreConfig();
+
+    boolean isUserInRole(String userId, String roleName);
+
+    boolean isGroupInRole(String groupId, String roleName);
+
+    List<User.UserBuilder> getUsersOfRole(String roleId);
+
+    List<Group.GroupBuilder> getGroupsOfRole(String roleId);
+
+    void deleteRole(String roleId);
+
+    void deletePermission(String permissionId);
 }

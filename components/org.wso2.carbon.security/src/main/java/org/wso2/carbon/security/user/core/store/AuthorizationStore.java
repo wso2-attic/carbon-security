@@ -24,7 +24,6 @@ import org.wso2.carbon.security.user.core.bean.Permission;
 import org.wso2.carbon.security.user.core.bean.Role;
 import org.wso2.carbon.security.user.core.bean.User;
 import org.wso2.carbon.security.user.core.config.AuthorizationStoreConfig;
-import org.wso2.carbon.security.user.core.constant.UserStoreConstants;
 import org.wso2.carbon.security.user.core.exception.AuthorizationStoreException;
 import org.wso2.carbon.security.user.core.exception.IdentityStoreException;
 import org.wso2.carbon.security.user.core.exception.StoreException;
@@ -50,6 +49,12 @@ public class AuthorizationStore {
     private RealmService realmService;
     private Map<String, AuthorizationStoreConnector> authorizationStoreConnectors = new HashMap<>();
 
+    /**
+     * Initialize the authorization store.
+     * @param realmService Parent realm service.
+     * @param authorizationStoreConfigs Store configs related to the authorization store.
+     * @throws AuthorizationStoreException
+     */
     public void init(RealmService realmService, Map<String, AuthorizationStoreConfig> authorizationStoreConfigs)
             throws AuthorizationStoreException {
 
@@ -62,8 +67,7 @@ public class AuthorizationStore {
         for (Map.Entry<String, AuthorizationStoreConfig> authorizationStoreConfig :
                 authorizationStoreConfigs.entrySet()) {
 
-            String connectorType = (String) authorizationStoreConfig.getValue().getStoreProperties()
-                    .get(UserStoreConstants.CONNECTOR_TYPE);
+            String connectorType = authorizationStoreConfig.getValue().getConnectorType();
             AuthorizationStoreConnectorFactory authorizationStoreConnectorFactory = CarbonSecurityDataHolder
                     .getInstance().getAuthorizationStoreConnectorFactoryMap().get(connectorType);
 
@@ -174,8 +178,15 @@ public class AuthorizationStore {
      * @param roleName Role name
      * @return True if user is in the role.
      */
-    public boolean isUserInRole(String userId, String roleName) {
-        throw new NotImplementedException();
+    public boolean isUserInRole(String userId, String roleName) throws AuthorizationStoreException {
+
+        for (AuthorizationStoreConnector authorizationStoreConnector : authorizationStoreConnectors.values()) {
+            if (authorizationStoreConnector.isUserInRole(userId, roleName)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**
@@ -184,8 +195,15 @@ public class AuthorizationStore {
      * @param roleName Role name.
      * @return True if group has the role.
      */
-    public boolean isGroupInRole(String groupId, String roleName) {
-        throw new NotImplementedException();
+    public boolean isGroupInRole(String groupId, String roleName) throws AuthorizationStoreException {
+
+        for (AuthorizationStoreConnector authorizationStoreConnector : authorizationStoreConnectors.values()) {
+            if (authorizationStoreConnector.isGroupInRole(groupId, roleName)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**
@@ -193,8 +211,17 @@ public class AuthorizationStore {
      * @param userId User id.
      * @return List of Roles.
      */
-    public List<Role> getRolesOfUser(String userId) {
-        throw new NotImplementedException();
+    public List<Role> getRolesOfUser(String userId) throws AuthorizationStoreException {
+
+        List<Role> roles = new ArrayList<>();
+        for (AuthorizationStoreConnector authorizationStoreConnector : authorizationStoreConnectors.values()) {
+            roles.addAll(authorizationStoreConnector.getRolesForUser(userId)
+                    .stream()
+                    .map(roleBuilder -> roleBuilder.setAuthorizationStore(realmService.getAuthorizationStore()).build())
+                    .collect(Collectors.toList()));
+        }
+
+        return roles;
     }
 
     /**
@@ -202,8 +229,23 @@ public class AuthorizationStore {
      * @param roleId Role id.
      * @return List of users.
      */
-    public List<User> getUsersOfRole(String roleId) {
-        throw new NotImplementedException();
+    public List<User> getUsersOfRole(String roleId, String authorizationStore) throws AuthorizationStoreException,
+            IdentityStoreException {
+
+        AuthorizationStoreConnector authorizationStoreConnector = authorizationStoreConnectors.get(authorizationStore);
+
+        if (authorizationStoreConnector == null) {
+            throw new StoreException("No authorization store connector found for the given name.");
+        }
+
+        List<User> users = new ArrayList<>();
+
+        // TODO: Can replace with JAVA 8 map when the carbon kernel support rethrow exceptions.
+        for (User.UserBuilder userBuilder : authorizationStoreConnector.getUsersOfRole(roleId)) {
+            users.add(realmService.getIdentityStore().getUserfromId(userBuilder.getUserId()));
+        }
+
+        return users;
     }
 
     /**
@@ -211,8 +253,23 @@ public class AuthorizationStore {
      * @param roleId Role id.
      * @return List of Groups.
      */
-    public List<Group> getGroupsOfRole(String roleId) {
-        throw new NotImplementedException();
+    public List<Group> getGroupsOfRole(String roleId, String authorizationStore) throws AuthorizationStoreException,
+            IdentityStoreException {
+
+        AuthorizationStoreConnector authorizationStoreConnector = authorizationStoreConnectors.get(authorizationStore);
+
+        if (authorizationStoreConnector == null) {
+            throw new StoreException("No authorization store connector found for the given name.");
+        }
+
+        List<Group> groups = new ArrayList<>();
+
+        // TODO: Can replace with JAVA 8 map when the carbon kernel support rethrow exceptions.
+        for (Group.GroupBuilder groupBuilder : authorizationStoreConnector.getGroupsOfRole(roleId)) {
+            groups.add(realmService.getIdentityStore().getGroupFromId(groupBuilder.getGroupId()));
+        }
+
+        return groups;
     }
 
     /**
@@ -241,8 +298,11 @@ public class AuthorizationStore {
      * @param roleId Role id.
      * @return List of Permissions.
      */
-    public List<Permission> getPermissionsOfRole(String roleId) {
-        throw new NotImplementedException();
+    public List<Permission> getPermissionsOfRole(String roleId, String authorizationStore)
+            throws AuthorizationStoreException {
+
+        AuthorizationStoreConnector authorizationStoreConnector = authorizationStoreConnectors.get(authorizationStore);
+        return authorizationStoreConnector.getPermissionsForRole(roleId);
     }
 
     /**
@@ -276,8 +336,10 @@ public class AuthorizationStore {
      * Delete an existing role.
      * @param role Role to be deleted.
      */
-    public void deleteRole(Role role) {
-        throw new NotImplementedException();
+    public void deleteRole(Role role) throws AuthorizationStoreException {
+
+        AuthorizationStoreConnector authorizationStoreConnector = authorizationStoreConnectors.get(role.getRoleId());
+        authorizationStoreConnector.deleteRole(role.getRoleId());
     }
 
     /**
@@ -295,10 +357,10 @@ public class AuthorizationStore {
                 .get(authorizationStoreId);
 
         if (authorizationStoreConnector == null) {
-            throw new AuthorizationStoreException("Invalid authorization store id.");
+            throw new StoreException("Invalid authorization store id.");
         }
 
-        return authorizationStoreConnector.addNewPermission(resourceId, action);
+        return authorizationStoreConnector.addPermission(resourceId, action);
     }
 
     /**
@@ -306,6 +368,15 @@ public class AuthorizationStore {
      * @param permission Permission to be delete.
      */
     public void deletePermission(Permission permission) {
+
+        AuthorizationStoreConnector authorizationStoreConnector = authorizationStoreConnectors
+                .get(permission.getAuthorizationStoreId());
+
+        if (authorizationStoreConnector == null) {
+            throw new StoreException("Invalid authorization store id.");
+        }
+
+        authorizationStoreConnector.deletePermission(permission.getPermissionId());
     }
 
     /**
@@ -359,9 +430,9 @@ public class AuthorizationStore {
      * Assign a new list of Roles to existing list and/or un-assign Roles from existing list. (PATCH)
      * @param groupId Id of the group.
      * @param rolesToBeAssign List to be added to the new list.
-     * @param rolesToBeUnassign List to be removed from the existing list.
+     * @param rolesToBeUnassigned List to be removed from the existing list.
      */
-    public void updateRolesInGroup(String groupId, List<Role> rolesToBeAssign, List<Role> rolesToBeUnassign) {
+    public void updateRolesInGroup(String groupId, List<Role> rolesToBeAssign, List<Role> rolesToBeUnassigned) {
         throw new NotImplementedException();
     }
 

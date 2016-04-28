@@ -18,6 +18,7 @@ package org.wso2.carbon.security.user.core.bean;
 
 import org.wso2.carbon.security.user.core.exception.AuthorizationStoreException;
 import org.wso2.carbon.security.user.core.exception.IdentityStoreException;
+import org.wso2.carbon.security.user.core.exception.StoreException;
 import org.wso2.carbon.security.user.core.store.AuthorizationStore;
 import org.wso2.carbon.security.user.core.store.IdentityStore;
 
@@ -109,7 +110,7 @@ public class Group {
      * @param roleName Name of the Role to be checked.
      * @return True if this Group has the Role.
      */
-    public boolean hasRole(String roleName) {
+    public boolean hasRole(String roleName) throws AuthorizationStoreException {
         return authorizationStore.isGroupInRole(groupID, roleName);
     }
 
@@ -160,11 +161,48 @@ public class Group {
         private IdentityStore identityStore;
         private AuthorizationStore authorizationStore;
 
-        public GroupBuilder(String groupId, String userStoreId, String groupName, String tenantDomain) {
-            this.groupId = groupId;
+        public String getGroupId() {
+            return groupId;
+        }
+
+        public String getUserStoreId() {
+            return userStoreId;
+        }
+
+        public String getGroupName() {
+            return groupName;
+        }
+
+        public String getTenantDomain() {
+            return tenantDomain;
+        }
+
+        public IdentityStore getIdentityStore() {
+            return identityStore;
+        }
+
+        public AuthorizationStore getAuthorizationStore() {
+            return authorizationStore;
+        }
+
+        public GroupBuilder setGroupName(String groupName) {
             this.groupName = groupName;
+            return this;
+        }
+
+        public GroupBuilder setGroupId(String groupId) {
+            this.groupId = groupId;
+            return this;
+        }
+
+        public GroupBuilder setUserStoreId(String userStoreId) {
             this.userStoreId = userStoreId;
+            return this;
+        }
+
+        public GroupBuilder setTenantDomain(String tenantDomain) {
             this.tenantDomain = tenantDomain;
+            return this;
         }
 
         public GroupBuilder setIdentityStore(IdentityStore identityStore) {
@@ -179,8 +217,9 @@ public class Group {
 
         public Group build() {
 
-            if (identityStore == null || authorizationStore == null) {
-                return null;
+            if (groupName == null || groupId == null || userStoreId == null || tenantDomain == null ||
+                    identityStore == null || authorizationStore == null) {
+                throw new StoreException("Required data is missing for building group.");
             }
 
             return new Group(groupId, userStoreId, groupName, tenantDomain, identityStore, authorizationStore);

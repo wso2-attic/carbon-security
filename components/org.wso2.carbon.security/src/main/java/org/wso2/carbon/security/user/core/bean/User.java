@@ -18,6 +18,7 @@ package org.wso2.carbon.security.user.core.bean;
 
 import org.wso2.carbon.security.user.core.exception.AuthorizationStoreException;
 import org.wso2.carbon.security.user.core.exception.IdentityStoreException;
+import org.wso2.carbon.security.user.core.exception.StoreException;
 import org.wso2.carbon.security.user.core.store.AuthorizationStore;
 import org.wso2.carbon.security.user.core.store.IdentityStore;
 
@@ -31,18 +32,20 @@ import java.util.Map;
 public class User {
 
     private String userID;
-    private String userStoreID;
+    private String identityStoreID;
+    private String credentialStoreId;
     private String tenantDomain;
     private String userName;
 
     private IdentityStore identityStore;
     private AuthorizationStore authorizationStore;
 
-    private User(String userName, String userID, String userStoreID, String tenantDomain, IdentityStore identityStore,
-                AuthorizationStore authorizationStore) {
+    private User(String userName, String userID, String identityStoreID, String credentialStoreId, String tenantDomain,
+                 IdentityStore identityStore, AuthorizationStore authorizationStore) {
 
         this.userID = userID;
-        this.userStoreID = userStoreID;
+        this.identityStoreID = identityStoreID;
+        this.credentialStoreId = credentialStoreId;
         this.userName = userName;
         this.tenantDomain = tenantDomain;
         this.identityStore = identityStore;
@@ -66,11 +69,19 @@ public class User {
     }
 
     /**
-     * Get user store id.
-     * @return User store id.
+     * Get the identity store id.
+     * @return Identity store id.
      */
-    public String getUserStoreId() {
-        return userStoreID;
+    public String getIdentityStoreId() {
+        return identityStoreID;
+    }
+
+    /**
+     * Get the credential store id.
+     * @return Credential store id.
+     */
+    public String getCredentialStoreId() {
+        return credentialStoreId;
     }
 
     /**
@@ -87,7 +98,7 @@ public class User {
      * @throws IdentityStoreException
      */
     public Map<String, String> getClaims() throws IdentityStoreException {
-        return identityStore.getUserAttributeValues(userID, userStoreID);
+        return identityStore.getUserAttributeValues(userID, identityStoreID);
     }
 
     /**
@@ -97,7 +108,7 @@ public class User {
      * @throws IdentityStoreException
      */
     public Map<String, String> getClaims(List<String> claimURIs) throws IdentityStoreException {
-        return identityStore.getUserAttributeValues(userID, claimURIs, userStoreID);
+        return identityStore.getUserAttributeValues(userID, claimURIs, identityStoreID);
     }
 
     /**
@@ -106,14 +117,14 @@ public class User {
      * @throws IdentityStoreException
      */
     public List<Group> getGroups() throws IdentityStoreException {
-        return identityStore.getGroupsOfUser(userID, userStoreID);
+        return identityStore.getGroupsOfUser(userID, identityStoreID);
     }
 
     /**
      * Get the roles assigned to this user.
      * @return List of Roles assigned to this user.
      */
-    public List<Role> getRoles() {
+    public List<Role> getRoles() throws AuthorizationStoreException {
         return authorizationStore.getRolesOfUser(userID);
     }
 
@@ -123,7 +134,7 @@ public class User {
      * @return True if authorized.
      */
     public boolean isAuthorized(Permission permission) throws AuthorizationStoreException, IdentityStoreException {
-        return authorizationStore.isUserAuthorized(userID, permission, userStoreID);
+        return authorizationStore.isUserAuthorized(userID, permission, identityStoreID);
     }
 
     /**
@@ -131,7 +142,7 @@ public class User {
      * @param roleName Name of the Role.
      * @return True if this user is in the Role.
      */
-    public boolean isInRole(String roleName) {
+    public boolean isInRole(String roleName) throws AuthorizationStoreException {
         return authorizationStore.isUserInRole(userID, roleName);
     }
 
@@ -141,7 +152,7 @@ public class User {
      * @return True if this User is in the group.
      */
     public boolean isInGroup(String groupName) throws IdentityStoreException {
-        return identityStore.isUserInGroup(userID, groupName, userStoreID);
+        return identityStore.isUserInGroup(userID, groupName, identityStoreID);
     }
 
     /**
@@ -195,23 +206,70 @@ public class User {
     }
 
     /**
-     * Builder for user bean.
+     * Builder for the user bean.
      */
     public static class UserBuilder {
 
         private String userName;
         private String userId;
-        private String userStoreId;
+        private String identityStoreId;
+        private String credentialStoreId;
         private String tenantDomain;
 
         private IdentityStore identityStore;
         private AuthorizationStore authorizationStore;
 
-        public UserBuilder(String userName, String userId, String userStoreId, String tenantDomain) {
+        public String getUserName() {
+            return userName;
+        }
+
+        public String getUserId() {
+            return userId;
+        }
+
+        public String getIdentityStoreId() {
+            return identityStoreId;
+        }
+
+        public String getCredentialStoreId() {
+            return credentialStoreId;
+        }
+
+        public String getTenantDomain() {
+            return tenantDomain;
+        }
+
+        public IdentityStore getIdentityStore() {
+            return identityStore;
+        }
+
+        public AuthorizationStore getAuthorizationStore() {
+            return authorizationStore;
+        }
+
+        public UserBuilder setUserName(String userName) {
             this.userName = userName;
+            return this;
+        }
+
+        public UserBuilder setUserId(String userId) {
             this.userId = userId;
-            this.userStoreId = userStoreId;
+            return this;
+        }
+
+        public UserBuilder setIdentityStoreId(String identityStoreId) {
+            this.identityStoreId = identityStoreId;
+            return this;
+        }
+
+        public UserBuilder setCredentialStoreId(String credentialStoreId) {
+            this.credentialStoreId = credentialStoreId;
+            return this;
+        }
+
+        public UserBuilder setTenantDomain(String tenantDomain) {
             this.tenantDomain = tenantDomain;
+            return this;
         }
 
         public UserBuilder setIdentityStore(IdentityStore identityStore) {
@@ -226,10 +284,13 @@ public class User {
 
         public User build() {
 
-            if (identityStore == null || authorizationStore == null) {
-                return null;
+            if (userName == null || userId == null || identityStoreId == null || credentialStoreId == null ||
+                    identityStore == null || tenantDomain == null || authorizationStore == null) {
+                throw new StoreException("Required data is missing for building user.");
             }
-            return new User(userName, userId, userStoreId, tenantDomain, identityStore, authorizationStore);
+
+            return new User(userName, userId, identityStoreId, credentialStoreId, tenantDomain, identityStore,
+                    authorizationStore);
         }
     }
 }
