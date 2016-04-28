@@ -16,7 +16,6 @@
 
 package org.wso2.carbon.security.user.core.bean;
 
-import org.wso2.carbon.security.user.core.exception.AuthorizationException;
 import org.wso2.carbon.security.user.core.exception.AuthorizationStoreException;
 import org.wso2.carbon.security.user.core.store.AuthorizationStore;
 
@@ -29,12 +28,14 @@ public class Role {
 
     private String roleName;
     private String roleId;
+    private String authorizationStoreId;
     private AuthorizationStore authorizationStore;
 
-    private Role(String roleName, String roleId, AuthorizationStore authorizationStore) {
+    private Role(String roleName, String roleId, String authorizationStoreId, AuthorizationStore authorizationStore) {
 
         this.roleName = roleName;
         this.roleId = roleId;
+        this.authorizationStoreId = authorizationStoreId;
         this.authorizationStore = authorizationStore;
     }
 
@@ -52,6 +53,14 @@ public class Role {
      */
     public String getRoleId() {
         return roleId;
+    }
+
+    /**
+     * Get the authorization store id.
+     * @return Id of the authorization store.
+     */
+    public String getAuthorizationStoreId() {
+        return authorizationStoreId;
     }
 
     /**
@@ -83,8 +92,8 @@ public class Role {
      * @param permission Permission to be checked.
      * @return True if authorized.
      */
-    public boolean isAuthorized(Permission permission) throws AuthorizationException, AuthorizationStoreException {
-        return authorizationStore.isRoleAuthorized(roleId, permission);
+    public boolean isAuthorized(Permission permission) throws AuthorizationStoreException {
+        return authorizationStore.isRoleAuthorized(roleId, authorizationStoreId, permission);
     }
 
     /**
@@ -163,12 +172,14 @@ public class Role {
 
         private String roleName;
         private String roleId;
+        private String authorizationStoreId;
 
         private AuthorizationStore authorizationStore;
 
-        public RoleBuilder(String roleName, String roleId) {
+        public RoleBuilder(String roleName, String roleId, String authorizationStoreId) {
             this.roleName = roleName;
             this.roleId = roleId;
+            this.authorizationStoreId = authorizationStoreId;
         }
 
         public RoleBuilder setAuthorizationStore(AuthorizationStore authorizationStore) {
@@ -182,7 +193,7 @@ public class Role {
                 return null;
             }
 
-            return new Role(roleName, roleId, authorizationStore);
+            return new Role(roleName, roleId, authorizationStoreId, authorizationStore);
         }
     }
 }

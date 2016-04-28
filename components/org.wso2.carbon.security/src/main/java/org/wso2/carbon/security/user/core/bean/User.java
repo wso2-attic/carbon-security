@@ -16,7 +16,6 @@
 
 package org.wso2.carbon.security.user.core.bean;
 
-import org.wso2.carbon.security.user.core.exception.AuthorizationException;
 import org.wso2.carbon.security.user.core.exception.AuthorizationStoreException;
 import org.wso2.carbon.security.user.core.exception.IdentityStoreException;
 import org.wso2.carbon.security.user.core.store.AuthorizationStore;
@@ -33,19 +32,19 @@ public class User {
 
     private String userID;
     private String userStoreID;
-    private long tenantId;
+    private String tenantDomain;
     private String userName;
 
     private IdentityStore identityStore;
     private AuthorizationStore authorizationStore;
 
-    private User(String userName, String userID, String userStoreID, long tenantId, IdentityStore identityStore,
+    private User(String userName, String userID, String userStoreID, String tenantDomain, IdentityStore identityStore,
                 AuthorizationStore authorizationStore) {
 
         this.userID = userID;
         this.userStoreID = userStoreID;
         this.userName = userName;
-        this.tenantId = tenantId;
+        this.tenantDomain = tenantDomain;
         this.identityStore = identityStore;
         this.authorizationStore = authorizationStore;
     }
@@ -75,11 +74,11 @@ public class User {
     }
 
     /**
-     * Get tenant id.
-     * @return Tenant id.
+     * Get tenant domain.
+     * @return Tenant domain.
      */
-    public long getTenantId() {
-        return tenantId;
+    public String getTenantDomain() {
+        return tenantDomain;
     }
 
     /**
@@ -88,7 +87,7 @@ public class User {
      * @throws IdentityStoreException
      */
     public Map<String, String> getClaims() throws IdentityStoreException {
-        return identityStore.getUserClaimValues(userID, userStoreID);
+        return identityStore.getUserAttributeValues(userID, userStoreID);
     }
 
     /**
@@ -98,7 +97,7 @@ public class User {
      * @throws IdentityStoreException
      */
     public Map<String, String> getClaims(List<String> claimURIs) throws IdentityStoreException {
-        return identityStore.getUserClaimValues(userID, claimURIs, userStoreID);
+        return identityStore.getUserAttributeValues(userID, claimURIs, userStoreID);
     }
 
     /**
@@ -122,10 +121,8 @@ public class User {
      * Checks whether this user is authorized for given Permission.
      * @param permission Permission that should check on this user.
      * @return True if authorized.
-     * @throws AuthorizationException
      */
-    public boolean isAuthorized(Permission permission) throws AuthorizationException, AuthorizationStoreException,
-            IdentityStoreException {
+    public boolean isAuthorized(Permission permission) throws AuthorizationStoreException, IdentityStoreException {
         return authorizationStore.isUserAuthorized(userID, permission, userStoreID);
     }
 
@@ -205,16 +202,16 @@ public class User {
         private String userName;
         private String userId;
         private String userStoreId;
-        private long tenantId;
+        private String tenantDomain;
 
         private IdentityStore identityStore;
         private AuthorizationStore authorizationStore;
 
-        public UserBuilder(String userName, String userId, String userStoreId, long tenantId) {
+        public UserBuilder(String userName, String userId, String userStoreId, String tenantDomain) {
             this.userName = userName;
             this.userId = userId;
             this.userStoreId = userStoreId;
-            this.tenantId = tenantId;
+            this.tenantDomain = tenantDomain;
         }
 
         public UserBuilder setIdentityStore(IdentityStore identityStore) {
@@ -232,7 +229,7 @@ public class User {
             if (identityStore == null || authorizationStore == null) {
                 return null;
             }
-            return new User(userName, userId, userStoreId, tenantId, identityStore, authorizationStore);
+            return new User(userName, userId, userStoreId, tenantDomain, identityStore, authorizationStore);
         }
     }
 }

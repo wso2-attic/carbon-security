@@ -30,14 +30,15 @@ public interface CredentialStoreConnector {
 
     /**
      * Initialize the Credential store connector.
-     * @param credentialStoreConfig Credential store configurations.
+     * @param credentialStoreConfig Credential store configurations for this connector.
+     * @param storeId Id of this store.
      * @throws CredentialStoreException
      */
-    void init(CredentialStoreConfig credentialStoreConfig) throws CredentialStoreException;
+    void init(String storeId, CredentialStoreConfig credentialStoreConfig) throws CredentialStoreException;
 
     /**
      * Get the ID of this credential store.
-     * @return ID as a String.
+     * @return ID of the credential store.
      */
     String getCredentialStoreId();
 
@@ -50,9 +51,15 @@ public interface CredentialStoreConnector {
     User.UserBuilder authenticate(Callback[] callbacks) throws CredentialStoreException, AuthenticationFailure;
 
     /**
-     *
-     * @param callbacks
-     * @return
+     * Checks whether this connector can handle the given callbacks.
+     * @param callbacks Array of callbacks.
+     * @return True if there are all of the callbacks required for this connector.
      */
     boolean canHandle(Callback[] callbacks);
+
+    /**
+     * Get the Credential store config.
+     * @return @see CredentialStoreConfig.
+     */
+    CredentialStoreConfig getCredentialStoreConfig();
 }

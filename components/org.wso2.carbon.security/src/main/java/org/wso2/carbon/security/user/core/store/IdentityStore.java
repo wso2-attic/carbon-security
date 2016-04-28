@@ -59,9 +59,9 @@ public class IdentityStore {
             throw new StoreException("At least one identity store configuration must present.");
         }
 
-        for (Map.Entry<String, IdentityStoreConfig> connectorConfig : identityStoreConfigs.entrySet()) {
+        for (Map.Entry<String, IdentityStoreConfig> identityStoreConfig : identityStoreConfigs.entrySet()) {
 
-            String connectorType = (String) connectorConfig.getValue().getStoreProperties()
+            String connectorType = (String) identityStoreConfig.getValue().getStoreProperties()
                     .get(UserStoreConstants.CONNECTOR_TYPE);
             IdentityStoreConnectorFactory identityStoreConnectorFactory = CarbonSecurityDataHolder.getInstance()
                     .getIdentityStoreConnectorFactoryMap().get(connectorType);
@@ -71,9 +71,9 @@ public class IdentityStore {
             }
 
             IdentityStoreConnector identityStoreConnector = identityStoreConnectorFactory.getInstance();
-            identityStoreConnector.init(connectorConfig.getValue());
+            identityStoreConnector.init(identityStoreConfig.getKey(), identityStoreConfig.getValue());
 
-            identityStoreConnectors.put(connectorConfig.getKey(), identityStoreConnector);
+            identityStoreConnectors.put(identityStoreConfig.getKey(), identityStoreConnector);
         }
 
         if (log.isDebugEnabled()) {
@@ -152,31 +152,31 @@ public class IdentityStore {
     }
 
     /**
-     * Get user claim values.
+     * Get user attribute values.
      * @param userID Id of the user.
      * @param userStoreId Id of the user store which this user belongs.
-     * @return Map of user claims.
+     * @return Map of user attributes.
      * @throws IdentityStoreException
      */
-    public Map<String, String> getUserClaimValues(String userID, String userStoreId) throws IdentityStoreException {
+    public Map<String, String> getUserAttributeValues(String userID, String userStoreId) throws IdentityStoreException {
 
         IdentityStoreConnector identityStoreConnector = identityStoreConnectors.get(userStoreId);
-        return identityStoreConnector.getUserClaimValues(userID);
+        return identityStoreConnector.getUserAttributeValues(userID);
     }
 
     /**
      * Get user's claim values for the given URIs.
      * @param userID Id of the user.
-     * @param claimURIs Claim URIs.
+     * @param attributeNames Attribute names.
      * @param userStoreId Id of the user store which this user belongs.
-     * @return Map of claims.
+     * @return Map of user attributes.
      * @throws IdentityStoreException
      */
-    public Map<String, String> getUserClaimValues(String userID, List<String> claimURIs, String userStoreId)
+    public Map<String, String> getUserAttributeValues(String userID, List<String> attributeNames, String userStoreId)
             throws IdentityStoreException {
 
         IdentityStoreConnector identityStoreConnector = identityStoreConnectors.get(userStoreId);
-        return identityStoreConnector.getUserClaimValues(userID, claimURIs);
+        return identityStoreConnector.getUserAttributeValues(userID, attributeNames);
     }
 
     /**

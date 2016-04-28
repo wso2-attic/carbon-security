@@ -16,7 +16,6 @@
 
 package org.wso2.carbon.security.user.core.bean;
 
-import org.wso2.carbon.security.user.core.exception.AuthorizationException;
 import org.wso2.carbon.security.user.core.exception.AuthorizationStoreException;
 import org.wso2.carbon.security.user.core.exception.IdentityStoreException;
 import org.wso2.carbon.security.user.core.store.AuthorizationStore;
@@ -32,15 +31,17 @@ public class Group {
     private String groupID;
     private String userStoreID;
     private String groupName;
+    private String tenantDomain;
     private IdentityStore identityStore;
     private AuthorizationStore authorizationStore;
 
-    private Group(String groupID, String userStoreID, String groupName, IdentityStore identityStore,
-                 AuthorizationStore authorizationStore) {
+    private Group(String groupID, String userStoreID, String groupName, String tenantDomain,
+                  IdentityStore identityStore, AuthorizationStore authorizationStore) {
 
         this.groupID = groupID;
         this.userStoreID = userStoreID;
         this.groupName = groupName;
+        this.tenantDomain = tenantDomain;
         this.identityStore = identityStore;
         this.authorizationStore = authorizationStore;
     }
@@ -59,6 +60,14 @@ public class Group {
      */
     public String getGroupId() {
         return groupID;
+    }
+
+    /**
+     * Get the tenant domain name.
+     * @return Name of the tenant domain.
+     */
+    public String getTenantDomain() {
+        return tenantDomain;
     }
 
     /**
@@ -82,7 +91,7 @@ public class Group {
      * @param permission Permission to be checked.
      * @return True if authorized.
      */
-    public boolean isAuthorized(Permission permission) throws AuthorizationException, AuthorizationStoreException {
+    public boolean isAuthorized(Permission permission) throws AuthorizationStoreException {
         return authorizationStore.isGroupAuthorized(groupID, permission);
     }
 
@@ -146,14 +155,16 @@ public class Group {
         private String groupId;
         private String userStoreId;
         private String groupName;
+        private String tenantDomain;
 
         private IdentityStore identityStore;
         private AuthorizationStore authorizationStore;
 
-        public GroupBuilder(String groupId, String userStoreId, String groupName) {
+        public GroupBuilder(String groupId, String userStoreId, String groupName, String tenantDomain) {
             this.groupId = groupId;
             this.groupName = groupName;
             this.userStoreId = userStoreId;
+            this.tenantDomain = tenantDomain;
         }
 
         public GroupBuilder setIdentityStore(IdentityStore identityStore) {
@@ -172,7 +183,7 @@ public class Group {
                 return null;
             }
 
-            return new Group(groupId, userStoreId, groupName, identityStore, authorizationStore);
+            return new Group(groupId, userStoreId, groupName, tenantDomain, identityStore, authorizationStore);
         }
     }
 }
