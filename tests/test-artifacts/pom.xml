@@ -14,23 +14,22 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
         <groupId>org.wso2.carbon.security</groupId>
-        <artifactId>org.wso2.carbon.security.parent</artifactId>
+        <artifactId>carbon-security-tests</artifactId>
         <version>1.0.0-SNAPSHOT</version>
-        <relativePath>../pom.xml</relativePath>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>carbon-security-tests</artifactId>
+    <artifactId>carbon-security-test-artifacts</artifactId>
     <packaging>pom</packaging>
-    <name>WSO2 Carbon Security - Tests</name>
+    <name>WSO2 Carbon Security - Sample Tests Artifacts</name>
     <url>http://wso2.com</url>
 
     <modules>
-        <module>test-artifacts</module>
-        <module>osgi-tests</module>
+        <module>in-memory-user-store-test-artifact</module>
     </modules>
 
 </project>
