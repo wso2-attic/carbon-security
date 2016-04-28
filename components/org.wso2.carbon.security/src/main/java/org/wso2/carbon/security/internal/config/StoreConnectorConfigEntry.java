@@ -27,6 +27,8 @@ public class StoreConnectorConfigEntry {
 
     private String name;
 
+    private String connectorType;
+
     private Properties properties;
 
     public String getName() {
@@ -43,6 +45,14 @@ public class StoreConnectorConfigEntry {
 
     public void setProperties(Properties properties) {
         this.properties = properties;
+    }
+
+    public String getConnectorType() {
+        return connectorType;
+    }
+
+    public void setConnectorType(String connectorType) {
+        this.connectorType = connectorType;
     }
 }
 
