@@ -74,14 +74,6 @@ public class SecurityOSGiTestUtils {
                                       .artifactId("json-smart")
                                       .versionAsInProject());
         defaultOptionList.add(mavenBundle()
-                                      .groupId("org.wso2.carbon.datasources")
-                                      .artifactId("org.wso2.carbon.datasource.core")
-                                      .versionAsInProject());
-        defaultOptionList.add(mavenBundle()
-                                      .groupId("org.wso2.carbon.jndi")
-                                      .artifactId("org.wso2.carbon.jndi")
-                                      .versionAsInProject());
-        defaultOptionList.add(mavenBundle()
                                       .groupId("org.wso2.carbon.security.caas")
                                       .artifactId("org.wso2.carbon.security.caas.boot")
                                       .versionAsInProject().noStart());
@@ -97,14 +89,6 @@ public class SecurityOSGiTestUtils {
                                       .groupId("commons-io.wso2")
                                       .artifactId("commons-io")
                                       .version("2.4.0.wso2v1"));
-        defaultOptionList.add(mavenBundle()
-                                      .groupId("com.zaxxer")
-                                      .artifactId("HikariCP")
-                                      .version("2.4.1"));
-        defaultOptionList.add(mavenBundle()
-                                      .groupId("com.h2database")
-                                      .artifactId("h2")
-                                      .version("1.4.191"));
         defaultOptionList.add(mavenBundle()
                                .groupId("org.wso2.carbon")
                                .artifactId("org.wso2.carbon.core")
