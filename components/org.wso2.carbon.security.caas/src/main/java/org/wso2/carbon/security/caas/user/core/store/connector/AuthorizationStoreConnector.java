@@ -59,23 +59,6 @@ public interface AuthorizationStoreConnector {
     Permission.PermissionBuilder getPermission(String permissionId) throws AuthorizationStoreException;
 
     /**
-     * List the roles.
-     * @param atribute
-     * @param filter
-     * @return
-     */
-    List<Role.RoleBuilder> listRoles(String atribute, String filter) throws AuthorizationStoreException;
-
-    /**
-     * List the permissions.
-     * @param attribute
-     * @param filter
-     * @return
-     */
-    List<Permission.PermissionBuilder> listPermissions(String attribute, String filter)
-            throws AuthorizationStoreException;
-
-    /**
      * Get roles for the user id.
      * @param userId User id of the user.
      * @return Roles associated to the user.
@@ -136,17 +119,55 @@ public interface AuthorizationStoreConnector {
      */
     AuthorizationStoreConfig getAuthorizationStoreConfig();
 
+    /**
+     * Checks whether the users is in the role.
+     * @param userId Id of the user.
+     * @param identityStoreId Identity store id of the user.
+     * @param roleName Name of the role.
+     * @return True if user is in the role.
+     */
     boolean isUserInRole(String userId, String identityStoreId, String roleName);
 
+    /**
+     * Checks whether the group is in the role.
+     * @param groupId Id of the group.
+     * @param identityStoreId Identity store id of the group.
+     * @param roleName Name of the role.
+     * @return True if the group is in the role.
+     */
     boolean isGroupInRole(String groupId, String identityStoreId, String roleName);
 
+    /**
+     * Get the users of the role.
+     * @param roleId Id of the role.
+     * @return List of @see User.UserBuilder.
+     */
     List<User.UserBuilder> getUsersOfRole(String roleId);
 
+    /**
+     * Get the groups of the role.
+     * @param roleId Id of the role.
+     * @return List of @see Group.GroupBuilder.
+     */
     List<Group.GroupBuilder> getGroupsOfRole(String roleId);
 
+    /**
+     * Delete the specified role.
+     * @param roleId Id of the role.
+     */
     void deleteRole(String roleId);
 
+    /**
+     * Delete the specified permission.
+     * @param permissionId Id of the permission.
+     */
     void deletePermission(String permissionId);
 
+    /**
+     * Update the roles of the user by replacing existing roles. (PUT)
+     * @param userId Id of the user.
+     * @param identityStoreId Identity store id of the user.
+     * @param newRoleList Role list to replace the existing.
+     */
     void updateRolesInUser(String userId, String identityStoreId, List<Role> newRoleList);
 }
