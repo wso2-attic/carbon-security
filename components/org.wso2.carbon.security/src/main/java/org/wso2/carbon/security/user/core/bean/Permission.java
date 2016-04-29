@@ -93,7 +93,7 @@ public class Permission {
     }
 
     /**
-     *
+     * Builder for the permission bean.
      */
     public static class PermissionBuilder {
 
