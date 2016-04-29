@@ -33,7 +33,6 @@ import javax.security.auth.spi.LoginModule;
  * <p>
  * Proxy login module which act as a wrapper for real login modules. Two properties must be set from the javax
  * .security.auth.login.Configuration implementation, the name of the login module and bundle id to be used to load it.
- * <p/>
  * This class MUST be available from all modules.
  * </p>
  *
