@@ -26,27 +26,18 @@
         <version>4</version>
     </parent>
 
-    <groupId>org.wso2.carbon.security</groupId>
-    <artifactId>org.wso2.carbon.security.parent</artifactId>
+    <groupId>org.wso2.carbon.security.caas</groupId>
+    <artifactId>org.wso2.carbon.security.caas.parent</artifactId>
     <packaging>pom</packaging>
     <version>1.0.0-SNAPSHOT</version>
-    <name>WSO2 Carbon Security - Parent</name>
+    <name>WSO2 Carbon Security CAAS - Parent</name>
 
     <scm>
-        <url>https://github.com/wso2/product-mss.git</url>
-        <developerConnection>scm:git:https://github.com/wso2/product-mss.git</developerConnection>
-        <connection>scm:git:https://github.com/wso2/product-mss.git</connection>
+        <url>https://github.com/wso2/carbon-security.git</url>
+        <developerConnection>scm:git:https://github.com/wso2/carbon-security.git</developerConnection>
+        <connection>scm:git:https://github.com/wso2/carbon-security.git</connection>
         <tag>HEAD</tag>
     </scm>
-
-    <developers>
-        <developer>
-            <name>WSO2</name>
-            <email>architecture@wso2.org</email>
-            <organization>WSO2 Inc</organization>
-            <organizationUrl>https://github.com/wso2/product-mss</organizationUrl>
-        </developer>
-    </developers>
 
     <build>
         <extensions>
@@ -204,9 +195,14 @@
 
             <!-- OSGI Tests-->
             <dependency>
-                <groupId>org.wso2.carbon.security</groupId>
-                <artifactId>org.wso2.carbon.security</artifactId>
-                <version>1.0.0-SNAPSHOT</version>
+                <groupId>org.wso2.carbon.security.caas</groupId>
+                <artifactId>org.wso2.carbon.security.caas</artifactId>
+                <version>${carbon.security.caas.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon.security.caas</groupId>
+                <artifactId>org.wso2.carbon.security.caas.boot</artifactId>
+                <version>${carbon.security.caas.boot.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.wso2.carbon</groupId>
@@ -286,16 +282,16 @@
     </dependencyManagement>
 
     <modules>
-        <module>components/org.wso2.carbon.security.boot</module>
-        <module>components/org.wso2.carbon.security</module>
+        <module>components/org.wso2.carbon.security.caas.boot</module>
+        <module>components/org.wso2.carbon.security.caas</module>
         <module>feature</module>
         <module>samples/usercore-sample</module>
         <module>tests</module>
     </modules>
 
     <properties>
-        <carbon.security.version>1.0.0-SNAPSHOT</carbon.security.version>
-        <carbon.security.boot.version>1.0.0-SNAPSHOT</carbon.security.boot.version>
+        <carbon.security.caas.version>1.0.0-SNAPSHOT</carbon.security.caas.version>
+        <carbon.security.caas.boot.version>1.0.0-SNAPSHOT</carbon.security.caas.boot.version>
 
         <carbon.feature.plugin.version>2.0.1</carbon.feature.plugin.version>
         <carbon.kernel.version>5.1.0-m3</carbon.kernel.version>

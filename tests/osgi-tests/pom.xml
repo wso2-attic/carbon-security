@@ -17,16 +17,16 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
-        <groupId>org.wso2.carbon.security</groupId>
-        <artifactId>carbon-security-tests</artifactId>
+        <groupId>org.wso2.carbon.security.caas</groupId>
+        <artifactId>carbon-security-caas-tests</artifactId>
         <version>1.0.0-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>carbon-security-osgi-tests</artifactId>
-    <name>WSO2 Carbon Security - OSGi Tests</name>
-    <description>OSGi Tests for Carbon Security Implementation</description>
+    <artifactId>carbon-security-caas-osgi-tests</artifactId>
+    <name>WSO2 Carbon Security CAAS - OSGi Tests</name>
+    <description>OSGi Tests for Carbon Security CAAS Implementation</description>
     <url>http://wso2.com</url>
 
     <build>
@@ -51,8 +51,8 @@
 
     <dependencies>
         <dependency>
-            <groupId>org.wso2.carbon.security</groupId>
-            <artifactId>org.wso2.carbon.security</artifactId>
+            <groupId>org.wso2.carbon.security.caas</groupId>
+            <artifactId>org.wso2.carbon.security.caas</artifactId>
         </dependency>
         <dependency>
             <groupId>org.wso2.carbon</groupId>
@@ -60,8 +60,8 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.wso2.carbon.security</groupId>
-            <artifactId>org.wso2.carbon.security.userstore.inmemory</artifactId>
+            <groupId>org.wso2.carbon.security.caas</groupId>
+            <artifactId>org.wso2.carbon.security.caas.userstore.inmemory</artifactId>
             <version>1.0.0-SNAPSHOT</version>
         </dependency>
 
@@ -275,10 +275,10 @@
                                             <structure name="Carbon Security OSGi Tests">
                                                 <classfiles>
                                                     <fileset
-                                                            dir="../../components/org.wso2.carbon.security/target/classes"/>
+                                                            dir="../../components/org.wso2.carbon.security.caas/target/classes"/>
                                                 </classfiles>
                                                 <sourcefiles encoding="UTF-8">
-                                                    <fileset dir="../../components/org.wso2.carbon.security/src"/>
+                                                    <fileset dir="../../components/org.wso2.carbon.security.caas/src"/>
                                                 </sourcefiles>
                                             </structure>
                                             <html destdir="${project.build.directory}/site/jacoco"/>

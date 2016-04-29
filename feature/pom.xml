@@ -18,32 +18,32 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
     <parent>
-        <groupId>org.wso2.carbon.security</groupId>
-        <artifactId>org.wso2.carbon.security.parent</artifactId>
+        <groupId>org.wso2.carbon.security.caas</groupId>
+        <artifactId>org.wso2.carbon.security.caas.parent</artifactId>
         <version>1.0.0-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>org.wso2.carbon.security.feature</artifactId>
+    <artifactId>org.wso2.carbon.security.caas.feature</artifactId>
 
     <packaging>carbon-feature</packaging>
-    <name>WSO2 Carbon Security - Feature</name>
+    <name>WSO2 Carbon Security CAAS - Feature</name>
     <url>http://wso2.org</url>
     <description>This feature contains the core bundles required by the Carbon Security feature
     </description>
 
     <dependencies>
         <dependency>
-            <groupId>org.wso2.carbon.security</groupId>
-            <artifactId>org.wso2.carbon.security.boot</artifactId>
-            <version>${carbon.security.boot.version}</version>
+            <groupId>org.wso2.carbon.security.caas</groupId>
+            <artifactId>org.wso2.carbon.security.caas.boot</artifactId>
+            <version>${carbon.security.caas.boot.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.wso2.carbon.security</groupId>
-            <artifactId>org.wso2.carbon.security</artifactId>
-            <version>${carbon.security.version}</version>
+            <groupId>org.wso2.carbon.security.caas</groupId>
+            <artifactId>org.wso2.carbon.security.caas</artifactId>
+            <version>${carbon.security.caas.version}</version>
         </dependency>
         <dependency>
             <groupId>io.netty</groupId>
@@ -143,12 +143,12 @@
                             </adviceFileContents>
                             <bundles>
                                 <bundle>
-                                    <symbolicName>org.wso2.carbon.security.boot</symbolicName>
-                                    <version>${carbon.security.boot.version}</version>
+                                    <symbolicName>org.wso2.carbon.security.caas.boot</symbolicName>
+                                    <version>${carbon.security.caas.boot.version}</version>
                                 </bundle>
                                 <bundle>
-                                    <symbolicName>org.wso2.carbon.security</symbolicName>
-                                    <version>${carbon.security.version}</version>
+                                    <symbolicName>org.wso2.carbon.security.caas</symbolicName>
+                                    <version>${carbon.security.caas.version}</version>
                                 </bundle>
                                 <bundle>
                                     <symbolicName>io.netty.buffer</symbolicName>

@@ -18,30 +18,30 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
     <parent>
-        <groupId>org.wso2.carbon.security</groupId>
-        <artifactId>carbon-security-test-artifacts</artifactId>
+        <groupId>org.wso2.carbon.security.caas</groupId>
+        <artifactId>carbon-security-caas-test-artifacts</artifactId>
         <version>1.0.0-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>org.wso2.carbon.security.userstore.inmemory</artifactId>
+    <artifactId>org.wso2.carbon.security.caas.userstore.inmemory</artifactId>
     <packaging>bundle</packaging>
-    <name>WSO2 Carbon Security - In-memory User Store</name>
+    <name>WSO2 Carbon Security CAAS - In-memory User Store</name>
     <url>http://maven.apache.org</url>
 
     <dependencies>
         <dependency>
-            <groupId>org.wso2.carbon.security</groupId>
-            <artifactId>org.wso2.carbon.security</artifactId>
+            <groupId>org.wso2.carbon.security.caas</groupId>
+            <artifactId>org.wso2.carbon.security.caas</artifactId>
         </dependency>
     </dependencies>
 
     <properties>
-        <private.package>org.wso2.carbon.security.userstore.inmemory.internal</private.package>
+        <private.package>org.wso2.carbon.security.caas.userstore.inmemory.internal</private.package>
         <export.package>
-            !org.wso2.carbon.security.userstore.inmemory.internal,
-            org.wso2.carbon.security.userstore.inmemory.*
+            !org.wso2.carbon.security.caas.userstore.inmemory.internal,
+            org.wso2.carbon.security.caas.userstore.inmemory.*
         </export.package>
         <import.package>
             org.osgi.framework.*;version="${osgi.framework.package.import.version.range}",
@@ -52,10 +52,10 @@
             javax.naming.*,
             javax.xml.*,
             org.osgi.service.component.annotations.*;version="${org.osgi.service.component.annotations.version.range}",
-            org.wso2.carbon.security.user.core.bean.*;version="${org.wso2.carbon.security.version.range}",
-            org.wso2.carbon.security.user.core.config.*;version="${org.wso2.carbon.security.version.range}",
-            org.wso2.carbon.security.user.core.exception.*;version="${org.wso2.carbon.security.version.range}",
-            org.wso2.carbon.security.user.core.store.connector.*;version="${org.wso2.carbon.security.version.range}",
+            org.wso2.carbon.security.caas.user.core.bean.*;version="${org.wso2.carbon.security.caas.version.range}",
+            org.wso2.carbon.security.caas.user.core.config.*;version="${org.wso2.carbon.security.caas.version.range}",
+            org.wso2.carbon.security.caas.user.core.exception.*;version="${org.wso2.carbon.security.caas.version.range}",
+            org.wso2.carbon.security.caas.user.core.store.connector.*;version="${org.wso2.carbon.security.caas.version.range}",
         </import.package>
 
         <dsannotations>*</dsannotations>
@@ -68,7 +68,7 @@
         </org.osgi.service.component.annotations.version.range>
         <org.osgi.service.jndi.version.range>[1.0.0, 1.1.0)</org.osgi.service.jndi.version.range>
         <org.wso2.carbon.datasource.version.range>[1.0.0, 1.1.0)</org.wso2.carbon.datasource.version.range>
-        <org.wso2.carbon.security.version.range>[1.0.0, 1.1.0)</org.wso2.carbon.security.version.range>
+        <org.wso2.carbon.security.caas.version.range>[1.0.0, 1.1.0)</org.wso2.carbon.security.caas.version.range>
 
         <!-- Dependency package version ranges -->
 

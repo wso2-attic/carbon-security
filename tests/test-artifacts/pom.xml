@@ -17,15 +17,15 @@
 <project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
-        <groupId>org.wso2.carbon.security</groupId>
-        <artifactId>carbon-security-tests</artifactId>
+        <groupId>org.wso2.carbon.security.caas</groupId>
+        <artifactId>carbon-security-caas-tests</artifactId>
         <version>1.0.0-SNAPSHOT</version>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>carbon-security-test-artifacts</artifactId>
+    <artifactId>carbon-security-caas-test-artifacts</artifactId>
     <packaging>pom</packaging>
-    <name>WSO2 Carbon Security - Sample Tests Artifacts</name>
+    <name>WSO2 Carbon Security CAAS - Sample Tests Artifacts</name>
     <url>http://wso2.com</url>
 
     <modules>
