@@ -211,8 +211,9 @@ public class User {
      * Assign a new list of Roles to existing list and/or un-assign Roles from existing list. (PATCH)
      * @param assignList List to be added to the new list.
      * @param unAssignList List to be removed from the existing list.
+     * @throws AuthorizationStoreException Authorization Store Exception.
      */
-    public void updateRoles(List<Role> assignList, List<Role> unAssignList) {
+    public void updateRoles(List<Role> assignList, List<Role> unAssignList) throws AuthorizationStoreException {
         authorizationStore.updateRolesInUser(userID, identityStoreID, assignList, unAssignList);
     }
 

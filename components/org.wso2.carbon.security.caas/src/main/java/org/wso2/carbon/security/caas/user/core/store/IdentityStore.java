@@ -49,7 +49,7 @@ public class IdentityStore {
      * Initialize the identity store instance.
      * @param realmService Parent realm service instance.
      * @param identityStoreConfigs Store configs related to the identity store.
-     * @throws IdentityStoreException
+     * @throws IdentityStoreException Identity Store Exception.
      */
     public void init(RealmService realmService, Map<String, IdentityStoreConfig> identityStoreConfigs)
             throws IdentityStoreException {
@@ -85,7 +85,7 @@ public class IdentityStore {
      * Get the user from username.
      * @param username Username of the user.
      * @return User.
-     * @throws IdentityStoreException
+     * @throws IdentityStoreException Identity Store Exception.
      */
     public User getUser(String username) throws IdentityStoreException {
 
@@ -107,7 +107,7 @@ public class IdentityStore {
      * Get the user from user Id.
      * @param userId Id of the user.
      * @return User.
-     * @throws IdentityStoreException
+     * @throws IdentityStoreException Identity Store Exception.
      */
     public User getUserFromId(String userId, String identityStoreId) throws IdentityStoreException {
 
@@ -130,7 +130,7 @@ public class IdentityStore {
      * @param offset Offset for list of users.
      * @param length Length from the offset.
      * @return List of users match the filter pattern.
-     * @throws IdentityStoreException
+     * @throws IdentityStoreException Identity Store Exception.
      */
     public List<User> listUsers(String filterPattern, int offset, int length) throws IdentityStoreException {
 
@@ -154,7 +154,7 @@ public class IdentityStore {
      * @param userID Id of the user.
      * @param userStoreId Id of the user store which this user belongs.
      * @return Map of user attributes.
-     * @throws IdentityStoreException
+     * @throws IdentityStoreException Identity Store Exception.
      */
     public Map<String, String> getUserAttributeValues(String userID, String userStoreId) throws IdentityStoreException {
 
@@ -168,7 +168,7 @@ public class IdentityStore {
      * @param attributeNames Attribute names.
      * @param userStoreId Id of the user store which this user belongs.
      * @return Map of user attributes.
-     * @throws IdentityStoreException
+     * @throws IdentityStoreException Identity Store Exception.
      */
     public Map<String, String> getUserAttributeValues(String userID, List<String> attributeNames, String userStoreId)
             throws IdentityStoreException {
@@ -181,6 +181,7 @@ public class IdentityStore {
      * Get the group from name.
      * @param groupName Name of the group.
      * @return Group
+     * @throws IdentityStoreException Identity Store Exception.
      */
     public Group getGroup(String groupName) throws IdentityStoreException {
 
@@ -202,6 +203,7 @@ public class IdentityStore {
      * Get the group from group id.
      * @param groupId Group id.
      * @return Group.
+     * @throws IdentityStoreException Identity Store Exception.
      */
     public Group getGroupFromId(String groupId, String identityStoreId) throws IdentityStoreException {
 
@@ -224,7 +226,7 @@ public class IdentityStore {
      * @param offset Offset for the group list.
      * @param length Length from the offset.
      * @return List of groups that matches the filter pattern.
-     * @throws IdentityStoreException
+     * @throws IdentityStoreException Identity Store Exception.
      */
     public List<Group> listGroups(String filterPattern, int offset, int length) throws IdentityStoreException {
 
@@ -248,7 +250,7 @@ public class IdentityStore {
      * @param userId Id of the user.
      * @param userStoreId Id of the user store which this user belongs.
      * @return List of Group assigned to the user.
-     * @throws IdentityStoreException
+     * @throws IdentityStoreException Identity Store Exception.
      */
     public List<Group> getGroupsOfUser(String userId, String userStoreId) throws IdentityStoreException {
 
@@ -267,7 +269,7 @@ public class IdentityStore {
      * @param groupID Id of the group.
      * @param userStoreId User store id of this group.
      * @return List of users assigned to the group.
-     * @throws IdentityStoreException
+     * @throws IdentityStoreException Identity Store Exception.
      */
     public List<User> getUsersOfGroup(String groupID, String userStoreId) throws IdentityStoreException {
 
@@ -287,6 +289,7 @@ public class IdentityStore {
      * @param groupId Id of the group.
      * @param userStoreId Id of the user store which this user belongs.
      * @return True if the user is in the group.
+     * @throws IdentityStoreException Identity Store Exception.
      */
     public boolean isUserInGroup(String userId, String groupId, String userStoreId) throws IdentityStoreException {
 

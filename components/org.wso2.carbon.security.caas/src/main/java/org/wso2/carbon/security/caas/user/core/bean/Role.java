@@ -129,7 +129,7 @@ public class Role {
      * Add a new Permission list by <b>replacing</b> the existing Permission list. (PUT)
      * @param newPermissionList New Permission list that needs to replace the existing list.
      */
-    public void updatePermissions(List<Permission> newPermissionList) {
+    public void updatePermissions(List<Permission> newPermissionList) throws AuthorizationStoreException {
         authorizationStore.updatePermissionsInRole(roleId, authorizationStoreId, newPermissionList);
     }
 
@@ -137,16 +137,19 @@ public class Role {
      * Assign a new list of Permissions to existing list and/or un-assign Permission from existing Permission. (PATCH)
      * @param assignList List to be added to the new list.
      * @param unAssignList List to be removed from the existing list.
+     * @throws AuthorizationStoreException Authorization store exception.
      */
-    public void updatePermissions(List<Permission> assignList, List<Permission> unAssignList) {
+    public void updatePermissions(List<Permission> assignList, List<Permission> unAssignList)
+            throws AuthorizationStoreException {
         authorizationStore.updatePermissionsInRole(roleId, authorizationStoreId, assignList, unAssignList);
     }
 
     /**
      * Add a new User list by <b>replacing</b> the existing User list. (PUT)
      * @param newUserList New User list that needs to replace the existing list.
+     * @throws AuthorizationStoreException Authorization store exception.
      */
-    public void updateUsers(List<User> newUserList) {
+    public void updateUsers(List<User> newUserList) throws AuthorizationStoreException {
         authorizationStore.updateUsersInRole(roleId, authorizationStoreId, newUserList);
     }
 
@@ -154,16 +157,18 @@ public class Role {
      * Assign a new list of User to existing list and/or un-assign Permission from existing User. (PATCH)
      * @param assignList List to be added to the new list.
      * @param unAssignList List to be removed from the existing list.
+     * @throws AuthorizationStoreException Authorization store exception.
      */
-    public void updateUsers(List<User> assignList, List<User> unAssignList) {
+    public void updateUsers(List<User> assignList, List<User> unAssignList) throws AuthorizationStoreException {
         authorizationStore.updateUsersInRole(roleName, authorizationStoreId, assignList, unAssignList);
     }
 
     /**
      * Add a new Group list by <b>replacing</b> the existing Group list. (PUT)
      * @param newGroupList New Group list that needs to replace the existing list.
+     * @throws AuthorizationStoreException Authorization store exception.
      */
-    public void updateGroups(List<Group> newGroupList) {
+    public void updateGroups(List<Group> newGroupList) throws AuthorizationStoreException {
         authorizationStore.updateGroupsInRole(roleName, authorizationStoreId, newGroupList);
     }
 
@@ -171,8 +176,9 @@ public class Role {
      * Assign a new list of Group to existing list and/or un-assign Group from existing Group. (PATCH)
      * @param assignList List to be added to the new list.
      * @param unAssignList List to be removed from the existing list.
+     * @throws AuthorizationStoreException Authorization store exception.
      */
-    public void updateGroups(List<Group> assignList, List<Group> unAssignList) {
+    public void updateGroups(List<Group> assignList, List<Group> unAssignList) throws AuthorizationStoreException {
         authorizationStore.updateGroupsInRole(roleId, authorizationStoreId, assignList, unAssignList);
     }
 

@@ -33,7 +33,7 @@ public interface IdentityStoreConnector {
      * Initialize identity store by passing identity store configurations read from files.
      * @param identityStoreConfig IdentityStoreConfig for this connector.
      * @param storeId Id of this store.
-     * @throws IdentityStoreException
+     * @throws IdentityStoreException Identity Store Exception.
      */
     void init(String storeId, IdentityStoreConfig identityStoreConfig) throws IdentityStoreException;
 
@@ -47,7 +47,7 @@ public interface IdentityStoreConnector {
      * Search user from user id.
      * @param userID User Id of the user
      * @return User Object with
-     * @throws IdentityStoreException
+     * @throws IdentityStoreException Identity Store Exception.
      */
     User.UserBuilder getUserFromId(String userID) throws IdentityStoreException;
 
@@ -55,7 +55,7 @@ public interface IdentityStoreConnector {
      * Get user from the user name.
      * @param username Name of the user.
      * @return @see User.UserBuilder.
-     * @throws IdentityStoreException
+     * @throws IdentityStoreException Identity Store Exception.
      */
     User.UserBuilder getUser(String username) throws IdentityStoreException;
 
@@ -66,7 +66,7 @@ public interface IdentityStoreConnector {
      * @param length        Number of users from the offset.
      * @return List of Identities which matches the given claim attribute with given filter or empty list if there are
      *         no identities to match.
-     * @throws IdentityStoreException
+     * @throws IdentityStoreException Identity Store Exception.
      */
     List<User.UserBuilder> listUsers(String filterPattern, int offset, int length) throws IdentityStoreException;
 
@@ -75,7 +75,7 @@ public interface IdentityStoreConnector {
      *
      * @param userID ID of the user whose claims are requested
      * @return Attribute map of the user with given ID
-     * @throws IdentityStoreException
+     * @throws IdentityStoreException Identity Store Exception.
      */
     Map<String, String> getUserAttributeValues(String userID) throws IdentityStoreException;
 
@@ -84,7 +84,7 @@ public interface IdentityStoreConnector {
      * @param userID Unique id of the user.
      * @param attributeNames User attribute names.
      * @return Map of user attributes.
-     * @throws IdentityStoreException
+     * @throws IdentityStoreException Identity Store Exception.
      */
     Map<String, String> getUserAttributeValues(String userID, List<String> attributeNames)
             throws IdentityStoreException;
@@ -93,7 +93,7 @@ public interface IdentityStoreConnector {
      * Retrieve group with given group ID.
      * @param groupID Unique ID of the group
      * @return Group with the given GroupID
-     * @throws IdentityStoreException
+     * @throws IdentityStoreException Identity Store Exception.
      */
     Group.GroupBuilder getGroupById(String groupID) throws IdentityStoreException;
 
@@ -101,7 +101,7 @@ public interface IdentityStoreConnector {
      * Retrieve group from the group name.
      * @param groupName Name of the group
      * @return Group with the given group name.
-     * @throws IdentityStoreException
+     * @throws IdentityStoreException Identity Store Exception.
      */
     Group.GroupBuilder getGroup(String groupName) throws IdentityStoreException;
 
@@ -111,7 +111,7 @@ public interface IdentityStoreConnector {
      * @param offset Offset for the group list.
      * @param length Length from the offset.
      * @return List of groups that matches the filter pattern.
-     * @throws IdentityStoreException
+     * @throws IdentityStoreException Identity Store Exception.
      */
     List<Group.GroupBuilder> listGroups(String filterPattern, int offset, int length) throws IdentityStoreException;
 
@@ -119,7 +119,7 @@ public interface IdentityStoreConnector {
      * Retrieve groups of a given User with unique ID.
      * @param userID Id of the User.
      * @return List of Groups which this user is assigned to
-     * @throws IdentityStoreException
+     * @throws IdentityStoreException Identity Store Exception.
      */
     List<Group.GroupBuilder> getGroupsOfUser(String userID) throws IdentityStoreException;
 
@@ -127,7 +127,7 @@ public interface IdentityStoreConnector {
      * Retrieve set of users belongs to a group.
      * @param groupID Unique ID of the group
      * @return Set of IdentityObjects resides in Group
-     * @throws IdentityStoreException
+     * @throws IdentityStoreException Identity Store Exception.
      */
     List<User.UserBuilder> getUsersOfGroup(String groupID) throws IdentityStoreException;
 
@@ -140,7 +140,7 @@ public interface IdentityStoreConnector {
     /**
      * To check whether a user store is read only.
      * @return True if the user store is read only, unless returns false
-     * @throws IdentityStoreException
+     * @throws IdentityStoreException Identity Store Exception.
      */
     boolean isReadOnly() throws IdentityStoreException;
 

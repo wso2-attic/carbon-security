@@ -48,6 +48,7 @@ public interface AuthorizationStoreConnector {
      * Get the role of from role id.
      * @param roleId Id of the Role
      * @return Role.
+     * @throws AuthorizationStoreException Authorization Store Exception.
      */
     Role.RoleBuilder getRole(String roleId) throws AuthorizationStoreException;
 
@@ -62,6 +63,7 @@ public interface AuthorizationStoreConnector {
      * Get roles for the user id.
      * @param userId User id of the user.
      * @return Roles associated to the user.
+     * @throws AuthorizationStoreException Authorization Store Exception.
      */
     List<Role.RoleBuilder> getRolesForUser(String userId, String identityStoreId) throws AuthorizationStoreException;
 
@@ -69,6 +71,7 @@ public interface AuthorizationStoreConnector {
      * Get roles associated to the group.
      * @param groupName Name of the group.
      * @return Roles associated to the group.
+     * @throws AuthorizationStoreException Authorization Store Exception.
      */
     List<Role.RoleBuilder> getRolesForGroup(String groupName, String identityStoreId)
             throws AuthorizationStoreException;
@@ -77,6 +80,7 @@ public interface AuthorizationStoreConnector {
      * Get permissions associated to the role.
      * @param roleName Role name of the required role.
      * @return List of permissions associated to the user.
+     * @throws AuthorizationStoreException Authorization Store Exception.
      */
     List<Permission.PermissionBuilder> getPermissionsForRole(String roleName) throws AuthorizationStoreException;
 
@@ -85,7 +89,7 @@ public interface AuthorizationStoreConnector {
      * @param resourceId Resource id.
      * @param action Action name.
      * @return New permission.
-     * @throws AuthorizationStoreException
+     * @throws AuthorizationStoreException Authorization Store Exception.
      */
     Permission.PermissionBuilder addPermission(String resourceId, String action) throws AuthorizationStoreException;
 
@@ -94,7 +98,7 @@ public interface AuthorizationStoreConnector {
      * @param roleName Name of the new role.
      * @param permissions List of permissions to be assign.
      * @return New Role.
-     * @throws AuthorizationStoreException
+     * @throws AuthorizationStoreException Authorization Store Exception.
      */
     Role.RoleBuilder addRole(String roleName, List<Permission> permissions) throws AuthorizationStoreException;
 
@@ -102,6 +106,7 @@ public interface AuthorizationStoreConnector {
      * Add a user against a role.
      * @param userId Id of the user.
      * @param roleName Name of the role.
+     * @throws AuthorizationStoreException Authorization Store Exception.
      */
     void assignUserRole(String userId, String roleName) throws AuthorizationStoreException;
 
@@ -109,15 +114,16 @@ public interface AuthorizationStoreConnector {
      * Add a permission to a role.
      * @param roleName Name of the role.
      * @param permissionName Name of the permission.
-     * @throws AuthorizationStoreException
+     * @throws AuthorizationStoreException Authorization Store Exception.
      */
     void addRolePermission(String roleName, String permissionName) throws AuthorizationStoreException;
 
     /**
      * Get the authorization store config.
      * @return @see AuthorizationStoreConfig.
+     * @throws AuthorizationStoreException Authorization Store Exception.
      */
-    AuthorizationStoreConfig getAuthorizationStoreConfig();
+    AuthorizationStoreConfig getAuthorizationStoreConfig() throws AuthorizationStoreException;
 
     /**
      * Checks whether the users is in the role.
@@ -125,8 +131,9 @@ public interface AuthorizationStoreConnector {
      * @param identityStoreId Identity store id of the user.
      * @param roleName Name of the role.
      * @return True if user is in the role.
+     * @throws AuthorizationStoreException Authorization Store Exception.
      */
-    boolean isUserInRole(String userId, String identityStoreId, String roleName);
+    boolean isUserInRole(String userId, String identityStoreId, String roleName) throws AuthorizationStoreException;
 
     /**
      * Checks whether the group is in the role.
@@ -134,40 +141,47 @@ public interface AuthorizationStoreConnector {
      * @param identityStoreId Identity store id of the group.
      * @param roleName Name of the role.
      * @return True if the group is in the role.
+     * @throws AuthorizationStoreException Authorization Store Exception.
      */
-    boolean isGroupInRole(String groupId, String identityStoreId, String roleName);
+    boolean isGroupInRole(String groupId, String identityStoreId, String roleName) throws AuthorizationStoreException;
 
     /**
      * Get the users of the role.
      * @param roleId Id of the role.
      * @return List of @see User.UserBuilder.
+     * @throws AuthorizationStoreException Authorization Store Exception.
      */
-    List<User.UserBuilder> getUsersOfRole(String roleId);
+    List<User.UserBuilder> getUsersOfRole(String roleId) throws AuthorizationStoreException;
 
     /**
      * Get the groups of the role.
      * @param roleId Id of the role.
      * @return List of @see Group.GroupBuilder.
+     * @throws AuthorizationStoreException Authorization Store Exception.
      */
-    List<Group.GroupBuilder> getGroupsOfRole(String roleId);
+    List<Group.GroupBuilder> getGroupsOfRole(String roleId) throws AuthorizationStoreException;
 
     /**
      * Delete the specified role.
      * @param roleId Id of the role.
+     * @throws AuthorizationStoreException Authorization Store Exception.
      */
-    void deleteRole(String roleId);
+    void deleteRole(String roleId) throws AuthorizationStoreException;
 
     /**
      * Delete the specified permission.
      * @param permissionId Id of the permission.
+     * @throws AuthorizationStoreException Authorization Store Exception.
      */
-    void deletePermission(String permissionId);
+    void deletePermission(String permissionId) throws AuthorizationStoreException;
 
     /**
      * Update the roles of the user by replacing existing roles. (PUT)
      * @param userId Id of the user.
      * @param identityStoreId Identity store id of the user.
      * @param newRoleList Role list to replace the existing.
+     * @throws AuthorizationStoreException Authorization Store Exception.
      */
-    void updateRolesInUser(String userId, String identityStoreId, List<Role> newRoleList);
+    void updateRolesInUser(String userId, String identityStoreId, List<Role> newRoleList)
+            throws AuthorizationStoreException;
 }
