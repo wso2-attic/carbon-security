@@ -16,10 +16,15 @@
 
 package org.wso2.carbon.security.user.core.bean;
 
+import org.wso2.carbon.security.user.core.exception.StoreException;
+
 /**
  * Permission bean.
  */
 public class Permission {
+
+    private String authorizationStoreId;
+    private String permissionId;
 
     private String resourceId;
     private String action;
@@ -27,6 +32,29 @@ public class Permission {
     public Permission(String resourceId, String action) {
         this.resourceId = resourceId;
         this.action = action;
+    }
+
+    private Permission(String resourceId, String action, String permissionId, String authorizationStoreId) {
+        this.resourceId = resourceId;
+        this.action = action;
+        this.permissionId = permissionId;
+        this.authorizationStoreId = authorizationStoreId;
+    }
+
+    /**
+     * Get the unique id of this permission.
+     * @return Permission id.
+     */
+    public String getPermissionId() {
+        return permissionId;
+    }
+
+    /**
+     * Get the authorization store id.
+     * @return Authorization store id.
+     */
+    public String getAuthorizationStoreId() {
+        return authorizationStoreId;
     }
 
     /**
@@ -62,5 +90,32 @@ public class Permission {
     @Override
     public int hashCode() {
         return getPermissionString().hashCode();
+    }
+
+    /**
+     * Builder for the permission bean.
+     */
+    public static class PermissionBuilder {
+
+        private String resourceId;
+        private String action;
+        private String permissionId;
+        private String authorizationStoreId;
+
+        public PermissionBuilder(String resourceId, String action, String permissionId, String authorizationStoreId) {
+            this.resourceId = resourceId;
+            this.action = action;
+            this.permissionId = permissionId;
+            this.authorizationStoreId = authorizationStoreId;
+        }
+
+        public Permission build() {
+
+            if (resourceId == null || action == null || permissionId == null || authorizationStoreId == null) {
+                throw new StoreException("Required data missing for building permission.");
+            }
+
+            return new Permission(resourceId, action, permissionId, authorizationStoreId);
+        }
     }
 }

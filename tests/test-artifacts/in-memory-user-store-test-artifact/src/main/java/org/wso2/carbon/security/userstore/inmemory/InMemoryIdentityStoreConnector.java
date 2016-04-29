@@ -52,7 +52,8 @@ public class InMemoryIdentityStoreConnector implements IdentityStoreConnector {
     @Override
     public User.UserBuilder getUser(String username) throws IdentityStoreException {
         if (InMemoryStoreUtil.getPassword(username) != null) {
-            return new User.UserBuilder(username, UUID.randomUUID().toString(), "PRIMARY", "carbon.super");
+            return new User.UserBuilder().setUserName(username).setUserId(UUID.randomUUID().toString())
+                    .setIdentityStoreId("PRIMARY").setCredentialStoreId("PRIMARY").setTenantDomain("carbon.super");
         }
         return null;
     }

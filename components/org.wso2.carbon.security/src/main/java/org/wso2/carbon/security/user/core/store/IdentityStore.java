@@ -22,7 +22,6 @@ import org.wso2.carbon.security.internal.CarbonSecurityDataHolder;
 import org.wso2.carbon.security.user.core.bean.Group;
 import org.wso2.carbon.security.user.core.bean.User;
 import org.wso2.carbon.security.user.core.config.IdentityStoreConfig;
-import org.wso2.carbon.security.user.core.constant.UserStoreConstants;
 import org.wso2.carbon.security.user.core.exception.IdentityStoreException;
 import org.wso2.carbon.security.user.core.exception.StoreException;
 import org.wso2.carbon.security.user.core.service.RealmService;
@@ -47,7 +46,9 @@ public class IdentityStore {
     private Map<String, IdentityStoreConnector> identityStoreConnectors = new HashMap<>();
 
     /**
-     * Initialize this instance.
+     * Initialize the identity store instance.
+     * @param realmService Parent realm service instance.
+     * @param identityStoreConfigs Store configs related to the identity store.
      * @throws IdentityStoreException
      */
     public void init(RealmService realmService, Map<String, IdentityStoreConfig> identityStoreConfigs) 
@@ -61,8 +62,7 @@ public class IdentityStore {
 
         for (Map.Entry<String, IdentityStoreConfig> identityStoreConfig : identityStoreConfigs.entrySet()) {
 
-            String connectorType = (String) identityStoreConfig.getValue().getStoreProperties()
-                    .get(UserStoreConstants.CONNECTOR_TYPE);
+            String connectorType = identityStoreConfig.getValue().getConnectorType();
             IdentityStoreConnectorFactory identityStoreConnectorFactory = CarbonSecurityDataHolder.getInstance()
                     .getIdentityStoreConnectorFactoryMap().get(connectorType);
 
@@ -103,27 +103,25 @@ public class IdentityStore {
         throw new IdentityStoreException("No user found for the given name.");
     }
 
-
     /**
      * Get the user from user Id.
      * @param userId Id of the user.
      * @return User.
      * @throws IdentityStoreException
      */
-    public User getUserfromId(String userId) throws IdentityStoreException {
+    public User getUserFromId(String userId, String identityStoreId) throws IdentityStoreException {
 
-        for (IdentityStoreConnector identityStoreConnector : identityStoreConnectors.values()) {
-            User.UserBuilder userBuilder = identityStoreConnector.getUserFromId(userId);
+        IdentityStoreConnector identityStoreConnector = identityStoreConnectors.get(identityStoreId);
+        User.UserBuilder userBuilder = identityStoreConnector.getUserFromId(userId);
 
-            if (userBuilder != null) {
-                return userBuilder
-                        .setIdentityStore(realmService.getIdentityStore())
-                        .setAuthorizationStore(realmService.getAuthorizationStore())
-                        .build();
-            }
+        if (userBuilder == null) {
+            throw new IdentityStoreException("No user found for the given user id in the given identity store.");
         }
 
-        throw new IdentityStoreException("No user found for the given user id.");
+        return userBuilder
+                .setIdentityStore(realmService.getIdentityStore())
+                .setAuthorizationStore(realmService.getAuthorizationStore())
+                .build();
     }
 
     /**
@@ -205,20 +203,19 @@ public class IdentityStore {
      * @param groupId Group id.
      * @return Group.
      */
-    public Group getGroupFromId(String groupId) throws IdentityStoreException {
+    public Group getGroupFromId(String groupId, String identityStoreId) throws IdentityStoreException {
 
-        for (IdentityStoreConnector identityStoreConnector : identityStoreConnectors.values()) {
-            Group.GroupBuilder groupBuilder = identityStoreConnector.getGroupById(groupId);
+        IdentityStoreConnector identityStoreConnector = identityStoreConnectors.get(identityStoreId);
+        Group.GroupBuilder groupBuilder = identityStoreConnector.getGroupById(groupId);
 
-            if (groupBuilder != null) {
-                return groupBuilder
-                        .setIdentityStore(realmService.getIdentityStore())
-                        .setAuthorizationStore(realmService.getAuthorizationStore())
-                        .build();
-            }
+        if (groupBuilder == null) {
+            throw new IdentityStoreException("No group found for the given group id in the given identity store.");
         }
 
-        throw new IdentityStoreException("No group found for the given group id.");
+        return groupBuilder
+                .setIdentityStore(realmService.getIdentityStore())
+                .setAuthorizationStore(realmService.getAuthorizationStore())
+                .build();
     }
 
     /**

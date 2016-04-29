@@ -16,8 +16,10 @@
 
 package org.wso2.carbon.security.user.core.store.connector;
 
+import org.wso2.carbon.security.user.core.bean.Group;
 import org.wso2.carbon.security.user.core.bean.Permission;
 import org.wso2.carbon.security.user.core.bean.Role;
+import org.wso2.carbon.security.user.core.bean.User;
 import org.wso2.carbon.security.user.core.config.AuthorizationStoreConfig;
 import org.wso2.carbon.security.user.core.exception.AuthorizationStoreException;
 
@@ -77,21 +79,22 @@ public interface AuthorizationStoreConnector {
      * @param userId User id of the user.
      * @return Roles associated to the user.
      */
-    List<Role.RoleBuilder> getRolesForUser(String userId) throws AuthorizationStoreException;
+    List<Role.RoleBuilder> getRolesForUser(String userId, String identityStoreId) throws AuthorizationStoreException;
 
     /**
      * Get roles associated to the group.
      * @param groupName Name of the group.
      * @return Roles associated to the group.
      */
-    List<Role.RoleBuilder> getRolesForGroup(String groupName) throws AuthorizationStoreException;
+    List<Role.RoleBuilder> getRolesForGroup(String groupName, String identityStoreId)
+            throws AuthorizationStoreException;
 
     /**
      * Get permissions associated to the role.
      * @param roleName Role name of the required role.
      * @return List of permissions associated to the user.
      */
-    List<Permission> getPermissionsForRole(String roleName) throws AuthorizationStoreException;
+    List<Permission.PermissionBuilder> getPermissionsForRole(String roleName) throws AuthorizationStoreException;
 
     /**
      * Add new permission.
@@ -100,7 +103,7 @@ public interface AuthorizationStoreConnector {
      * @return New permission.
      * @throws AuthorizationStoreException
      */
-    Permission addNewPermission(String resourceId, String action) throws AuthorizationStoreException;
+    Permission.PermissionBuilder addPermission(String resourceId, String action) throws AuthorizationStoreException;
 
     /**
      * Add new role.
@@ -109,7 +112,7 @@ public interface AuthorizationStoreConnector {
      * @return New Role.
      * @throws AuthorizationStoreException
      */
-    Role.RoleBuilder addNewRole(String roleName, List<Permission> permissions) throws AuthorizationStoreException;
+    Role.RoleBuilder addRole(String roleName, List<Permission> permissions) throws AuthorizationStoreException;
 
     /**
      * Add a user against a role.
@@ -131,4 +134,18 @@ public interface AuthorizationStoreConnector {
      * @return @see AuthorizationStoreConfig.
      */
     AuthorizationStoreConfig getAuthorizationStoreConfig();
+
+    boolean isUserInRole(String userId, String identityStoreId, String roleName);
+
+    boolean isGroupInRole(String groupId, String identityStoreId, String roleName);
+
+    List<User.UserBuilder> getUsersOfRole(String roleId);
+
+    List<Group.GroupBuilder> getGroupsOfRole(String roleId);
+
+    void deleteRole(String roleId);
+
+    void deletePermission(String permissionId);
+
+    void updateRolesInUser(String userId, String identityStoreId, List<Role> newRoleList);
 }

@@ -16,8 +16,10 @@
 
 package org.wso2.carbon.security.userstore.inmemory;
 
+import org.wso2.carbon.security.user.core.bean.Group;
 import org.wso2.carbon.security.user.core.bean.Permission;
 import org.wso2.carbon.security.user.core.bean.Role;
+import org.wso2.carbon.security.user.core.bean.User;
 import org.wso2.carbon.security.user.core.config.AuthorizationStoreConfig;
 import org.wso2.carbon.security.user.core.exception.AuthorizationStoreException;
 import org.wso2.carbon.security.user.core.store.connector.AuthorizationStoreConnector;
@@ -33,7 +35,6 @@ public class InMemoryAuthorizationConnector implements AuthorizationStoreConnect
     @Override
     public void init(String storeId, AuthorizationStoreConfig authorizationStoreConfig)
             throws AuthorizationStoreException {
-
     }
 
     @Override
@@ -62,27 +63,31 @@ public class InMemoryAuthorizationConnector implements AuthorizationStoreConnect
     }
 
     @Override
-    public List<Role.RoleBuilder> getRolesForUser(String userId) throws AuthorizationStoreException {
+    public List<Role.RoleBuilder> getRolesForUser(String userId, String identityStoreId)
+            throws AuthorizationStoreException {
         return null;
     }
 
     @Override
-    public List<Role.RoleBuilder> getRolesForGroup(String groupName) throws AuthorizationStoreException {
+    public List<Role.RoleBuilder> getRolesForGroup(String groupName, String identityStoreId)
+            throws AuthorizationStoreException {
         return null;
     }
 
     @Override
-    public List<Permission> getPermissionsForRole(String roleName) throws AuthorizationStoreException {
+    public List<Permission.PermissionBuilder> getPermissionsForRole(String roleName)
+            throws AuthorizationStoreException {
         return null;
     }
 
     @Override
-    public Permission addNewPermission(String resourceId, String action) throws AuthorizationStoreException {
+    public Permission.PermissionBuilder addPermission(String resourceId, String action)
+            throws AuthorizationStoreException {
         return null;
     }
 
     @Override
-    public Role.RoleBuilder addNewRole(String roleName, List<Permission> permissions)
+    public Role.RoleBuilder addRole(String roleName, List<Permission> permissions)
             throws AuthorizationStoreException {
         return null;
     }
@@ -94,11 +99,42 @@ public class InMemoryAuthorizationConnector implements AuthorizationStoreConnect
 
     @Override
     public void addRolePermission(String roleName, String permissionName) throws AuthorizationStoreException {
-
     }
 
     @Override
     public AuthorizationStoreConfig getAuthorizationStoreConfig() {
         return null;
+    }
+
+    @Override
+    public boolean isUserInRole(String userId, String identityStoreId, String roleName) {
+        return false;
+    }
+
+    @Override
+    public boolean isGroupInRole(String groupId, String identityStoreId, String roleName) {
+        return false;
+    }
+
+    @Override
+    public List<User.UserBuilder> getUsersOfRole(String roleId) {
+        return null;
+    }
+
+    @Override
+    public List<Group.GroupBuilder> getGroupsOfRole(String roleId) {
+        return null;
+    }
+
+    @Override
+    public void deleteRole(String roleId) {
+    }
+
+    @Override
+    public void deletePermission(String permissionId) {
+    }
+
+    @Override
+    public void updateRolesInUser(String userId, String identityStore, List<Role> newRoleList) {
     }
 }

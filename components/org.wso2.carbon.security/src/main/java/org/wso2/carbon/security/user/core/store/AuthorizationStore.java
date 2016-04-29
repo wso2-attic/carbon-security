@@ -24,7 +24,6 @@ import org.wso2.carbon.security.user.core.bean.Permission;
 import org.wso2.carbon.security.user.core.bean.Role;
 import org.wso2.carbon.security.user.core.bean.User;
 import org.wso2.carbon.security.user.core.config.AuthorizationStoreConfig;
-import org.wso2.carbon.security.user.core.constant.UserStoreConstants;
 import org.wso2.carbon.security.user.core.exception.AuthorizationStoreException;
 import org.wso2.carbon.security.user.core.exception.IdentityStoreException;
 import org.wso2.carbon.security.user.core.exception.StoreException;
@@ -50,6 +49,12 @@ public class AuthorizationStore {
     private RealmService realmService;
     private Map<String, AuthorizationStoreConnector> authorizationStoreConnectors = new HashMap<>();
 
+    /**
+     * Initialize the authorization store.
+     * @param realmService Parent realm service.
+     * @param authorizationStoreConfigs Store configs related to the authorization store.
+     * @throws AuthorizationStoreException
+     */
     public void init(RealmService realmService, Map<String, AuthorizationStoreConfig> authorizationStoreConfigs)
             throws AuthorizationStoreException {
 
@@ -62,8 +67,7 @@ public class AuthorizationStore {
         for (Map.Entry<String, AuthorizationStoreConfig> authorizationStoreConfig :
                 authorizationStoreConfigs.entrySet()) {
 
-            String connectorType = (String) authorizationStoreConfig.getValue().getStoreProperties()
-                    .get(UserStoreConstants.CONNECTOR_TYPE);
+            String connectorType = authorizationStoreConfig.getValue().getConnectorType();
             AuthorizationStoreConnectorFactory authorizationStoreConnectorFactory = CarbonSecurityDataHolder
                     .getInstance().getAuthorizationStoreConnectorFactoryMap().get(connectorType);
 
@@ -86,16 +90,16 @@ public class AuthorizationStore {
      * Checks whether the given user do have the permission.
      * @param userId User id of the user.
      * @param permission Permission that needs to check on.
-     * @param userStoreId Id of the user store which this user belongs.
+     * @param identityStoreId Id of the user store which this user belongs.
      * @return True if the user has required permission.
      */
-    public boolean isUserAuthorized(String userId, Permission permission, String userStoreId)
+    public boolean isUserAuthorized(String userId, Permission permission, String identityStoreId)
             throws AuthorizationStoreException, IdentityStoreException {
 
         // Get the roles directly associated to the user.
         List<Role> roles = new ArrayList<>();
         for (AuthorizationStoreConnector authorizationStoreConnector : authorizationStoreConnectors.values()) {
-            roles.addAll(authorizationStoreConnector.getRolesForUser(userId)
+            roles.addAll(authorizationStoreConnector.getRolesForUser(userId, identityStoreId)
                     .stream()
                     .map(roleBuilder -> roleBuilder
                             .setAuthorizationStore(realmService.getAuthorizationStore())
@@ -104,9 +108,9 @@ public class AuthorizationStore {
         }
 
         // Get the roles associated through groups.
-        List<Group> groups = realmService.getIdentityStore().getGroupsOfUser(userId, userStoreId);
+        List<Group> groups = realmService.getIdentityStore().getGroupsOfUser(userId, identityStoreId);
         for (Group group : groups) {
-            roles.addAll(getRolesOfGroup(group.getGroupId()));
+            roles.addAll(getRolesOfGroup(group.getGroupId(), identityStoreId));
         }
 
         if (roles.isEmpty()) {
@@ -125,12 +129,14 @@ public class AuthorizationStore {
     /**
      * Checks whether the group is authorized.
      * @param groupId Group id.
+     * @param identityStoreId Identity store id of the group.
      * @param permission Permission.
      * @return True if authorized.
      */
-    public boolean isGroupAuthorized(String groupId, Permission permission) throws AuthorizationStoreException {
+    public boolean isGroupAuthorized(String groupId, String identityStoreId, Permission permission)
+            throws AuthorizationStoreException {
 
-        List<Role> roles = getRolesOfGroup(groupId);
+        List<Role> roles = getRolesOfGroup(groupId, identityStoreId);
 
         for (Role role : roles) {
             if (isRoleAuthorized(role.getRoleId(), role.getAuthorizationStoreId(), permission)) {
@@ -144,6 +150,7 @@ public class AuthorizationStore {
     /**
      * Checks whether role is authorized.
      * @param roleId Id of the Role.
+     * @param authorizationStoreId Authorization store id of the role.
      * @param permission Permission.
      * @return True if authorized.
      */
@@ -153,14 +160,15 @@ public class AuthorizationStore {
         AuthorizationStoreConnector authorizationStoreConnector = authorizationStoreConnectors
                 .get(authorizationStoreId);
 
-        List<Permission> permissions = authorizationStoreConnector.getPermissionsForRole(roleId);
+        List<Permission.PermissionBuilder> permissionBuilders = authorizationStoreConnector
+                .getPermissionsForRole(roleId);
 
-        if (permissions.isEmpty()) {
+        if (permissionBuilders.isEmpty()) {
             throw new StoreException("No permissions assigned for this role");
         }
 
-        for (Permission rolePermission : permissions) {
-            if (rolePermission.getPermissionString().equals(permission.getPermissionString())) {
+        for (Permission.PermissionBuilder permissionBuilder : permissionBuilders) {
+            if (permissionBuilder.build().getPermissionString().equals(permission.getPermissionString())) {
                 return true;
             }
         }
@@ -171,61 +179,124 @@ public class AuthorizationStore {
     /**
      * Checks whether the user is in the role.
      * @param userId User id.
+     * @param identityStoreId Identity store id of the user.
      * @param roleName Role name
      * @return True if user is in the role.
      */
-    public boolean isUserInRole(String userId, String roleName) {
-        throw new NotImplementedException();
+    public boolean isUserInRole(String userId, String identityStoreId, String roleName)
+            throws AuthorizationStoreException {
+
+        for (AuthorizationStoreConnector authorizationStoreConnector : authorizationStoreConnectors.values()) {
+            if (authorizationStoreConnector.isUserInRole(userId, identityStoreId, roleName)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**
      * Checks whether the group has the specific role.
      * @param groupId Group id.
+     * @param identityStoreId Identity store id of the group.
      * @param roleName Role name.
      * @return True if group has the role.
      */
-    public boolean isGroupInRole(String groupId, String roleName) {
-        throw new NotImplementedException();
+    public boolean isGroupInRole(String groupId, String identityStoreId, String roleName)
+            throws AuthorizationStoreException {
+
+        for (AuthorizationStoreConnector authorizationStoreConnector : authorizationStoreConnectors.values()) {
+            if (authorizationStoreConnector.isGroupInRole(groupId, identityStoreId, roleName)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**
      * Get roles assigned to the specific user.
      * @param userId User id.
+     * @param identityStoreId Identity store id of the user.
      * @return List of Roles.
      */
-    public List<Role> getRolesOfUser(String userId) {
-        throw new NotImplementedException();
+    public List<Role> getRolesOfUser(String userId, String identityStoreId) throws AuthorizationStoreException {
+
+        List<Role> roles = new ArrayList<>();
+        for (AuthorizationStoreConnector authorizationStoreConnector : authorizationStoreConnectors.values()) {
+            roles.addAll(authorizationStoreConnector.getRolesForUser(userId, identityStoreId)
+                    .stream()
+                    .map(roleBuilder -> roleBuilder.setAuthorizationStore(realmService.getAuthorizationStore()).build())
+                    .collect(Collectors.toList()));
+        }
+
+        return roles;
     }
 
     /**
      * Get users assigned to the specific role.
      * @param roleId Role id.
+     * @param authorizationStore Authorization store id of the role.
      * @return List of users.
      */
-    public List<User> getUsersOfRole(String roleId) {
-        throw new NotImplementedException();
+    public List<User> getUsersOfRole(String roleId, String authorizationStore) throws AuthorizationStoreException,
+            IdentityStoreException {
+
+        AuthorizationStoreConnector authorizationStoreConnector = authorizationStoreConnectors.get(authorizationStore);
+
+        if (authorizationStoreConnector == null) {
+            throw new StoreException("No authorization store connector found for the given name.");
+        }
+
+        List<User> users = new ArrayList<>();
+
+        // TODO: Can replace with JAVA 8 map when the carbon kernel support rethrow exceptions.
+        for (User.UserBuilder userBuilder : authorizationStoreConnector.getUsersOfRole(roleId)) {
+            users.add(realmService.getIdentityStore().getUserFromId(userBuilder.getUserId(),
+                    userBuilder.getIdentityStoreId()));
+        }
+
+        return users;
     }
 
     /**
      * Get the assigned groups of the specific role.
      * @param roleId Role id.
+     * @param authorizationStore Authorization store id of the role.
      * @return List of Groups.
      */
-    public List<Group> getGroupsOfRole(String roleId) {
-        throw new NotImplementedException();
+    public List<Group> getGroupsOfRole(String roleId, String authorizationStore) throws AuthorizationStoreException,
+            IdentityStoreException {
+
+        AuthorizationStoreConnector authorizationStoreConnector = authorizationStoreConnectors.get(authorizationStore);
+
+        if (authorizationStoreConnector == null) {
+            throw new StoreException("No authorization store connector found for the given name.");
+        }
+
+        List<Group> groups = new ArrayList<>();
+
+        // TODO: Can replace with JAVA 8 map when the carbon kernel support rethrow exceptions.
+        for (Group.GroupBuilder groupBuilder : authorizationStoreConnector.getGroupsOfRole(roleId)) {
+            groups.add(realmService.getIdentityStore().getGroupFromId(groupBuilder.getGroupId(),
+                    groupBuilder.getIdentityStoreId()));
+        }
+
+        return groups;
     }
 
     /**
      * Get roles for specific group.
      * @param groupId Group id.
+     * @param identityStoreId Identity store id of the group.
      * @return List of Roles.
      */
-    public List<Role> getRolesOfGroup(String groupId) throws AuthorizationStoreException {
+    public List<Role> getRolesOfGroup(String groupId, String identityStoreId) throws AuthorizationStoreException {
 
         List<Role> roles = new ArrayList<>();
 
         for (AuthorizationStoreConnector authorizationStoreConnector : authorizationStoreConnectors.values()) {
-            roles.addAll(authorizationStoreConnector.getRolesForGroup(groupId)
+            roles.addAll(authorizationStoreConnector.getRolesForGroup(groupId, identityStoreId)
                     .stream()
                     .map(roleBuilder -> roleBuilder
                             .setAuthorizationStore(realmService.getAuthorizationStore())
@@ -239,10 +310,18 @@ public class AuthorizationStore {
     /**
      * Get permissions assigned to the specific role.
      * @param roleId Role id.
+     * @param authorizationStore Authorization store id of the role.
      * @return List of Permissions.
      */
-    public List<Permission> getPermissionsOfRole(String roleId) {
-        throw new NotImplementedException();
+    public List<Permission> getPermissionsOfRole(String roleId, String authorizationStore)
+            throws AuthorizationStoreException {
+
+        AuthorizationStoreConnector authorizationStoreConnector = authorizationStoreConnectors.get(authorizationStore);
+
+        return authorizationStoreConnector.getPermissionsForRole(roleId)
+                .stream()
+                .map(Permission.PermissionBuilder::build)
+                .collect(Collectors.toList());
     }
 
     /**
@@ -260,10 +339,10 @@ public class AuthorizationStore {
                 .get(authorizationStoreId);
 
         if (authorizationStoreConnector == null) {
-            throw new AuthorizationStoreException("Invalid authorization store id.");
+            throw new StoreException("No authorization store found for given id.");
         }
 
-        Role.RoleBuilder roleBuilder = authorizationStoreConnector.addNewRole(roleName, permissions);
+        Role.RoleBuilder roleBuilder = authorizationStoreConnector.addRole(roleName, permissions);
 
         if (roleBuilder == null) {
             throw new AuthorizationStoreException("Role builder is null.");
@@ -276,8 +355,10 @@ public class AuthorizationStore {
      * Delete an existing role.
      * @param role Role to be deleted.
      */
-    public void deleteRole(Role role) {
-        throw new NotImplementedException();
+    public void deleteRole(Role role) throws AuthorizationStoreException {
+
+        AuthorizationStoreConnector authorizationStoreConnector = authorizationStoreConnectors.get(role.getRoleId());
+        authorizationStoreConnector.deleteRole(role.getRoleId());
     }
 
     /**
@@ -295,10 +376,10 @@ public class AuthorizationStore {
                 .get(authorizationStoreId);
 
         if (authorizationStoreConnector == null) {
-            throw new AuthorizationStoreException("Invalid authorization store id.");
+            throw new StoreException("Invalid authorization store id.");
         }
 
-        return authorizationStoreConnector.addNewPermission(resourceId, action);
+        return authorizationStoreConnector.addPermission(resourceId, action).build();
     }
 
     /**
@@ -306,100 +387,138 @@ public class AuthorizationStore {
      * @param permission Permission to be delete.
      */
     public void deletePermission(Permission permission) {
+
+        AuthorizationStoreConnector authorizationStoreConnector = authorizationStoreConnectors
+                .get(permission.getAuthorizationStoreId());
+
+        if (authorizationStoreConnector == null) {
+            throw new StoreException("Invalid authorization store id.");
+        }
+
+        authorizationStoreConnector.deletePermission(permission.getPermissionId());
     }
 
     /**
      * Add a new Role list by <b>replacing</b> the existing Role list. (PUT)
      * @param userId Id of the user.
+     * @param identityStoreId Identity store id of the user.
      * @param newRoleList List of Roles needs to be assigned to this User.
      */
-    public void updateRolesInUser(String userId, List<Role> newRoleList) {
-        throw new NotImplementedException();
+    public void updateRolesInUser(String userId, String identityStoreId, List<Role> newRoleList)
+            throws AuthorizationStoreException, IdentityStoreException {
+
+        for (Role role : newRoleList) {
+
+            AuthorizationStoreConnector authorizationStoreConnector = authorizationStoreConnectors
+                    .get(role.getAuthorizationStoreId());
+
+            if (authorizationStoreConnector == null) {
+                throw new StoreException(String.format("No authorization store found for the given id %s.",
+                        role.getAuthorizationStoreId()));
+            }
+
+            authorizationStoreConnector.updateRolesInUser(userId, identityStoreId, newRoleList);
+        }
     }
 
     /**
      * Assign a new list of Roles to existing list and/or un-assign Roles from existing list. (PATCH)
      * @param userId Id of the user.
+     * @param identityStoreId Identity store id of the user.
      * @param rolesToBeAssign List to be added to the new list.
      * @param rolesToBeUnassign List to be removed from the existing list.
      */
-    public void updateRolesInUser(String userId, List<Role> rolesToBeAssign, List<Role> rolesToBeUnassign) {
+    public void updateRolesInUser(String userId, String identityStoreId, List<Role> rolesToBeAssign,
+                                  List<Role> rolesToBeUnassign) {
         throw new NotImplementedException();
     }
 
     /**
      * Add a new User list by <b>replacing</b> the existing User list. (PUT)
      * @param roleId Id of the role.
-     * @param usersToBeAssign New User list that needs to replace the existing list.
+     * @param authorizationStoreId Authorization store id of the role.
+     * @param newUserList New User list that needs to replace the existing list.
      */
-    public void updateUsersInRole(String roleId, List<User> usersToBeAssign) {
+    public void updateUsersInRole(String roleId, String authorizationStoreId, List<User> newUserList) {
         throw new NotImplementedException();
     }
 
     /**
      * Assign a new list of User to existing list and/or un-assign Permission from existing User. (PATCH)
      * @param roleId Id of the role.
+     * @param authorizationStoreId Authorization store id of the role.
      * @param usersToBeAssign List to be added to the new list.
      * @param usersToBeUnassign List to be removed from the existing list.
      */
-    public void updateUsersInRole(String roleId, List<User> usersToBeAssign, List<User> usersToBeUnassign) {
+    public void updateUsersInRole(String roleId, String authorizationStoreId, List<User> usersToBeAssign,
+                                  List<User> usersToBeUnassign) {
         throw new NotImplementedException();
     }
 
     /**
      * Add a new Role list by <b>replacing</b> the existing Role list. (PUT)
      * @param groupId Id of the group.
-     * @param rolesToBeAssign List of Roles needs to be assigned to this Group.
+     * @param identityStoreId Identity store id of the group.
+     * @param newRoleList New Roles list that needs to be replace existing list.
      */
-    public void updateRolesInGroup(String groupId, List<Role> rolesToBeAssign) {
+    public void updateRolesInGroup(String groupId, String identityStoreId, List<Role> newRoleList) {
         throw new NotImplementedException();
     }
 
     /**
      * Assign a new list of Roles to existing list and/or un-assign Roles from existing list. (PATCH)
      * @param groupId Id of the group.
+     * @param identityStoreId Identity store id of the group.
      * @param rolesToBeAssign List to be added to the new list.
-     * @param rolesToBeUnassign List to be removed from the existing list.
+     * @param rolesToBeUnassigned List to be removed from the existing list.
      */
-    public void updateRolesInGroup(String groupId, List<Role> rolesToBeAssign, List<Role> rolesToBeUnassign) {
+    public void updateRolesInGroup(String groupId, String identityStoreId, List<Role> rolesToBeAssign,
+                                   List<Role> rolesToBeUnassigned) {
         throw new NotImplementedException();
     }
 
     /**
      * Add a new Group list by <b>replacing</b> the existing Group list. (PUT)
      * @param roleId Name of role.
-     * @param groupToBeAssign New Group list that needs to replace the existing list.
+     * @param authorizationStoreId Authorization store id of the role.
+     * @param newGroupList New Group list that needs to replace the existing list.
      */
-    public void updateGroupsInRole(String roleId, List<Group> groupToBeAssign) {
+    public void updateGroupsInRole(String roleId, String authorizationStoreId, List<Group> newGroupList) {
         throw new NotImplementedException();
     }
 
     /**
      * Assign a new list of Group to existing list and/or un-assign Group from existing Group. (PATCH)
      * @param roleId Name of the role.
+     * @param authorizationStoreId Authorization store id of the role.
      * @param groupToBeAssign List to be added to the new list.
      * @param groupToBeUnassign List to be removed from the existing list.
      */
-    public void updateGroupsInRole(String roleId, List<Group> groupToBeAssign, List<Group> groupToBeUnassign) {
+    public void updateGroupsInRole(String roleId, String authorizationStoreId, List<Group> groupToBeAssign,
+                                   List<Group> groupToBeUnassign) {
         throw new NotImplementedException();
     }
 
     /**
      * Add a new Permission list by <b>replacing</b> the existing Permission list. (PUT)
      * @param roleId Name of the role.
-     * @param permissionsToBeAssign New Permission list that needs to replace the existing list.
+     * @param authorizationStoreId Authorization store id of the role.
+     * @param newPermissionList New Permission list that needs to replace the existing list.
      */
-    public void updatePermissionsInRole(String roleId, List<Permission> permissionsToBeAssign) {
+    public void updatePermissionsInRole(String roleId, String authorizationStoreId,
+                                        List<Permission> newPermissionList) {
         throw new NotImplementedException();
     }
 
     /**
      * Assign a new list of Permissions to existing list and/or un-assign Permission from existing Permission. (PATCH)
      * @param roleId Name of the role.
+     * @param authorizationStoreId Authorization store id of the role.
      * @param permissionsToBeAssign List to be added to the new list.
      * @param permissionsToBeUnassign List to be removed from the existing list.
      */
-    public void updatePermissionsInRole(String roleId, List<Permission> permissionsToBeAssign,
+    public void updatePermissionsInRole(String roleId, String authorizationStoreId,
+                                        List<Permission> permissionsToBeAssign,
                                         List<Permission> permissionsToBeUnassign) {
         throw new NotImplementedException();
     }

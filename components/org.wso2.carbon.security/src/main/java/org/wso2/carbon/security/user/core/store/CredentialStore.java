@@ -21,7 +21,6 @@ import org.slf4j.LoggerFactory;
 import org.wso2.carbon.security.internal.CarbonSecurityDataHolder;
 import org.wso2.carbon.security.user.core.bean.User;
 import org.wso2.carbon.security.user.core.config.CredentialStoreConfig;
-import org.wso2.carbon.security.user.core.constant.UserStoreConstants;
 import org.wso2.carbon.security.user.core.context.AuthenticationContext;
 import org.wso2.carbon.security.user.core.exception.AuthenticationFailure;
 import org.wso2.carbon.security.user.core.exception.CredentialStoreException;
@@ -45,6 +44,12 @@ public class CredentialStore {
     private RealmService realmService;
     private Map<String, CredentialStoreConnector> credentialStoreConnectors = new HashMap<>();
 
+    /**
+     * Initialize credential store.
+     * @param realmService Parent RealmService instance.
+     * @param credentialStoreConfigs Store configs related to the credential store.
+     * @throws CredentialStoreException
+     */
     public void init(RealmService realmService, Map<String, CredentialStoreConfig> credentialStoreConfigs)
             throws CredentialStoreException {
 
@@ -56,8 +61,7 @@ public class CredentialStore {
 
         for (Map.Entry<String, CredentialStoreConfig> credentialStoreConfig : credentialStoreConfigs.entrySet()) {
 
-            String connectorType = (String) credentialStoreConfig.getValue().getStoreProperties()
-                    .get(UserStoreConstants.CONNECTOR_TYPE);
+            String connectorType = credentialStoreConfig.getValue().getConnectorType();
             CredentialStoreConnectorFactory credentialStoreConnectorFactory = CarbonSecurityDataHolder.getInstance()
                     .getCredentialStoreConnectorFactoryMap().get(connectorType);
 
