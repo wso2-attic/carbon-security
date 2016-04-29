@@ -118,6 +118,7 @@ public class Role {
     /**
      * Checks whether the Group is in this Role.
      * @param groupId Id of the Group to be checked.
+     * @param identityStoreId Identity store id of the group.
      * @return True if the Group exists.
      * @throws AuthorizationStoreException Authorization store exception.
      */
