@@ -60,7 +60,7 @@ public interface CredentialStoreConnector {
 
     /**
      * Get the Credential store config.
-     * @return @see CredentialStoreConfig.
+     * @return CredentialStoreConfig.
      */
     CredentialStoreConfig getCredentialStoreConfig();
 }
