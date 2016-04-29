@@ -356,6 +356,8 @@
         <ow2.jta.spec.version>1.0.12</ow2.jta.spec.version>
         <javax.inject.version>1</javax.inject.version>
         <jacoco.version>0.7.5.201505241946</jacoco.version>
+
+        <project.scm.id>my-scm-server</project.scm.id>
     </properties>
 
 </project>
