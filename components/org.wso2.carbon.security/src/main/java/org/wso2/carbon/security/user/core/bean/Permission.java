@@ -16,6 +16,8 @@
 
 package org.wso2.carbon.security.user.core.bean;
 
+import org.wso2.carbon.security.user.core.exception.StoreException;
+
 /**
  * Permission bean.
  */
@@ -100,25 +102,17 @@ public class Permission {
         private String permissionId;
         private String authorizationStoreId;
 
-        public PermissionBuilder(String resourceId, String action) {
+        public PermissionBuilder(String resourceId, String action, String permissionId, String authorizationStoreId) {
             this.resourceId = resourceId;
             this.action = action;
-        }
-
-        public PermissionBuilder setPermissionId(String permissionId) {
             this.permissionId = permissionId;
-            return this;
-        }
-
-        public PermissionBuilder setAuthorizationStore(String authorizationStoreId) {
             this.authorizationStoreId = authorizationStoreId;
-            return this;
         }
 
         public Permission build() {
 
-            if (permissionId == null || authorizationStoreId == null) {
-                return null;
+            if (resourceId == null || action == null || permissionId == null || authorizationStoreId == null) {
+                throw new StoreException("Required data missing for building permission.");
             }
 
             return new Permission(resourceId, action, permissionId, authorizationStoreId);

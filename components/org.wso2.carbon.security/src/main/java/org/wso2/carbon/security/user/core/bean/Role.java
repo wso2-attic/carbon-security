@@ -103,8 +103,8 @@ public class Role {
      * @param userId Id of the User to be checked.
      * @return True if User exists.
      */
-    public boolean hasUser(String userId) throws AuthorizationStoreException {
-        return authorizationStore.isUserInRole(userId, roleName);
+    public boolean hasUser(String userId, String identityStoreId) throws AuthorizationStoreException {
+        return authorizationStore.isUserInRole(userId, identityStoreId, roleName);
     }
 
     /**
@@ -112,8 +112,8 @@ public class Role {
      * @param groupId Id of the Group to be checked.
      * @return True if the Group exists.
      */
-    public boolean hasGroup(String groupId) throws AuthorizationStoreException {
-        return authorizationStore.isGroupInRole(groupId, roleName);
+    public boolean hasGroup(String groupId, String identityStoreId) throws AuthorizationStoreException {
+        return authorizationStore.isGroupInRole(groupId, identityStoreId, roleName);
     }
 
     /**
@@ -121,7 +121,7 @@ public class Role {
      * @param newPermissionList New Permission list that needs to replace the existing list.
      */
     public void updatePermissions(List<Permission> newPermissionList) {
-        authorizationStore.updatePermissionsInRole(roleName, newPermissionList);
+        authorizationStore.updatePermissionsInRole(roleId, authorizationStoreId, newPermissionList);
     }
 
     /**
@@ -130,7 +130,7 @@ public class Role {
      * @param unAssignList List to be removed from the existing list.
      */
     public void updatePermissions(List<Permission> assignList, List<Permission> unAssignList) {
-        authorizationStore.updatePermissionsInRole(roleName, assignList, unAssignList);
+        authorizationStore.updatePermissionsInRole(roleId, authorizationStoreId, assignList, unAssignList);
     }
 
     /**
@@ -138,7 +138,7 @@ public class Role {
      * @param newUserList New User list that needs to replace the existing list.
      */
     public void updateUsers(List<User> newUserList) {
-        authorizationStore.updateUsersInRole(roleName, newUserList);
+        authorizationStore.updateUsersInRole(roleId, authorizationStoreId, newUserList);
     }
 
     /**
@@ -147,7 +147,7 @@ public class Role {
      * @param unAssignList List to be removed from the existing list.
      */
     public void updateUsers(List<User> assignList, List<User> unAssignList) {
-        authorizationStore.updateUsersInRole(roleName, assignList, unAssignList);
+        authorizationStore.updateUsersInRole(roleName, authorizationStoreId, assignList, unAssignList);
     }
 
     /**
@@ -155,7 +155,7 @@ public class Role {
      * @param newGroupList New Group list that needs to replace the existing list.
      */
     public void updateGroups(List<Group> newGroupList) {
-        authorizationStore.updateGroupsInRole(roleName, newGroupList);
+        authorizationStore.updateGroupsInRole(roleName, authorizationStoreId, newGroupList);
     }
 
     /**
@@ -164,7 +164,7 @@ public class Role {
      * @param unAssignList List to be removed from the existing list.
      */
     public void updateGroups(List<Group> assignList, List<Group> unAssignList) {
-        authorizationStore.updateGroupsInRole(roleName, assignList, unAssignList);
+        authorizationStore.updateGroupsInRole(roleId, authorizationStoreId, assignList, unAssignList);
     }
 
     /**
@@ -201,7 +201,7 @@ public class Role {
         public Role build() {
 
             if (roleName == null || roleId == null || authorizationStoreId == null || authorizationStore == null) {
-                throw new StoreException("Required data is missing for building role.");
+                throw new StoreException("Required data missing for building role.");
             }
 
             return new Role(roleName, roleId, authorizationStoreId, authorizationStore);

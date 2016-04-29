@@ -35,7 +35,6 @@ public class InMemoryAuthorizationConnector implements AuthorizationStoreConnect
     @Override
     public void init(String storeId, AuthorizationStoreConfig authorizationStoreConfig)
             throws AuthorizationStoreException {
-
     }
 
     @Override
@@ -64,27 +63,31 @@ public class InMemoryAuthorizationConnector implements AuthorizationStoreConnect
     }
 
     @Override
-    public List<Role.RoleBuilder> getRolesForUser(String userId) throws AuthorizationStoreException {
+    public List<Role.RoleBuilder> getRolesForUser(String userId, String identityStoreId)
+            throws AuthorizationStoreException {
         return null;
     }
 
     @Override
-    public List<Role.RoleBuilder> getRolesForGroup(String groupName) throws AuthorizationStoreException {
+    public List<Role.RoleBuilder> getRolesForGroup(String groupName, String identityStoreId)
+            throws AuthorizationStoreException {
         return null;
     }
 
     @Override
-    public List<Permission> getPermissionsForRole(String roleName) throws AuthorizationStoreException {
+    public List<Permission.PermissionBuilder> getPermissionsForRole(String roleName)
+            throws AuthorizationStoreException {
         return null;
     }
 
     @Override
-    public Permission addPermission(String resourceId, String action) throws AuthorizationStoreException {
+    public Permission.PermissionBuilder addPermission(String resourceId, String action)
+            throws AuthorizationStoreException {
         return null;
     }
 
     @Override
-    public Role.RoleBuilder addNewRole(String roleName, List<Permission> permissions)
+    public Role.RoleBuilder addRole(String roleName, List<Permission> permissions)
             throws AuthorizationStoreException {
         return null;
     }
@@ -104,12 +107,12 @@ public class InMemoryAuthorizationConnector implements AuthorizationStoreConnect
     }
 
     @Override
-    public boolean isUserInRole(String userId, String roleName) {
+    public boolean isUserInRole(String userId, String identityStoreId, String roleName) {
         return false;
     }
 
     @Override
-    public boolean isGroupInRole(String groupId, String roleName) {
+    public boolean isGroupInRole(String groupId, String identityStoreId, String roleName) {
         return false;
     }
 
@@ -129,5 +132,9 @@ public class InMemoryAuthorizationConnector implements AuthorizationStoreConnect
 
     @Override
     public void deletePermission(String permissionId) {
+    }
+
+    @Override
+    public void updateRolesInUser(String userId, String identityStore, List<Role> newRoleList) {
     }
 }

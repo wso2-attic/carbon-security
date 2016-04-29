@@ -30,18 +30,18 @@ import java.util.List;
 public class Group {
 
     private String groupID;
-    private String userStoreID;
+    private String identityStoreID;
     private String groupName;
     private String tenantDomain;
     private IdentityStore identityStore;
     private AuthorizationStore authorizationStore;
 
-    private Group(String groupID, String userStoreID, String groupName, String tenantDomain,
+    private Group(String groupName, String groupID, String identityStoreID, String tenantDomain,
                   IdentityStore identityStore, AuthorizationStore authorizationStore) {
 
-        this.groupID = groupID;
-        this.userStoreID = userStoreID;
         this.groupName = groupName;
+        this.groupID = groupID;
+        this.identityStoreID = identityStoreID;
         this.tenantDomain = tenantDomain;
         this.identityStore = identityStore;
         this.authorizationStore = authorizationStore;
@@ -64,6 +64,14 @@ public class Group {
     }
 
     /**
+     * Get the identity store id.
+     * @return Identity store id.
+     */
+    public String getIdentityStoreId() {
+        return identityStoreID;
+    }
+
+    /**
      * Get the tenant domain name.
      * @return Name of the tenant domain.
      */
@@ -76,7 +84,7 @@ public class Group {
      * @return List of users assigned to this group.
      */
     public List<User> getUsers() throws IdentityStoreException {
-        return identityStore.getUsersOfGroup(groupID, userStoreID);
+        return identityStore.getUsersOfGroup(groupID, identityStoreID);
     }
 
     /**
@@ -84,7 +92,7 @@ public class Group {
      * @return List of Roles.
      */
     public List<Role> getRoles() throws AuthorizationStoreException {
-        return authorizationStore.getRolesOfGroup(groupID);
+        return authorizationStore.getRolesOfGroup(groupID, identityStoreID);
     }
 
     /**
@@ -93,7 +101,7 @@ public class Group {
      * @return True if authorized.
      */
     public boolean isAuthorized(Permission permission) throws AuthorizationStoreException {
-        return authorizationStore.isGroupAuthorized(groupID, permission);
+        return authorizationStore.isGroupAuthorized(groupID, identityStoreID, permission);
     }
 
     /**
@@ -102,7 +110,7 @@ public class Group {
      * @return True if User is in this Group.
      */
     public boolean hasUser(String userId) throws IdentityStoreException {
-        return identityStore.isUserInGroup(userId, groupID, userStoreID);
+        return identityStore.isUserInGroup(userId, groupID, identityStoreID);
     }
 
     /**
@@ -111,7 +119,7 @@ public class Group {
      * @return True if this Group has the Role.
      */
     public boolean hasRole(String roleName) throws AuthorizationStoreException {
-        return authorizationStore.isGroupInRole(groupID, roleName);
+        return authorizationStore.isGroupInRole(groupID, identityStoreID, roleName);
     }
 
     /**
@@ -136,7 +144,7 @@ public class Group {
      * @param newRoleList List of Roles needs to be assigned to this Group.
      */
     public void updateRoles(List<Role> newRoleList) {
-        authorizationStore.updateRolesInGroup(groupID, newRoleList);
+        authorizationStore.updateRolesInGroup(groupID, identityStoreID, newRoleList);
     }
 
     /**
@@ -145,7 +153,7 @@ public class Group {
      * @param unAssignList List to be removed from the existing list.
      */
     public void updateRoles(List<Role> assignList, List<Role> unAssignList) {
-        authorizationStore.updateRolesInGroup(groupID, assignList, unAssignList);
+        authorizationStore.updateRolesInGroup(groupID, identityStoreID, assignList, unAssignList);
     }
 
     /**
@@ -154,7 +162,7 @@ public class Group {
     public static class GroupBuilder {
 
         private String groupId;
-        private String userStoreId;
+        private String identityStoreId;
         private String groupName;
         private String tenantDomain;
 
@@ -165,8 +173,8 @@ public class Group {
             return groupId;
         }
 
-        public String getUserStoreId() {
-            return userStoreId;
+        public String getIdentityStoreId() {
+            return identityStoreId;
         }
 
         public String getGroupName() {
@@ -195,8 +203,8 @@ public class Group {
             return this;
         }
 
-        public GroupBuilder setUserStoreId(String userStoreId) {
-            this.userStoreId = userStoreId;
+        public GroupBuilder setIdentityStoreId(String identityStoreId) {
+            this.identityStoreId = identityStoreId;
             return this;
         }
 
@@ -217,12 +225,12 @@ public class Group {
 
         public Group build() {
 
-            if (groupName == null || groupId == null || userStoreId == null || tenantDomain == null ||
+            if (groupName == null || groupId == null || identityStoreId == null || tenantDomain == null ||
                     identityStore == null || authorizationStore == null) {
-                throw new StoreException("Required data is missing for building group.");
+                throw new StoreException("Required data missing for building group.");
             }
 
-            return new Group(groupId, userStoreId, groupName, tenantDomain, identityStore, authorizationStore);
+            return new Group(groupName, groupId, identityStoreId, tenantDomain, identityStore, authorizationStore);
         }
     }
 }

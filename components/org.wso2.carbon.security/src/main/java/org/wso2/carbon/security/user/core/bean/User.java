@@ -40,13 +40,14 @@ public class User {
     private IdentityStore identityStore;
     private AuthorizationStore authorizationStore;
 
-    private User(String userName, String userID, String identityStoreID, String credentialStoreId, String tenantDomain,
-                 IdentityStore identityStore, AuthorizationStore authorizationStore) {
+    private User(String userName, String userID, String identityStoreID, String credentialStoreId,
+                 String tenantDomain, IdentityStore identityStore,
+                 AuthorizationStore authorizationStore) {
 
+        this.userName = userName;
         this.userID = userID;
         this.identityStoreID = identityStoreID;
         this.credentialStoreId = credentialStoreId;
-        this.userName = userName;
         this.tenantDomain = tenantDomain;
         this.identityStore = identityStore;
         this.authorizationStore = authorizationStore;
@@ -125,7 +126,7 @@ public class User {
      * @return List of Roles assigned to this user.
      */
     public List<Role> getRoles() throws AuthorizationStoreException {
-        return authorizationStore.getRolesOfUser(userID);
+        return authorizationStore.getRolesOfUser(userID, identityStoreID);
     }
 
     /**
@@ -143,7 +144,7 @@ public class User {
      * @return True if this user is in the Role.
      */
     public boolean isInRole(String roleName) throws AuthorizationStoreException {
-        return authorizationStore.isUserInRole(userID, roleName);
+        return authorizationStore.isUserInRole(userID, identityStoreID, roleName);
     }
 
     /**
@@ -192,8 +193,8 @@ public class User {
      * Add a new Role list by <b>replacing</b> the existing Role list. (PUT)
      * @param newRolesList List of Roles needs to be assigned to this User.
      */
-    public void updateRoles(List<Role> newRolesList) {
-        authorizationStore.updateRolesInUser(userID, newRolesList);
+    public void updateRoles(List<Role> newRolesList) throws AuthorizationStoreException, IdentityStoreException {
+        authorizationStore.updateRolesInUser(userID, identityStoreID, newRolesList);
     }
 
     /**
@@ -202,7 +203,7 @@ public class User {
      * @param unAssignList List to be removed from the existing list.
      */
     public void updateRoles(List<Role> assignList, List<Role> unAssignList) {
-        authorizationStore.updateRolesInUser(userID, assignList, unAssignList);
+        authorizationStore.updateRolesInUser(userID, identityStoreID, assignList, unAssignList);
     }
 
     /**
@@ -286,7 +287,7 @@ public class User {
 
             if (userName == null || userId == null || identityStoreId == null || credentialStoreId == null ||
                     identityStore == null || tenantDomain == null || authorizationStore == null) {
-                throw new StoreException("Required data is missing for building user.");
+                throw new StoreException("Required data missing for building user.");
             }
 
             return new User(userName, userId, identityStoreId, credentialStoreId, tenantDomain, identityStore,
