@@ -60,21 +60,12 @@ public class UsernamePasswordLoginModule implements LoginModule {
     private User user;
 
     /**
-     * <p>
-     * This method determines whether the login module can handle the content of the CarbonCallback.
-     * The method will extract the HttpRequest from the callback and check for basic authorization header.
-     * @param carbonCallback CarbonCallback
-     * @return true if the callback content can be handled, false if not.
-     * @throws LoginException
-     */
-
-    /**
      * This method initializes the login module.
      *
-     * @param subject
-     * @param callbackHandler
-     * @param sharedState
-     * @param options
+     * @param subject subject.
+     * @param callbackHandler callback handler.
+     * @param sharedState shared state.
+     * @param options options.
      */
     @Override
     public void initialize(Subject subject, CallbackHandler callbackHandler, Map<String, ?> sharedState,
@@ -92,7 +83,7 @@ public class UsernamePasswordLoginModule implements LoginModule {
 
     /**
      * This method authenticates a Subject (phase 1 )with the underlying <code>UserStoreManager</code>.
-     * The result of the authentication attempt as private state within the LoginModule.
+     * <p>The result of the authentication attempt as private state within the LoginModule.</p>
      *
      * @return true if the authentication is success.
      * @throws LoginException if the authentication fails.
@@ -129,12 +120,11 @@ public class UsernamePasswordLoginModule implements LoginModule {
 
     /**
      * This method is called if the LoginContext's  overall authentication success.
-     * <p>
      * <p> If this LoginModule's own authentication attempt
      * success (checked by retrieving the private state saved by the <code>login</code> method), then this method
      * associates a <code>SamplePrincipal</code> with the <code>Subject</code> located in the
      * <code>LoginModule</code>.  If this LoginModule's own authentication attempted failed, then this method removes
-     * any state that was originally saved.
+     * any state that was originally saved.</p>
      *
      * @return true if this LoginModule's own login and commit attempts success, or false otherwise.
      * @throws LoginException if the commit fails.
@@ -167,10 +157,9 @@ public class UsernamePasswordLoginModule implements LoginModule {
 
     /**
      * This method is called if the LoginContext's overall authentication failed.
-     * <p>
      * <p> If this LoginModule's own authentication attempt success (checked by retrieving the private state saved
      * by the <code>login</code> and <code>commit</code> methods), then this method cleans up any state that was
-     * originally saved.
+     * originally saved.</p>
      *
      * @return if this LoginModule's own login and/or commit attempts failed, and true otherwise.
      * @throws LoginException if the abort fails.
