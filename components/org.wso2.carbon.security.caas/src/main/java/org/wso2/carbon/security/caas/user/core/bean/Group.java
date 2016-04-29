@@ -82,6 +82,7 @@ public class Group {
     /**
      * Get the users assigned to this group.
      * @return List of users assigned to this group.
+     * @throws IdentityStoreException Identity store exception.
      */
     public List<User> getUsers() throws IdentityStoreException {
         return identityStore.getUsersOfGroup(groupID, identityStoreID);
@@ -90,6 +91,7 @@ public class Group {
     /**
      * Get Roles assigned to this Group.
      * @return List of Roles.
+     * @throws AuthorizationStoreException Authorization store exception.
      */
     public List<Role> getRoles() throws AuthorizationStoreException {
         return authorizationStore.getRolesOfGroup(groupID, identityStoreID);
@@ -99,6 +101,7 @@ public class Group {
      * Checks whether this Group is authorized for given Permission.
      * @param permission Permission to be checked.
      * @return True if authorized.
+     * @throws AuthorizationStoreException Authorization store exception.
      */
     public boolean isAuthorized(Permission permission) throws AuthorizationStoreException {
         return authorizationStore.isGroupAuthorized(groupID, identityStoreID, permission);
@@ -108,6 +111,7 @@ public class Group {
      * Checks whether the User in this Group.
      * @param userId Id of the User to be checked.
      * @return True if User is in this Group.
+     * @throws IdentityStoreException Identity store exception.
      */
     public boolean hasUser(String userId) throws IdentityStoreException {
         return identityStore.isUserInGroup(userId, groupID, identityStoreID);
@@ -117,6 +121,7 @@ public class Group {
      * Checks whether this Group has the Role.
      * @param roleName Name of the Role to be checked.
      * @return True if this Group has the Role.
+     * @throws AuthorizationStoreException Authorization store exception.
      */
     public boolean hasRole(String roleName) throws AuthorizationStoreException {
         return authorizationStore.isGroupInRole(groupID, identityStoreID, roleName);
@@ -125,6 +130,7 @@ public class Group {
     /**
      * Add a new User list by <b>replacing</b> the existing User list. (PUT)
      * @param newUserList List of User names needs to be assigned to this Group.
+     * @throws IdentityStoreException Identity store exception.
      */
     public void updateUsers(List<String> newUserList) throws IdentityStoreException {
         throw new UnsupportedOperationException("This operation is not supported in platform level.");
@@ -134,6 +140,7 @@ public class Group {
      * Assign a new list of Users to existing list and/or un-assign Users from existing list. (PATCH)
      * @param assignList List to be added to the new list.
      * @param unAssignList List to be removed from the existing list.
+     * @throws IdentityStoreException Identity store exception.
      */
     public void updateUsers(List<String> assignList, List<String> unAssignList) throws IdentityStoreException {
         throw new UnsupportedOperationException("This operation is not supported in platform level.");

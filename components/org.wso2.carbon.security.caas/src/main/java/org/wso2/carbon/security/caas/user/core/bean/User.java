@@ -96,7 +96,7 @@ public class User {
     /**
      * Get claims of this user.
      * @return Map of User claims.
-     * @throws IdentityStoreException
+     * @throws IdentityStoreException Identity store exception.
      */
     public Map<String, String> getClaims() throws IdentityStoreException {
         return identityStore.getUserAttributeValues(userID, identityStoreID);
@@ -106,7 +106,7 @@ public class User {
      * Get claims of this user for given URIs.
      * @param claimURIs Claim URIs that needs to be retrieved.
      * @return Map of User claims.
-     * @throws IdentityStoreException
+     * @throws IdentityStoreException Identity store exception.
      */
     public Map<String, String> getClaims(List<String> claimURIs) throws IdentityStoreException {
         return identityStore.getUserAttributeValues(userID, claimURIs, identityStoreID);
@@ -115,7 +115,7 @@ public class User {
     /**
      * Get the groups assigned to this user.
      * @return List of Groups assigned to this user.
-     * @throws IdentityStoreException
+     * @throws IdentityStoreException Identity store exception.
      */
     public List<Group> getGroups() throws IdentityStoreException {
         return identityStore.getGroupsOfUser(userID, identityStoreID);
@@ -124,6 +124,7 @@ public class User {
     /**
      * Get the roles assigned to this user.
      * @return List of Roles assigned to this user.
+     * @throws AuthorizationStoreException Authorization store exception,
      */
     public List<Role> getRoles() throws AuthorizationStoreException {
         return authorizationStore.getRolesOfUser(userID, identityStoreID);
@@ -133,6 +134,8 @@ public class User {
      * Checks whether this user is authorized for given Permission.
      * @param permission Permission that should check on this user.
      * @return True if authorized.
+     * @throws AuthorizationStoreException Authorization store exception.
+     * @throws IdentityStoreException Identity store exception.
      */
     public boolean isAuthorized(Permission permission) throws AuthorizationStoreException, IdentityStoreException {
         return authorizationStore.isUserAuthorized(userID, permission, identityStoreID);
@@ -142,6 +145,7 @@ public class User {
      * Checks whether this User is in the given Role.
      * @param roleName Name of the Role.
      * @return True if this user is in the Role.
+     * @throws AuthorizationStoreException Authorization store exception.
      */
     public boolean isInRole(String roleName) throws AuthorizationStoreException {
         return authorizationStore.isUserInRole(userID, identityStoreID, roleName);
@@ -151,6 +155,7 @@ public class User {
      * Checks whether this user is in the given Group.
      * @param groupName Name of the Group.
      * @return True if this User is in the group.
+     * @throws IdentityStoreException Identity store exception.
      */
     public boolean isInGroup(String groupName) throws IdentityStoreException {
         return identityStore.isUserInGroup(userID, groupName, identityStoreID);
@@ -167,6 +172,7 @@ public class User {
     /**
      * Set claims for this User.
      * @param claims List of claims to be set.
+     * @throws IdentityStoreException Identity store exception.
      */
     public void setClaims(Map<String, String> claims) throws IdentityStoreException {
         throw new UnsupportedOperationException("This operation is not supported in platform level.");
@@ -175,6 +181,7 @@ public class User {
     /**
      * Add a new Group list by <b>replacing</b> the existing group list. (PUT)
      * @param newGroupList New group list names that needs to replace the existing list.
+     * @throws IdentityStoreException Identity store exception.
      */
     public void updateGroups(List<String> newGroupList) throws IdentityStoreException {
         throw new UnsupportedOperationException("This operation is not supported in platform level.");
@@ -184,6 +191,7 @@ public class User {
      * Assign a new list of Groups to existing list and/or un-assign Groups from existing Groups. (PATCH)
      * @param assignList List to be added to the new list.
      * @param unAssignList List to be removed from the existing list.
+     * @throws IdentityStoreException Identity store exception.
      */
     public void updateGroups(List<String> assignList, List<String> unAssignList) throws IdentityStoreException {
         throw new UnsupportedOperationException("This operation is not supported in platform level.");
@@ -192,6 +200,8 @@ public class User {
     /**
      * Add a new Role list by <b>replacing</b> the existing Role list. (PUT)
      * @param newRolesList List of Roles needs to be assigned to this User.
+     * @throws AuthorizationStoreException Authorization store exception,
+     * @throws IdentityStoreException Identity store exception.
      */
     public void updateRoles(List<Role> newRolesList) throws AuthorizationStoreException, IdentityStoreException {
         authorizationStore.updateRolesInUser(userID, identityStoreID, newRolesList);
