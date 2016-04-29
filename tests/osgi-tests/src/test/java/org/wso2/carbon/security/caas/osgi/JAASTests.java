@@ -151,7 +151,6 @@ public class JAASTests {
 
     }
 
-
     private static HttpRequest getHTTPRequestWithAuthzHeader(String headerContent) {
 
         HttpRequest httpRequest = new DefaultHttpRequest(HttpVersion.HTTP_1_1, HttpMethod.GET, "");
@@ -159,5 +158,4 @@ public class JAASTests {
 
         return httpRequest;
     }
-
 }
