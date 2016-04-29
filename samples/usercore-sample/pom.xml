@@ -19,8 +19,8 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
     <parent>
-        <groupId>org.wso2.carbon.security</groupId>
-        <artifactId>org.wso2.carbon.security.parent</artifactId>
+        <groupId>org.wso2.carbon.security.caas</groupId>
+        <artifactId>org.wso2.carbon.security.caas.parent</artifactId>
         <version>1.0.0-SNAPSHOT</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
@@ -29,7 +29,7 @@
     <artifactId>osgi-security-service</artifactId>
     <version>1.0.0-SNAPSHOT</version>
     <packaging>bundle</packaging>
-    <name>WSO2 Carbon Security - Sample: Usercore sample</name>
+    <name>WSO2 Carbon Security CAAS - Sample: Usercore sample</name>
     <url>http://wso2.com</url>
 
     <dependencies>
@@ -42,9 +42,8 @@
             <artifactId>msf4j-core</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.wso2.carbon.security</groupId>
-            <artifactId>org.wso2.carbon.security</artifactId>
-            <version>1.0.0-SNAPSHOT</version>
+            <groupId>org.wso2.carbon.security.caas</groupId>
+            <artifactId>org.wso2.carbon.security.caas</artifactId>
         </dependency>
         <dependency>
             <groupId>javax.ws.rs</groupId>
