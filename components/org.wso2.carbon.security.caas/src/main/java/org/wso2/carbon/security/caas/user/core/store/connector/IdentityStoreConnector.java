@@ -54,7 +54,7 @@ public interface IdentityStoreConnector {
     /**
      * Get user from the user name.
      * @param username Name of the user.
-     * @return @see User.UserBuilder.
+     * @return User.UserBuilder.
      * @throws IdentityStoreException Identity Store Exception.
      */
     User.UserBuilder getUser(String username) throws IdentityStoreException;
@@ -133,9 +133,12 @@ public interface IdentityStoreConnector {
 
     /**
      * Checks whether the user is in the group.
+     * @param userId Id of the user.
+     * @param groupId Id of the group.
      * @return true if user is in the group.
+     * @throws IdentityStoreException Identity store exception.
      */
-    boolean isUserInGroup(String userid, String groupId) throws IdentityStoreException;
+    boolean isUserInGroup(String userId, String groupId) throws IdentityStoreException;
 
     /**
      * To check whether a user store is read only.
@@ -146,7 +149,7 @@ public interface IdentityStoreConnector {
 
     /**
      * Returns IdentityStoreConfig which consists of user store configurations.
-     * @return @see IdentityStoreConfig which consists of user store configurations
+     * @return IdentityStoreConfig which consists of user store configurations
      */
     IdentityStoreConfig getIdentityStoreConfig();
 }

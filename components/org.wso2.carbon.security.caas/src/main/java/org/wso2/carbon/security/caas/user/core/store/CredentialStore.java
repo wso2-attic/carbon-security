@@ -83,7 +83,7 @@ public class CredentialStore {
     /**
      * Authenticate the user.
      * @param callbacks Callbacks to get the user details.
-     * @return @see{AuthenticationContext} if the authentication is success. @see{AuthenticationFailure} otherwise.
+     * @return If the authentication is success. AuthenticationFailure otherwise.
      * @throws AuthenticationFailure Authentication Failure.
      */
     public AuthenticationContext authenticate(Callback[] callbacks) throws AuthenticationFailure {

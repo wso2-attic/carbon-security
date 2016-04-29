@@ -128,6 +128,7 @@ public class Role {
     /**
      * Add a new Permission list by <b>replacing</b> the existing Permission list. (PUT)
      * @param newPermissionList New Permission list that needs to replace the existing list.
+     * @throws AuthorizationStoreException Authorization store exception.
      */
     public void updatePermissions(List<Permission> newPermissionList) throws AuthorizationStoreException {
         authorizationStore.updatePermissionsInRole(roleId, authorizationStoreId, newPermissionList);

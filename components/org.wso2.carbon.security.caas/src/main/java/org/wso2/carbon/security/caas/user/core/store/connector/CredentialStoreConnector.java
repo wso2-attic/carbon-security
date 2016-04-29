@@ -47,6 +47,7 @@ public interface CredentialStoreConnector {
      * @param callbacks Callbacks to get the user attributes.
      * @return Authentication result, User if success, null otherwise.
      * @throws CredentialStoreException Credential Store Exception.
+     * @throws AuthenticationFailure Authentication failure.
      */
     User.UserBuilder authenticate(Callback[] callbacks) throws CredentialStoreException, AuthenticationFailure;
 

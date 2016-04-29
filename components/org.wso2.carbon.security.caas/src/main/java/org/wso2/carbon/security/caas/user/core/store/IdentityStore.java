@@ -106,6 +106,7 @@ public class IdentityStore {
     /**
      * Get the user from user Id.
      * @param userId Id of the user.
+     * @param identityStoreId Identity store id of the user.
      * @return User.
      * @throws IdentityStoreException Identity Store Exception.
      */
@@ -202,6 +203,7 @@ public class IdentityStore {
     /**
      * Get the group from group id.
      * @param groupId Group id.
+     * @param identityStoreId Identity store id of the group.
      * @return Group.
      * @throws IdentityStoreException Identity Store Exception.
      */

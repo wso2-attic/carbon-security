@@ -34,7 +34,7 @@ public interface AuthorizationStoreConnector {
      * Initialize the authorization store.
      * @param storeId Id of this store.
      * @param authorizationStoreConfig Authorization store configurations for this connector.
-     * @throws AuthorizationStoreException
+     * @throws AuthorizationStoreException Authorization store exception.
      */
     void init(String storeId, AuthorizationStoreConfig authorizationStoreConfig) throws AuthorizationStoreException;
 
@@ -47,7 +47,7 @@ public interface AuthorizationStoreConnector {
     /**
      * Get the role of from role id.
      * @param roleId Id of the Role
-     * @return Role.
+     * @return Role.RoleBuilder.
      * @throws AuthorizationStoreException Authorization Store Exception.
      */
     Role.RoleBuilder getRole(String roleId) throws AuthorizationStoreException;
@@ -55,13 +55,15 @@ public interface AuthorizationStoreConnector {
     /**
      * Get permission from the permission id.
      * @param permissionId Id of the permission.
-     * @return Permission.
+     * @return Permission.PermissionBuilder.
+     * @throws AuthorizationStoreException Authorization Store Exception
      */
     Permission.PermissionBuilder getPermission(String permissionId) throws AuthorizationStoreException;
 
     /**
      * Get roles for the user id.
      * @param userId User id of the user.
+     * @param identityStoreId Identity Store id of the user.
      * @return Roles associated to the user.
      * @throws AuthorizationStoreException Authorization Store Exception.
      */
@@ -70,6 +72,7 @@ public interface AuthorizationStoreConnector {
     /**
      * Get roles associated to the group.
      * @param groupName Name of the group.
+     * @param identityStoreId Identity Store id of the user.
      * @return Roles associated to the group.
      * @throws AuthorizationStoreException Authorization Store Exception.
      */
@@ -97,7 +100,7 @@ public interface AuthorizationStoreConnector {
      * Add new role.
      * @param roleName Name of the new role.
      * @param permissions List of permissions to be assign.
-     * @return New Role.
+     * @return New Role.RoleBuilder.
      * @throws AuthorizationStoreException Authorization Store Exception.
      */
     Role.RoleBuilder addRole(String roleName, List<Permission> permissions) throws AuthorizationStoreException;
@@ -120,7 +123,7 @@ public interface AuthorizationStoreConnector {
 
     /**
      * Get the authorization store config.
-     * @return @see AuthorizationStoreConfig.
+     * @return AuthorizationStoreConfig.
      * @throws AuthorizationStoreException Authorization Store Exception.
      */
     AuthorizationStoreConfig getAuthorizationStoreConfig() throws AuthorizationStoreException;
