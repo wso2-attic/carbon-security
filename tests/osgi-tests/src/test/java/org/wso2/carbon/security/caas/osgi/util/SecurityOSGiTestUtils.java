@@ -84,7 +84,7 @@ public class SecurityOSGiTestUtils {
         defaultOptionList.add(mavenBundle()
                                       .groupId("org.wso2.carbon.security.caas")
                                       .artifactId("org.wso2.carbon.security.caas.userstore.inmemory")
-                                      .version("1.0.0-SNAPSHOT"));
+                                      .versionAsInProject());
         defaultOptionList.add(mavenBundle()
                                       .groupId("commons-io.wso2")
                                       .artifactId("commons-io")

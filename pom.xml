@@ -126,16 +126,6 @@
                 <version>${org.snakeyaml.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.wso2.carbon.jndi</groupId>
-                <artifactId>org.wso2.carbon.jndi</artifactId>
-                <version>${carbon.jndi.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.wso2.carbon.datasources</groupId>
-                <artifactId>org.wso2.carbon.datasource.core</artifactId>
-                <version>${carbon.datasources.version}</version>
-            </dependency>
-            <dependency>
                 <groupId>org.wso2.orbit.org.opensaml</groupId>
                 <artifactId>opensaml</artifactId>
                 <version>${opensaml.version}</version>
@@ -295,8 +285,6 @@
 
         <carbon.feature.plugin.version>2.0.1</carbon.feature.plugin.version>
         <carbon.kernel.version>5.1.0-m3</carbon.kernel.version>
-        <carbon.jndi.version>1.0.0-m1</carbon.jndi.version>
-        <carbon.datasources.version>1.0.0-m1</carbon.datasources.version>
         <msf4j.version>1.0.0</msf4j.version>
         <opensaml.version>2.6.4.wso2v1</opensaml.version>
         <commons.dbcp.version>1.4</commons.dbcp.version>
