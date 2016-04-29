@@ -35,7 +35,7 @@ public class UserCoreUtil {
      * @param salt Salt to be used to hash the password.
      * @param hashAlgo Hashing algorithm to be used.
      * @return Hash as a <code>String</code>
-     * @throws NoSuchAlgorithmException
+     * @throws NoSuchAlgorithmException No such algorithm exception.
      */
     public static String hashPassword(char[] password, String salt, String hashAlgo) throws NoSuchAlgorithmException {
 

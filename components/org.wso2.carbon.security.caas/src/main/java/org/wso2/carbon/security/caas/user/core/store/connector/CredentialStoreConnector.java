@@ -32,7 +32,7 @@ public interface CredentialStoreConnector {
      * Initialize the Credential store connector.
      * @param credentialStoreConfig Credential store configurations for this connector.
      * @param storeId Id of this store.
-     * @throws CredentialStoreException
+     * @throws CredentialStoreException Credential Store Exception.
      */
     void init(String storeId, CredentialStoreConfig credentialStoreConfig) throws CredentialStoreException;
 
@@ -46,7 +46,7 @@ public interface CredentialStoreConnector {
      * Authenticate user using callbacks.
      * @param callbacks Callbacks to get the user attributes.
      * @return Authentication result, User if success, null otherwise.
-     * @throws CredentialStoreException
+     * @throws CredentialStoreException Credential Store Exception.
      */
     User.UserBuilder authenticate(Callback[] callbacks) throws CredentialStoreException, AuthenticationFailure;
 

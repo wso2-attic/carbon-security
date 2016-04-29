@@ -48,7 +48,7 @@ public class CredentialStore {
      * Initialize credential store.
      * @param realmService Parent RealmService instance.
      * @param credentialStoreConfigs Store configs related to the credential store.
-     * @throws CredentialStoreException
+     * @throws CredentialStoreException Credential Store Exception.
      */
     public void init(RealmService realmService, Map<String, CredentialStoreConfig> credentialStoreConfigs)
             throws CredentialStoreException {
@@ -84,7 +84,7 @@ public class CredentialStore {
      * Authenticate the user.
      * @param callbacks Callbacks to get the user details.
      * @return @see{AuthenticationContext} if the authentication is success. @see{AuthenticationFailure} otherwise.
-     * @throws AuthenticationFailure
+     * @throws AuthenticationFailure Authentication Failure.
      */
     public AuthenticationContext authenticate(Callback[] callbacks) throws AuthenticationFailure {
 

@@ -27,19 +27,19 @@ public interface RealmService {
 
     /**
      * Get the Authentication store.
-     * @return @see CredentialStore
+     * @return CredentialStore
      */
     CredentialStore getCredentialStore();
 
     /**
      * Get the Virtual authorization store.
-     * @return @see AuthorizationStoreConnector
+     * @return AuthorizationStoreConnector
      */
     AuthorizationStore getAuthorizationStore();
 
     /**
      * Get the Virtual identity store.
-     * @return @see IdentityStore
+     * @return IdentityStore
      */
     IdentityStore getIdentityStore();
 }

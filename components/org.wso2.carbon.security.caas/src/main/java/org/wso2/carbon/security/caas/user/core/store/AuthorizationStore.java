@@ -53,7 +53,7 @@ public class AuthorizationStore {
      * Initialize the authorization store.
      * @param realmService Parent realm service.
      * @param authorizationStoreConfigs Store configs related to the authorization store.
-     * @throws AuthorizationStoreException
+     * @throws AuthorizationStoreException Authorization store exception.
      */
     public void init(RealmService realmService, Map<String, AuthorizationStoreConfig> authorizationStoreConfigs)
             throws AuthorizationStoreException {
@@ -92,6 +92,8 @@ public class AuthorizationStore {
      * @param permission Permission that needs to check on.
      * @param identityStoreId Id of the user store which this user belongs.
      * @return True if the user has required permission.
+     * @throws AuthorizationStoreException Authorization store exception.
+     * @throws IdentityStoreException Identity Store Exception.
      */
     public boolean isUserAuthorized(String userId, Permission permission, String identityStoreId)
             throws AuthorizationStoreException, IdentityStoreException {
@@ -132,6 +134,7 @@ public class AuthorizationStore {
      * @param identityStoreId Identity store id of the group.
      * @param permission Permission.
      * @return True if authorized.
+     * @throws AuthorizationStoreException Authorization store exception.
      */
     public boolean isGroupAuthorized(String groupId, String identityStoreId, Permission permission)
             throws AuthorizationStoreException {
@@ -153,6 +156,7 @@ public class AuthorizationStore {
      * @param authorizationStoreId Authorization store id of the role.
      * @param permission Permission.
      * @return True if authorized.
+     * @throws AuthorizationStoreException Authorization store exception.
      */
     public boolean isRoleAuthorized(String roleId, String authorizationStoreId, Permission permission)
             throws AuthorizationStoreException {
@@ -182,6 +186,7 @@ public class AuthorizationStore {
      * @param identityStoreId Identity store id of the user.
      * @param roleName Role name
      * @return True if user is in the role.
+     * @throws AuthorizationStoreException Authorization store exception.
      */
     public boolean isUserInRole(String userId, String identityStoreId, String roleName)
             throws AuthorizationStoreException {
@@ -201,6 +206,7 @@ public class AuthorizationStore {
      * @param identityStoreId Identity store id of the group.
      * @param roleName Role name.
      * @return True if group has the role.
+     * @throws AuthorizationStoreException Authorization store exception.
      */
     public boolean isGroupInRole(String groupId, String identityStoreId, String roleName)
             throws AuthorizationStoreException {
@@ -219,6 +225,7 @@ public class AuthorizationStore {
      * @param userId User id.
      * @param identityStoreId Identity store id of the user.
      * @return List of Roles.
+     * @throws AuthorizationStoreException Authorization store exception.
      */
     public List<Role> getRolesOfUser(String userId, String identityStoreId) throws AuthorizationStoreException {
 
@@ -238,6 +245,8 @@ public class AuthorizationStore {
      * @param roleId Role id.
      * @param authorizationStore Authorization store id of the role.
      * @return List of users.
+     * @throws AuthorizationStoreException Authorization store exception.
+     * @throws IdentityStoreException Identity Store Exception.
      */
     public List<User> getUsersOfRole(String roleId, String authorizationStore) throws AuthorizationStoreException,
             IdentityStoreException {
@@ -264,6 +273,8 @@ public class AuthorizationStore {
      * @param roleId Role id.
      * @param authorizationStore Authorization store id of the role.
      * @return List of Groups.
+     * @throws AuthorizationStoreException Authorization store exception.
+     * @throws IdentityStoreException Identity Store Exception.
      */
     public List<Group> getGroupsOfRole(String roleId, String authorizationStore) throws AuthorizationStoreException,
             IdentityStoreException {
@@ -290,6 +301,7 @@ public class AuthorizationStore {
      * @param groupId Group id.
      * @param identityStoreId Identity store id of the group.
      * @return List of Roles.
+     * @throws AuthorizationStoreException Authorization store exception.
      */
     public List<Role> getRolesOfGroup(String groupId, String identityStoreId) throws AuthorizationStoreException {
 
@@ -312,6 +324,7 @@ public class AuthorizationStore {
      * @param roleId Role id.
      * @param authorizationStore Authorization store id of the role.
      * @return List of Permissions.
+     * @throws AuthorizationStoreException Authorization store exception.
      */
     public List<Permission> getPermissionsOfRole(String roleId, String authorizationStore)
             throws AuthorizationStoreException {
@@ -330,7 +343,7 @@ public class AuthorizationStore {
      * @param permissions List of permissions to be assign.
      * @param authorizationStoreId Id of the authorizations store where the role should be stored.
      * @return New Role.
-     * @throws AuthorizationStoreException
+     * @throws AuthorizationStoreException Authorization store exception.
      */
     public Role addRole(String roleName, List<Permission> permissions, String authorizationStoreId)
             throws AuthorizationStoreException {
@@ -354,6 +367,7 @@ public class AuthorizationStore {
     /**
      * Delete an existing role.
      * @param role Role to be deleted.
+     * @throws AuthorizationStoreException Authorization store exception.
      */
     public void deleteRole(Role role) throws AuthorizationStoreException {
 
@@ -367,7 +381,7 @@ public class AuthorizationStore {
      * @param action Action name.
      * @param authorizationStoreId Id of the authorizations store where the permission should store.
      * @return Created Permission.
-     * @throws AuthorizationStoreException
+     * @throws AuthorizationStoreException Authorization store exception.
      */
     public Permission addPermission(String resourceId, String action, String authorizationStoreId)
             throws AuthorizationStoreException {
@@ -385,8 +399,9 @@ public class AuthorizationStore {
     /**
      * Delete the given permission.
      * @param permission Permission to be delete.
+     * @throws AuthorizationStoreException Authorization store exception.
      */
-    public void deletePermission(Permission permission) {
+    public void deletePermission(Permission permission) throws AuthorizationStoreException {
 
         AuthorizationStoreConnector authorizationStoreConnector = authorizationStoreConnectors
                 .get(permission.getAuthorizationStoreId());
@@ -403,6 +418,8 @@ public class AuthorizationStore {
      * @param userId Id of the user.
      * @param identityStoreId Identity store id of the user.
      * @param newRoleList List of Roles needs to be assigned to this User.
+     * @throws AuthorizationStoreException Authorization store exception.
+     * @throws IdentityStoreException Identity Store Exception.
      */
     public void updateRolesInUser(String userId, String identityStoreId, List<Role> newRoleList)
             throws AuthorizationStoreException, IdentityStoreException {
@@ -427,9 +444,10 @@ public class AuthorizationStore {
      * @param identityStoreId Identity store id of the user.
      * @param rolesToBeAssign List to be added to the new list.
      * @param rolesToBeUnassign List to be removed from the existing list.
+     * @throws AuthorizationStoreException Authorization store exception.
      */
     public void updateRolesInUser(String userId, String identityStoreId, List<Role> rolesToBeAssign,
-                                  List<Role> rolesToBeUnassign) {
+                                  List<Role> rolesToBeUnassign) throws AuthorizationStoreException {
         throw new NotImplementedException();
     }
 
@@ -438,8 +456,10 @@ public class AuthorizationStore {
      * @param roleId Id of the role.
      * @param authorizationStoreId Authorization store id of the role.
      * @param newUserList New User list that needs to replace the existing list.
+     * @throws AuthorizationStoreException Authorization store exception.
      */
-    public void updateUsersInRole(String roleId, String authorizationStoreId, List<User> newUserList) {
+    public void updateUsersInRole(String roleId, String authorizationStoreId, List<User> newUserList)
+            throws AuthorizationStoreException {
         throw new NotImplementedException();
     }
 
@@ -449,9 +469,10 @@ public class AuthorizationStore {
      * @param authorizationStoreId Authorization store id of the role.
      * @param usersToBeAssign List to be added to the new list.
      * @param usersToBeUnassign List to be removed from the existing list.
+     * @throws AuthorizationStoreException Authorization store exception.
      */
     public void updateUsersInRole(String roleId, String authorizationStoreId, List<User> usersToBeAssign,
-                                  List<User> usersToBeUnassign) {
+                                  List<User> usersToBeUnassign) throws AuthorizationStoreException {
         throw new NotImplementedException();
     }
 
@@ -460,8 +481,10 @@ public class AuthorizationStore {
      * @param groupId Id of the group.
      * @param identityStoreId Identity store id of the group.
      * @param newRoleList New Roles list that needs to be replace existing list.
+     * @throws AuthorizationStoreException Authorization store exception.
      */
-    public void updateRolesInGroup(String groupId, String identityStoreId, List<Role> newRoleList) {
+    public void updateRolesInGroup(String groupId, String identityStoreId, List<Role> newRoleList)
+            throws AuthorizationStoreException {
         throw new NotImplementedException();
     }
 
@@ -471,9 +494,10 @@ public class AuthorizationStore {
      * @param identityStoreId Identity store id of the group.
      * @param rolesToBeAssign List to be added to the new list.
      * @param rolesToBeUnassigned List to be removed from the existing list.
+     * @throws AuthorizationStoreException Authorization store exception.
      */
     public void updateRolesInGroup(String groupId, String identityStoreId, List<Role> rolesToBeAssign,
-                                   List<Role> rolesToBeUnassigned) {
+                                   List<Role> rolesToBeUnassigned) throws AuthorizationStoreException {
         throw new NotImplementedException();
     }
 
@@ -482,8 +506,10 @@ public class AuthorizationStore {
      * @param roleId Name of role.
      * @param authorizationStoreId Authorization store id of the role.
      * @param newGroupList New Group list that needs to replace the existing list.
+     * @throws AuthorizationStoreException Authorization store exception.
      */
-    public void updateGroupsInRole(String roleId, String authorizationStoreId, List<Group> newGroupList) {
+    public void updateGroupsInRole(String roleId, String authorizationStoreId, List<Group> newGroupList)
+            throws AuthorizationStoreException {
         throw new NotImplementedException();
     }
 
@@ -493,9 +519,10 @@ public class AuthorizationStore {
      * @param authorizationStoreId Authorization store id of the role.
      * @param groupToBeAssign List to be added to the new list.
      * @param groupToBeUnassign List to be removed from the existing list.
+     * @throws AuthorizationStoreException Authorization store exception.
      */
     public void updateGroupsInRole(String roleId, String authorizationStoreId, List<Group> groupToBeAssign,
-                                   List<Group> groupToBeUnassign) {
+                                   List<Group> groupToBeUnassign) throws AuthorizationStoreException {
         throw new NotImplementedException();
     }
 
@@ -504,9 +531,10 @@ public class AuthorizationStore {
      * @param roleId Name of the role.
      * @param authorizationStoreId Authorization store id of the role.
      * @param newPermissionList New Permission list that needs to replace the existing list.
+     * @throws AuthorizationStoreException Authorization store exception.
      */
     public void updatePermissionsInRole(String roleId, String authorizationStoreId,
-                                        List<Permission> newPermissionList) {
+                                        List<Permission> newPermissionList) throws AuthorizationStoreException {
         throw new NotImplementedException();
     }
 
@@ -516,10 +544,11 @@ public class AuthorizationStore {
      * @param authorizationStoreId Authorization store id of the role.
      * @param permissionsToBeAssign List to be added to the new list.
      * @param permissionsToBeUnassign List to be removed from the existing list.
+     * @throws AuthorizationStoreException Authorization store exception.
      */
     public void updatePermissionsInRole(String roleId, String authorizationStoreId,
                                         List<Permission> permissionsToBeAssign,
-                                        List<Permission> permissionsToBeUnassign) {
+                                        List<Permission> permissionsToBeUnassign) throws AuthorizationStoreException {
         throw new NotImplementedException();
     }
 }
