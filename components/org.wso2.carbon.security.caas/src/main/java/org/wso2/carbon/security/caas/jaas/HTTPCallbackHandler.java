@@ -16,7 +16,7 @@ public interface HTTPCallbackHandler extends CallbackHandler {
     /**
      * Set HTTPRequest
      *
-     * @param httpRequest
+     * @param httpRequest HTTP Request.
      */
     void setHTTPRequest(HttpRequest httpRequest);
 
