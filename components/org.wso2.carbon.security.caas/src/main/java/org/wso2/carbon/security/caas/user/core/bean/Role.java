@@ -68,6 +68,8 @@ public class Role {
     /**
      * Get the users assigned to this role.
      * @return List of users assigned to this role.
+     * @throws AuthorizationStoreException Authorization store exception.
+     * @throws IdentityStoreException Identity store exception.
      */
     public List<User> getUsers() throws AuthorizationStoreException, IdentityStoreException {
         return authorizationStore.getUsersOfRole(roleId, authorizationStoreId);
@@ -76,6 +78,7 @@ public class Role {
     /**
      * Get all Permissions assign to this Role.
      * @return List of Permission.
+     * @throws AuthorizationStoreException Authorization store exception.
      */
     public List<Permission> getPermissions() throws AuthorizationStoreException {
         return authorizationStore.getPermissionsOfRole(roleId, authorizationStoreId);
@@ -84,6 +87,8 @@ public class Role {
     /**
      * Get all Groups assigned to this Role.
      * @return List of Group.
+     * @throws AuthorizationStoreException Authorization store exception.
+     * @throws IdentityStoreException Identity store exception.
      */
     public List<Group> getGroups() throws AuthorizationStoreException, IdentityStoreException {
         return authorizationStore.getGroupsOfRole(roleId, authorizationStoreId);
@@ -93,6 +98,7 @@ public class Role {
      * Checks whether this Role is authorized for given Permission.
      * @param permission Permission to be checked.
      * @return True if authorized.
+     * @throws AuthorizationStoreException Authorization store exception.
      */
     public boolean isAuthorized(Permission permission) throws AuthorizationStoreException {
         return authorizationStore.isRoleAuthorized(roleId, authorizationStoreId, permission);
@@ -101,7 +107,9 @@ public class Role {
     /**
      * Checks whether the User is in this Role.
      * @param userId Id of the User to be checked.
+     * @param identityStoreId Identity user store id.
      * @return True if User exists.
+     * @throws AuthorizationStoreException Authorization store exception.
      */
     public boolean hasUser(String userId, String identityStoreId) throws AuthorizationStoreException {
         return authorizationStore.isUserInRole(userId, identityStoreId, roleName);
@@ -111,6 +119,7 @@ public class Role {
      * Checks whether the Group is in this Role.
      * @param groupId Id of the Group to be checked.
      * @return True if the Group exists.
+     * @throws AuthorizationStoreException Authorization store exception.
      */
     public boolean hasGroup(String groupId, String identityStoreId) throws AuthorizationStoreException {
         return authorizationStore.isGroupInRole(groupId, identityStoreId, roleName);
