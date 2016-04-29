@@ -7,7 +7,6 @@ Carbon Security project provides authentication and authorization implementation
 * Built in login modules
   * Username Password login module
   * JWT login module
-  * SAML login module
 * Mechanism to plug-in custom Login modules, callback handlers in an OSGi environment.
 
 ## Getting Started
@@ -28,10 +27,9 @@ CarbonSecurityConfig {
    org.wso2.carbon.security.jaas.modules.UsernamePasswordLoginModule required;
 };
 ```
-Similarly for JWT and SAML login modules, the following fully qualified class names can be used.
+Similarly for JWT login module, the following fully qualified class name can be used.
 
 -  `org.wso2.carbon.security.jaas.modules.JWTLoginModule`
--  `org.wso2.carbon.security.jaas.modules.SAML2LoginModule`
 
 The following code snippet shows how to perfrom a login using JAAS.
 
