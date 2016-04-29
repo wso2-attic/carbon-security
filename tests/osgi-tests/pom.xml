@@ -251,9 +251,7 @@
                             <execution>
                                 <phase>prepare-package</phase>
                                 <configuration>
-                                    <target xmlns:jacoco="antlib:org.jacoco.ant"
-                                            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-                                            xsi:schemaLocation="antlib:org.jacoco.ant">
+                                    <target xmlns:jacoco="antlib:org.jacoco.ant">
                                         //this task is to provide class/src files locations for jacoco report generation
                                         <taskdef uri="antlib:org.jacoco.ant" resource="org/jacoco/ant/antlib.xml">
                                             <classpath path="${project.build.directory}"/>
