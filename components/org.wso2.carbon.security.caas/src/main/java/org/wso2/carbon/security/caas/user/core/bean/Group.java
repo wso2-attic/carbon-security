@@ -142,8 +142,9 @@ public class Group {
     /**
      * Add a new Role list by <b>replacing</b> the existing Role list. (PUT)
      * @param newRoleList List of Roles needs to be assigned to this Group.
+     * @throws AuthorizationStoreException Authorization store exception.
      */
-    public void updateRoles(List<Role> newRoleList) {
+    public void updateRoles(List<Role> newRoleList) throws AuthorizationStoreException {
         authorizationStore.updateRolesInGroup(groupID, identityStoreID, newRoleList);
     }
 
@@ -151,8 +152,9 @@ public class Group {
      * Assign a new list of Roles to existing list and/or un-assign Roles from existing list. (PATCH)
      * @param assignList List to be added to the new list.
      * @param unAssignList List to be removed from the existing list.
+     * @throws AuthorizationStoreException Authorization store exception.
      */
-    public void updateRoles(List<Role> assignList, List<Role> unAssignList) {
+    public void updateRoles(List<Role> assignList, List<Role> unAssignList) throws AuthorizationStoreException {
         authorizationStore.updateRolesInGroup(groupID, identityStoreID, assignList, unAssignList);
     }
 
