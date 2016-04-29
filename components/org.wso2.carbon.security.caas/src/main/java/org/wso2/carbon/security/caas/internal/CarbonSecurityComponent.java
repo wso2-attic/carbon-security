@@ -63,7 +63,7 @@ import javax.security.auth.spi.LoginModule;
  * @since 1.0.0
  */
 @Component(
-        name = "CarbonSecurityComponent",
+        name = "org.wso2.carbon.security.caas.internal.CarbonSecurityComponent",
         immediate = true
 )
 public class CarbonSecurityComponent {
