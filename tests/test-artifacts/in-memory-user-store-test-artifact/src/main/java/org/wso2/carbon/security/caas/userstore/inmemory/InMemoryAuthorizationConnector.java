@@ -53,17 +53,6 @@ public class InMemoryAuthorizationConnector implements AuthorizationStoreConnect
     }
 
     @Override
-    public List<Role.RoleBuilder> listRoles(String atribute, String filter) throws AuthorizationStoreException {
-        return null;
-    }
-
-    @Override
-    public List<Permission.PermissionBuilder> listPermissions(String atribute, String filter)
-            throws AuthorizationStoreException {
-        return null;
-    }
-
-    @Override
     public List<Role.RoleBuilder> getRolesForUser(String userId, String identityStoreId)
             throws AuthorizationStoreException {
         return null;
