@@ -99,7 +99,7 @@
                             <goal>copy-resources</goal>
                         </goals>
                         <configuration>
-                            <outputDirectory>src/main/output</outputDirectory>
+                            <outputDirectory>src/main/resources</outputDirectory>
                             <resources>
                                 <resource>
                                     <directory>resources</directory>
