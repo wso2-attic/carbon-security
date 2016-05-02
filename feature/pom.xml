@@ -82,9 +82,6 @@
     <build>
         <resources>
             <resource>
-                <directory>${project.build.directory}/</directory>
-            </resource>
-            <resource>
                 <directory>src/main/resources</directory>
             </resource>
         </resources>
@@ -115,16 +112,6 @@
                                 </resource>
                             </resources>
                         </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-source-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>attach-sources</id>
-                        <phase/>
                     </execution>
                 </executions>
             </plugin>
