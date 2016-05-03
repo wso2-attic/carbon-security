@@ -106,29 +106,6 @@ public interface AuthorizationStoreConnector {
     Role.RoleBuilder addRole(String roleName, List<Permission> permissions) throws AuthorizationStoreException;
 
     /**
-     * Add a user against a role.
-     * @param userId Id of the user.
-     * @param roleName Name of the role.
-     * @throws AuthorizationStoreException Authorization Store Exception.
-     */
-    void assignUserRole(String userId, String roleName) throws AuthorizationStoreException;
-
-    /**
-     * Add a permission to a role.
-     * @param roleName Name of the role.
-     * @param permissionName Name of the permission.
-     * @throws AuthorizationStoreException Authorization Store Exception.
-     */
-    void addRolePermission(String roleName, String permissionName) throws AuthorizationStoreException;
-
-    /**
-     * Get the authorization store config.
-     * @return AuthorizationStoreConfig.
-     * @throws AuthorizationStoreException Authorization Store Exception.
-     */
-    AuthorizationStoreConfig getAuthorizationStoreConfig() throws AuthorizationStoreException;
-
-    /**
      * Checks whether the users is in the role.
      * @param userId Id of the user.
      * @param identityStoreId Identity store id of the user.
@@ -186,5 +163,97 @@ public interface AuthorizationStoreConnector {
      * @throws AuthorizationStoreException Authorization Store Exception.
      */
     void updateRolesInUser(String userId, String identityStoreId, List<Role> newRoleList)
+            throws AuthorizationStoreException;
+
+    /**
+     * Get the authorization store config.
+     * @return AuthorizationStoreConfig.
+     * @throws AuthorizationStoreException Authorization Store Exception.
+     */
+    AuthorizationStoreConfig getAuthorizationStoreConfig() throws AuthorizationStoreException;
+
+    /**
+     * Add a new User list by <b>replacing</b> the existing User list. (PUT)
+     * @param roleId Id of the role.
+     * @param newUserList New user list.
+     * @throws AuthorizationStoreException Authorization Store Exception.
+     */
+    void updateUsersInRole(String roleId, List<User> newUserList) throws AuthorizationStoreException;
+
+    /**
+     * Add a new Role list by <b>replacing</b> the existing Role list. (PUT)
+     * @param groupId Id of the group.
+     * @param identityStoreId Id of the identity store.
+     * @param newRoleList List
+     * @throws AuthorizationStoreException Authorization Store Exception.
+     */
+    void updateRolesInGroup(String groupId, String identityStoreId, List<Role> newRoleList)
+            throws AuthorizationStoreException;
+
+    /**
+     * Add a new Group list by <b>replacing</b> the existing Group list. (PUT)
+     * @param roleId Id of the role.
+     * @param newGroupList New group list.
+     * @throws AuthorizationStoreException Authorization Store Exception.
+     */
+    void updateGroupsInRole(String roleId, List<Group> newGroupList) throws AuthorizationStoreException;
+
+    /**
+     * Add a new Permission list by <b>replacing</b> the existing Permission list. (PUT)
+     * @param roleId Id of the role.
+     * @param newPermissionList New permissions list.
+     * @throws AuthorizationStoreException Authorization Store Exception.
+     */
+    void updatePermissionsInRole(String roleId, List<Permission> newPermissionList) throws AuthorizationStoreException;
+
+    /**
+     * Assign a new list of Permissions to existing list and/or un-assign Permission from existing Permission. (PATCH)
+     * @param roleId Id of the role.
+     * @param permissionsToBeAssign List of permissions to be assign.
+     * @param permissionsToBeUnassign List of permissions to be un assign.
+     * @throws AuthorizationStoreException Authorization Store Exception.
+     */
+    void updatePermissionsInRole(String roleId, List<Permission> permissionsToBeAssign,
+                                 List<Permission> permissionsToBeUnassign) throws AuthorizationStoreException;
+
+    /**
+     * Assign a new list of Roles to existing list and/or un-assign Roles from existing list. (PATCH)
+     * @param userId Id of the user.
+     * @param identityStoreId Id of the identity store.
+     * @param rolesToBeAssign List of roles to be assign.
+     * @param rolesToBeUnassign List of roles to be un assign.
+     * @throws AuthorizationStoreException Authorization Store Exception.
+     */
+    void updateRolesInUser(String userId, String identityStoreId, List<Role> rolesToBeAssign,
+                           List<Role> rolesToBeUnassign) throws AuthorizationStoreException;
+
+    /**
+     * Assign a new list of User to existing list and/or un-assign Permission from existing User. (PATCH)
+     * @param roleId Id of the role.
+     * @param usersToBeAssign List of users to be assign.
+     * @param usersToBeUnassign List of users to un assign.
+     * @throws AuthorizationStoreException Authorization Store Exception.
+     */
+    void updateUsersInRole(String roleId, List<User> usersToBeAssign, List<User> usersToBeUnassign)
+            throws AuthorizationStoreException;
+
+    /**
+     * Assign a new list of Group to existing list and/or un-assign Group from existing Group. (PATCH)
+     * @param roleId Id of the role.
+     * @param groupToBeAssign List of groups to be assign.
+     * @param groupToBeUnassign List of groups to be un assign.
+     * @throws AuthorizationStoreException Authorization Store Exception.
+     */
+    void updateGroupsInRole(String roleId, List<Group> groupToBeAssign, List<Group> groupToBeUnassign)
+            throws AuthorizationStoreException;
+
+    /**
+     * Assign a new list of Roles to existing list and/or un-assign Roles from existing list. (PATCH)
+     * @param groupId Id of the group.
+     * @param rolesToBeAssign List of roles to be assign.
+     * @param rolesToBeUnassigned List of roles to be un assign.
+     * @throws AuthorizationStoreException Authorization Store Exception.
+     */
+    void updateRolesInGroup(String groupId, List<Role> rolesToBeAssign, List<Role> rolesToBeUnassigned)
             throws AuthorizationStoreException;
 }

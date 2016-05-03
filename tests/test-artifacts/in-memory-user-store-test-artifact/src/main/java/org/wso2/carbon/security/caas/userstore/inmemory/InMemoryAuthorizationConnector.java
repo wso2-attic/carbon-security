@@ -83,17 +83,58 @@ public class InMemoryAuthorizationConnector implements AuthorizationStoreConnect
     }
 
     @Override
-    public void assignUserRole(String userId, String roleName) throws AuthorizationStoreException {
-
-    }
-
-    @Override
-    public void addRolePermission(String roleName, String permissionName) throws AuthorizationStoreException {
-    }
-
-    @Override
     public AuthorizationStoreConfig getAuthorizationStoreConfig() {
         return null;
+    }
+
+    @Override
+    public void updateUsersInRole(String roleId, List<User> newUserList) {
+
+    }
+
+    @Override
+    public void updateRolesInGroup(String groupId, String identityStoreId, List<Role> newRoleList)
+            throws AuthorizationStoreException {
+
+    }
+
+    @Override
+    public void updateGroupsInRole(String roleId, List<Group> newGroupList) {
+
+    }
+
+    @Override
+    public void updatePermissionsInRole(String roleId, List<Permission> newPermissionList) {
+
+    }
+
+    @Override
+    public void updatePermissionsInRole(String roleId, List<Permission> permissionsToBeAssign,
+                                        List<Permission> permissionsToBeUnassign) {
+    }
+
+    @Override
+    public void updateRolesInUser(String userId, String identityStoreId, List<Role> rolesToBeAssign,
+                                  List<Role> rolesToBeUnassign) throws AuthorizationStoreException {
+
+    }
+
+    @Override
+    public void updateUsersInRole(String roleId, List<User> usersToBeAssign, List<User> usersToBeUnassign)
+            throws AuthorizationStoreException {
+
+    }
+
+    @Override
+    public void updateGroupsInRole(String roleId, List<Group> groupToBeAssign, List<Group> groupToBeUnassign)
+            throws AuthorizationStoreException {
+
+    }
+
+    @Override
+    public void updateRolesInGroup(String groupId, List<Role> rolesToBeAssign, List<Role> rolesToBeUnassigned)
+            throws AuthorizationStoreException {
+
     }
 
     @Override
