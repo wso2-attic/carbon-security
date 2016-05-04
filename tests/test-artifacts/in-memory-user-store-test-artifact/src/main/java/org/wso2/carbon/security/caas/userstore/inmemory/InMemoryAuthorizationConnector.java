@@ -132,8 +132,8 @@ public class InMemoryAuthorizationConnector implements AuthorizationStoreConnect
     }
 
     @Override
-    public void updateRolesInGroup(String groupId, List<Role> rolesToBeAssign, List<Role> rolesToBeUnassigned)
-            throws AuthorizationStoreException {
+    public void updateRolesInGroup(String groupId, String identityStoreId, List<Role> rolesToBeAssign,
+                                   List<Role> rolesToBeUnassigned) throws AuthorizationStoreException {
 
     }
 

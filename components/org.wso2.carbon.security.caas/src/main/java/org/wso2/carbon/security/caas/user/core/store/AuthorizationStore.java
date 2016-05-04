@@ -35,6 +35,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -439,6 +440,8 @@ public class AuthorizationStore {
 
     /**
      * Add a new Role list by <b>replacing</b> the existing Role list. (PUT)
+     * Sending a null or empty list will remove all of the roles associated with the specified user in all available
+     * authorization stores.
      * @param userId Id of the user.
      * @param identityStoreId Identity store id of the user.
      * @param newRoleList List of Roles needs to be assigned to this User.
@@ -447,43 +450,23 @@ public class AuthorizationStore {
     public void updateRolesInUser(String userId, String identityStoreId, List<Role> newRoleList)
             throws AuthorizationStoreException {
 
-        if (newRoleList.isEmpty()) {
-            throw new StoreException("Role list cannot be empty.");
+        if (newRoleList == null || newRoleList.isEmpty()) {
+            for (AuthorizationStoreConnector authorizationStoreConnector : authorizationStoreConnectors.values()) {
+                authorizationStoreConnector.updateRolesInUser(userId, identityStoreId, newRoleList);
+            }
+            return;
         }
 
-        boolean isMultiAuthorizationStores = false;
+        Map<String, List<Role>> roleMap = this.getRolesWithAuthorizationStore(newRoleList);
 
-        String authorizationStoreId = newRoleList.get(1).getAuthorizationStoreId();
-
-        // We need to check whether this role list has roles with different authorizations stores.
-        for (Role role : newRoleList) {
-            if (!authorizationStoreId.equals(role.getAuthorizationStoreId())) {
-                isMultiAuthorizationStores = true;
-                break;
-            }
-            authorizationStoreId = role.getAuthorizationStoreId();
-        }
-
-        if (isMultiAuthorizationStores) {
-            for (Role role : newRoleList) {
-                AuthorizationStoreConnector authorizationStoreConnector = authorizationStoreConnectors
-                        .get(role.getAuthorizationStoreId());
-                if (authorizationStoreConnector == null) {
-                    throw new StoreException(String.format("No authorization store found for the given id %s.",
-                            role.getAuthorizationStoreId()));
-                }
-                List<Role> roles = new ArrayList<>();
-                roles.add(role);
-                authorizationStoreConnector.updateRolesInUser(userId, identityStoreId, roles);
-            }
-        } else {
+        for (Map.Entry<String, List<Role>> roleEntry : roleMap.entrySet()) {
             AuthorizationStoreConnector authorizationStoreConnector = authorizationStoreConnectors
-                    .get(authorizationStoreId);
+                    .get(roleEntry.getKey());
             if (authorizationStoreConnector == null) {
                 throw new StoreException(String.format("No authorization store found for the given id %s",
-                        authorizationStoreId));
+                        roleEntry.getKey()));
             }
-            authorizationStoreConnector.updateRolesInUser(userId, identityStoreId, newRoleList);
+            authorizationStoreConnector.updateRolesInUser(userId, identityStoreId, roleEntry.getValue());
         }
     }
 
@@ -498,30 +481,29 @@ public class AuthorizationStore {
     public void updateRolesInUser(String userId, String identityStoreId, List<Role> rolesToBeAssign,
                                   List<Role> rolesToBeUnassign) throws AuthorizationStoreException {
 
-        // We are assuming that all of the roles are in the same authorization store. Cross authorization stores
-        // are not supported in this method.
+        Map<String, List<Role>> rolesToBeAssignWithStoreId = this.getRolesWithAuthorizationStore(rolesToBeAssign);
+        Map<String, List<Role>> rolesToBeUnAssignWithStoreId = this.getRolesWithAuthorizationStore(rolesToBeUnassign);
 
-        if ((rolesToBeAssign == null || rolesToBeAssign.isEmpty()) &&
-                (rolesToBeUnassign == null || rolesToBeUnassign.isEmpty())) {
-            throw new StoreException("Roles to be assign and roles to be un assign cannot be empty at the same time.");
+        Set<String> keys = rolesToBeAssignWithStoreId.keySet();
+        keys.addAll(rolesToBeUnAssignWithStoreId.keySet());
+
+        for (String key : keys) {
+
+            AuthorizationStoreConnector authorizationStoreConnector = authorizationStoreConnectors.get(key);
+
+            if (authorizationStoreConnector == null) {
+                throw new StoreException(String.format("No authorization store found for the given id %s.", key));
+            }
+
+            authorizationStoreConnector.updateRolesInUser(userId, identityStoreId, rolesToBeAssignWithStoreId.get(key),
+                    rolesToBeUnAssignWithStoreId.get(key));
         }
-
-        String authorizationStoreId = rolesToBeAssign == null || rolesToBeAssign.isEmpty() ?
-                rolesToBeUnassign.get(1).getAuthorizationStoreId() : rolesToBeAssign.get(1).getAuthorizationStoreId();
-
-        AuthorizationStoreConnector authorizationStoreConnector = authorizationStoreConnectors
-                .get(authorizationStoreId);
-
-        if (authorizationStoreConnector == null) {
-            throw new StoreException(String.format("No authorization store found for the given id %s.",
-                    authorizationStoreId));
-        }
-
-        authorizationStoreConnector.updateRolesInUser(userId, identityStoreId, rolesToBeAssign, rolesToBeUnassign);
     }
 
     /**
      * Add a new User list by <b>replacing</b> the existing User list. (PUT)
+     * Sending a null or empty list will remove all of the users associated with the specified role in specified
+     * authorization store.
      * @param roleId Id of the role.
      * @param authorizationStoreId Authorization store id of the role.
      * @param newUserList New User list that needs to replace the existing list.
@@ -529,10 +511,6 @@ public class AuthorizationStore {
      */
     public void updateUsersInRole(String roleId, String authorizationStoreId, List<User> newUserList)
             throws AuthorizationStoreException {
-
-        if (newUserList.isEmpty()) {
-            throw new StoreException("User list cannot be empty.");
-        }
 
         AuthorizationStoreConnector authorizationStoreConnector = authorizationStoreConnectors
                 .get(authorizationStoreId);
@@ -556,11 +534,6 @@ public class AuthorizationStore {
     public void updateUsersInRole(String roleId, String authorizationStoreId, List<User> usersToBeAssign,
                                   List<User> usersToBeUnassign) throws AuthorizationStoreException {
 
-        if ((usersToBeAssign == null || usersToBeAssign.isEmpty()) &&
-                (usersToBeUnassign == null || usersToBeUnassign.isEmpty())) {
-            throw new StoreException("Users to be assign and users to be un assign cannot be empty at the same time.");
-        }
-
         AuthorizationStoreConnector authorizationStoreConnector = authorizationStoreConnectors
                 .get(authorizationStoreId);
 
@@ -574,6 +547,8 @@ public class AuthorizationStore {
 
     /**
      * Add a new Role list by <b>replacing</b> the existing Role list. (PUT)
+     * Sending a null or empty list will remove all of the roles associated with the specified group in all available
+     * authorization stores.
      * @param groupId Id of the group.
      * @param identityStoreId Identity store id of the group.
      * @param newRoleList New Roles list that needs to be replace existing list.
@@ -582,43 +557,23 @@ public class AuthorizationStore {
     public void updateRolesInGroup(String groupId, String identityStoreId, List<Role> newRoleList)
             throws AuthorizationStoreException {
 
-        if (newRoleList.isEmpty()) {
-            throw new StoreException("Role list cannot be empty.");
+        if (newRoleList == null || newRoleList.isEmpty()) {
+            for (AuthorizationStoreConnector authorizationStoreConnector : authorizationStoreConnectors.values()) {
+                authorizationStoreConnector.updateRolesInGroup(groupId, identityStoreId, newRoleList);
+            }
+            return;
         }
 
-        boolean isMultiAuthorizationStores = false;
+        Map<String, List<Role>> roleMap = this.getRolesWithAuthorizationStore(newRoleList);
 
-        String authorizationStoreId = newRoleList.get(1).getAuthorizationStoreId();
-
-        // We need to check whether this role list has roles with different authorizations stores.
-        for (Role role : newRoleList) {
-            if (!authorizationStoreId.equals(role.getAuthorizationStoreId())) {
-                isMultiAuthorizationStores = true;
-                break;
-            }
-            authorizationStoreId = role.getAuthorizationStoreId();
-        }
-
-        if (isMultiAuthorizationStores) {
-            for (Role role : newRoleList) {
-                AuthorizationStoreConnector authorizationStoreConnector = authorizationStoreConnectors
-                        .get(role.getAuthorizationStoreId());
-                if (authorizationStoreConnector == null) {
-                    throw new StoreException(String.format("No authorization store found for the given id %s.",
-                            role.getAuthorizationStoreId()));
-                }
-                List<Role> roles = new ArrayList<>();
-                roles.add(role);
-                authorizationStoreConnector.updateRolesInGroup(groupId, identityStoreId, roles);
-            }
-        } else {
+        for (Map.Entry<String, List<Role>> roleEntry : roleMap.entrySet()) {
             AuthorizationStoreConnector authorizationStoreConnector = authorizationStoreConnectors
-                    .get(authorizationStoreId);
+                    .get(roleEntry.getKey());
             if (authorizationStoreConnector == null) {
                 throw new StoreException(String.format("No authorization store found for the given id %s",
-                        authorizationStoreId));
+                        roleEntry.getKey()));
             }
-            authorizationStoreConnector.updateRolesInGroup(groupId, identityStoreId, newRoleList);
+            authorizationStoreConnector.updateRolesInGroup(groupId, identityStoreId, roleEntry.getValue());
         }
     }
 
@@ -633,30 +588,29 @@ public class AuthorizationStore {
     public void updateRolesInGroup(String groupId, String identityStoreId, List<Role> rolesToBeAssign,
                                    List<Role> rolesToBeUnassigned) throws AuthorizationStoreException {
 
-        // We are assuming that all of the roles are in the same authorization store. Cross authorization stores
-        // are not supported.
+        Map<String, List<Role>> rolesToBeAssignWithStoreId = this.getRolesWithAuthorizationStore(rolesToBeAssign);
+        Map<String, List<Role>> rolesToBeUnAssignWithStoreId = this.getRolesWithAuthorizationStore(rolesToBeUnassigned);
 
-        if ((rolesToBeAssign == null || rolesToBeAssign.isEmpty()) &&
-                (rolesToBeUnassigned == null || rolesToBeUnassigned.isEmpty())) {
-            throw new StoreException("Roles to be assign and roles to be un assign cannot be empty at the same time.");
+        Set<String> keys = rolesToBeAssignWithStoreId.keySet();
+        keys.addAll(rolesToBeUnAssignWithStoreId.keySet());
+
+        for (String key : keys) {
+
+            AuthorizationStoreConnector authorizationStoreConnector = authorizationStoreConnectors.get(key);
+
+            if (authorizationStoreConnector == null) {
+                throw new StoreException(String.format("No authorization store found for the given id %s.", key));
+            }
+
+            authorizationStoreConnector.updateRolesInGroup(groupId, identityStoreId,
+                    rolesToBeAssignWithStoreId.get(key), rolesToBeUnAssignWithStoreId.get(key));
         }
-
-        String authorizationStoreId = rolesToBeAssign == null || rolesToBeAssign.isEmpty() ?
-                rolesToBeUnassigned.get(1).getAuthorizationStoreId() : rolesToBeAssign.get(1).getAuthorizationStoreId();
-
-        AuthorizationStoreConnector authorizationStoreConnector = authorizationStoreConnectors
-                .get(authorizationStoreId);
-
-        if (authorizationStoreConnector == null) {
-            throw new StoreException(String.format("No authorization store found for the given id %s.",
-                    authorizationStoreId));
-        }
-
-        authorizationStoreConnector.updateRolesInGroup(groupId, rolesToBeAssign, rolesToBeUnassigned);
     }
 
     /**
      * Add a new Group list by <b>replacing</b> the existing Group list. (PUT)
+     * Sending a null or empty list will remove all of the groups associated with the specified role in specified
+     * authorization store.
      * @param roleId Name of role.
      * @param authorizationStoreId Authorization store id of the role.
      * @param newGroupList New Group list that needs to replace the existing list.
@@ -664,10 +618,6 @@ public class AuthorizationStore {
      */
     public void updateGroupsInRole(String roleId, String authorizationStoreId, List<Group> newGroupList)
             throws AuthorizationStoreException {
-
-        if (newGroupList.isEmpty()) {
-            throw new StoreException("Group list cannot be empty.");
-        }
 
         AuthorizationStoreConnector authorizationStoreConnector = authorizationStoreConnectors
                 .get(authorizationStoreId);
@@ -691,11 +641,6 @@ public class AuthorizationStore {
     public void updateGroupsInRole(String roleId, String authorizationStoreId, List<Group> groupToBeAssign,
                                    List<Group> groupToBeUnassign) throws AuthorizationStoreException {
 
-        if ((groupToBeAssign == null || groupToBeAssign.isEmpty())
-                && (groupToBeUnassign == null || groupToBeUnassign.isEmpty())) {
-            throw new StoreException("Groups to be assign and groups to be un assign can't be empty at the same time.");
-        }
-
         AuthorizationStoreConnector authorizationStoreConnector = authorizationStoreConnectors
                 .get(authorizationStoreId);
 
@@ -709,6 +654,8 @@ public class AuthorizationStore {
 
     /**
      * Add a new Permission list by <b>replacing</b> the existing Permission list. (PUT)
+     * Sending a null or empty list will remove all of the permissions associated with the specified role in specified
+     * authorization store.
      * @param roleId Name of the role.
      * @param authorizationStoreId Authorization store id of the role.
      * @param newPermissionList New Permission list that needs to replace the existing list.
@@ -716,10 +663,6 @@ public class AuthorizationStore {
      */
     public void updatePermissionsInRole(String roleId, String authorizationStoreId, List<Permission> newPermissionList)
             throws AuthorizationStoreException {
-
-        if (newPermissionList.isEmpty()) {
-            throw new StoreException("Permission list cannot be empty.");
-        }
 
         AuthorizationStoreConnector authorizationStoreConnector = authorizationStoreConnectors
                 .get(authorizationStoreId);
@@ -753,5 +696,26 @@ public class AuthorizationStore {
         }
 
         authorizationStoreConnector.updatePermissionsInRole(roleId, permissionsToBeAssign, permissionsToBeUnassign);
+    }
+
+    /**
+     * Get the roles with there respective authorization store id.
+     * @param roles List of roles.
+     * @return Roles grouped from there authorization store id.
+     */
+    private Map<String, List<Role>> getRolesWithAuthorizationStore(List<Role> roles) {
+
+        Map<String, List<Role>> roleMap = new HashMap<>();
+
+        for (Role role : roles) {
+            List<Role> roleList = roleMap.get(role.getAuthorizationStoreId());
+            if (roleList == null) {
+                roleList = new ArrayList<>();
+            }
+            roleList.add(role);
+            roleMap.put(role.getAuthorizationStoreId(), roleList);
+        }
+
+        return roleMap;
     }
 }

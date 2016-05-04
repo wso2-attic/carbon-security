@@ -250,10 +250,11 @@ public interface AuthorizationStoreConnector {
     /**
      * Assign a new list of Roles to existing list and/or un-assign Roles from existing list. (PATCH)
      * @param groupId Id of the group.
+     * @param identityStoreId Id of the identity store of the group.
      * @param rolesToBeAssign List of roles to be assign.
      * @param rolesToBeUnassigned List of roles to be un assign.
      * @throws AuthorizationStoreException Authorization Store Exception.
      */
-    void updateRolesInGroup(String groupId, List<Role> rolesToBeAssign, List<Role> rolesToBeUnassigned)
-            throws AuthorizationStoreException;
+    void updateRolesInGroup(String groupId, String identityStoreId, List<Role> rolesToBeAssign,
+                            List<Role> rolesToBeUnassigned) throws AuthorizationStoreException;
 }
