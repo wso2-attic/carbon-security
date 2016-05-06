@@ -37,9 +37,9 @@ import org.wso2.carbon.security.caas.internal.osgi.JWTCallbackHandlerFactory;
 import org.wso2.carbon.security.caas.internal.osgi.JWTLoginModuleFactory;
 import org.wso2.carbon.security.caas.internal.osgi.UserNamePasswordLoginModuleFactory;
 import org.wso2.carbon.security.caas.internal.osgi.UsernamePasswordCallbackHandlerFactory;
+import org.wso2.carbon.security.caas.jaas.CarbonCallbackHandler;
 import org.wso2.carbon.security.caas.jaas.CarbonJAASConfiguration;
 import org.wso2.carbon.security.caas.jaas.CarbonPolicy;
-import org.wso2.carbon.security.caas.jaas.HTTPCallbackHandler;
 import org.wso2.carbon.security.caas.jaas.modules.JWTLoginModule;
 import org.wso2.carbon.security.caas.jaas.modules.UsernamePasswordLoginModule;
 import org.wso2.carbon.security.caas.jaas.util.CarbonSecurityConstants;
@@ -198,15 +198,15 @@ public class CarbonSecurityComponent {
 
         // Registering callback handler factories
         Hashtable<String, String> usernamePasswordCallbackHandlerProps = new Hashtable<>();
-        usernamePasswordCallbackHandlerProps.put(HTTPCallbackHandler.SUPPORTED_LOGIN_MODULE,
+        usernamePasswordCallbackHandlerProps.put(CarbonCallbackHandler.SUPPORTED_LOGIN_MODULE,
                                                  CarbonSecurityConstants.USERNAME_PASSWORD_LOGIN_MODULE);
-        bundleContext.registerService(HTTPCallbackHandler.class, new UsernamePasswordCallbackHandlerFactory(),
+        bundleContext.registerService(CarbonCallbackHandler.class, new UsernamePasswordCallbackHandlerFactory(),
                                       usernamePasswordCallbackHandlerProps);
 
         Hashtable<String, String> jwtCallbackHandlerProps = new Hashtable<>();
-        jwtCallbackHandlerProps.put(HTTPCallbackHandler.SUPPORTED_LOGIN_MODULE,
+        jwtCallbackHandlerProps.put(CarbonCallbackHandler.SUPPORTED_LOGIN_MODULE,
                                     CarbonSecurityConstants.JWT_LOGIN_MODULE);
-        bundleContext.registerService(HTTPCallbackHandler.class, new JWTCallbackHandlerFactory(),
+        bundleContext.registerService(CarbonCallbackHandler.class, new JWTCallbackHandlerFactory(),
                                       jwtCallbackHandlerProps);
 
         // TODO Uncomment when SAML2LoginModule is fixed

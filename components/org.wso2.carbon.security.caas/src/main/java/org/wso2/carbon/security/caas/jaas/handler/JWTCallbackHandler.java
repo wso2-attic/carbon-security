@@ -17,12 +17,11 @@
 package org.wso2.carbon.security.caas.jaas.handler;
 
 import com.nimbusds.jwt.SignedJWT;
-import io.netty.handler.codec.http.HttpHeaders;
-import io.netty.handler.codec.http.HttpRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.wso2.carbon.messaging.CarbonMessage;
 import org.wso2.carbon.security.caas.jaas.CarbonCallback;
-import org.wso2.carbon.security.caas.jaas.HTTPCallbackHandler;
+import org.wso2.carbon.security.caas.jaas.CarbonCallbackHandler;
 import org.wso2.carbon.security.caas.jaas.util.CarbonSecurityConstants;
 
 import java.io.IOException;
@@ -37,28 +36,27 @@ import javax.security.auth.callback.UnsupportedCallbackException;
  *
  * @since 1.0.0
  */
-public class JWTCallbackHandler implements HTTPCallbackHandler {
+public class JWTCallbackHandler implements CarbonCallbackHandler {
 
     private static final Logger log = LoggerFactory.getLogger(JWTCallbackHandler.class);
 
-    private HttpRequest httpRequest;
+    private CarbonMessage carbonMessage;
 
     private SignedJWT singedJWT;
 
     @Override
-    public void setHTTPRequest(HttpRequest httpRequest) {
-        this.httpRequest = httpRequest;
+    public void setCarbonMessage(CarbonMessage carbonMessage) {
+        this.carbonMessage = carbonMessage;
     }
 
     @Override
     public boolean canHandle() {
 
-        if (httpRequest == null || httpRequest.headers() == null
-            || httpRequest.headers().get(HttpHeaders.Names.AUTHORIZATION) == null) {
+        if (carbonMessage == null || carbonMessage.getHeader("Authorization") == null) {
             return false;
         }
 
-        String authorizationHeader = httpRequest.headers().get(HttpHeaders.Names.AUTHORIZATION).trim();
+        String authorizationHeader = carbonMessage.getHeader("Authorization").trim();
 
         if (authorizationHeader.startsWith(CarbonSecurityConstants.HTTP_AUTHORIZATION_PREFIX_BEARER)) {
 

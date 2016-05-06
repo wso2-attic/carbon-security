@@ -105,34 +105,9 @@
                 <version>${rs-api.version}</version>
             </dependency>
             <dependency>
-                <groupId>io.netty</groupId>
-                <artifactId>netty-buffer</artifactId>
-                <version>${netty.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>io.netty</groupId>
-                <artifactId>netty-codec</artifactId>
-                <version>${netty.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>io.netty</groupId>
-                <artifactId>netty-codec-http</artifactId>
-                <version>${netty.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>io.netty</groupId>
-                <artifactId>netty-common</artifactId>
-                <version>${netty.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>io.netty</groupId>
-                <artifactId>netty-handler</artifactId>
-                <version>${netty.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>io.netty</groupId>
-                <artifactId>netty-transport</artifactId>
-                <version>${netty.version}</version>
+                <groupId>org.wso2.carbon.messaging</groupId>
+                <artifactId>org.wso2.carbon.messaging</artifactId>
+                <version>${org.wso2.carbon.messaging.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.google.code.gson</groupId>
@@ -326,6 +301,7 @@
         <msf4j.version>1.0.0</msf4j.version>
         <opensaml.version>2.6.4.wso2v1</opensaml.version>
         <commons.dbcp.version>1.4</commons.dbcp.version>
+        <org.wso2.carbon.messaging.version>1.0.2</org.wso2.carbon.messaging.version>
 
         <!-- Equinox dependency versions -->
         <osgi.core.api.version>6.0.0</osgi.core.api.version>

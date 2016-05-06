@@ -19,7 +19,7 @@ package org.wso2.carbon.security.caas.internal.osgi;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.PrototypeServiceFactory;
 import org.osgi.framework.ServiceRegistration;
-import org.wso2.carbon.security.caas.jaas.HTTPCallbackHandler;
+import org.wso2.carbon.security.caas.jaas.CarbonCallbackHandler;
 import org.wso2.carbon.security.caas.jaas.handler.UsernamePasswordCallbackHandler;
 
 /**
@@ -27,19 +27,19 @@ import org.wso2.carbon.security.caas.jaas.handler.UsernamePasswordCallbackHandle
  *
  * @since 1.0.0
  */
-public class UsernamePasswordCallbackHandlerFactory implements PrototypeServiceFactory<HTTPCallbackHandler> {
+public class UsernamePasswordCallbackHandlerFactory implements PrototypeServiceFactory<CarbonCallbackHandler> {
 
     @Override
-    public HTTPCallbackHandler getService(Bundle bundle,
-                                          ServiceRegistration<HTTPCallbackHandler>
+    public CarbonCallbackHandler getService(Bundle bundle,
+                                          ServiceRegistration<CarbonCallbackHandler>
                                                   httpCallbackHandlerServiceRegistration) {
         return new UsernamePasswordCallbackHandler();
     }
 
     @Override
     public void ungetService(Bundle bundle,
-                             ServiceRegistration<HTTPCallbackHandler> httpCallbackHandlerServiceRegistration,
-                             HTTPCallbackHandler httpCallbackHandler) {
+                             ServiceRegistration<CarbonCallbackHandler> httpCallbackHandlerServiceRegistration,
+                             CarbonCallbackHandler carbonCallbackHandler) {
 
     }
 }

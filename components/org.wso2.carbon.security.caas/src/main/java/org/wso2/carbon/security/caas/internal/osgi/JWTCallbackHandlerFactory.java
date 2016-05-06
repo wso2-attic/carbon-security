@@ -19,7 +19,7 @@ package org.wso2.carbon.security.caas.internal.osgi;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.PrototypeServiceFactory;
 import org.osgi.framework.ServiceRegistration;
-import org.wso2.carbon.security.caas.jaas.HTTPCallbackHandler;
+import org.wso2.carbon.security.caas.jaas.CarbonCallbackHandler;
 import org.wso2.carbon.security.caas.jaas.handler.JWTCallbackHandler;
 
 /**
@@ -27,19 +27,19 @@ import org.wso2.carbon.security.caas.jaas.handler.JWTCallbackHandler;
  *
  * @since 1.0.0
  */
-public class JWTCallbackHandlerFactory implements PrototypeServiceFactory<HTTPCallbackHandler> {
+public class JWTCallbackHandlerFactory implements PrototypeServiceFactory<CarbonCallbackHandler> {
 
     @Override
-    public HTTPCallbackHandler getService(Bundle bundle,
-                                          ServiceRegistration<HTTPCallbackHandler>
+    public CarbonCallbackHandler getService(Bundle bundle,
+                                          ServiceRegistration<CarbonCallbackHandler>
                                                   httpCallbackHandlerServiceRegistration) {
         return new JWTCallbackHandler();
     }
 
     @Override
     public void ungetService(Bundle bundle,
-                             ServiceRegistration<HTTPCallbackHandler> httpCallbackHandlerServiceRegistration,
-                             HTTPCallbackHandler httpCallbackHandler) {
+                             ServiceRegistration<CarbonCallbackHandler> httpCallbackHandlerServiceRegistration,
+                             CarbonCallbackHandler carbonCallbackHandler) {
 
     }
 }

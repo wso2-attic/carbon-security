@@ -16,8 +16,8 @@
 
 package org.wso2.carbon.security.caas.jaas.handler;
 
-import io.netty.handler.codec.http.HttpRequest;
-import org.wso2.carbon.security.caas.jaas.HTTPCallbackHandler;
+import org.wso2.carbon.messaging.CarbonMessage;
+import org.wso2.carbon.security.caas.jaas.CarbonCallbackHandler;
 
 import java.io.IOException;
 import javax.security.auth.callback.Callback;
@@ -50,7 +50,7 @@ import javax.security.auth.callback.UnsupportedCallbackException;
  * This class builds SAML Assertion from the Authorization header.
  * </p>
  */
-public class SAMLCallbackHandler implements HTTPCallbackHandler {
+public class SAMLCallbackHandler implements CarbonCallbackHandler {
 
 //    private static boolean openSAMLBootstrapped = false;
 
@@ -59,7 +59,7 @@ public class SAMLCallbackHandler implements HTTPCallbackHandler {
 //    private Assertion samlAssertion;
 
     @Override
-    public void setHTTPRequest(HttpRequest httpRequest) {
+    public void setCarbonMessage(CarbonMessage carbonMessage) {
 //        this.httpRequest = httpRequest;
     }
 

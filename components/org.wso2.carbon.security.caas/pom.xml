@@ -61,8 +61,12 @@
             <artifactId>org.eclipse.osgi.services</artifactId>
         </dependency>
         <dependency>
-            <groupId>io.netty</groupId>
-            <artifactId>netty-codec-http</artifactId>
+            <groupId>org.wso2.carbon.security.caas</groupId>
+            <artifactId>org.wso2.carbon.security.caas.boot</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.wso2.carbon.messaging</groupId>
+            <artifactId>org.wso2.carbon.messaging</artifactId>
         </dependency>
         <dependency>
             <groupId>org.wso2.orbit.com.nimbusds</groupId>
@@ -73,24 +77,12 @@
             <artifactId>org.wso2.carbon.core</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.testng</groupId>
-            <artifactId>testng</artifactId>
-        </dependency>
-        <dependency>
             <groupId>org.wso2.orbit.org.yaml</groupId>
             <artifactId>snakeyaml</artifactId>
         </dependency>
-        <!--<dependency>-->
-        <!--<groupId>org.wso2.orbit.org.opensaml</groupId>-->
-        <!--<artifactId>opensaml</artifactId>-->
-        <!--</dependency>-->
         <dependency>
             <groupId>net.minidev</groupId>
             <artifactId>asm</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.wso2.carbon.security.caas</groupId>
-            <artifactId>org.wso2.carbon.security.caas.boot</artifactId>
         </dependency>
     </dependencies>
 
@@ -103,8 +95,6 @@
         <import.package>
             org.osgi.framework.*;version="${osgi.framework.package.import.version.range}",
             org.osgi.service.permissionadmin.*;version="${org.osgi.service.permissionadmin.import.version.range}",
-            org.slf4j.*;version="${slf4j.logging.package.import.version.range}",
-            io.netty.handler.codec.http.*;version="${io.netty.package.import.version.range}",
             javax.security.auth.*,
             com.nimbusds.jose.*;version="${com.nimbusds.package.import.version.range}",
             com.nimbusds.jwt.*;version="${com.nimbusds.package.import.version.range}",
@@ -129,7 +119,6 @@
         </org.osgi.service.component.annotations.version.range>
 
         <!-- Dependency package version ranges -->
-        <io.netty.package.import.version.range>[4.0,5)</io.netty.package.import.version.range>
         <com.nimbusds.package.import.version.range>[2.26.1, 2.27)</com.nimbusds.package.import.version.range>
         <asm.package.version.range>[1.0.2, 2.0.0)</asm.package.version.range>
 

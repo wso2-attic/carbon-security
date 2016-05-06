@@ -42,29 +42,13 @@ public class SecurityOSGiTestUtils {
         List<Option> defaultOptionList = new ArrayList<>();
 
         defaultOptionList.add(mavenBundle()
-                                      .groupId("io.netty")
-                                      .artifactId("netty-codec")
-                                      .versionAsInProject());
-        defaultOptionList.add(mavenBundle()
-                                      .groupId("io.netty")
-                                      .artifactId("netty-buffer")
-                                      .versionAsInProject());
-        defaultOptionList.add(mavenBundle()
-                                      .groupId("io.netty")
-                                      .artifactId("netty-codec-http")
-                                      .versionAsInProject());
-        defaultOptionList.add(mavenBundle()
-                                      .groupId("io.netty")
-                                      .artifactId("netty-common")
-                                      .versionAsInProject());
-        defaultOptionList.add(mavenBundle()
-                                      .groupId("io.netty")
-                                      .artifactId("netty-handler")
-                                      .versionAsInProject());
-        defaultOptionList.add(mavenBundle()
-                                      .groupId("io.netty")
-                                      .artifactId("netty-transport")
-                                      .versionAsInProject());
+                                      .groupId("org.slf4j")
+                                      .artifactId("slf4j-api")
+                                      .version("1.7.12"));
+//        defaultOptionList.add(mavenBundle()
+//                                      .groupId("org.slf4j")
+//                                      .artifactId("slf4j-log4j12")
+//                                      .version("1.7.5").noStart());
         defaultOptionList.add(mavenBundle()
                                       .groupId("org.wso2.orbit.com.nimbusds")
                                       .artifactId("nimbus-jose-jwt")
@@ -73,6 +57,10 @@ public class SecurityOSGiTestUtils {
                                       .groupId("net.minidev.wso2")
                                       .artifactId("json-smart")
                                       .versionAsInProject());
+        defaultOptionList.add(mavenBundle()
+                                      .groupId("org.wso2.carbon.messaging")
+                                      .artifactId("org.wso2.carbon.messaging")
+                                      .version("1.0.2"));
         defaultOptionList.add(mavenBundle()
                                       .groupId("org.wso2.carbon.security.caas")
                                       .artifactId("org.wso2.carbon.security.caas.boot")

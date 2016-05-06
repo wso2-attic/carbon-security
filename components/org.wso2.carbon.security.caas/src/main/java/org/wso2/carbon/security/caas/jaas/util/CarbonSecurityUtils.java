@@ -20,7 +20,7 @@ import org.osgi.framework.BundleContext;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceReference;
 import org.wso2.carbon.security.caas.internal.CarbonSecurityDataHolder;
-import org.wso2.carbon.security.caas.jaas.HTTPCallbackHandler;
+import org.wso2.carbon.security.caas.jaas.CarbonCallbackHandler;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -33,14 +33,14 @@ import java.util.List;
  */
 public class CarbonSecurityUtils {
 
-    public static List<HTTPCallbackHandler> getCallbackHandlers(String supportedLoginModule) {
+    public static List<CarbonCallbackHandler> getCallbackHandlers(String supportedLoginModule) {
 
-        List<HTTPCallbackHandler> callbackHandlers = new ArrayList<>();
+        List<CarbonCallbackHandler> callbackHandlers = new ArrayList<>();
         BundleContext bundleContext = CarbonSecurityDataHolder.getInstance().getBundleContext();
 
         try {
-            Collection<ServiceReference<HTTPCallbackHandler>> serviceReferences = bundleContext.getServiceReferences
-                    (HTTPCallbackHandler.class, "(&(" + HTTPCallbackHandler.SUPPORTED_LOGIN_MODULE + "=" +
+            Collection<ServiceReference<CarbonCallbackHandler>> serviceReferences = bundleContext.getServiceReferences
+                    (CarbonCallbackHandler.class, "(&(" + CarbonCallbackHandler.SUPPORTED_LOGIN_MODULE + "=" +
                                                 supportedLoginModule + ")(service.scope=prototype))");
             if (serviceReferences != null) {
                 serviceReferences.forEach(
