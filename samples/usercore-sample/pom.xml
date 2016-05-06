@@ -27,7 +27,7 @@
     <artifactId>osgi-security-service</artifactId>
     <version>1.0.0-SNAPSHOT</version>
     <packaging>bundle</packaging>
-    <name>WSO2 Carbon Security CAAS - Sample: Usercore sample</name>
+    <name>WSO2 Carbon Security CAAS - Usercore Sample</name>
     <url>http://wso2.com</url>
 
     <dependencies>
