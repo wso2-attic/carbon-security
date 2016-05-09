@@ -33,6 +33,7 @@ import org.wso2.carbon.security.caas.user.core.store.connector.AuthorizationStor
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -484,7 +485,8 @@ public class AuthorizationStore {
         Map<String, List<Role>> rolesToBeAssignWithStoreId = this.getRolesWithAuthorizationStore(rolesToBeAssign);
         Map<String, List<Role>> rolesToBeUnAssignWithStoreId = this.getRolesWithAuthorizationStore(rolesToBeUnassign);
 
-        Set<String> keys = rolesToBeAssignWithStoreId.keySet();
+        Set<String> keys = new HashSet<>();
+        keys.addAll(rolesToBeAssignWithStoreId.keySet());
         keys.addAll(rolesToBeUnAssignWithStoreId.keySet());
 
         for (String key : keys) {
@@ -591,7 +593,8 @@ public class AuthorizationStore {
         Map<String, List<Role>> rolesToBeAssignWithStoreId = this.getRolesWithAuthorizationStore(rolesToBeAssign);
         Map<String, List<Role>> rolesToBeUnAssignWithStoreId = this.getRolesWithAuthorizationStore(rolesToBeUnassigned);
 
-        Set<String> keys = rolesToBeAssignWithStoreId.keySet();
+        Set<String> keys = new HashSet<>();
+        keys.addAll(rolesToBeAssignWithStoreId.keySet());
         keys.addAll(rolesToBeUnAssignWithStoreId.keySet());
 
         for (String key : keys) {
