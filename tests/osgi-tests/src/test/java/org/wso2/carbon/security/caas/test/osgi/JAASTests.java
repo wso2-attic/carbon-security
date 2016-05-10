@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.wso2.carbon.security.caas.osgi;
+package org.wso2.carbon.security.caas.test.osgi;
 
 import org.ops4j.pax.exam.Configuration;
 import org.ops4j.pax.exam.Option;
@@ -29,7 +29,7 @@ import org.wso2.carbon.kernel.context.PrivilegedCarbonContext;
 import org.wso2.carbon.kernel.utils.CarbonServerInfo;
 import org.wso2.carbon.messaging.CarbonMessage;
 import org.wso2.carbon.security.caas.jaas.ProxyCallbackHandler;
-import org.wso2.carbon.security.caas.osgi.util.SecurityOSGiTestUtils;
+import org.wso2.carbon.security.caas.test.osgi.util.SecurityOSGiTestUtils;
 
 import java.nio.file.Paths;
 import java.util.Base64;

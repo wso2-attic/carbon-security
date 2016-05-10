@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.wso2.carbon.security.caas.osgi.util;
+package org.wso2.carbon.security.caas.test.osgi.util;
 
 import org.ops4j.pax.exam.Option;
 import org.wso2.carbon.osgi.test.util.CarbonSysPropConfiguration;
