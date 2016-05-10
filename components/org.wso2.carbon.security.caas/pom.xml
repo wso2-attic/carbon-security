@@ -69,10 +69,6 @@
             <artifactId>org.wso2.carbon.messaging</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.wso2.orbit.com.nimbusds</groupId>
-            <artifactId>nimbus-jose-jwt</artifactId>
-        </dependency>
-        <dependency>
             <groupId>org.wso2.carbon</groupId>
             <artifactId>org.wso2.carbon.core</artifactId>
         </dependency>
@@ -97,7 +93,6 @@
             org.osgi.service.permissionadmin.*;version="${org.osgi.service.permissionadmin.import.version.range}",
             javax.security.auth.*,
             com.nimbusds.jose.*;version="${com.nimbusds.package.import.version.range}",
-            com.nimbusds.jwt.*;version="${com.nimbusds.package.import.version.range}",
             org.wso2.carbon.context.api.*;version="${org.wso2.carbon.context.import.version.range}",
             org.yaml.snakeyaml.*;version="${org.snakeyaml.package.import.version.range}",
             javax.sql.*,
