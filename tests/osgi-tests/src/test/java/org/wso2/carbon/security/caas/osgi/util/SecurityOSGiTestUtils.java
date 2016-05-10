@@ -45,14 +45,6 @@ public class SecurityOSGiTestUtils {
                                       .groupId("org.slf4j")
                                       .artifactId("slf4j-api")
                                       .version("1.7.12"));
-//        defaultOptionList.add(mavenBundle()
-//                                      .groupId("org.slf4j")
-//                                      .artifactId("slf4j-log4j12")
-//                                      .version("1.7.5").noStart());
-        defaultOptionList.add(mavenBundle()
-                                      .groupId("org.wso2.orbit.com.nimbusds")
-                                      .artifactId("nimbus-jose-jwt")
-                                      .versionAsInProject());
         defaultOptionList.add(mavenBundle()
                                       .groupId("net.minidev.wso2")
                                       .artifactId("json-smart")
@@ -84,10 +76,6 @@ public class SecurityOSGiTestUtils {
         defaultOptionList.add(mavenBundle()
                                .groupId("net.minidev.wso2")
                                .artifactId("json-smart")
-                               .versionAsInProject());
-        defaultOptionList.add(mavenBundle()
-                               .groupId("org.wso2.orbit.com.nimbusds")
-                               .artifactId("nimbus-jose-jwt")
                                .versionAsInProject());
         defaultOptionList.add(mavenBundle()
                                .groupId("net.minidev")

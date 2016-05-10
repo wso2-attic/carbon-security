@@ -102,6 +102,8 @@
             net.minidev.asm.*;version="${asm.package.version.range}",
             org.wso2.carbon.security.caas.boot.*,
             org.wso2.carbon.kernel.*,
+            org.slf4j.*,
+            org.wso2.carbon.messaging.*
         </import.package>
 
         <dsannotations>*</dsannotations>
