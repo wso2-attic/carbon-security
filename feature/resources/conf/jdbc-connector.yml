@@ -1,2 +1,0 @@
-name: "jdbc-identity-store-connector"
-dataSource: "jdbc/WSO2CARBON_DB"
