@@ -18,6 +18,7 @@ package org.wso2.carbon.security.caas.user.core.exception;
 
 /**
  * This class is an extension of {@code Exception} class and used to indicate identity store related exceptions.
+ * @since 1.0.0
  */
 public class IdentityStoreException extends Exception {
 

@@ -18,6 +18,7 @@ package org.wso2.carbon.security.caas.user.core.exception;
 
 /**
  * This class is an extension of {@code Exception} class and used to indicate authentication failures.
+ * @since 1.0.0
  */
 public class AuthenticationFailure extends Throwable {
 

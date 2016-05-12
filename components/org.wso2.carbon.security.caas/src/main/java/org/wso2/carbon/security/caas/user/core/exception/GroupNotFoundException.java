@@ -17,20 +17,20 @@
 package org.wso2.carbon.security.caas.user.core.exception;
 
 /**
- * Authorization store exception.
+ * This class represents a Group Not Found exception.
  * @since 1.0.0
  */
-public class AuthorizationStoreException extends Exception {
+public class GroupNotFoundException extends Exception {
 
-    public AuthorizationStoreException() {
+    public GroupNotFoundException() {
         super();
     }
 
-    public AuthorizationStoreException(String message) {
+    public GroupNotFoundException(String message) {
         super(message);
     }
 
-    public AuthorizationStoreException(String messgae, Throwable cause) {
-        super(messgae, cause);
+    public GroupNotFoundException(String message, Throwable throwable) {
+        super(message, throwable);
     }
 }

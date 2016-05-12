@@ -19,7 +19,9 @@ package org.wso2.carbon.security.caas.user.core.store.connector;
 import org.wso2.carbon.security.caas.user.core.bean.Group;
 import org.wso2.carbon.security.caas.user.core.bean.User;
 import org.wso2.carbon.security.caas.user.core.config.IdentityStoreConfig;
+import org.wso2.carbon.security.caas.user.core.exception.GroupNotFoundException;
 import org.wso2.carbon.security.caas.user.core.exception.IdentityStoreException;
+import org.wso2.carbon.security.caas.user.core.exception.UserNotFoundException;
 
 import java.util.List;
 import java.util.Map;
@@ -57,7 +59,7 @@ public interface IdentityStoreConnector {
      * @return User.UserBuilder.
      * @throws IdentityStoreException Identity Store Exception.
      */
-    User.UserBuilder getUser(String username) throws IdentityStoreException;
+    User.UserBuilder getUser(String username) throws UserNotFoundException, IdentityStoreException;
 
     /**
      * List all users in User Store according to the filter pattern.
@@ -103,7 +105,7 @@ public interface IdentityStoreConnector {
      * @return Group with the given group name.
      * @throws IdentityStoreException Identity Store Exception.
      */
-    Group.GroupBuilder getGroup(String groupName) throws IdentityStoreException;
+    Group.GroupBuilder getGroup(String groupName) throws GroupNotFoundException, IdentityStoreException;
 
     /**
      * List groups according to the filter pattern.

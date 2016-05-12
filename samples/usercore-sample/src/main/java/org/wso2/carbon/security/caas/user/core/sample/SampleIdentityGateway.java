@@ -24,6 +24,7 @@ import org.osgi.service.component.annotations.ReferenceCardinality;
 import org.osgi.service.component.annotations.ReferencePolicy;
 import org.wso2.carbon.security.caas.user.core.bean.User;
 import org.wso2.carbon.security.caas.user.core.exception.IdentityStoreException;
+import org.wso2.carbon.security.caas.user.core.exception.UserNotFoundException;
 import org.wso2.carbon.security.caas.user.core.service.RealmService;
 import org.wso2.carbon.security.caas.user.core.store.IdentityStore;
 import org.wso2.msf4j.Microservice;
@@ -74,6 +75,8 @@ public class SampleIdentityGateway implements Microservice {
             User user = identityStore.getUser(symbol);
             return Response.ok(user, MediaType.APPLICATION_JSON_TYPE).build();
         } catch (IdentityStoreException e) {
+            return Response.serverError().build();
+        } catch (UserNotFoundException e) {
             return Response.serverError().build();
         }
     }
