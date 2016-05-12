@@ -28,6 +28,7 @@ import org.testng.annotations.Test;
 import org.wso2.carbon.kernel.context.PrivilegedCarbonContext;
 import org.wso2.carbon.kernel.utils.CarbonServerInfo;
 import org.wso2.carbon.messaging.CarbonMessage;
+import org.wso2.carbon.messaging.DefaultCarbonMessage;
 import org.wso2.carbon.security.caas.jaas.ProxyCallbackHandler;
 import org.wso2.carbon.security.caas.test.osgi.util.SecurityOSGiTestUtils;
 
@@ -70,7 +71,7 @@ public class JAASTests {
 
         PrivilegedCarbonContext.destroyCurrentContext();
 
-        CarbonMessage carbonMessage = new CarbonMessageImpl();
+        CarbonMessage carbonMessage = new DefaultCarbonMessage();
         carbonMessage.setHeader("Authorization", "Basic " + Base64.getEncoder()
                 .encodeToString("admin:admin".getBytes()));
         ProxyCallbackHandler callbackHandler = new ProxyCallbackHandler(carbonMessage);
@@ -85,7 +86,7 @@ public class JAASTests {
     public void testBasicLoginFailure() {
         PrivilegedCarbonContext.destroyCurrentContext();
 
-        CarbonMessage carbonMessage = new CarbonMessageImpl();
+        CarbonMessage carbonMessage = new DefaultCarbonMessage();
         carbonMessage.setHeader("Authorization", "Basic " + Base64.getEncoder()
                 .encodeToString("admin:wrongpassword".getBytes()));
 
