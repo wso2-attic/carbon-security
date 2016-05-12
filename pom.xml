@@ -290,7 +290,7 @@
         <carbon.security.caas.version>1.0.0-SNAPSHOT</carbon.security.caas.version>
 
         <carbon.feature.plugin.version>2.0.1</carbon.feature.plugin.version>
-        <carbon.kernel.version>5.1.0-m3</carbon.kernel.version>
+        <carbon.kernel.version>5.1.0-alpha</carbon.kernel.version>
         <msf4j.version>1.0.0</msf4j.version>
         <opensaml.version>2.6.4.wso2v1</opensaml.version>
         <commons.dbcp.version>1.4</commons.dbcp.version>

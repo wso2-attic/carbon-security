@@ -22,6 +22,8 @@ import org.wso2.carbon.security.caas.user.core.bean.Role;
 import org.wso2.carbon.security.caas.user.core.bean.User;
 import org.wso2.carbon.security.caas.user.core.config.AuthorizationStoreConfig;
 import org.wso2.carbon.security.caas.user.core.exception.AuthorizationStoreException;
+import org.wso2.carbon.security.caas.user.core.exception.PermissionNotFoundException;
+import org.wso2.carbon.security.caas.user.core.exception.RoleNotFoundException;
 
 import java.util.List;
 
@@ -39,26 +41,22 @@ public interface AuthorizationStoreConnector {
     void init(String storeId, AuthorizationStoreConfig authorizationStoreConfig) throws AuthorizationStoreException;
 
     /**
-     * Get the id of this authorization store.
-     * @return Id of the authorization store.
-     */
-    String getAuthorizationStoreId();
-
-    /**
      * Get the role of from role id.
      * @param roleId Id of the Role
      * @return Role.RoleBuilder.
      * @throws AuthorizationStoreException Authorization Store Exception.
      */
-    Role.RoleBuilder getRole(String roleId) throws AuthorizationStoreException;
+    Role.RoleBuilder getRole(String roleId) throws RoleNotFoundException, AuthorizationStoreException;
 
     /**
-     * Get permission from the permission id.
-     * @param permissionId Id of the permission.
+     * Get permission from the resource id and action.
+     * @param resourceId Resource id of this permission.
+     * @param action Action of the permission.
      * @return Permission.PermissionBuilder.
      * @throws AuthorizationStoreException Authorization Store Exception
      */
-    Permission.PermissionBuilder getPermission(String permissionId) throws AuthorizationStoreException;
+    Permission.PermissionBuilder getPermission(String resourceId, String action) throws PermissionNotFoundException,
+            AuthorizationStoreException;
 
     /**
      * Get roles for the user id.
@@ -257,4 +255,10 @@ public interface AuthorizationStoreConnector {
      */
     void updateRolesInGroup(String groupId, String identityStoreId, List<Role> rolesToBeAssign,
                             List<Role> rolesToBeUnassigned) throws AuthorizationStoreException;
+
+    /**
+     * Get the id of this authorization store.
+     * @return Id of the authorization store.
+     */
+    String getAuthorizationStoreId();
 }

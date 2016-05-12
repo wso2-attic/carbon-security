@@ -22,8 +22,10 @@ import org.wso2.carbon.security.caas.internal.CarbonSecurityDataHolder;
 import org.wso2.carbon.security.caas.user.core.bean.Group;
 import org.wso2.carbon.security.caas.user.core.bean.User;
 import org.wso2.carbon.security.caas.user.core.config.IdentityStoreConfig;
+import org.wso2.carbon.security.caas.user.core.exception.GroupNotFoundException;
 import org.wso2.carbon.security.caas.user.core.exception.IdentityStoreException;
 import org.wso2.carbon.security.caas.user.core.exception.StoreException;
+import org.wso2.carbon.security.caas.user.core.exception.UserNotFoundException;
 import org.wso2.carbon.security.caas.user.core.service.RealmService;
 import org.wso2.carbon.security.caas.user.core.store.connector.IdentityStoreConnector;
 import org.wso2.carbon.security.caas.user.core.store.connector.IdentityStoreConnectorFactory;
@@ -86,21 +88,23 @@ public class IdentityStore {
      * @param username Username of the user.
      * @return User.
      * @throws IdentityStoreException Identity Store Exception.
+     * @throws UserNotFoundException User not found exception.
      */
-    public User getUser(String username) throws IdentityStoreException {
+    public User getUser(String username) throws IdentityStoreException, UserNotFoundException {
+
+        UserNotFoundException userNotFoundException = new UserNotFoundException("User not found for the given name.");
 
         for (IdentityStoreConnector identityStoreConnector : identityStoreConnectors.values()) {
-            User.UserBuilder userBuilder = identityStoreConnector.getUser(username);
-
-            if (userBuilder != null) {
-                return userBuilder
+            try {
+                return identityStoreConnector.getUser(username)
                         .setIdentityStore(realmService.getIdentityStore())
                         .setAuthorizationStore(realmService.getAuthorizationStore())
                         .build();
+            } catch (UserNotFoundException e) {
+                userNotFoundException.addSuppressed(e);
             }
         }
-
-        throw new IdentityStoreException("No user found for the given name.");
+        throw userNotFoundException;
     }
 
     /**
@@ -183,21 +187,24 @@ public class IdentityStore {
      * @param groupName Name of the group.
      * @return Group
      * @throws IdentityStoreException Identity Store Exception.
+     * @throws GroupNotFoundException Group not found exception.
      */
-    public Group getGroup(String groupName) throws IdentityStoreException {
+    public Group getGroup(String groupName) throws IdentityStoreException, GroupNotFoundException {
+
+        GroupNotFoundException groupNotFoundException =
+                new GroupNotFoundException("Group not found for the given name");
 
         for (IdentityStoreConnector identityStoreConnector : identityStoreConnectors.values()) {
-            Group.GroupBuilder groupBuilder = identityStoreConnector.getGroup(groupName);
-
-            if (groupBuilder != null) {
-                return groupBuilder
+            try {
+                return identityStoreConnector.getGroup(groupName)
                         .setIdentityStore(realmService.getIdentityStore())
                         .setAuthorizationStore(realmService.getAuthorizationStore())
                         .build();
+            } catch (GroupNotFoundException e) {
+                groupNotFoundException.addSuppressed(e);
             }
         }
-
-        throw new IdentityStoreException("No group found for the given name.");
+        throw groupNotFoundException;
     }
 
     /**

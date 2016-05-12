@@ -17,20 +17,20 @@
 package org.wso2.carbon.security.caas.user.core.exception;
 
 /**
- * Authorization store exception.
+ * This class represents a Permission not found exception.
  * @since 1.0.0
  */
-public class AuthorizationStoreException extends Exception {
+public class PermissionNotFoundException extends Exception {
 
-    public AuthorizationStoreException() {
+    public PermissionNotFoundException() {
         super();
     }
 
-    public AuthorizationStoreException(String message) {
+    public PermissionNotFoundException(String message) {
         super(message);
     }
 
-    public AuthorizationStoreException(String messgae, Throwable cause) {
-        super(messgae, cause);
+    public PermissionNotFoundException(String message, Throwable throwable) {
+        super(message, throwable);
     }
 }

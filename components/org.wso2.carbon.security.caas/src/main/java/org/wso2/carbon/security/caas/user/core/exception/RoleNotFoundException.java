@@ -17,20 +17,20 @@
 package org.wso2.carbon.security.caas.user.core.exception;
 
 /**
- * Authorization store exception.
+ * This class represents a Role not found exception.
  * @since 1.0.0
  */
-public class AuthorizationStoreException extends Exception {
+public class RoleNotFoundException extends Exception {
 
-    public AuthorizationStoreException() {
+    public RoleNotFoundException() {
         super();
     }
 
-    public AuthorizationStoreException(String message) {
+    public RoleNotFoundException(String message) {
         super(message);
     }
 
-    public AuthorizationStoreException(String messgae, Throwable cause) {
-        super(messgae, cause);
+    public RoleNotFoundException(String message, Throwable throwable) {
+        super(message, throwable);
     }
 }

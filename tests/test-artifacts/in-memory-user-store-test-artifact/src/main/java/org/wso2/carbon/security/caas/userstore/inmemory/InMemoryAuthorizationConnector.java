@@ -48,7 +48,8 @@ public class InMemoryAuthorizationConnector implements AuthorizationStoreConnect
     }
 
     @Override
-    public Permission.PermissionBuilder getPermission(String permissionId) throws AuthorizationStoreException {
+    public Permission.PermissionBuilder getPermission(String resourceId, String action)
+            throws AuthorizationStoreException {
         return null;
     }
 

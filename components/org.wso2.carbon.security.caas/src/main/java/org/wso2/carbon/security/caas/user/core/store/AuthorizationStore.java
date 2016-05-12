@@ -26,6 +26,8 @@ import org.wso2.carbon.security.caas.user.core.bean.User;
 import org.wso2.carbon.security.caas.user.core.config.AuthorizationStoreConfig;
 import org.wso2.carbon.security.caas.user.core.exception.AuthorizationStoreException;
 import org.wso2.carbon.security.caas.user.core.exception.IdentityStoreException;
+import org.wso2.carbon.security.caas.user.core.exception.PermissionNotFoundException;
+import org.wso2.carbon.security.caas.user.core.exception.RoleNotFoundException;
 import org.wso2.carbon.security.caas.user.core.exception.StoreException;
 import org.wso2.carbon.security.caas.user.core.service.RealmService;
 import org.wso2.carbon.security.caas.user.core.store.connector.AuthorizationStoreConnector;
@@ -224,6 +226,53 @@ public class AuthorizationStore {
         }
 
         return false;
+    }
+
+    /**
+     * Get the role from role name.
+     * @param roleName Name of the role.
+     * @return Role.
+     * @throws RoleNotFoundException Role not found exception.
+     * @throws AuthorizationStoreException Authorization store exception.
+     */
+    public Role getRole(String roleName) throws RoleNotFoundException, AuthorizationStoreException {
+
+        RoleNotFoundException roleNotFoundException = new RoleNotFoundException("Role not found for the given name.");
+
+        for (AuthorizationStoreConnector authorizationStoreConnector : authorizationStoreConnectors.values()) {
+            try {
+                return authorizationStoreConnector.getRole(roleName)
+                        .setAuthorizationStore(realmService.getAuthorizationStore())
+                        .build();
+            } catch (RoleNotFoundException e) {
+                roleNotFoundException.addSuppressed(e);
+            }
+        }
+        throw roleNotFoundException;
+    }
+
+    /**
+     * Get the permission from resource id and action.
+     * @param resourceId Resource id of the permission.
+     * @param action Action of the permission.
+     * @return Permission.
+     * @throws PermissionNotFoundException Permission not found exception.
+     * @throws AuthorizationStoreException Authorization store exception.
+     */
+    public Permission getPermission(String resourceId, String action) throws PermissionNotFoundException,
+            AuthorizationStoreException {
+
+        PermissionNotFoundException permissionNotFoundException =
+                new PermissionNotFoundException("Permission not found for the given resource id and the action.");
+
+        for (AuthorizationStoreConnector authorizationStoreConnector : authorizationStoreConnectors.values()) {
+            try {
+                return authorizationStoreConnector.getPermission(resourceId, action).build();
+            } catch (PermissionNotFoundException e) {
+                permissionNotFoundException.addSuppressed(e);
+            }
+        }
+        throw permissionNotFoundException;
     }
 
     /**
@@ -709,6 +758,10 @@ public class AuthorizationStore {
     private Map<String, List<Role>> getRolesWithAuthorizationStore(List<Role> roles) {
 
         Map<String, List<Role>> roleMap = new HashMap<>();
+
+        if (roles == null) {
+            return roleMap;
+        }
 
         for (Role role : roles) {
             List<Role> roleList = roleMap.get(role.getAuthorizationStoreId());

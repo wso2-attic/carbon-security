@@ -18,6 +18,7 @@ package org.wso2.carbon.security.caas.user.core.exception;
 
 /**
  * Credential store exception.
+ * @since 1.0.0
  */
 public class CredentialStoreException extends Exception {
 
