@@ -33,14 +33,11 @@ import org.wso2.carbon.security.caas.internal.config.DefaultPermissionInfo;
 import org.wso2.carbon.security.caas.internal.config.DefaultPermissionInfoCollection;
 import org.wso2.carbon.security.caas.internal.config.SecurityConfigBuilder;
 import org.wso2.carbon.security.caas.internal.config.StoreConfigBuilder;
-import org.wso2.carbon.security.caas.internal.osgi.JWTCallbackHandlerFactory;
-import org.wso2.carbon.security.caas.internal.osgi.JWTLoginModuleFactory;
 import org.wso2.carbon.security.caas.internal.osgi.UserNamePasswordLoginModuleFactory;
 import org.wso2.carbon.security.caas.internal.osgi.UsernamePasswordCallbackHandlerFactory;
+import org.wso2.carbon.security.caas.jaas.CarbonCallbackHandler;
 import org.wso2.carbon.security.caas.jaas.CarbonJAASConfiguration;
 import org.wso2.carbon.security.caas.jaas.CarbonPolicy;
-import org.wso2.carbon.security.caas.jaas.HTTPCallbackHandler;
-import org.wso2.carbon.security.caas.jaas.modules.JWTLoginModule;
 import org.wso2.carbon.security.caas.jaas.modules.UsernamePasswordLoginModule;
 import org.wso2.carbon.security.caas.jaas.util.CarbonSecurityConstants;
 import org.wso2.carbon.security.caas.user.core.common.CarbonRealmServiceImpl;
@@ -187,34 +184,12 @@ public class CarbonSecurityComponent {
         bundleContext.registerService(LoginModule.class, new UserNamePasswordLoginModuleFactory(),
                                       usernamePasswordLoginModuleProps);
 
-        Hashtable<String, String> jwtLoginModuleProps = new Hashtable<>();
-        jwtLoginModuleProps.put(ProxyLoginModule.LOGIN_MODULE_SEARCH_KEY, JWTLoginModule.class.getName());
-        bundleContext.registerService(LoginModule.class, new JWTLoginModuleFactory(), jwtLoginModuleProps);
-
-        // TODO Uncomment when SAML2LoginModule is fixed
-//        Hashtable<String, String> samlLoginModuleProps = new Hashtable<>();
-//        samlLoginModuleProps.put(ProxyLoginModule.LOGIN_MODULE_SEARCH_KEY, SAML2LoginModule.class.getName());
-//        bundleContext.registerService(LoginModule.class, new SAML2LoginModuleFactory(), samlLoginModuleProps);
-
         // Registering callback handler factories
         Hashtable<String, String> usernamePasswordCallbackHandlerProps = new Hashtable<>();
-        usernamePasswordCallbackHandlerProps.put(HTTPCallbackHandler.SUPPORTED_LOGIN_MODULE,
+        usernamePasswordCallbackHandlerProps.put(CarbonCallbackHandler.SUPPORTED_LOGIN_MODULE,
                                                  CarbonSecurityConstants.USERNAME_PASSWORD_LOGIN_MODULE);
-        bundleContext.registerService(HTTPCallbackHandler.class, new UsernamePasswordCallbackHandlerFactory(),
+        bundleContext.registerService(CarbonCallbackHandler.class, new UsernamePasswordCallbackHandlerFactory(),
                                       usernamePasswordCallbackHandlerProps);
-
-        Hashtable<String, String> jwtCallbackHandlerProps = new Hashtable<>();
-        jwtCallbackHandlerProps.put(HTTPCallbackHandler.SUPPORTED_LOGIN_MODULE,
-                                    CarbonSecurityConstants.JWT_LOGIN_MODULE);
-        bundleContext.registerService(HTTPCallbackHandler.class, new JWTCallbackHandlerFactory(),
-                                      jwtCallbackHandlerProps);
-
-        // TODO Uncomment when SAML2LoginModule is fixed
-//        Hashtable<String, String> samlCallbackHandlerProps = new Hashtable<>();
-//        samlCallbackHandlerProps.put(HTTPCallbackHandler.SUPPORTED_LOGIN_MODULE,
-//                                     CarbonSecurityConstants.SAML_LOGIN_MODULE);
-//        bundleContext.registerService(HTTPCallbackHandler.class, new SAMLCallbackHandlerFactory(),
-//                                      samlCallbackHandlerProps);
     }
 
     /**

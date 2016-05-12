@@ -45,34 +45,6 @@
             <version>${carbon.security.caas.version}</version>
         </dependency>
         <dependency>
-            <groupId>io.netty</groupId>
-            <artifactId>netty-buffer</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>io.netty</groupId>
-            <artifactId>netty-codec</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>io.netty</groupId>
-            <artifactId>netty-codec-http</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>io.netty</groupId>
-            <artifactId>netty-common</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>io.netty</groupId>
-            <artifactId>netty-handler</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>io.netty</groupId>
-            <artifactId>netty-transport</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.wso2.orbit.com.nimbusds</groupId>
-            <artifactId>nimbus-jose-jwt</artifactId>
-        </dependency>
-        <dependency>
             <groupId>net.minidev.wso2</groupId>
             <artifactId>json-smart</artifactId>
         </dependency>
@@ -145,34 +117,6 @@
                                 <bundle>
                                     <symbolicName>org.wso2.carbon.security.caas</symbolicName>
                                     <version>${carbon.security.caas.version}</version>
-                                </bundle>
-                                <bundle>
-                                    <symbolicName>io.netty.buffer</symbolicName>
-                                    <version>${netty.version}</version>
-                                </bundle>
-                                <bundle>
-                                    <symbolicName>io.netty.codec</symbolicName>
-                                    <version>${netty.version}</version>
-                                </bundle>
-                                <bundle>
-                                    <symbolicName>io.netty.codec-http</symbolicName>
-                                    <version>${netty.version}</version>
-                                </bundle>
-                                <bundle>
-                                    <symbolicName>io.netty.common</symbolicName>
-                                    <version>${netty.version}</version>
-                                </bundle>
-                                <bundle>
-                                    <symbolicName>io.netty.handler</symbolicName>
-                                    <version>${netty.version}</version>
-                                </bundle>
-                                <bundle>
-                                    <symbolicName>io.netty.transport</symbolicName>
-                                    <version>${netty.version}</version>
-                                </bundle>
-                                <bundle>
-                                    <symbolicName>nimbus-jose-jwt</symbolicName>
-                                    <version>${nimbus.version}</version>
                                 </bundle>
                                 <bundle>
                                     <symbolicName>json-smart</symbolicName>

@@ -14,12 +14,8 @@
  * limitations under the License.
  */
 
-package org.wso2.carbon.security.caas.osgi;
+package org.wso2.carbon.security.caas.test.osgi;
 
-import io.netty.handler.codec.http.DefaultHttpRequest;
-import io.netty.handler.codec.http.HttpMethod;
-import io.netty.handler.codec.http.HttpRequest;
-import io.netty.handler.codec.http.HttpVersion;
 import org.ops4j.pax.exam.Configuration;
 import org.ops4j.pax.exam.Option;
 import org.ops4j.pax.exam.spi.reactors.ExamReactorStrategy;
@@ -31,8 +27,9 @@ import org.testng.annotations.Listeners;
 import org.testng.annotations.Test;
 import org.wso2.carbon.kernel.context.PrivilegedCarbonContext;
 import org.wso2.carbon.kernel.utils.CarbonServerInfo;
-import org.wso2.carbon.security.caas.jaas.CarbonCallbackHandler;
-import org.wso2.carbon.security.caas.osgi.util.SecurityOSGiTestUtils;
+import org.wso2.carbon.messaging.CarbonMessage;
+import org.wso2.carbon.security.caas.jaas.ProxyCallbackHandler;
+import org.wso2.carbon.security.caas.test.osgi.util.SecurityOSGiTestUtils;
 
 import java.nio.file.Paths;
 import java.util.Base64;
@@ -72,10 +69,11 @@ public class JAASTests {
     public void testBasicLogin() throws LoginException {
 
         PrivilegedCarbonContext.destroyCurrentContext();
-        HttpRequest httpRequest = getHTTPRequestWithAuthzHeader("Basic " + Base64.getEncoder().encodeToString
-                ("admin:admin".getBytes()));
 
-        CarbonCallbackHandler callbackHandler = new CarbonCallbackHandler(httpRequest);
+        CarbonMessage carbonMessage = new CarbonMessageImpl();
+        carbonMessage.setHeader("Authorization", "Basic " + Base64.getEncoder()
+                .encodeToString("admin:admin".getBytes()));
+        ProxyCallbackHandler callbackHandler = new ProxyCallbackHandler(carbonMessage);
 
         LoginContext loginContext = new LoginContext("CarbonSecurityBasicConfig", callbackHandler);
 
@@ -86,10 +84,12 @@ public class JAASTests {
     @Test
     public void testBasicLoginFailure() {
         PrivilegedCarbonContext.destroyCurrentContext();
-        HttpRequest httpRequest = getHTTPRequestWithAuthzHeader("Basic " + Base64.getEncoder().encodeToString
-                ("admin:wrongpassword".getBytes()));
 
-        CarbonCallbackHandler callbackHandler = new CarbonCallbackHandler(httpRequest);
+        CarbonMessage carbonMessage = new CarbonMessageImpl();
+        carbonMessage.setHeader("Authorization", "Basic " + Base64.getEncoder()
+                .encodeToString("admin:wrongpassword".getBytes()));
+
+        ProxyCallbackHandler callbackHandler = new ProxyCallbackHandler(carbonMessage);
 
         LoginContext loginContext;
 
@@ -106,56 +106,5 @@ public class JAASTests {
                 Assert.assertTrue(false, "Error message for failed login attempt should not be 'null'.");
             }
         }
-    }
-
-    @Test
-    public void testJWTLogin() throws LoginException {
-
-        PrivilegedCarbonContext.destroyCurrentContext();
-
-        //JWT for user: admin.
-        String encodedJWT = "eyJhbGciOiJSUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImV4cCI6NDEwMjQyNTAwMH0.E2SstYw2upLmIf0FqYNM_hS" +
-                            "PJ9j-vrYwep9nEAHu-OgxEBGU9-e1UXT9FTQ9ZJnkLgO4DypF_kAW2xbA6SOhwSpT_BQHcXJta_yCrPcnxH09vtk" +
-                            "HN35zl9UzS7d3CCLaKrDNWMWnf6Z9XcbDJjOvakVhbf7UFPI0ec0fNx0RbbQ";
-
-        HttpRequest httpRequest = getHTTPRequestWithAuthzHeader("Bearer " + encodedJWT);
-
-        CarbonCallbackHandler callbackHandler = new CarbonCallbackHandler(httpRequest);
-        LoginContext loginContext = new LoginContext("CarbonSecurityJWTConfig", callbackHandler);
-
-        loginContext.login();
-        Assert.assertTrue(true);
-    }
-
-    @Test
-    public void testJWTLoginFailure() {
-
-        PrivilegedCarbonContext.destroyCurrentContext();
-
-        //JWT for username: test.
-        String encodedJWT = "eyJhbGciOiJSUzI1NiJ9.eyJzdWIiOiJ0ZXN0IiwiZXhwIjo0MTAyNDI1MDAwfQ.UGwW7DmszZ-a2_YkNVgh9Ss-" +
-                            "fIJ5rAAQj9z9d8WNdJw1D_qQKDFbYztuorXl45iUIgjkQA1gIqgVUDd8ERuhpegiELevGi-_W0cQAawy2GRV5A2k" +
-                            "-y4EhQ-H065sJol4Npaw7dCTBYEbXzHYrxfcSkjXb92i8m-7mMK6pMJs5lo";
-
-        HttpRequest httpRequest = getHTTPRequestWithAuthzHeader("Bearer " + encodedJWT);
-
-        CarbonCallbackHandler callbackHandler = new CarbonCallbackHandler(httpRequest);
-        LoginContext loginContext;
-        try {
-            loginContext = new LoginContext("CarbonSecurityJWTConfig", callbackHandler);
-            loginContext.login();
-            Assert.assertTrue(false, "Login succeeded for a non-existing user.");
-        } catch (LoginException e) {
-            Assert.assertTrue(true);
-        }
-
-    }
-
-    private static HttpRequest getHTTPRequestWithAuthzHeader(String headerContent) {
-
-        HttpRequest httpRequest = new DefaultHttpRequest(HttpVersion.HTTP_1_1, HttpMethod.GET, "");
-        httpRequest.headers().add("Authorization", headerContent);
-
-        return httpRequest;
     }
 }

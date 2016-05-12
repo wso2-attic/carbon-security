@@ -90,8 +90,6 @@
         </plugins>
     </build>
 
-
-
     <dependencyManagement>
         <dependencies>
             <dependency>
@@ -105,34 +103,9 @@
                 <version>${rs-api.version}</version>
             </dependency>
             <dependency>
-                <groupId>io.netty</groupId>
-                <artifactId>netty-buffer</artifactId>
-                <version>${netty.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>io.netty</groupId>
-                <artifactId>netty-codec</artifactId>
-                <version>${netty.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>io.netty</groupId>
-                <artifactId>netty-codec-http</artifactId>
-                <version>${netty.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>io.netty</groupId>
-                <artifactId>netty-common</artifactId>
-                <version>${netty.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>io.netty</groupId>
-                <artifactId>netty-handler</artifactId>
-                <version>${netty.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>io.netty</groupId>
-                <artifactId>netty-transport</artifactId>
-                <version>${netty.version}</version>
+                <groupId>org.wso2.carbon.messaging</groupId>
+                <artifactId>org.wso2.carbon.messaging</artifactId>
+                <version>${org.wso2.carbon.messaging.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.google.code.gson</groupId>
@@ -143,11 +116,6 @@
                 <groupId>org.wso2.msf4j</groupId>
                 <artifactId>msf4j-core</artifactId>
                 <version>${msf4j.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.wso2.orbit.com.nimbusds</groupId>
-                <artifactId>nimbus-jose-jwt</artifactId>
-                <version>${nimbus.version}</version>
             </dependency>
             <dependency>
                 <groupId>net.minidev.wso2</groupId>
@@ -326,6 +294,7 @@
         <msf4j.version>1.0.0</msf4j.version>
         <opensaml.version>2.6.4.wso2v1</opensaml.version>
         <commons.dbcp.version>1.4</commons.dbcp.version>
+        <org.wso2.carbon.messaging.version>1.0.2</org.wso2.carbon.messaging.version>
 
         <!-- Equinox dependency versions -->
         <osgi.core.api.version>6.0.0</osgi.core.api.version>
@@ -336,7 +305,6 @@
 
         <osgi.api.version>6.0.0</osgi.api.version>
         <netty.version>4.0.30.Final</netty.version>
-        <nimbus.version>2.26.1.wso2v3</nimbus.version>
         <json.smart.version>2.1.0.wso2v1</json.smart.version>
         <slf4j.api.version>1.7.12</slf4j.api.version>
         <org.snakeyaml.version>1.16.0.wso2v1</org.snakeyaml.version>
