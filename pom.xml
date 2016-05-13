@@ -275,6 +275,12 @@
                 <version>${carbon.kernel.version}</version>
                 <scope>test</scope>
             </dependency>
+            <dependency>
+                <groupId>commons-io.wso2</groupId>
+                <artifactId>commons-io</artifactId>
+                <version>${commons-io.version}</version>
+                <scope>test</scope>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -346,6 +352,7 @@
         <ow2.jta.spec.version>1.0.12</ow2.jta.spec.version>
         <javax.inject.version>1</javax.inject.version>
         <jacoco.version>0.7.5.201505241946</jacoco.version>
+        <commons-io.version>2.4.0.wso2v1</commons-io.version>
 
         <project.scm.id>my-scm-server</project.scm.id>
     </properties>

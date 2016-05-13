@@ -44,7 +44,7 @@ public class SecurityOSGiTestUtils {
         defaultOptionList.add(mavenBundle()
                                       .groupId("org.slf4j")
                                       .artifactId("slf4j-api")
-                                      .version("1.7.12"));
+                                      .versionAsInProject());
         defaultOptionList.add(mavenBundle()
                                       .groupId("net.minidev.wso2")
                                       .artifactId("json-smart")
@@ -52,7 +52,7 @@ public class SecurityOSGiTestUtils {
         defaultOptionList.add(mavenBundle()
                                       .groupId("org.wso2.carbon.messaging")
                                       .artifactId("org.wso2.carbon.messaging")
-                                      .version("1.0.2"));
+                                      .versionAsInProject());
         defaultOptionList.add(mavenBundle()
                                       .groupId("org.wso2.carbon.security.caas")
                                       .artifactId("org.wso2.carbon.security.caas.boot")
@@ -68,7 +68,7 @@ public class SecurityOSGiTestUtils {
         defaultOptionList.add(mavenBundle()
                                       .groupId("commons-io.wso2")
                                       .artifactId("commons-io")
-                                      .version("2.4.0.wso2v1"));
+                                      .versionAsInProject());
         defaultOptionList.add(mavenBundle()
                                .groupId("org.wso2.carbon")
                                .artifactId("org.wso2.carbon.core")
