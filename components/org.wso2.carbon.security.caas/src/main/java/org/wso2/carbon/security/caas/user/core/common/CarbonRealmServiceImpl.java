@@ -45,7 +45,6 @@ public class CarbonRealmServiceImpl implements RealmService {
 
     /**
      * Get the credential store.
-     *
      * @return CredentialStore.
      */
     @Override
@@ -55,7 +54,6 @@ public class CarbonRealmServiceImpl implements RealmService {
 
     /**
      * Get the authorization store.
-     *
      * @return AuthorizationStore.
      */
     @Override
@@ -65,7 +63,6 @@ public class CarbonRealmServiceImpl implements RealmService {
 
     /**
      * Get the identity store.
-     *
      * @return IdentityStore.
      */
     @Override
