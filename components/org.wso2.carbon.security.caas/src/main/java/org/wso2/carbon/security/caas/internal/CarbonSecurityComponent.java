@@ -79,17 +79,19 @@ public class CarbonSecurityComponent {
             initAuthorizationConfigs(bundleContext);
         }
 
-        StoreConfig storeConfig = StoreConfigBuilder.buildStoreConfigs();
-
+        // Register the carbon realm service.
         try {
+
+            StoreConfig storeConfig = StoreConfigBuilder.buildStoreConfigs();
             CarbonRealmServiceImpl carbonRealmService = new CarbonRealmServiceImpl(storeConfig);
             CarbonSecurityDataHolder.getInstance().registerCarbonRealmService(carbonRealmService);
-            realmServiceRegistration = bundleContext.registerService(RealmService.class.getName(),
-                                                                     carbonRealmService, null);
+            realmServiceRegistration = bundleContext
+                    .registerService(RealmService.class.getName(), carbonRealmService, null);
         } catch (Throwable e) {
             log.error(e.getMessage(), e);
         }
 
+        log.info("Realm service registered successfully.");
         log.info("Carbon-Security bundle activated successfully.");
     }
 

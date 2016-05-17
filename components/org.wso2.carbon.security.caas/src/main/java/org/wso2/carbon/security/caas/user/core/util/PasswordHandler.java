@@ -14,19 +14,14 @@
  * limitations under the License.
  */
 
-package org.wso2.carbon.security.caas.user.core.constant;
+package org.wso2.carbon.security.caas.user.core.util;
+
+import java.security.NoSuchAlgorithmException;
 
 /**
- * User store constants.
+ * Pluggable password handler.
  */
-public class UserStoreConstants {
+public interface PasswordHandler {
 
-    public static final String USER_STORE_NAME = "userStoreName";
-    public static final String EXECUTION_ORDER = "executionOrder";
-    public static final String READ_ONLY = "readOnly";
-    public static final String USER_STORE_CLASS = "userStoreClass";
-    public static final String PRIMARY = "PRIMARY";
-    public static final String USER_STORE_ID = "userStoreID";
-    public static final String USER_STORE_CONFIGURATION_FILE = "primary-userstore.yml";
-    public static final String CONNECTOR_TYPE = "connectorType";
+    String hashPassword(char [] password, String salt, String hashAlgo) throws NoSuchAlgorithmException;
 }

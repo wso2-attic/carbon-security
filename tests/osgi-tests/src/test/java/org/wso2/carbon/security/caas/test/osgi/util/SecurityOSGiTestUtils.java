@@ -42,45 +42,45 @@ public class SecurityOSGiTestUtils {
         List<Option> defaultOptionList = new ArrayList<>();
 
         defaultOptionList.add(mavenBundle()
-                                      .groupId("org.slf4j")
-                                      .artifactId("slf4j-api")
-                                      .versionAsInProject());
+                .groupId("org.slf4j")
+                .artifactId("slf4j-api")
+                .versionAsInProject());
         defaultOptionList.add(mavenBundle()
-                                      .groupId("net.minidev.wso2")
-                                      .artifactId("json-smart")
-                                      .versionAsInProject());
+                .groupId("net.minidev.wso2")
+                .artifactId("json-smart")
+                .versionAsInProject());
         defaultOptionList.add(mavenBundle()
-                                      .groupId("org.wso2.carbon.messaging")
-                                      .artifactId("org.wso2.carbon.messaging")
-                                      .versionAsInProject());
+                .groupId("org.wso2.carbon.messaging")
+                .artifactId("org.wso2.carbon.messaging")
+                .versionAsInProject());
         defaultOptionList.add(mavenBundle()
-                                      .groupId("org.wso2.carbon.security.caas")
-                                      .artifactId("org.wso2.carbon.security.caas.boot")
-                                      .versionAsInProject().noStart());
+                .groupId("org.wso2.carbon.security.caas")
+                .artifactId("org.wso2.carbon.security.caas.boot")
+                .versionAsInProject().noStart());
         defaultOptionList.add(mavenBundle()
-                                      .groupId("org.wso2.carbon.security.caas")
-                                      .artifactId("org.wso2.carbon.security.caas")
-                                      .versionAsInProject());
+                .groupId("org.wso2.carbon.security.caas")
+                .artifactId("org.wso2.carbon.security.caas")
+                .versionAsInProject());
         defaultOptionList.add(mavenBundle()
-                                      .groupId("org.wso2.carbon.security.caas")
-                                      .artifactId("org.wso2.carbon.security.caas.userstore.inmemory")
-                                      .versionAsInProject());
+                .groupId("org.wso2.carbon.security.caas")
+                .artifactId("org.wso2.carbon.security.caas.userstore.inmemory")
+                .versionAsInProject());
         defaultOptionList.add(mavenBundle()
-                                      .groupId("commons-io.wso2")
-                                      .artifactId("commons-io")
-                                      .versionAsInProject());
+                .groupId("commons-io.wso2")
+                .artifactId("commons-io")
+                .versionAsInProject());
         defaultOptionList.add(mavenBundle()
-                               .groupId("org.wso2.carbon")
-                               .artifactId("org.wso2.carbon.core")
-                               .versionAsInProject());
+                .groupId("org.wso2.carbon")
+                .artifactId("org.wso2.carbon.core")
+                .versionAsInProject());
         defaultOptionList.add(mavenBundle()
-                               .groupId("net.minidev.wso2")
-                               .artifactId("json-smart")
-                               .versionAsInProject());
+                .groupId("net.minidev.wso2")
+                .artifactId("json-smart")
+                .versionAsInProject());
         defaultOptionList.add(mavenBundle()
-                               .groupId("net.minidev")
-                               .artifactId("asm")
-                               .versionAsInProject());
+                .groupId("net.minidev")
+                .artifactId("asm")
+                .versionAsInProject());
 
         CarbonSysPropConfiguration sysPropConfiguration = new CarbonSysPropConfiguration();
         sysPropConfiguration.setCarbonHome(getCarbonHome());
