@@ -30,7 +30,7 @@ import javax.security.auth.callback.NameCallback;
 import javax.security.auth.callback.PasswordCallback;
 import javax.security.auth.callback.UnsupportedCallbackException;
 
-import static org.wso2.carbon.security.caas.api.util.LambdaExceptionUtils.rethrowConsumer;
+import static org.wso2.carbon.kernel.utils.LambdaExceptionUtils.rethrowConsumer;
 
 /**
  * The class {@code CarbonCallbackHandler} is an implementation {@code CarbonCallbackHandler}.
