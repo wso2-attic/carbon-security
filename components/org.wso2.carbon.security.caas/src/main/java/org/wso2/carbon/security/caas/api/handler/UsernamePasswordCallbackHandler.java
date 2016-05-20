@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-package org.wso2.carbon.security.caas.jaas.handler;
+package org.wso2.carbon.security.caas.api.handler;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.wso2.carbon.messaging.CarbonMessage;
-import org.wso2.carbon.security.caas.jaas.CarbonCallbackHandler;
-import org.wso2.carbon.security.caas.jaas.util.CarbonSecurityConstants;
+import org.wso2.carbon.security.caas.api.CarbonCallbackHandler;
+import org.wso2.carbon.security.caas.api.util.CarbonSecurityConstants;
 
 import java.io.IOException;
 import java.nio.charset.Charset;

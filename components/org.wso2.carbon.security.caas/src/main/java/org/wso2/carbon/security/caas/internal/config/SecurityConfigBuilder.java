@@ -18,7 +18,7 @@ package org.wso2.carbon.security.caas.internal.config;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.wso2.carbon.security.caas.jaas.util.CarbonSecurityConstants;
+import org.wso2.carbon.security.caas.api.util.CarbonSecurityConstants;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.introspector.BeanAccess;
 

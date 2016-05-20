@@ -29,7 +29,7 @@ import org.wso2.carbon.kernel.context.PrivilegedCarbonContext;
 import org.wso2.carbon.kernel.utils.CarbonServerInfo;
 import org.wso2.carbon.messaging.CarbonMessage;
 import org.wso2.carbon.messaging.DefaultCarbonMessage;
-import org.wso2.carbon.security.caas.jaas.ProxyCallbackHandler;
+import org.wso2.carbon.security.caas.api.ProxyCallbackHandler;
 import org.wso2.carbon.security.caas.test.osgi.util.SecurityOSGiTestUtils;
 
 import java.nio.file.Paths;

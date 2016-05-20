@@ -15,7 +15,7 @@
 *  specific language governing permissions and limitations
 *  under the License.
 */
-package org.wso2.carbon.security.caas.jaas.util;
+package org.wso2.carbon.security.caas.api.util;
 
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;

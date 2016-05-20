@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-package org.wso2.carbon.security.caas.jaas;
+package org.wso2.carbon.security.caas.api;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.wso2.carbon.messaging.CarbonMessage;
-import org.wso2.carbon.security.caas.jaas.util.CarbonSecurityConstants;
-import org.wso2.carbon.security.caas.jaas.util.CarbonSecurityUtils;
+import org.wso2.carbon.security.caas.api.util.CarbonSecurityConstants;
+import org.wso2.carbon.security.caas.api.util.CarbonSecurityUtils;
 
 import java.io.IOException;
 import java.util.List;
@@ -30,7 +30,7 @@ import javax.security.auth.callback.NameCallback;
 import javax.security.auth.callback.PasswordCallback;
 import javax.security.auth.callback.UnsupportedCallbackException;
 
-import static org.wso2.carbon.security.caas.jaas.util.LambdaExceptionUtils.rethrowConsumer;
+import static org.wso2.carbon.security.caas.api.util.LambdaExceptionUtils.rethrowConsumer;
 
 /**
  * The class {@code CarbonCallbackHandler} is an implementation {@code CarbonCallbackHandler}.

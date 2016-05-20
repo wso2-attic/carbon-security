@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-package org.wso2.carbon.security.caas.jaas.util;
+package org.wso2.carbon.security.caas.api.util;
 
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceReference;
+import org.wso2.carbon.security.caas.api.CarbonCallbackHandler;
 import org.wso2.carbon.security.caas.internal.CarbonSecurityDataHolder;
-import org.wso2.carbon.security.caas.jaas.CarbonCallbackHandler;
 
 import java.util.ArrayList;
 import java.util.Collection;

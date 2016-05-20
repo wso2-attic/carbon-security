@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.wso2.carbon.security.caas.jaas.util;
+package org.wso2.carbon.security.caas.api.util;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;

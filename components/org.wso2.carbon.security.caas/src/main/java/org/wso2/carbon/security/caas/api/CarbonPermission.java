@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.wso2.carbon.security.caas.jaas;
+package org.wso2.carbon.security.caas.api;
 
 import java.security.BasicPermission;
 import java.security.Permission;
