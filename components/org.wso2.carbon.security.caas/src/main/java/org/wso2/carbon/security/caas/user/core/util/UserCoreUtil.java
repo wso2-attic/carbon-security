@@ -16,39 +16,12 @@
 
 package org.wso2.carbon.security.caas.user.core.util;
 
-import java.nio.CharBuffer;
-import java.nio.charset.StandardCharsets;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.util.Arrays;
 import java.util.UUID;
-import javax.xml.bind.DatatypeConverter;
 
 /**
  * User core utils.
  */
 public class UserCoreUtil {
-
-    /**
-     * Hash the given password using given algorithm.
-     * @param password Password to be hashed.
-     * @param salt Salt to be used to hash the password.
-     * @param hashAlgo Hashing algorithm to be used.
-     * @return Hash as a <code>String</code>
-     * @throws NoSuchAlgorithmException No such algorithm exception.
-     */
-    public static String hashPassword(char[] password, String salt, String hashAlgo) throws NoSuchAlgorithmException {
-
-        // Merge the password and salt to a single array.
-        char[] saltedPassword = Arrays.copyOf(password, password.length + salt.length());
-        System.arraycopy(salt.toCharArray(), 0, saltedPassword, password.length, salt.length());
-
-        MessageDigest messageDigest = MessageDigest.getInstance(hashAlgo);
-        byte [] hash = messageDigest.digest(StandardCharsets.UTF_8.encode(CharBuffer.wrap(saltedPassword)).array());
-
-        // Hash is in hex binary. Convert and return.
-        return DatatypeConverter.printHexBinary(hash);
-    }
 
     /**
      * Get a random id.
