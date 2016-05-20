@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.wso2.carbon.security.caas.api.modules;
+package org.wso2.carbon.security.caas.api.module;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
