@@ -18,7 +18,7 @@ package org.wso2.carbon.security.caas.internal.config;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.wso2.carbon.security.caas.jaas.util.CarbonSecurityConstants;
+import org.wso2.carbon.security.caas.api.util.CarbonSecurityConstants;
 import org.wso2.carbon.security.caas.user.core.config.AuthorizationStoreConfig;
 import org.wso2.carbon.security.caas.user.core.config.CredentialStoreConfig;
 import org.wso2.carbon.security.caas.user.core.config.IdentityStoreConfig;

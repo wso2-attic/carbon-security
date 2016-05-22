@@ -28,6 +28,11 @@ import org.osgi.service.permissionadmin.PermissionAdmin;
 import org.osgi.service.permissionadmin.PermissionInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.wso2.carbon.security.caas.api.CarbonCallbackHandler;
+import org.wso2.carbon.security.caas.api.CarbonJAASConfiguration;
+import org.wso2.carbon.security.caas.api.CarbonPolicy;
+import org.wso2.carbon.security.caas.api.module.UsernamePasswordLoginModule;
+import org.wso2.carbon.security.caas.api.util.CarbonSecurityConstants;
 import org.wso2.carbon.security.caas.boot.ProxyLoginModule;
 import org.wso2.carbon.security.caas.internal.config.DefaultPermissionInfo;
 import org.wso2.carbon.security.caas.internal.config.DefaultPermissionInfoCollection;
@@ -35,11 +40,6 @@ import org.wso2.carbon.security.caas.internal.config.SecurityConfigBuilder;
 import org.wso2.carbon.security.caas.internal.config.StoreConfigBuilder;
 import org.wso2.carbon.security.caas.internal.osgi.UserNamePasswordLoginModuleFactory;
 import org.wso2.carbon.security.caas.internal.osgi.UsernamePasswordCallbackHandlerFactory;
-import org.wso2.carbon.security.caas.jaas.CarbonCallbackHandler;
-import org.wso2.carbon.security.caas.jaas.CarbonJAASConfiguration;
-import org.wso2.carbon.security.caas.jaas.CarbonPolicy;
-import org.wso2.carbon.security.caas.jaas.modules.UsernamePasswordLoginModule;
-import org.wso2.carbon.security.caas.jaas.util.CarbonSecurityConstants;
 import org.wso2.carbon.security.caas.user.core.common.CarbonRealmServiceImpl;
 import org.wso2.carbon.security.caas.user.core.config.StoreConfig;
 import org.wso2.carbon.security.caas.user.core.service.RealmService;
@@ -179,7 +179,7 @@ public class CarbonSecurityComponent {
         CarbonJAASConfiguration configuration = new CarbonJAASConfiguration();
         configuration.init();
 
-        //Registering login modules provided by the bundle
+        //Registering login module provided by the bundle
         Hashtable<String, String> usernamePasswordLoginModuleProps = new Hashtable<>();
         usernamePasswordLoginModuleProps.put(ProxyLoginModule.LOGIN_MODULE_SEARCH_KEY,
                                              UsernamePasswordLoginModule.class.getName());

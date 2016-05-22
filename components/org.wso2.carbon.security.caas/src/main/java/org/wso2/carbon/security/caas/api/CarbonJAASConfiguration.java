@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.wso2.carbon.security.caas.jaas;
+package org.wso2.carbon.security.caas.api;
 
 import org.wso2.carbon.security.caas.boot.ProxyLoginModule;
 import sun.security.provider.ConfigFile.Spi;
