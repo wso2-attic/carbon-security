@@ -27,6 +27,7 @@ public class StoreConfig {
     private Map<String, AuthorizationStoreConfig> authorizationStoreConfigMap = new HashMap<>();
     private Map<String, IdentityStoreConfig> identityStoreConfigMap = new HashMap<>();
     private Map<String, CredentialStoreConfig> credentialStoreConfigMap = new HashMap<>();
+    private boolean cacheEnabled;
 
     public Map<String, AuthorizationStoreConfig> getAuthorizationStoreConfigMap() {
         return authorizationStoreConfigMap;
@@ -62,5 +63,13 @@ public class StoreConfig {
 
     public void addCredentialStoreConfig(String name, CredentialStoreConfig credentialStoreConfig) {
         this.credentialStoreConfigMap.put(name, credentialStoreConfig);
+    }
+
+    public void setCacheEnabled(boolean cacheEnabled) {
+        this.cacheEnabled = cacheEnabled;
+    }
+
+    public boolean isCacheEnabled() {
+        return cacheEnabled;
     }
 }

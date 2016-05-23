@@ -17,10 +17,8 @@
 package org.wso2.carbon.security.caas.internal;
 
 import org.osgi.framework.BundleContext;
+import org.wso2.carbon.caching.CarbonCachingService;
 import org.wso2.carbon.security.caas.user.core.common.CarbonRealmServiceImpl;
-import org.wso2.carbon.security.caas.user.core.config.AuthorizationStoreConfig;
-import org.wso2.carbon.security.caas.user.core.config.CredentialStoreConfig;
-import org.wso2.carbon.security.caas.user.core.config.IdentityStoreConfig;
 import org.wso2.carbon.security.caas.user.core.store.connector.AuthorizationStoreConnectorFactory;
 import org.wso2.carbon.security.caas.user.core.store.connector.CredentialStoreConnectorFactory;
 import org.wso2.carbon.security.caas.user.core.store.connector.IdentityStoreConnectorFactory;
@@ -39,9 +37,7 @@ public class CarbonSecurityDataHolder {
     private Map<String, AuthorizationStoreConnectorFactory> authorizationStoreConnectorFactoryMap = new HashMap<>();
     private Map<String, CredentialStoreConnectorFactory> credentialStoreConnectorFactoryMap = new HashMap<>();
     private Map<String, IdentityStoreConnectorFactory> identityStoreConnectorFactoryMap = new HashMap<>();
-    private Map<String, CredentialStoreConfig> credentialStoreConfigMap = new HashMap<>();
-    private Map<String, IdentityStoreConfig> identityStoreConfigMap = new HashMap<>();
-    private Map<String, AuthorizationStoreConfig> authorizationStoreConfigMap = new HashMap<>();
+    private CarbonCachingService carbonCachingService;
     private BundleContext bundleContext = null;
 
     private CarbonSecurityDataHolder() {
@@ -109,35 +105,20 @@ public class CarbonSecurityDataHolder {
         return identityStoreConnectorFactoryMap;
     }
 
+    public void registerCacheService(CarbonCachingService carbonCachingService)  {
+        this.carbonCachingService = carbonCachingService;
+    }
+
+    public CarbonCachingService getCarbonCachingService() {
+        return carbonCachingService;
+    }
+
     public void setBundleContext(BundleContext bundleContext) {
         this.bundleContext = bundleContext;
     }
 
-    public Map<String, CredentialStoreConfig> getCredentialStoreConfigMap() {
-        return credentialStoreConfigMap;
-    }
-
-    public void addCredentialStoreConfig(String connectorName, CredentialStoreConfig storeConfig) {
-        this.credentialStoreConfigMap.put(connectorName, storeConfig);
-    }
-
-    public Map<String, IdentityStoreConfig> getIdentityStoreConfigMap() {
-        return identityStoreConfigMap;
-    }
-
-    public void addIdentityStoreConfig(String connectorName, IdentityStoreConfig storeConfig) {
-        this.identityStoreConfigMap.put(connectorName, storeConfig);
-    }
-
-    public Map<String, AuthorizationStoreConfig> getAuthorizationStoreConfigMap() {
-        return authorizationStoreConfigMap;
-    }
-
-    public void addAuthorizationStoreConfig(String connectorName, AuthorizationStoreConfig storeConfig) {
-        this.authorizationStoreConfigMap.put(connectorName, storeConfig);
-    }
-
     public BundleContext getBundleContext() {
+
         if (this.bundleContext == null) {
             throw new IllegalStateException("BundleContext is null.");
         }

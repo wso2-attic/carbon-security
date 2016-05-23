@@ -22,22 +22,31 @@ import org.wso2.carbon.security.caas.user.core.exception.CredentialStoreExceptio
 import org.wso2.carbon.security.caas.user.core.exception.IdentityStoreException;
 import org.wso2.carbon.security.caas.user.core.service.RealmService;
 import org.wso2.carbon.security.caas.user.core.store.AuthorizationStore;
+import org.wso2.carbon.security.caas.user.core.store.AuthorizationStoreImpl;
+import org.wso2.carbon.security.caas.user.core.store.CacheBackedAuthorizationStore;
+import org.wso2.carbon.security.caas.user.core.store.CacheBackedIdentityStore;
 import org.wso2.carbon.security.caas.user.core.store.CredentialStore;
+import org.wso2.carbon.security.caas.user.core.store.CredentialStoreImpl;
 import org.wso2.carbon.security.caas.user.core.store.IdentityStore;
+import org.wso2.carbon.security.caas.user.core.store.IdentityStoreImpl;
 
 /**
  * Basic user realm service.
  */
 public class CarbonRealmServiceImpl implements RealmService {
 
-    private CredentialStore credentialStore = new CredentialStore();
-    private AuthorizationStore authorizationStore = new AuthorizationStore();
-    private IdentityStore identityStore = new IdentityStore();
+    private CredentialStore credentialStore = new CredentialStoreImpl();
+    private AuthorizationStore authorizationStore = new AuthorizationStoreImpl();
+    private IdentityStore identityStore = new IdentityStoreImpl();
 
     public CarbonRealmServiceImpl(StoreConfig storeConfig) throws IdentityStoreException, AuthorizationStoreException,
             CredentialStoreException {
 
-        super();
+        if (storeConfig.isCacheEnabled()) {
+            this.identityStore = new CacheBackedIdentityStore();
+            this.authorizationStore = new CacheBackedAuthorizationStore();
+        }
+
         credentialStore.init(this, storeConfig.getCredentialStoreConfigMap());
         authorizationStore.init(this, storeConfig.getAuthorizationStoreConfigMap());
         identityStore.init(this, storeConfig.getIdentityStoreConfigMap());

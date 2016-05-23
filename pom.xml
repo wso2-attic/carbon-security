@@ -184,6 +184,11 @@
                 <artifactId>asm</artifactId>
                 <version>${net.minidev.asm.version}</version>
             </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon.caching</groupId>
+                <artifactId>org.wso2.carbon.caching</artifactId>
+                <version>${org.wso2.carbon.caching.version}</version>
+            </dependency>
 
             <!-- OSGI Tests-->
             <dependency>
@@ -301,6 +306,7 @@
         <opensaml.version>2.6.4.wso2v1</opensaml.version>
         <commons.dbcp.version>1.4</commons.dbcp.version>
         <org.wso2.carbon.messaging.version>1.0.2</org.wso2.carbon.messaging.version>
+        <org.wso2.carbon.caching.version>1.0.0-SNAPSHOT</org.wso2.carbon.caching.version>
 
         <!-- Equinox dependency versions -->
         <osgi.core.api.version>6.0.0</osgi.core.api.version>
