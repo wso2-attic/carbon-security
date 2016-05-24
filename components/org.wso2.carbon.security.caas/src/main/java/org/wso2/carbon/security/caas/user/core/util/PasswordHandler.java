@@ -23,5 +23,25 @@ import java.security.NoSuchAlgorithmException;
  */
 public interface PasswordHandler {
 
+    /**
+     * Hash the given password using given algorithm.
+     * @param password Password to be hashed.
+     * @param salt Salt to be used to hash the password.
+     * @param hashAlgo Hashing algorithm to be used. (SHA1, SHA224, SHA256, SHA384, SHA512)
+     * @return Hash as a <code>String</code>
+     * @throws NoSuchAlgorithmException No such algorithm exception.
+     */
     String hashPassword(char [] password, String salt, String hashAlgo) throws NoSuchAlgorithmException;
+
+    /**
+     * Set iteration count for the hash.
+     * @param iterationCount Iteration count.
+     */
+    void setIterationCount(int iterationCount);
+
+    /**
+     * Key length of the hash.
+     * @param keyLength Key length.
+     */
+    void setKeyLength(int keyLength);
 }
