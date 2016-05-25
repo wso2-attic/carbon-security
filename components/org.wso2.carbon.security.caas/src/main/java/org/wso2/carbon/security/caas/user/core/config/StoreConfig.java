@@ -24,9 +24,45 @@ import java.util.Map;
  */
 public class StoreConfig {
 
+    private boolean enableCache;
+    private boolean enableCacheForAuthorizationStore;
+    private boolean enableCacheForIdentityStore;
+    private boolean enableCacheForCredentialStore;
     private Map<String, AuthorizationStoreConfig> authorizationStoreConfigMap = new HashMap<>();
     private Map<String, IdentityStoreConfig> identityStoreConfigMap = new HashMap<>();
     private Map<String, CredentialStoreConfig> credentialStoreConfigMap = new HashMap<>();
+
+    public boolean isEnableCache() {
+        return enableCache;
+    }
+
+    public void setEnableCache(boolean enableCache) {
+        this.enableCache = enableCache;
+    }
+
+    public boolean isEnableCacheForAuthorizationStore() {
+        return enableCacheForAuthorizationStore;
+    }
+
+    public void setEnableCacheForAuthorizationStore(boolean enableCacheForAuthorizationStore) {
+        this.enableCacheForAuthorizationStore = enableCacheForAuthorizationStore;
+    }
+
+    public boolean isEnableCacheForIdentityStore() {
+        return enableCacheForIdentityStore;
+    }
+
+    public void setEnableCacheForIdentityStore(boolean enableCacheForIdentityStore) {
+        this.enableCacheForIdentityStore = enableCacheForIdentityStore;
+    }
+
+    public boolean isEnableCacheForCredentialStore() {
+        return enableCacheForCredentialStore;
+    }
+
+    public void setEnableCacheForCredentialStore(boolean enableCacheForCredentialStore) {
+        this.enableCacheForCredentialStore = enableCacheForCredentialStore;
+    }
 
     public Map<String, AuthorizationStoreConfig> getAuthorizationStoreConfigMap() {
         return authorizationStoreConfigMap;

@@ -16,43 +16,40 @@
 
 package org.wso2.carbon.security.caas.internal.config;
 
-import java.util.Properties;
+import java.util.List;
 
 /**
- * StoreConfig Bean
- *
- * @since 1.0.0
+ * Claim Config mapper class
  */
-public class StoreConfigEntry {
+public class ClaimConfigFile {
 
-    private boolean enableCache;
+    private String claimManager;
 
-    private String connector;
+    private String dialectURI;
 
-    private Properties properties;
+    private List<ClaimEntry> claims;
 
-    public boolean isEnableCache() {
-        return enableCache;
+    public String getClaimManager() {
+        return claimManager;
     }
 
-    public void setEnableCache(boolean enableCache) {
-        this.enableCache = enableCache;
+    public void setClaimManager(String claimManager) {
+        this.claimManager = claimManager;
     }
 
-    public String getConnector() {
-        return connector;
+    public String getDialectURI() {
+        return dialectURI;
     }
 
-    public void setConnector(String connector) {
-        this.connector = connector;
+    public void setDialectURI(String dialectURI) {
+        this.dialectURI = dialectURI;
     }
 
-    public Properties getProperties() {
-        return properties;
+    public List<ClaimEntry> getClaims() {
+        return claims;
     }
 
-    public void setProperties(Properties properties) {
-        this.properties = properties;
+    public void setClaims(List<ClaimEntry> claims) {
+        this.claims = claims;
     }
 }
-

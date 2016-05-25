@@ -100,6 +100,7 @@ public class CredentialStore {
                 return new AuthenticationContext(userBuilder
                         .setIdentityStore(realmService.getIdentityStore())
                         .setAuthorizationStore(realmService.getAuthorizationStore())
+                        .setClaimManager(realmService.getClaimManager())
                         .build());
             } catch (AuthenticationFailure | CredentialStoreException failure) {
                 authenticationFailure.addSuppressed(failure);
