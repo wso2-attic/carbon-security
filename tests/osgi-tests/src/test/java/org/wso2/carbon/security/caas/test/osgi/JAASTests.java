@@ -84,6 +84,7 @@ public class JAASTests {
 
     @Test
     public void testBasicLoginFailure() {
+
         PrivilegedCarbonContext.destroyCurrentContext();
 
         CarbonMessage carbonMessage = new DefaultCarbonMessage();
