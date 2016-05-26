@@ -17,6 +17,7 @@
 package org.wso2.carbon.security.caas.internal;
 
 import org.osgi.framework.BundleContext;
+import org.wso2.carbon.security.caas.internal.config.ClaimConfig;
 import org.wso2.carbon.security.caas.user.core.common.CarbonRealmServiceImpl;
 import org.wso2.carbon.security.caas.user.core.config.AuthorizationStoreConfig;
 import org.wso2.carbon.security.caas.user.core.config.CredentialStoreConfig;
@@ -42,6 +43,7 @@ public class CarbonSecurityDataHolder {
     private Map<String, CredentialStoreConfig> credentialStoreConfigMap = new HashMap<>();
     private Map<String, IdentityStoreConfig> identityStoreConfigMap = new HashMap<>();
     private Map<String, AuthorizationStoreConfig> authorizationStoreConfigMap = new HashMap<>();
+    private ClaimConfig claimConfig;
     private BundleContext bundleContext = null;
 
     private CarbonSecurityDataHolder() {
@@ -142,5 +144,13 @@ public class CarbonSecurityDataHolder {
             throw new IllegalStateException("BundleContext is null.");
         }
         return bundleContext;
+    }
+
+    public ClaimConfig getClaimConfig() {
+        return claimConfig;
+    }
+
+    public void setClaimConfig(ClaimConfig claimConfig) {
+        this.claimConfig = claimConfig;
     }
 }

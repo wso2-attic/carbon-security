@@ -100,6 +100,7 @@ public class IdentityStore {
                 return identityStoreConnector.getUser(username)
                         .setIdentityStore(realmService.getIdentityStore())
                         .setAuthorizationStore(realmService.getAuthorizationStore())
+                        .setClaimManager(realmService.getClaimManager())
                         .build();
             } catch (UserNotFoundException e) {
                 userNotFoundException.addSuppressed(e);
@@ -145,6 +146,7 @@ public class IdentityStore {
         return userBuilder
                 .setIdentityStore(realmService.getIdentityStore())
                 .setAuthorizationStore(realmService.getAuthorizationStore())
+                .setClaimManager(realmService.getClaimManager())
                 .build();
     }
 
@@ -166,6 +168,7 @@ public class IdentityStore {
                     .map(userBuilder -> userBuilder
                             .setIdentityStore(realmService.getIdentityStore())
                             .setAuthorizationStore(realmService.getAuthorizationStore())
+                            .setClaimManager(realmService.getClaimManager())
                             .build())
                     .collect(Collectors.toList()));
         }
@@ -307,6 +310,7 @@ public class IdentityStore {
                 .map(userBuilder -> userBuilder
                         .setIdentityStore(realmService.getIdentityStore())
                         .setAuthorizationStore(realmService.getAuthorizationStore())
+                        .setClaimManager(realmService.getClaimManager())
                         .build())
                 .collect(Collectors.toList());
     }

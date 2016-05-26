@@ -26,6 +26,8 @@ import java.util.List;
  */
 public class StoreConfigFile {
 
+    private boolean enableCache;
+
     private StoreConfigEntry credentialStore;
 
     private StoreConfigEntry identityStore;
@@ -33,6 +35,14 @@ public class StoreConfigFile {
     private StoreConfigEntry authorizationStore;
 
     private List<StoreConnectorConfigEntry> storeConnectors;
+
+    public boolean isEnableCache() {
+        return enableCache;
+    }
+
+    public void setEnableCache(boolean enableCache) {
+        this.enableCache = enableCache;
+    }
 
     public StoreConfigEntry getCredentialStore() {
         return credentialStore;

@@ -130,7 +130,10 @@ public class CredentialStore {
                 if (userBuilder == null) {
                     throw new AuthenticationFailure("Authentication failed for user. User builder is null.");
                 }
-                return new AuthenticationContext(user);
+                return new AuthenticationContext(userBuilder
+                        .setIdentityStore(realmService.getIdentityStore())
+                        .setAuthorizationStore(realmService.getAuthorizationStore())
+                        .build());
             } catch (AuthenticationFailure | CredentialStoreException failure) {
                 authenticationFailure.addSuppressed(failure);
             }
