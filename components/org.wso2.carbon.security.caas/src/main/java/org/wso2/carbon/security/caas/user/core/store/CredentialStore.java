@@ -17,6 +17,7 @@
 package org.wso2.carbon.security.caas.user.core.store;
 
 import org.wso2.carbon.security.caas.user.core.config.CredentialStoreConfig;
+import org.wso2.carbon.security.caas.user.core.constant.UserCoreConstants;
 import org.wso2.carbon.security.caas.user.core.context.AuthenticationContext;
 import org.wso2.carbon.security.caas.user.core.exception.AuthenticationFailure;
 import org.wso2.carbon.security.caas.user.core.exception.CredentialStoreException;

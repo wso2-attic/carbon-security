@@ -56,6 +56,7 @@ public class CarbonRealmServiceImpl implements RealmService {
         credentialStore.init(this, storeConfig.getCredentialStoreConfigMap());
         authorizationStore.init(this, storeConfig.getAuthorizationStoreConfigMap());
         identityStore.init(this, storeConfig.getIdentityStoreConfigMap());
+
     }
 
     /**
