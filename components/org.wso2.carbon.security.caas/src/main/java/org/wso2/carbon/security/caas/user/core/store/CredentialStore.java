@@ -18,13 +18,17 @@ package org.wso2.carbon.security.caas.user.core.store;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.wso2.carbon.security.caas.api.CarbonCallback;
 import org.wso2.carbon.security.caas.internal.CarbonSecurityDataHolder;
 import org.wso2.carbon.security.caas.user.core.bean.User;
 import org.wso2.carbon.security.caas.user.core.config.CredentialStoreConfig;
+import org.wso2.carbon.security.caas.user.core.constant.UserCoreConstants;
 import org.wso2.carbon.security.caas.user.core.context.AuthenticationContext;
 import org.wso2.carbon.security.caas.user.core.exception.AuthenticationFailure;
 import org.wso2.carbon.security.caas.user.core.exception.CredentialStoreException;
+import org.wso2.carbon.security.caas.user.core.exception.IdentityStoreException;
 import org.wso2.carbon.security.caas.user.core.exception.StoreException;
+import org.wso2.carbon.security.caas.user.core.exception.UserNotFoundException;
 import org.wso2.carbon.security.caas.user.core.service.RealmService;
 import org.wso2.carbon.security.caas.user.core.store.connector.CredentialStoreConnector;
 import org.wso2.carbon.security.caas.user.core.store.connector.CredentialStoreConnectorFactory;
@@ -88,19 +92,45 @@ public class CredentialStore {
      */
     public AuthenticationContext authenticate(Callback[] callbacks) throws AuthenticationFailure {
 
+        User user;
+        try {
+            // Get the user using given callbacks. We need to find the user unique id.
+            user = realmService.getIdentityStore().getUser(callbacks);
+
+            // Crete a new call back array from existing one and add new user data (user id and identity store id)
+            // as a carbon callback to the new array.
+            Callback [] newCallbacks = new Callback[callbacks.length + 1];
+            System.arraycopy(callbacks, 0, newCallbacks, 0, callbacks.length);
+
+            // User data will be a map.
+            CarbonCallback<Map> carbonCallback = new CarbonCallback<>(null);
+            Map<String, String> userData = new HashMap<>();
+            userData.put(UserCoreConstants.USER_ID, user.getUserId());
+            userData.put(UserCoreConstants.IDENTITY_STORE_ID, user.getIdentityStoreId());
+            carbonCallback.setContent(userData);
+
+            // New callback always will be the last element.
+            newCallbacks[newCallbacks.length - 1] = carbonCallback;
+
+            // Old callbacks with the new carbon callback.
+            callbacks = newCallbacks;
+        } catch (IdentityStoreException | UserNotFoundException e) {
+            throw new AuthenticationFailure("Error occurred while retrieving user.", e);
+        }
+
         AuthenticationFailure authenticationFailure = new AuthenticationFailure("Invalid user credentials.");
 
         for (CredentialStoreConnector credentialStoreConnector : credentialStoreConnectors.values()) {
 
             try {
                 User.UserBuilder userBuilder = credentialStoreConnector.authenticate(callbacks);
+
+                // If the authentication failed, there should be a authentication failure exception. But we are double
+                // checking for the null as well.
                 if (userBuilder == null) {
-                    throw new AuthenticationFailure("User builder is null.");
+                    throw new AuthenticationFailure("Authentication failed for user. User builder is null.");
                 }
-                return new AuthenticationContext(userBuilder
-                        .setIdentityStore(realmService.getIdentityStore())
-                        .setAuthorizationStore(realmService.getAuthorizationStore())
-                        .build());
+                return new AuthenticationContext(user);
             } catch (AuthenticationFailure | CredentialStoreException failure) {
                 authenticationFailure.addSuppressed(failure);
             }

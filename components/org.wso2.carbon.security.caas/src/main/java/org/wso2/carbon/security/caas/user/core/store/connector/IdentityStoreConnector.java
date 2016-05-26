@@ -25,6 +25,7 @@ import org.wso2.carbon.security.caas.user.core.exception.UserNotFoundException;
 
 import java.util.List;
 import java.util.Map;
+import javax.security.auth.callback.Callback;
 
 /**
  * User store.
@@ -57,9 +58,19 @@ public interface IdentityStoreConnector {
      * Get user from the user name.
      * @param username Name of the user.
      * @return User.UserBuilder.
+     * @throws UserNotFoundException User not found exception.
      * @throws IdentityStoreException Identity Store Exception.
      */
     User.UserBuilder getUser(String username) throws UserNotFoundException, IdentityStoreException;
+
+    /**
+     * Get user from callbacks.
+     * @param callbacks Array of callbacks.
+     * @return User.UserBuilder.
+     * @throws UserNotFoundException User not found exception.
+     * @throws IdentityStoreException Identity Store Exception.
+     */
+    User.UserBuilder getUser(Callback [] callbacks) throws UserNotFoundException, IdentityStoreException;
 
     /**
      * List all users in User Store according to the filter pattern.

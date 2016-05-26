@@ -29,4 +29,8 @@ public class AuthenticationFailure extends Throwable {
     public AuthenticationFailure(String message) {
         super(message);
     }
+
+    public AuthenticationFailure(String message, Throwable t) {
+        super(message, t);
+    }
 }

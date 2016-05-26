@@ -20,12 +20,15 @@ import org.wso2.carbon.security.caas.user.core.bean.Group;
 import org.wso2.carbon.security.caas.user.core.bean.User;
 import org.wso2.carbon.security.caas.user.core.config.IdentityStoreConfig;
 import org.wso2.carbon.security.caas.user.core.exception.IdentityStoreException;
+import org.wso2.carbon.security.caas.user.core.exception.UserNotFoundException;
 import org.wso2.carbon.security.caas.user.core.store.connector.IdentityStoreConnector;
 import org.wso2.carbon.security.caas.userstore.inmemory.util.InMemoryStoreUtil;
 
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import javax.security.auth.callback.Callback;
+import javax.security.auth.callback.NameCallback;
 
 /**
  * Identity store connector for InMemory based stores.
@@ -51,6 +54,23 @@ public class InMemoryIdentityStoreConnector implements IdentityStoreConnector {
 
     @Override
     public User.UserBuilder getUser(String username) throws IdentityStoreException {
+        if (InMemoryStoreUtil.getPassword(username) != null) {
+            return new User.UserBuilder().setUserName(username).setUserId(UUID.randomUUID().toString())
+                    .setIdentityStoreId("PRIMARY").setCredentialStoreId("PRIMARY").setTenantDomain("carbon.super");
+        }
+        return null;
+    }
+
+    @Override
+    public User.UserBuilder getUser(Callback[] callbacks) throws UserNotFoundException, IdentityStoreException {
+
+        String username = null;
+        for (Callback callback : callbacks) {
+            if (callback instanceof NameCallback) {
+                username = ((NameCallback) callback).getName();
+            }
+        }
+
         if (InMemoryStoreUtil.getPassword(username) != null) {
             return new User.UserBuilder().setUserName(username).setUserId(UUID.randomUUID().toString())
                     .setIdentityStoreId("PRIMARY").setCredentialStoreId("PRIMARY").setTenantDomain("carbon.super");
