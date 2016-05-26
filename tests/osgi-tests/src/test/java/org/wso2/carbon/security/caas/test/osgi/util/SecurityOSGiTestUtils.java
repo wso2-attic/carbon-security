@@ -54,6 +54,10 @@ public class SecurityOSGiTestUtils {
                 .artifactId("org.wso2.carbon.messaging")
                 .versionAsInProject());
         defaultOptionList.add(mavenBundle()
+                .groupId("org.wso2.carbon.caching")
+                .artifactId("org.wso2.carbon.caching")
+                .versionAsInProject());
+        defaultOptionList.add(mavenBundle()
                 .groupId("org.wso2.carbon.security.caas")
                 .artifactId("org.wso2.carbon.security.caas.boot")
                 .versionAsInProject().noStart());

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.wso2.carbon.security.caas.jaas.util;
+package org.wso2.carbon.security.caas.api.util;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -45,6 +45,7 @@ public final class CarbonSecurityConstants {
     //Config file names
     public static final String STORE_CONFIG_FILE = "store-config.yml";
     public static final String PERMISSION_CONFIG_FILE = "permissions.yml";
+    public static final String CLAIM_CONFIG_FILE = "claim-config.yml";
 
     public static Path getCarbonHomeDirectory() {
         return Paths.get(System.getProperty(CARBON_HOME));

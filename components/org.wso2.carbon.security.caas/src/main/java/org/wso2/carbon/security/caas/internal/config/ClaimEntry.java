@@ -19,32 +19,30 @@ package org.wso2.carbon.security.caas.internal.config;
 import java.util.Properties;
 
 /**
- * StoreConfig Bean
- *
- * @since 1.0.0
+ * Claim Entry.
  */
-public class StoreConfigEntry {
+public class ClaimEntry {
 
-    private boolean enableCache;
+    private String claimURI;
 
-    private String connector;
+    private Properties mappedAttributes;
 
     private Properties properties;
 
-    public boolean isEnableCache() {
-        return enableCache;
+    public String getClaimURI() {
+        return claimURI;
     }
 
-    public void setEnableCache(boolean enableCache) {
-        this.enableCache = enableCache;
+    public void setClaimURI(String claimURI) {
+        this.claimURI = claimURI;
     }
 
-    public String getConnector() {
-        return connector;
+    public Properties getMappedAttributes() {
+        return mappedAttributes;
     }
 
-    public void setConnector(String connector) {
-        this.connector = connector;
+    public void setMappedAttributes(Properties mappedAttributes) {
+        this.mappedAttributes = mappedAttributes;
     }
 
     public Properties getProperties() {
@@ -55,4 +53,3 @@ public class StoreConfigEntry {
         this.properties = properties;
     }
 }
-

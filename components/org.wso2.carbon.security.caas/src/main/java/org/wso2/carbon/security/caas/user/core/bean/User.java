@@ -16,14 +16,21 @@
 
 package org.wso2.carbon.security.caas.user.core.bean;
 
+import org.wso2.carbon.security.caas.user.core.claim.Claim;
+import org.wso2.carbon.security.caas.user.core.claim.ClaimManager;
+import org.wso2.carbon.security.caas.user.core.claim.IdnStoreMetaClaimMapping;
 import org.wso2.carbon.security.caas.user.core.exception.AuthorizationStoreException;
+import org.wso2.carbon.security.caas.user.core.exception.ClaimManagerException;
 import org.wso2.carbon.security.caas.user.core.exception.IdentityStoreException;
 import org.wso2.carbon.security.caas.user.core.exception.StoreException;
 import org.wso2.carbon.security.caas.user.core.store.AuthorizationStore;
 import org.wso2.carbon.security.caas.user.core.store.IdentityStore;
 
+import java.io.Serializable;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * Represents a user in the user core. All of the user related identity operations can be
@@ -39,10 +46,13 @@ public class User {
 
     private IdentityStore identityStore;
     private AuthorizationStore authorizationStore;
+    private ClaimManager claimManager;
+
+    private UserBuilder builder;
 
     private User(String userName, String userID, String identityStoreID, String credentialStoreId,
                  String tenantDomain, IdentityStore identityStore,
-                 AuthorizationStore authorizationStore) {
+                 AuthorizationStore authorizationStore, ClaimManager claimManager) {
 
         this.userName = userName;
         this.userID = userID;
@@ -51,6 +61,7 @@ public class User {
         this.tenantDomain = tenantDomain;
         this.identityStore = identityStore;
         this.authorizationStore = authorizationStore;
+        this.claimManager = claimManager;
     }
 
     /**
@@ -95,21 +106,64 @@ public class User {
 
     /**
      * Get claims of this user.
-     * @return Map of User claims.
+     *
+     * @return List of User claims.
      * @throws IdentityStoreException Identity store exception.
      */
-    public Map<String, String> getClaims() throws IdentityStoreException {
-        return identityStore.getUserAttributeValues(userID, identityStoreID);
+    public List<Claim> getClaims() throws IdentityStoreException, ClaimManagerException {
+
+        Map<String, String> userAttributeValues = identityStore.getUserAttributeValues(userID, identityStoreID);
+        if (userAttributeValues == null || userAttributeValues.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        List<IdnStoreMetaClaimMapping> idnStoreMetaClaimMappings = claimManager
+                .getMetaClaimMappingsByIdentityStoreId(identityStoreID);
+        if (idnStoreMetaClaimMappings == null || idnStoreMetaClaimMappings.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        return buildClaims(idnStoreMetaClaimMappings, userAttributeValues);
     }
 
     /**
      * Get claims of this user for given URIs.
+     *
      * @param claimURIs Claim URIs that needs to be retrieved.
-     * @return Map of User claims.
+     * @return List of User claims.
      * @throws IdentityStoreException Identity store exception.
      */
-    public Map<String, String> getClaims(List<String> claimURIs) throws IdentityStoreException {
-        return identityStore.getUserAttributeValues(userID, claimURIs, identityStoreID);
+    public List<Claim> getClaims(List<String> claimURIs) throws IdentityStoreException, ClaimManagerException {
+
+        List<IdnStoreMetaClaimMapping> idnStoreMetaClaimMappings = claimManager
+                .getMetaClaimMappingsByIdentityStoreId(identityStoreID, claimURIs);
+        if (idnStoreMetaClaimMappings == null || idnStoreMetaClaimMappings.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        List<String> attributeNames = idnStoreMetaClaimMappings.stream()
+                .map(IdnStoreMetaClaimMapping::getAttributeName)
+                .collect(Collectors.toList());
+
+        Map<String, String> attributeValues = identityStore
+                .getUserAttributeValues(userID, attributeNames, identityStoreID);
+        if (attributeValues == null || attributeValues.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        return buildClaims(idnStoreMetaClaimMappings, attributeValues);
+    }
+
+    private List<Claim> buildClaims(List<IdnStoreMetaClaimMapping> idnStoreMetaClaimMappings,
+                                    Map<String, String> userAttributeValues) {
+
+        return idnStoreMetaClaimMappings.stream()
+                .filter(idnStoreMetaClaimMapping -> userAttributeValues.containsKey(idnStoreMetaClaimMapping
+                        .getAttributeName()) && idnStoreMetaClaimMapping.getMetaClaim() != null)
+                .map(idnStoreMetaClaimMapping -> new Claim(idnStoreMetaClaimMapping.getMetaClaim().getDialectURI(),
+                        idnStoreMetaClaimMapping.getMetaClaim().getClaimURI(), userAttributeValues.get
+                        (idnStoreMetaClaimMapping.getAttributeName())))
+                .collect(Collectors.toList());
     }
 
     /**
@@ -218,9 +272,23 @@ public class User {
     }
 
     /**
+     * Get the builder associated with this bean.
+     * @return UserBuilder.
+     */
+    public UserBuilder getBuilder() {
+        return this.builder;
+    }
+
+    private void setBuilder(UserBuilder userBuilder) {
+        this.builder = userBuilder;
+    }
+
+    /**
      * Builder for the user bean.
      */
-    public static class UserBuilder {
+    public static class UserBuilder implements Serializable {
+
+        private static final long serialVersionUID = 382215500137222190L;
 
         private String userName;
         private String userId;
@@ -228,8 +296,9 @@ public class User {
         private String credentialStoreId;
         private String tenantDomain;
 
-        private IdentityStore identityStore;
-        private AuthorizationStore authorizationStore;
+        private transient IdentityStore identityStore;
+        private transient AuthorizationStore authorizationStore;
+        private transient ClaimManager claimManager;
 
         public String getUserName() {
             return userName;
@@ -257,6 +326,10 @@ public class User {
 
         public AuthorizationStore getAuthorizationStore() {
             return authorizationStore;
+        }
+
+        public ClaimManager getClaimManager() {
+            return claimManager;
         }
 
         public UserBuilder setUserName(String userName) {
@@ -294,15 +367,23 @@ public class User {
             return this;
         }
 
+        public UserBuilder setClaimManager(ClaimManager claimManager) {
+            this.claimManager = claimManager;
+            return this;
+        }
+
         public User build() {
 
             if (userName == null || userId == null || identityStoreId == null || credentialStoreId == null ||
-                    identityStore == null || tenantDomain == null || authorizationStore == null) {
+                    identityStore == null || tenantDomain == null || authorizationStore == null ||
+                    claimManager == null) {
                 throw new StoreException("Required data missing for building user.");
             }
 
-            return new User(userName, userId, identityStoreId, credentialStoreId, tenantDomain, identityStore,
-                    authorizationStore);
+            User user = new User(userName, userId, identityStoreId, credentialStoreId, tenantDomain, identityStore,
+                    authorizationStore, claimManager);
+            user.setBuilder(this);
+            return user;
         }
     }
 }

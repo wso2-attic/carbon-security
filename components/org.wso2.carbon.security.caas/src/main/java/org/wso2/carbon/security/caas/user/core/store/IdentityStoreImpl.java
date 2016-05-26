@@ -35,6 +35,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import javax.security.auth.callback.Callback;
 
 /**
  * Represents a virtual identity store to abstract the underlying stores.
@@ -88,6 +89,27 @@ public class IdentityStoreImpl implements IdentityStore {
                 return identityStoreConnector.getUser(username)
                         .setIdentityStore(realmService.getIdentityStore())
                         .setAuthorizationStore(realmService.getAuthorizationStore())
+                        .setClaimManager(realmService.getClaimManager())
+                        .build();
+            } catch (UserNotFoundException e) {
+                userNotFoundException.addSuppressed(e);
+            }
+        }
+        throw userNotFoundException;
+    }
+
+    @Override
+    public User getUser(Callback [] callbacks) throws IdentityStoreException, UserNotFoundException {
+
+        UserNotFoundException userNotFoundException = new
+                UserNotFoundException("User not found for the given callbacks.");
+
+        for (IdentityStoreConnector identityStoreConnector : identityStoreConnectors.values()) {
+            try {
+                return identityStoreConnector.getUser(callbacks)
+                        .setIdentityStore(realmService.getIdentityStore())
+                        .setAuthorizationStore(realmService.getAuthorizationStore())
+                        .setClaimManager(realmService.getClaimManager())
                         .build();
             } catch (UserNotFoundException e) {
                 userNotFoundException.addSuppressed(e);
@@ -109,6 +131,7 @@ public class IdentityStoreImpl implements IdentityStore {
         return userBuilder
                 .setIdentityStore(realmService.getIdentityStore())
                 .setAuthorizationStore(realmService.getAuthorizationStore())
+                .setClaimManager(realmService.getClaimManager())
                 .build();
     }
 
@@ -123,6 +146,7 @@ public class IdentityStoreImpl implements IdentityStore {
                     .map(userBuilder -> userBuilder
                             .setIdentityStore(realmService.getIdentityStore())
                             .setAuthorizationStore(realmService.getAuthorizationStore())
+                            .setClaimManager(realmService.getClaimManager())
                             .build())
                     .collect(Collectors.toList()));
         }
@@ -220,6 +244,7 @@ public class IdentityStoreImpl implements IdentityStore {
                 .map(userBuilder -> userBuilder
                         .setIdentityStore(realmService.getIdentityStore())
                         .setAuthorizationStore(realmService.getAuthorizationStore())
+                        .setClaimManager(realmService.getClaimManager())
                         .build())
                 .collect(Collectors.toList());
     }

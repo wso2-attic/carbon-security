@@ -17,20 +17,19 @@
 package org.wso2.carbon.security.caas.user.core.exception;
 
 /**
- * This class is an extension of {@code Exception} class and used to indicate authentication failures.
- * @since 1.0.0
+ * Claim Manager Exception.
  */
-public class AuthenticationFailure extends Throwable {
+public class ClaimManagerException extends Exception {
 
-    public AuthenticationFailure(Throwable t) {
-        super(t);
+    public ClaimManagerException() {
+        super();
     }
 
-    public AuthenticationFailure(String message) {
+    public ClaimManagerException(String message) {
         super(message);
     }
 
-    public AuthenticationFailure(String message, Throwable t) {
-        super(message, t);
+    public ClaimManagerException(String messgae, Throwable cause) {
+        super(messgae, cause);
     }
 }

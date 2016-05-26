@@ -16,6 +16,7 @@
 
 package org.wso2.carbon.security.caas.user.core.common;
 
+import org.wso2.carbon.security.caas.user.core.claim.ClaimManager;
 import org.wso2.carbon.security.caas.user.core.config.StoreConfig;
 import org.wso2.carbon.security.caas.user.core.exception.AuthorizationStoreException;
 import org.wso2.carbon.security.caas.user.core.exception.CredentialStoreException;
@@ -38,13 +39,18 @@ public class CarbonRealmServiceImpl implements RealmService {
     private CredentialStore credentialStore = new CredentialStoreImpl();
     private AuthorizationStore authorizationStore = new AuthorizationStoreImpl();
     private IdentityStore identityStore = new IdentityStoreImpl();
+    private ClaimManager claimManager;
 
     public CarbonRealmServiceImpl(StoreConfig storeConfig) throws IdentityStoreException, AuthorizationStoreException,
             CredentialStoreException {
 
-        if (storeConfig.isCacheEnabled()) {
-            this.identityStore = new CacheBackedIdentityStore();
-            this.authorizationStore = new CacheBackedAuthorizationStore();
+        if (storeConfig.isEnableCache()) {
+            if (storeConfig.isEnableCacheForIdentityStore()) {
+                this.identityStore = new CacheBackedIdentityStore();
+            }
+            if (storeConfig.isEnableCacheForAuthorizationStore()) {
+                this.authorizationStore = new CacheBackedAuthorizationStore();
+            }
         }
 
         credentialStore.init(this, storeConfig.getCredentialStoreConfigMap());
@@ -77,6 +83,19 @@ public class CarbonRealmServiceImpl implements RealmService {
     @Override
     public IdentityStore getIdentityStore() {
         return identityStore;
+    }
+
+    /**
+     * Get the Claim Manager.
+     * @return ClaimManager
+     */
+    @Override
+    public ClaimManager getClaimManager() {
+        return claimManager;
+    }
+
+    public void setClaimManager(ClaimManager claimManager) {
+        this.claimManager = claimManager;
     }
 
 }

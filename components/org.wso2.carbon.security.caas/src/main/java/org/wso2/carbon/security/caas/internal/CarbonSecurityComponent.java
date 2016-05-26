@@ -29,20 +29,25 @@ import org.osgi.service.permissionadmin.PermissionInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.wso2.carbon.caching.CarbonCachingService;
+import org.wso2.carbon.security.caas.api.CarbonCallbackHandler;
+import org.wso2.carbon.security.caas.api.CarbonJAASConfiguration;
+import org.wso2.carbon.security.caas.api.CarbonPolicy;
+import org.wso2.carbon.security.caas.api.module.UsernamePasswordLoginModule;
+import org.wso2.carbon.security.caas.api.util.CarbonSecurityConstants;
 import org.wso2.carbon.security.caas.boot.ProxyLoginModule;
+import org.wso2.carbon.security.caas.internal.config.ClaimConfig;
+import org.wso2.carbon.security.caas.internal.config.ClaimConfigBuilder;
 import org.wso2.carbon.security.caas.internal.config.DefaultPermissionInfo;
 import org.wso2.carbon.security.caas.internal.config.DefaultPermissionInfoCollection;
 import org.wso2.carbon.security.caas.internal.config.SecurityConfigBuilder;
 import org.wso2.carbon.security.caas.internal.config.StoreConfigBuilder;
 import org.wso2.carbon.security.caas.internal.osgi.UserNamePasswordLoginModuleFactory;
 import org.wso2.carbon.security.caas.internal.osgi.UsernamePasswordCallbackHandlerFactory;
-import org.wso2.carbon.security.caas.jaas.CarbonCallbackHandler;
-import org.wso2.carbon.security.caas.jaas.CarbonJAASConfiguration;
-import org.wso2.carbon.security.caas.jaas.CarbonPolicy;
-import org.wso2.carbon.security.caas.jaas.modules.UsernamePasswordLoginModule;
-import org.wso2.carbon.security.caas.jaas.util.CarbonSecurityConstants;
+import org.wso2.carbon.security.caas.user.core.claim.ClaimManager;
+import org.wso2.carbon.security.caas.user.core.claim.InMemoryClaimManager;
 import org.wso2.carbon.security.caas.user.core.common.CarbonRealmServiceImpl;
 import org.wso2.carbon.security.caas.user.core.config.StoreConfig;
+import org.wso2.carbon.security.caas.user.core.exception.ClaimManagerException;
 import org.wso2.carbon.security.caas.user.core.service.RealmService;
 import org.wso2.carbon.security.caas.user.core.store.connector.AuthorizationStoreConnectorFactory;
 import org.wso2.carbon.security.caas.user.core.store.connector.CredentialStoreConnectorFactory;
@@ -58,6 +63,7 @@ import javax.security.auth.spi.LoginModule;
 
 /**
  * OSGi service component which handle authentication and authorization.
+ *
  * @since 1.0.0
  */
 @Component(
@@ -90,6 +96,18 @@ public class CarbonSecurityComponent {
                     .registerService(RealmService.class.getName(), carbonRealmService, null);
         } catch (Throwable e) {
             log.error(e.getMessage(), e);
+        }
+
+        ClaimConfig claimConfig = ClaimConfigBuilder.getClaimConfig();
+        CarbonSecurityDataHolder.getInstance().setClaimConfig(claimConfig);
+        if ("DEFAULT".equals(claimConfig.getClaimManager())) {
+            InMemoryClaimManager claimManager = new InMemoryClaimManager();
+            try {
+                claimManager.init(claimConfig.getClaimMappings());
+            } catch (ClaimManagerException e) {
+                log.error("Failed to initialze Inmemory Claim Manager", e);
+            }
+            CarbonSecurityDataHolder.getInstance().getCarbonRealmService().setClaimManager(claimManager);
         }
 
         log.info("Realm service registered successfully.");
@@ -135,7 +153,7 @@ public class CarbonSecurityComponent {
             unbind = "unregisterIdentityStoreConnectorFactory"
     )
     protected void registerIdentityStoreConnectorFactory(IdentityStoreConnectorFactory identityStoreConnectorFactory,
-                                             Map<String, String> properties) {
+                                                         Map<String, String> properties) {
 
         String connectorId = properties.get("connector-type");
         CarbonSecurityDataHolder.getInstance()
@@ -180,8 +198,37 @@ public class CarbonSecurityComponent {
         CarbonSecurityDataHolder.getInstance().registerCacheService(null);
     }
 
+    @Reference(
+            name = "ClaimManager",
+            service = ClaimManager.class,
+            cardinality = ReferenceCardinality.OPTIONAL,
+            policy = ReferencePolicy.DYNAMIC,
+            unbind = "unregisterClaimManager"
+    )
+    protected void registerClaimManager(ClaimManager claimManager, Map<String, String> properties) {
+
+        String claimMangerName = properties.get("claim-manager");
+        if (claimMangerName != null && !claimMangerName.trim().isEmpty() && CarbonSecurityDataHolder.getInstance()
+                .getClaimConfig() != null && claimMangerName.equals(CarbonSecurityDataHolder.getInstance()
+                .getClaimConfig().getClaimManager())) {
+
+            try {
+                claimManager.init(CarbonSecurityDataHolder.getInstance().getClaimConfig().getClaimMappings());
+                CarbonSecurityDataHolder.getInstance().getCarbonRealmService().setClaimManager(claimManager);
+            } catch (ClaimManagerException e) {
+                log.error("Failed to initialze Claim Manager - " + claimMangerName, e);
+            }
+        }
+    }
+
+    protected void unregisterClaimManager(ClaimManager claimManager) {
+
+        CarbonSecurityDataHolder.getInstance().getCarbonRealmService().setClaimManager(null);
+    }
+
     /**
      * Initialize authentication related configs
+     *
      * @param bundleContext
      */
     private void initAuthenticationConfigs(BundleContext bundleContext) {
@@ -195,23 +242,24 @@ public class CarbonSecurityComponent {
         CarbonJAASConfiguration configuration = new CarbonJAASConfiguration();
         configuration.init();
 
-        //Registering login modules provided by the bundle
+        //Registering login module provided by the bundle
         Hashtable<String, String> usernamePasswordLoginModuleProps = new Hashtable<>();
         usernamePasswordLoginModuleProps.put(ProxyLoginModule.LOGIN_MODULE_SEARCH_KEY,
-                                             UsernamePasswordLoginModule.class.getName());
+                UsernamePasswordLoginModule.class.getName());
         bundleContext.registerService(LoginModule.class, new UserNamePasswordLoginModuleFactory(),
-                                      usernamePasswordLoginModuleProps);
+                usernamePasswordLoginModuleProps);
 
         // Registering callback handler factories
         Hashtable<String, String> usernamePasswordCallbackHandlerProps = new Hashtable<>();
         usernamePasswordCallbackHandlerProps.put(CarbonCallbackHandler.SUPPORTED_LOGIN_MODULE,
-                                                 CarbonSecurityConstants.USERNAME_PASSWORD_LOGIN_MODULE);
+                CarbonSecurityConstants.USERNAME_PASSWORD_LOGIN_MODULE);
         bundleContext.registerService(CarbonCallbackHandler.class, new UsernamePasswordCallbackHandlerFactory(),
-                                      usernamePasswordCallbackHandlerProps);
+                usernamePasswordCallbackHandlerProps);
     }
 
     /**
      * Initialize authorization related configs
+     *
      * @param bundleContext
      */
     private void initAuthorizationConfigs(BundleContext bundleContext) {
@@ -255,17 +303,18 @@ public class CarbonSecurityComponent {
             }
 
             permissionInfoList.add(new PermissionInfo(permissionInfo.getType(), permissionInfo.getName(),
-                                                      (permissionInfo.getActions() != null && !permissionInfo
-                                                              .getActions().trim().isEmpty()) ?
-                                                      permissionInfo.getActions().trim() : null));
+                    (permissionInfo.getActions() != null && !permissionInfo
+                            .getActions().trim().isEmpty()) ?
+                            permissionInfo.getActions().trim() : null));
         }
 
         permissionAdmin.setDefaultPermissions(permissionInfoList.toArray(new PermissionInfo[permissionInfoList.size()
-                                                                                 ]));
+                ]));
     }
 
     /**
      * Get PermissionAdmin
+     *
      * @param context
      * @return
      */

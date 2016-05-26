@@ -18,7 +18,7 @@ package org.wso2.carbon.security.caas.internal.config;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.wso2.carbon.security.caas.jaas.util.CarbonSecurityConstants;
+import org.wso2.carbon.security.caas.api.util.CarbonSecurityConstants;
 import org.wso2.carbon.security.caas.user.core.config.AuthorizationStoreConfig;
 import org.wso2.carbon.security.caas.user.core.config.CredentialStoreConfig;
 import org.wso2.carbon.security.caas.user.core.config.IdentityStoreConfig;
@@ -79,9 +79,12 @@ public class StoreConfigBuilder {
                                                CarbonSecurityConstants.STORE_CONFIG_FILE);
         }
 
+        storeConfig.setEnableCache(storeConfigFile.isEnableCache());
 
         if (storeConfigFile.getCredentialStore().getConnector() != null && !storeConfigFile.getCredentialStore()
                 .getConnector().trim().isEmpty()) {
+
+            storeConfig.setEnableCacheForCredentialStore(storeConfigFile.getCredentialStore().isEnableCache());
 
             Map<String, StoreConnectorConfigEntry> credentialConnectorMap =
                     getStoreConnectorsMap(storeConfigFile.getCredentialStore().getConnector(),
@@ -103,6 +106,8 @@ public class StoreConfigBuilder {
         if (storeConfigFile.getIdentityStore().getConnector() != null && !storeConfigFile.getIdentityStore()
                 .getConnector().trim().isEmpty()) {
 
+            storeConfig.setEnableCacheForIdentityStore(storeConfigFile.getIdentityStore().isEnableCache());
+
             Map<String, StoreConnectorConfigEntry> identityStoreConnectorMap =
                     getStoreConnectorsMap(storeConfigFile.getIdentityStore().getConnector(),
                                           storeConfigFile.getIdentityStore(), externalConfigEntries,
@@ -122,6 +127,8 @@ public class StoreConfigBuilder {
 
         if (storeConfigFile.getAuthorizationStore().getConnector() != null && !storeConfigFile.getAuthorizationStore()
                 .getConnector().trim().isEmpty()) {
+
+            storeConfig.setEnableCacheForAuthorizationStore(storeConfigFile.getAuthorizationStore().isEnableCache());
 
             Map<String, StoreConnectorConfigEntry> authorizationStoreConnectorMap =
                     getStoreConnectorsMap(storeConfigFile.getAuthorizationStore().getConnector(),

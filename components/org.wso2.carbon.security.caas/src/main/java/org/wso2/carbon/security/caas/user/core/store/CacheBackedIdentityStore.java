@@ -33,6 +33,7 @@ import java.util.Map;
 import javax.cache.Cache;
 import javax.cache.CacheManager;
 import javax.cache.configuration.MutableConfiguration;
+import javax.security.auth.callback.Callback;
 
 /**
  * Virtual identity store with the caching.
@@ -43,6 +44,7 @@ public class CacheBackedIdentityStore implements IdentityStore {
     private static Logger log = LoggerFactory.getLogger(CacheBackedIdentityStore.class);
     private static final boolean IS_DEBUG_ENABLED = log.isDebugEnabled();
 
+    private RealmService realmService;
     private IdentityStore identityStore = new IdentityStoreImpl();
     private CacheManager cacheManager;
 
@@ -57,6 +59,7 @@ public class CacheBackedIdentityStore implements IdentityStore {
         cacheManager = CarbonSecurityDataHolder.getInstance().getCarbonCachingService().getCachingProvider()
                 .getCacheManager();
         identityStore.init(realmService, identityStoreConfigs);
+        this.realmService = realmService;
 
         if (IS_DEBUG_ENABLED) {
             log.debug("Cache backed identity store successfully initialized.");
@@ -66,39 +69,53 @@ public class CacheBackedIdentityStore implements IdentityStore {
     @Override
     public User getUser(String username) throws IdentityStoreException, UserNotFoundException {
 
-        Cache<String, User> cache = cacheManager.getCache("getUser");
+        Cache<String, User.UserBuilder> cache = cacheManager.getCache("user-username", String.class,
+                User.UserBuilder.class);
 
         if (cache == null) {
-            cache = this.createCache(String.class, User.class, "getUser");
+            cache = this.createCache("user-username", String.class, User.UserBuilder.class);
         }
 
-        User user = cache.get(username);
+        User.UserBuilder userBuilder = cache.get(username);
 
-        if (user == null) {
-            user = identityStore.getUser(username);
-            cache.put(username, user);
+        if (userBuilder == null) {
+            userBuilder = identityStore.getUser(username).getBuilder();
+            cache.put(username, userBuilder);
         }
 
-        return user;
+        return userBuilder.setAuthorizationStore(realmService.getAuthorizationStore())
+                .setIdentityStore(realmService.getIdentityStore())
+                .setClaimManager(realmService.getClaimManager())
+                .build();
+    }
+
+    @Override
+    public User getUser(Callback[] callbacks) throws IdentityStoreException, UserNotFoundException {
+
+        return identityStore.getUser(callbacks);
     }
 
     @Override
     public User getUserFromId(String userId, String identityStoreId) throws IdentityStoreException {
 
-        Cache<String, User> cache = cacheManager.getCache("getUserFromId");
+        Cache<String, User.UserBuilder> cache = cacheManager.getCache("user-userid", String.class,
+                User.UserBuilder.class);
 
         if (cache == null) {
-            cache = this.createCache(String.class, User.class, "getUserFromId");
+            cache = this.createCache("user-userid", String.class, User.UserBuilder.class);
         }
 
-        User user = cache.get(userId);
+        User.UserBuilder userBuilder = cache.get(userId);
 
-        if (user == null) {
-            user = identityStore.getUserFromId(userId, identityStoreId);
-            cache.put(userId, user);
+        if (userBuilder == null) {
+            userBuilder = identityStore.getUserFromId(userId, identityStoreId).getBuilder();
+            cache.put(userId, userBuilder);
         }
 
-        return user;
+        return userBuilder.setAuthorizationStore(realmService.getAuthorizationStore())
+                .setIdentityStore(realmService.getIdentityStore())
+                .setClaimManager(realmService.getClaimManager())
+                .build();
     }
 
     @Override
@@ -120,39 +137,45 @@ public class CacheBackedIdentityStore implements IdentityStore {
     @Override
     public Group getGroup(String groupName) throws IdentityStoreException, GroupNotFoundException {
 
-        Cache<String, Group> cache = cacheManager.getCache("getGroup");
+        Cache<String, Group.GroupBuilder> cache = cacheManager.getCache("group-groupname", String.class,
+                Group.GroupBuilder.class);
 
         if (cache == null) {
-            cache = this.createCache(String.class, Group.class, "getGroup");
+            cache = this.createCache("group-groupname", String.class, Group.GroupBuilder.class);
         }
 
-        Group group = cache.get(groupName);
+        Group.GroupBuilder groupBuilder = cache.get(groupName);
 
-        if (group == null) {
-            group = identityStore.getGroup(groupName);
-            cache.put(groupName, group);
+        if (groupBuilder == null) {
+            groupBuilder = identityStore.getGroup(groupName).getBuilder();
+            cache.put(groupName, groupBuilder);
         }
 
-        return group;
+        return groupBuilder.setIdentityStore(realmService.getIdentityStore())
+                .setAuthorizationStore(realmService.getAuthorizationStore())
+                .build();
     }
 
     @Override
     public Group getGroupFromId(String groupId, String identityStoreId) throws IdentityStoreException {
 
-        Cache<String, Group> cache = cacheManager.getCache("getGroupFromId");
+        Cache<String, Group.GroupBuilder> cache = cacheManager.getCache("group-groupid", String.class,
+                Group.GroupBuilder.class);
 
         if (cache == null) {
-            cache = this.createCache(String.class, Group.class, "getGroupFromId");
+            cache = this.createCache("group-groupid", String.class, Group.GroupBuilder.class);
         }
 
-        Group group = cache.get(groupId);
+        Group.GroupBuilder groupBuilder = cache.get(groupId);
 
-        if (group == null) {
-            group = identityStore.getGroupFromId(groupId, identityStoreId);
-            cache.put(groupId, group);
+        if (groupBuilder == null) {
+            groupBuilder = identityStore.getGroupFromId(groupId, identityStoreId).getBuilder();
+            cache.put(groupId, groupBuilder);
         }
 
-        return group;
+        return groupBuilder.setIdentityStore(realmService.getIdentityStore())
+                .setAuthorizationStore(realmService.getAuthorizationStore())
+                .build();
     }
 
     @Override
@@ -175,7 +198,7 @@ public class CacheBackedIdentityStore implements IdentityStore {
         return identityStore.isUserInGroup(userId, groupId, userStoreId);
     }
 
-    private <K, V> Cache<K, V> createCache(Class<K> keyClass, Class<V> valueClass, String cacheName) {
+    private <K, V> Cache<K, V> createCache(String cacheName, Class<K> keyClass, Class<V> valueClass) {
 
         MutableConfiguration<K, V> configuration = new MutableConfiguration<>();
         configuration.setStoreByValue(true)

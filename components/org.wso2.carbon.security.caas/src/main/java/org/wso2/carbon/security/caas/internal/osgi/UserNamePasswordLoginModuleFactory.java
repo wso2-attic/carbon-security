@@ -19,7 +19,7 @@ package org.wso2.carbon.security.caas.internal.osgi;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.PrototypeServiceFactory;
 import org.osgi.framework.ServiceRegistration;
-import org.wso2.carbon.security.caas.jaas.modules.UsernamePasswordLoginModule;
+import org.wso2.carbon.security.caas.api.module.UsernamePasswordLoginModule;
 
 import javax.security.auth.spi.LoginModule;
 

@@ -32,4 +32,16 @@ public interface PasswordHandler {
      * @throws NoSuchAlgorithmException No such algorithm exception.
      */
     String hashPassword(char [] password, String salt, String hashAlgo) throws NoSuchAlgorithmException;
+
+    /**
+     * Set iteration count for the hash.
+     * @param iterationCount Iteration count.
+     */
+    void setIterationCount(int iterationCount);
+
+    /**
+     * Key length of the hash.
+     * @param keyLength Key length.
+     */
+    void setKeyLength(int keyLength);
 }

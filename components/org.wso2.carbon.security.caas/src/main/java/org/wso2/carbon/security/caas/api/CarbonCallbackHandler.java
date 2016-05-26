@@ -1,4 +1,4 @@
-package org.wso2.carbon.security.caas.jaas;
+package org.wso2.carbon.security.caas.api;
 
 import org.wso2.carbon.messaging.CarbonMessage;
 

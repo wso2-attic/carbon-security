@@ -26,6 +26,7 @@ import org.wso2.carbon.security.caas.user.core.service.RealmService;
 
 import java.util.List;
 import java.util.Map;
+import javax.security.auth.callback.Callback;
 
 /**
  * Represents a virtual identity store to abstract the underlying stores.
@@ -49,6 +50,15 @@ public interface IdentityStore {
      * @throws UserNotFoundException User not found exception.
      */
     User getUser(String username) throws IdentityStoreException, UserNotFoundException;
+
+    /**
+     * Get the user from callbacks.
+     * @param callbacks Callback array.
+     * @return User related to the callbacks.
+     * @throws IdentityStoreException Identity Store Exception.
+     * @throws UserNotFoundException User Not Found Exception.
+     */
+    User getUser(Callback[] callbacks) throws IdentityStoreException, UserNotFoundException;
 
     /**
      * Get the user from user Id.
