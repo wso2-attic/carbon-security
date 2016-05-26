@@ -119,6 +119,7 @@ public class IdentityStore {
                 return identityStoreConnector.getUser(callbacks)
                         .setIdentityStore(realmService.getIdentityStore())
                         .setAuthorizationStore(realmService.getAuthorizationStore())
+                        .setClaimManager(realmService.getClaimManager())
                         .build();
             } catch (UserNotFoundException e) {
                 userNotFoundException.addSuppressed(e);
