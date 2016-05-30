@@ -76,6 +76,7 @@
                                         <include>conf/permissions.yml</include>
                                         <include>conf/security.policy</include>
                                         <include>conf/store-config.yml</include>
+                                        <include>conf/claim-config.yml</include>
                                         <include>p2.inf</include>
                                         <include>build.properties</include>
                                     </includes>
