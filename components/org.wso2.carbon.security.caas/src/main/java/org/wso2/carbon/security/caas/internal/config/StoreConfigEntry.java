@@ -16,6 +16,7 @@
 
 package org.wso2.carbon.security.caas.internal.config;
 
+import java.util.List;
 import java.util.Properties;
 
 /**
@@ -25,11 +26,23 @@ import java.util.Properties;
  */
 public class StoreConfigEntry {
 
-    private boolean enableCache;
+    //This variable represents whether cache should be enabled for a particular store. The default values is set to
+    //enableCache=true unless specified otherwise in the store-config file.
+    private boolean enableCache = true;
 
     private String connector;
 
     private Properties properties;
+
+    private List<CacheEntry> caches;
+
+    public List<CacheEntry> getCaches() {
+        return caches;
+    }
+
+    public void setCaches(List<CacheEntry> cache) {
+        this.caches = cache;
+    }
 
     public boolean isEnableCache() {
         return enableCache;
