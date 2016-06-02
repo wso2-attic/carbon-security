@@ -30,7 +30,7 @@ public class AuthorizationStoreException extends Exception {
         super(message);
     }
 
-    public AuthorizationStoreException(String messgae, Throwable cause) {
-        super(messgae, cause);
+    public AuthorizationStoreException(String message, Throwable cause) {
+        super(message, cause);
     }
 }

@@ -26,12 +26,9 @@ import java.util.List;
  */
 public class StoreConfigFile {
 
-    private boolean enableCache;
-
+    private boolean enableCache = true;
     private StoreConfigEntry credentialStore;
-
     private StoreConfigEntry identityStore;
-
     private StoreConfigEntry authorizationStore;
 
     private List<StoreConnectorConfigEntry> storeConnectors;
@@ -40,28 +37,28 @@ public class StoreConfigFile {
         return enableCache;
     }
 
-    public void setEnableCache(boolean enableCache) {
-        this.enableCache = enableCache;
-    }
-
     public StoreConfigEntry getCredentialStore() {
         return credentialStore;
-    }
-
-    public void setCredentialStore(StoreConfigEntry credentialStore) {
-        this.credentialStore = credentialStore;
     }
 
     public StoreConfigEntry getIdentityStore() {
         return identityStore;
     }
 
-    public void setIdentityStore(StoreConfigEntry identityStore) {
-        this.identityStore = identityStore;
-    }
-
     public StoreConfigEntry getAuthorizationStore() {
         return authorizationStore;
+    }
+
+    public void setEnableCache(boolean enableCache) {
+        this.enableCache = enableCache;
+    }
+
+    public void setCredentialStore(StoreConfigEntry credentialStore) {
+        this.credentialStore = credentialStore;
+    }
+
+    public void setIdentityStore(StoreConfigEntry identityStore) {
+        this.identityStore = identityStore;
     }
 
     public void setAuthorizationStore(StoreConfigEntry authorizationStore) {

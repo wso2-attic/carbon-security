@@ -29,6 +29,8 @@ public class Permission {
     private String resourceId;
     private String action;
 
+    private PermissionBuilder builder;
+
     public Permission(String resourceId, String action) {
         this.resourceId = resourceId;
         this.action = action;
@@ -96,6 +98,8 @@ public class Permission {
      * Builder for the permission bean.
      */
     public static class PermissionBuilder {
+
+        private static final long serialVersionUID = 7876352257812187294L;
 
         private String resourceId;
         private String action;

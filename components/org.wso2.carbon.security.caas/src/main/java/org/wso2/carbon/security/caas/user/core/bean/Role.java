@@ -26,11 +26,12 @@ import java.util.List;
 /**
  * Represents a Role.
  */
-public class Role {
+public class Role  {
 
     private String roleName;
     private String roleId;
     private String authorizationStoreId;
+    private RoleBuilder builder;
     private AuthorizationStore authorizationStore;
 
     private Role(String roleName, String roleId, String authorizationStoreId, AuthorizationStore authorizationStore) {
@@ -189,11 +190,13 @@ public class Role {
      */
     public static class RoleBuilder {
 
+        private static final long serialVersionUID = -7097267952117338236L;
+
         private String roleName;
         private String roleId;
         private String authorizationStoreId;
 
-        private AuthorizationStore authorizationStore;
+        private transient AuthorizationStore authorizationStore;
 
         public RoleBuilder setRoleName(String roleName) {
             this.roleName = roleName;

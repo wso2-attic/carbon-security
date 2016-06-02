@@ -155,7 +155,7 @@
             <dependency>
                 <groupId>org.wso2.carbon</groupId>
                 <artifactId>org.wso2.carbon.launcher</artifactId>
-                <version>${carbon.kernel.version}</version>
+                <version>${carbon.launcher.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.wso2.carbon</groupId>
@@ -172,7 +172,7 @@
             <dependency>
                 <groupId>org.wso2.carbon</groupId>
                 <artifactId>org.wso2.carbon.core</artifactId>
-                <version>${carbon.kernel.version}</version>
+                <version>${carbon.core.version}</version>
             </dependency>
             <dependency>
                 <groupId>commons-dbcp</groupId>
@@ -183,6 +183,11 @@
                 <groupId>net.minidev</groupId>
                 <artifactId>asm</artifactId>
                 <version>${net.minidev.asm.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon.caching</groupId>
+                <artifactId>org.wso2.carbon.caching</artifactId>
+                <version>${org.wso2.carbon.caching.version}</version>
             </dependency>
 
             <!-- OSGI Tests-->
@@ -204,7 +209,7 @@
             <dependency>
                 <groupId>org.wso2.carbon</groupId>
                 <artifactId>osgi-test-util</artifactId>
-                <version>${carbon.kernel.version}</version>
+                <version>${carbon.osgi.test.util.version}</version>
                 <scope>test</scope>
             </dependency>
             <dependency>
@@ -296,11 +301,15 @@
         <carbon.security.caas.version>1.0.0-SNAPSHOT</carbon.security.caas.version>
 
         <carbon.feature.plugin.version>2.0.1</carbon.feature.plugin.version>
-        <carbon.kernel.version>5.1.0-alpha2</carbon.kernel.version>
+        <carbon.kernel.version>5.1.0</carbon.kernel.version>
+        <carbon.launcher.version>5.1.0</carbon.launcher.version>
+        <carbon.core.version>5.1.0</carbon.core.version>
+        <carbon.osgi.test.util.version>5.1.0</carbon.osgi.test.util.version>
         <msf4j.version>1.0.0</msf4j.version>
         <opensaml.version>2.6.4.wso2v1</opensaml.version>
         <commons.dbcp.version>1.4</commons.dbcp.version>
-        <org.wso2.carbon.messaging.version>1.0.2</org.wso2.carbon.messaging.version>
+        <org.wso2.carbon.messaging.version>1.0.3</org.wso2.carbon.messaging.version>
+        <org.wso2.carbon.caching.version>1.0.0</org.wso2.carbon.caching.version>
 
         <!-- Equinox dependency versions -->
         <osgi.core.api.version>6.0.0</osgi.core.api.version>
