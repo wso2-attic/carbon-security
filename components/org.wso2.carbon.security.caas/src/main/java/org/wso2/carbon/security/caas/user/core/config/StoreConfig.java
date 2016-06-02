@@ -31,6 +31,9 @@ public class StoreConfig {
     private Map<String, AuthorizationStoreConfig> authorizationStoreConfigMap = new HashMap<>();
     private Map<String, IdentityStoreConfig> identityStoreConfigMap = new HashMap<>();
     private Map<String, CredentialStoreConfig> credentialStoreConfigMap = new HashMap<>();
+    private Map<String, CacheConfig> authorizationStoreCacheConfigMap = new HashMap<>();
+    private Map<String, CacheConfig> identityStoreCacheConfigMap = new HashMap<>();
+    private Map<String, CacheConfig> credentialStoreCacheConfigMap = new HashMap<>();
 
     public boolean isEnableCache() {
         return enableCache;
@@ -98,5 +101,29 @@ public class StoreConfig {
 
     public void addCredentialStoreConfig(String name, CredentialStoreConfig credentialStoreConfig) {
         this.credentialStoreConfigMap.put(name, credentialStoreConfig);
+    }
+
+    public Map<String, CacheConfig> getAuthorizationStoreCacheConfigMap() {
+        return authorizationStoreCacheConfigMap;
+    }
+
+    public void setAuthorizationStoreCacheConfigMap(Map<String, CacheConfig> authorizationStoreCacheConfigMap) {
+        this.authorizationStoreCacheConfigMap = authorizationStoreCacheConfigMap;
+    }
+
+    public Map<String, CacheConfig> getIdentityStoreCacheConfigMap() {
+        return identityStoreCacheConfigMap;
+    }
+
+    public void setIdentityStoreCacheConfigMap(Map<String, CacheConfig> identityStoreCacheConfigMap) {
+        this.identityStoreCacheConfigMap = identityStoreCacheConfigMap;
+    }
+
+    public Map<String, CacheConfig> getCredentialStoreCacheConfigMap() {
+        return credentialStoreCacheConfigMap;
+    }
+
+    public void setCredentialStoreCacheConfigMap(Map<String, CacheConfig> cradentialStoreCacheConfigMap) {
+        this.credentialStoreCacheConfigMap = cradentialStoreCacheConfigMap;
     }
 }

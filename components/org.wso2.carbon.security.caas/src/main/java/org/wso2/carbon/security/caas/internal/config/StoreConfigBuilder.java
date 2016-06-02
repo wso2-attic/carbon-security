@@ -20,6 +20,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.wso2.carbon.security.caas.api.util.CarbonSecurityConstants;
 import org.wso2.carbon.security.caas.user.core.config.AuthorizationStoreConfig;
+import org.wso2.carbon.security.caas.user.core.config.CacheConfig;
 import org.wso2.carbon.security.caas.user.core.config.CredentialStoreConfig;
 import org.wso2.carbon.security.caas.user.core.config.IdentityStoreConfig;
 import org.wso2.carbon.security.caas.user.core.config.StoreConfig;
@@ -36,10 +37,12 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.stream.Collectors;
 
 /**
  * Configuration builder for stores.
@@ -50,6 +53,11 @@ public class StoreConfigBuilder {
 
     private static final Logger log = LoggerFactory.getLogger(StoreConfigBuilder.class);
 
+    /**
+     * Builder a config object based on the store-config.yml properties.
+     *
+     * @return StoreConfig
+     */
     public static StoreConfig buildStoreConfigs() {
 
         StoreConfig storeConfig = new StoreConfig();
@@ -79,7 +87,67 @@ public class StoreConfigBuilder {
                                                CarbonSecurityConstants.STORE_CONFIG_FILE);
         }
 
-        storeConfig.setEnableCache(storeConfigFile.isEnableCache());
+        boolean cacheEnabled = storeConfigFile.isEnableCache();
+        storeConfig.setEnableCache(cacheEnabled);
+
+        List<CacheEntry> credentialStoreCacheEntries = storeConfigFile.getCredentialStore().getCaches();
+        Map<String, CacheConfig> credentialStoreCacheConfigMap;
+
+        if (cacheEnabled && credentialStoreCacheEntries != null && !credentialStoreCacheEntries.isEmpty()) {
+            credentialStoreCacheConfigMap = credentialStoreCacheEntries.stream()
+                    .filter(t -> !(t.getName() == null || t.getName().isEmpty()))
+                    .map(t -> {
+                        if (t.getCacheConfig() == null) {
+                            t.setCacheConfig(new CacheConfig());
+                        }
+                        return t;
+                    })
+                    .collect(Collectors.toMap(CacheEntry::getName, CacheEntry::getCacheConfig));
+        } else {
+            credentialStoreCacheConfigMap = Collections.emptyMap();
+        }
+
+        storeConfig.setCredentialStoreCacheConfigMap(credentialStoreCacheConfigMap);
+
+        List<CacheEntry> identityStoreCacheEntries = storeConfigFile.getIdentityStore().getCaches();
+        Map<String, CacheConfig> identityStoreCacheConfigMap;
+
+        if (cacheEnabled && identityStoreCacheEntries != null && !identityStoreCacheEntries.isEmpty()) {
+
+            identityStoreCacheConfigMap = identityStoreCacheEntries.stream()
+                    .filter(t -> !(t.getName() == null || t.getName().isEmpty()))
+                    .map(t -> {
+                        if (t.getCacheConfig() == null) {
+                            t.setCacheConfig(new CacheConfig());
+                        }
+                        return t;
+                    })
+                    .collect(Collectors.toMap(CacheEntry::getName, CacheEntry::getCacheConfig));
+        } else {
+            identityStoreCacheConfigMap = Collections.emptyMap();
+        }
+
+        storeConfig.setIdentityStoreCacheConfigMap(identityStoreCacheConfigMap);
+
+        List<CacheEntry> authorizationStoreCacheEntries = storeConfigFile.getAuthorizationStore().getCaches();
+        Map<String, CacheConfig> authorizationStoreCacheConfigMap;
+
+        if (cacheEnabled && authorizationStoreCacheEntries != null && !authorizationStoreCacheEntries.isEmpty()) {
+
+            authorizationStoreCacheConfigMap = authorizationStoreCacheEntries.stream()
+                    .filter(t -> !(t.getName() == null || t.getName().isEmpty()))
+                    .map(t -> {
+                        if (t.getCacheConfig() == null) {
+                            t.setCacheConfig(new CacheConfig());
+                        }
+                        return t;
+                    })
+                    .collect(Collectors.toMap(CacheEntry::getName, CacheEntry::getCacheConfig));
+        } else {
+            authorizationStoreCacheConfigMap = Collections.emptyMap();
+        }
+
+        storeConfig.setAuthorizationStoreCacheConfigMap(authorizationStoreCacheConfigMap);
 
         if (storeConfigFile.getCredentialStore().getConnector() != null && !storeConfigFile.getCredentialStore()
                 .getConnector().trim().isEmpty()) {
