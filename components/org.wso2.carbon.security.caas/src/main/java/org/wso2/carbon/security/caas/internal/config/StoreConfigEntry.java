@@ -26,8 +26,8 @@ import java.util.Properties;
  */
 public class StoreConfigEntry {
 
-    //This variable represents whether cache should be enabled for a particular store. The default values is set to
-    //enableCache=true unless specified otherwise in the store-config file.
+    // This variable represents whether cache should be enabled for a particular store. The default values is set to
+    // enableCache=true unless specified otherwise in the store-config file.
     private boolean enableCache = true;
 
     private String connector;
