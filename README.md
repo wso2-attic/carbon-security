@@ -3,7 +3,7 @@
 
 |  Branch | Build Status |
 | :------------ |:-------------
-| master      | [![Build Status](https://wso2.org/jenkins/job/carbon-security/badge/icon)](https://wso2.org/jenkins/job/carbon-security) |
+| master      | [![Build Status](https://wso2.org/jenkins/buildStatus/icon?job=carbon-security)](https://wso2.org/jenkins/job/carbon-security) |
 
 
 ---
