@@ -20,7 +20,7 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * StoreConfigs Bean
+ * StoreConfigs Bean.
  *
  * @since 1.0.0
  */

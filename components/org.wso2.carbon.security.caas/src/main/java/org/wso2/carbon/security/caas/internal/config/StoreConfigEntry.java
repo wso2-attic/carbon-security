@@ -20,7 +20,7 @@ import java.util.List;
 import java.util.Properties;
 
 /**
- * StoreConfig Bean
+ * StoreConfig Bean.
  *
  * @since 1.0.0
  */

@@ -74,7 +74,7 @@ public class StoreConfigBuilder {
                 storeConfigFile = new Yaml().loadAs(in, StoreConfigFile.class);
             } catch (IOException e) {
                 throw new RuntimeException("Error while loading " + CarbonSecurityConstants.STORE_CONFIG_FILE + " " +
-                                           "configuration file", e);
+                                           "configuration file.", e);
             }
         } else {
             throw new RuntimeException("Configuration file " + CarbonSecurityConstants.STORE_CONFIG_FILE + "' is not " +
