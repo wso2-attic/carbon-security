@@ -21,18 +21,20 @@ import org.slf4j.LoggerFactory;
 import org.wso2.carbon.security.caas.internal.CarbonSecurityDataHolder;
 import org.wso2.carbon.security.caas.user.core.bean.Group;
 import org.wso2.carbon.security.caas.user.core.bean.User;
-import org.wso2.carbon.security.caas.user.core.config.IdentityStoreConfig;
+import org.wso2.carbon.security.caas.user.core.config.CacheConfig;
+import org.wso2.carbon.security.caas.user.core.config.IdentityConnectorConfig;
+import org.wso2.carbon.security.caas.user.core.constant.CacheNames;
 import org.wso2.carbon.security.caas.user.core.exception.GroupNotFoundException;
 import org.wso2.carbon.security.caas.user.core.exception.IdentityStoreException;
 import org.wso2.carbon.security.caas.user.core.exception.StoreException;
 import org.wso2.carbon.security.caas.user.core.exception.UserNotFoundException;
 import org.wso2.carbon.security.caas.user.core.service.RealmService;
+import org.wso2.carbon.security.caas.user.core.util.CacheHelper;
 
 import java.util.List;
 import java.util.Map;
 import javax.cache.Cache;
 import javax.cache.CacheManager;
-import javax.cache.configuration.MutableConfiguration;
 import javax.security.auth.callback.Callback;
 
 /**
@@ -44,12 +46,16 @@ public class CacheBackedIdentityStore implements IdentityStore {
     private static Logger log = LoggerFactory.getLogger(CacheBackedIdentityStore.class);
     private static final boolean IS_DEBUG_ENABLED = log.isDebugEnabled();
 
-    private RealmService realmService;
     private IdentityStore identityStore = new IdentityStoreImpl();
     private CacheManager cacheManager;
+    private Map<String, CacheConfig> cacheConfigs;
+
+    public CacheBackedIdentityStore(Map<String, CacheConfig> cacheConfigs) {
+        this.cacheConfigs = cacheConfigs;
+    }
 
     @Override
-    public void init(RealmService realmService, Map<String, IdentityStoreConfig> identityStoreConfigs)
+    public void init(RealmService realmService, Map<String, IdentityConnectorConfig> identityConnectorConfigs)
             throws IdentityStoreException {
 
         if (CarbonSecurityDataHolder.getInstance().getCarbonCachingService() == null) {
@@ -58,8 +64,7 @@ public class CacheBackedIdentityStore implements IdentityStore {
 
         cacheManager = CarbonSecurityDataHolder.getInstance().getCarbonCachingService().getCachingProvider()
                 .getCacheManager();
-        identityStore.init(realmService, identityStoreConfigs);
-        this.realmService = realmService;
+        identityStore.init(realmService, identityConnectorConfigs);
 
         if (IS_DEBUG_ENABLED) {
             log.debug("Cache backed identity store successfully initialized.");
@@ -69,53 +74,65 @@ public class CacheBackedIdentityStore implements IdentityStore {
     @Override
     public User getUser(String username) throws IdentityStoreException, UserNotFoundException {
 
-        Cache<String, User.UserBuilder> cache = cacheManager.getCache("user-username", String.class,
-                User.UserBuilder.class);
+        if (CacheHelper.isCacheDisabled(cacheConfigs, CacheNames.USER_USERNAME)) {
+            return identityStore.getUser(username);
+        }
+
+        int expireTime = CacheHelper.getExpireTime(cacheConfigs, CacheNames.USER_USERNAME,
+                CacheHelper.MEDIUM_EXPIRE_TIME);
+
+        Cache<String, User> cache = cacheManager.getCache(CacheNames.USER_USERNAME, String.class, User.class);
+        User user = null;
 
         if (cache == null) {
-            cache = this.createCache("user-username", String.class, User.UserBuilder.class);
+            cache =  CacheHelper.createCache(CacheNames.USER_USERNAME, String.class, User.class, expireTime,
+                    cacheManager);
+        } else {
+            user = cache.get(username);
         }
 
-        User.UserBuilder userBuilder = cache.get(username);
-
-        if (userBuilder == null) {
-            userBuilder = identityStore.getUser(username).getBuilder();
-            cache.put(username, userBuilder);
+        if (user == null) {
+            user = identityStore.getUser(username);
+            cache.put(username, user);
         }
 
-        return userBuilder.setAuthorizationStore(realmService.getAuthorizationStore())
-                .setIdentityStore(realmService.getIdentityStore())
-                .setClaimManager(realmService.getClaimManager())
-                .build();
+        return user;
     }
 
     @Override
     public User getUser(Callback[] callbacks) throws IdentityStoreException, UserNotFoundException {
 
+        // We are using this method mostly internally and for to aid the authenticate() method. I see no use of
+        // caching in here.
         return identityStore.getUser(callbacks);
     }
 
     @Override
     public User getUserFromId(String userId, String identityStoreId) throws IdentityStoreException {
 
-        Cache<String, User.UserBuilder> cache = cacheManager.getCache("user-userid", String.class,
-                User.UserBuilder.class);
+        if (CacheHelper.isCacheDisabled(cacheConfigs, CacheNames.USER_USERID)) {
+            return identityStore.getUserFromId(userId, identityStoreId);
+        }
+
+        int expireTime = CacheHelper.getExpireTime(cacheConfigs, CacheNames.USER_USERID,
+                CacheHelper.MEDIUM_EXPIRE_TIME);
+
+        Cache<String, User> cache = cacheManager.getCache(CacheNames.USER_USERID, String.class, User.class);
+        User user = null;
 
         if (cache == null) {
-            cache = this.createCache("user-userid", String.class, User.UserBuilder.class);
+            cache =  CacheHelper.createCache(CacheNames.USER_USERID, String.class, User.class, expireTime,
+                    cacheManager);
+        } else {
+            user = cache.get(userId + identityStoreId);
         }
 
-        User.UserBuilder userBuilder = cache.get(userId);
-
-        if (userBuilder == null) {
-            userBuilder = identityStore.getUserFromId(userId, identityStoreId).getBuilder();
-            cache.put(userId, userBuilder);
+        if (user == null) {
+            user = identityStore.getUserFromId(userId, identityStoreId);
+            cache.put(userId + identityStoreId, user);
         }
 
-        return userBuilder.setAuthorizationStore(realmService.getAuthorizationStore())
-                .setIdentityStore(realmService.getIdentityStore())
-                .setClaimManager(realmService.getClaimManager())
-                .build();
+        return user;
     }
 
     @Override
@@ -137,45 +154,57 @@ public class CacheBackedIdentityStore implements IdentityStore {
     @Override
     public Group getGroup(String groupName) throws IdentityStoreException, GroupNotFoundException {
 
-        Cache<String, Group.GroupBuilder> cache = cacheManager.getCache("group-groupname", String.class,
-                Group.GroupBuilder.class);
+        if (CacheHelper.isCacheDisabled(cacheConfigs, CacheNames.GROUP_GROUPNAME)) {
+            return identityStore.getGroup(groupName);
+        }
+
+        int expireTime = CacheHelper.getExpireTime(cacheConfigs, CacheNames.GROUP_GROUPNAME,
+                CacheHelper.MEDIUM_EXPIRE_TIME);
+
+        Cache<String, Group> cache = cacheManager.getCache(CacheNames.GROUP_GROUPNAME, String.class, Group.class);
+        Group group = null;
 
         if (cache == null) {
-            cache = this.createCache("group-groupname", String.class, Group.GroupBuilder.class);
+            cache = CacheHelper.createCache(CacheNames.GROUP_GROUPNAME, String.class, Group.class, expireTime,
+                    cacheManager);
+        } else {
+            group = cache.get(groupName);
         }
 
-        Group.GroupBuilder groupBuilder = cache.get(groupName);
-
-        if (groupBuilder == null) {
-            groupBuilder = identityStore.getGroup(groupName).getBuilder();
-            cache.put(groupName, groupBuilder);
+        if (group == null) {
+            group = identityStore.getGroup(groupName);
+            cache.put(groupName, group);
         }
 
-        return groupBuilder.setIdentityStore(realmService.getIdentityStore())
-                .setAuthorizationStore(realmService.getAuthorizationStore())
-                .build();
+        return group;
     }
 
     @Override
     public Group getGroupFromId(String groupId, String identityStoreId) throws IdentityStoreException {
 
-        Cache<String, Group.GroupBuilder> cache = cacheManager.getCache("group-groupid", String.class,
-                Group.GroupBuilder.class);
+        if (CacheHelper.isCacheDisabled(cacheConfigs, CacheNames.GROUP_GROUP_ID)) {
+            return identityStore.getGroupFromId(groupId, identityStoreId);
+        }
+
+        int expireTime = CacheHelper.getExpireTime(cacheConfigs, CacheNames.GROUP_GROUP_ID,
+                CacheHelper.MEDIUM_EXPIRE_TIME);
+
+        Cache<String, Group> cache = cacheManager.getCache(CacheNames.GROUP_GROUP_ID, String.class, Group.class);
+        Group group = null;
 
         if (cache == null) {
-            cache = this.createCache("group-groupid", String.class, Group.GroupBuilder.class);
+            cache = CacheHelper.createCache(CacheNames.GROUP_GROUP_ID, String.class, Group.class, expireTime,
+                    cacheManager);
+        } else {
+            group = cache.get(groupId + identityStoreId);
         }
 
-        Group.GroupBuilder groupBuilder = cache.get(groupId);
-
-        if (groupBuilder == null) {
-            groupBuilder = identityStore.getGroupFromId(groupId, identityStoreId).getBuilder();
-            cache.put(groupId, groupBuilder);
+        if (group == null) {
+            group = identityStore.getGroupFromId(groupId, identityStoreId);
+            cache.put(groupId + identityStoreId, group);
         }
 
-        return groupBuilder.setIdentityStore(realmService.getIdentityStore())
-                .setAuthorizationStore(realmService.getAuthorizationStore())
-                .build();
+        return group;
     }
 
     @Override
@@ -184,26 +213,68 @@ public class CacheBackedIdentityStore implements IdentityStore {
     }
 
     @Override
-    public List<Group> getGroupsOfUser(String userId, String userStoreId) throws IdentityStoreException {
-        return identityStore.getGroupsOfUser(userId, userStoreId);
+    public List<Group> getGroupsOfUser(String userId, String identityStoreId) throws IdentityStoreException {
+
+        if (CacheHelper.isCacheDisabled(cacheConfigs, CacheNames.GROUPS_USERID_IDENTITYSTOREID)) {
+            return identityStore.getGroupsOfUser(userId, identityStoreId);
+        }
+
+        int expireTime = CacheHelper.getExpireTime(cacheConfigs, CacheNames.GROUPS_USERID_IDENTITYSTOREID,
+                CacheHelper.LOW_EXPIRE_TIME);
+
+        Cache<String, List> cache = cacheManager.getCache(CacheNames.GROUPS_USERID_IDENTITYSTOREID, String.class,
+                List.class);
+
+        List<Group> groups = null;
+        if (cache == null) {
+            cache = CacheHelper.createCache(CacheNames.GROUPS_USERID_IDENTITYSTOREID, String.class, List.class,
+                    expireTime, cacheManager);
+        } else {
+            groups = cache.get(userId + identityStoreId);
+        }
+
+        if (groups == null) {
+            groups = identityStore.getGroupsOfUser(userId, identityStoreId);
+            cache.put(userId + identityStoreId, groups);
+        }
+
+        return groups;
     }
 
     @Override
-    public List<User> getUsersOfGroup(String groupID, String userStoreId) throws IdentityStoreException {
-        return identityStore.getUsersOfGroup(groupID, userStoreId);
+    public List<User> getUsersOfGroup(String groupID, String identityStoreId) throws IdentityStoreException {
+        return identityStore.getUsersOfGroup(groupID, identityStoreId);
     }
 
     @Override
-    public boolean isUserInGroup(String userId, String groupId, String userStoreId) throws IdentityStoreException {
-        return identityStore.isUserInGroup(userId, groupId, userStoreId);
-    }
+    public boolean isUserInGroup(String userId, String groupId, String identityStoreId) throws IdentityStoreException {
 
-    private <K, V> Cache<K, V> createCache(String cacheName, Class<K> keyClass, Class<V> valueClass) {
+        if (CacheHelper.isCacheDisabled(cacheConfigs, CacheNames.GROUPS_USERID_IDENTITYSTOREID)) {
+            return identityStore.isUserInGroup(userId, groupId, identityStoreId);
+        }
 
-        MutableConfiguration<K, V> configuration = new MutableConfiguration<>();
-        configuration.setStoreByValue(true)
-                .setTypes(keyClass, valueClass);
+        Cache<String, List> cache = cacheManager.getCache(CacheNames.GROUPS_USERID_IDENTITYSTOREID, String.class,
+                List.class);
 
-        return cacheManager.createCache(cacheName, configuration);
+        boolean isUserInGroup = false;
+
+        if (cache == null) {
+            isUserInGroup = identityStore.isUserInGroup(userId, groupId, identityStoreId);
+        } else {
+            List<Group> groups = cache.get(userId + identityStoreId);
+            if (groups == null) {
+                isUserInGroup = identityStore.isUserInGroup(userId, groupId, identityStoreId);
+            } else {
+                // If there are groups for this user id and identity store id in the cache,
+                // do the validation logic here.
+                for (Group group : groups) {
+                    if (group.getGroupId().equals(groupId)) {
+                        isUserInGroup = true;
+                        break;
+                    }
+                }
+            }
+        }
+        return isUserInGroup;
     }
 }

@@ -21,7 +21,7 @@ import org.slf4j.LoggerFactory;
 import org.wso2.carbon.security.caas.internal.CarbonSecurityDataHolder;
 import org.wso2.carbon.security.caas.user.core.bean.Group;
 import org.wso2.carbon.security.caas.user.core.bean.User;
-import org.wso2.carbon.security.caas.user.core.config.IdentityStoreConfig;
+import org.wso2.carbon.security.caas.user.core.config.IdentityConnectorConfig;
 import org.wso2.carbon.security.caas.user.core.exception.GroupNotFoundException;
 import org.wso2.carbon.security.caas.user.core.exception.IdentityStoreException;
 import org.wso2.carbon.security.caas.user.core.exception.StoreException;
@@ -49,16 +49,16 @@ public class IdentityStoreImpl implements IdentityStore {
     private Map<String, IdentityStoreConnector> identityStoreConnectors = new HashMap<>();
 
     @Override
-    public void init(RealmService realmService, Map<String, IdentityStoreConfig> identityStoreConfigs)
+    public void init(RealmService realmService, Map<String, IdentityConnectorConfig> identityConnectorConfigs)
             throws IdentityStoreException {
 
         this.realmService = realmService;
 
-        if (identityStoreConfigs.isEmpty()) {
+        if (identityConnectorConfigs.isEmpty()) {
             throw new StoreException("At least one identity store configuration must present.");
         }
 
-        for (Map.Entry<String, IdentityStoreConfig> identityStoreConfig : identityStoreConfigs.entrySet()) {
+        for (Map.Entry<String, IdentityConnectorConfig> identityStoreConfig : identityConnectorConfigs.entrySet()) {
 
             String connectorType = identityStoreConfig.getValue().getConnectorType();
             IdentityStoreConnectorFactory identityStoreConnectorFactory = CarbonSecurityDataHolder.getInstance()
@@ -223,9 +223,9 @@ public class IdentityStoreImpl implements IdentityStore {
     }
 
     @Override
-    public List<Group> getGroupsOfUser(String userId, String userStoreId) throws IdentityStoreException {
+    public List<Group> getGroupsOfUser(String userId, String identityStoreId) throws IdentityStoreException {
 
-        IdentityStoreConnector identityStoreConnector = identityStoreConnectors.get(userStoreId);
+        IdentityStoreConnector identityStoreConnector = identityStoreConnectors.get(identityStoreId);
         return identityStoreConnector.getGroupsOfUser(userId)
                 .stream()
                 .map(groupBuilder -> groupBuilder
@@ -236,9 +236,9 @@ public class IdentityStoreImpl implements IdentityStore {
     }
 
     @Override
-    public List<User> getUsersOfGroup(String groupID, String userStoreId) throws IdentityStoreException {
+    public List<User> getUsersOfGroup(String groupID, String identityStoreId) throws IdentityStoreException {
 
-        IdentityStoreConnector identityStoreConnector = identityStoreConnectors.get(userStoreId);
+        IdentityStoreConnector identityStoreConnector = identityStoreConnectors.get(identityStoreId);
         return identityStoreConnector.getUsersOfGroup(groupID)
                 .stream()
                 .map(userBuilder -> userBuilder
@@ -250,9 +250,9 @@ public class IdentityStoreImpl implements IdentityStore {
     }
 
     @Override
-    public boolean isUserInGroup(String userId, String groupId, String userStoreId) throws IdentityStoreException {
+    public boolean isUserInGroup(String userId, String groupId, String identityStoreId) throws IdentityStoreException {
 
-        IdentityStoreConnector identityStoreConnector = identityStoreConnectors.get(userStoreId);
+        IdentityStoreConnector identityStoreConnector = identityStoreConnectors.get(identityStoreId);
         return identityStoreConnector.isUserInGroup(userId, groupId);
     }
 }

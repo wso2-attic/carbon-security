@@ -18,7 +18,7 @@ package org.wso2.carbon.security.caas.userstore.inmemory;
 
 import org.wso2.carbon.security.caas.user.core.bean.Group;
 import org.wso2.carbon.security.caas.user.core.bean.User;
-import org.wso2.carbon.security.caas.user.core.config.IdentityStoreConfig;
+import org.wso2.carbon.security.caas.user.core.config.IdentityConnectorConfig;
 import org.wso2.carbon.security.caas.user.core.exception.IdentityStoreException;
 import org.wso2.carbon.security.caas.user.core.exception.UserNotFoundException;
 import org.wso2.carbon.security.caas.user.core.store.connector.IdentityStoreConnector;
@@ -38,7 +38,7 @@ import javax.security.auth.callback.NameCallback;
 public class InMemoryIdentityStoreConnector implements IdentityStoreConnector {
 
     @Override
-    public void init(String storeId, IdentityStoreConfig identityStoreConfig) throws IdentityStoreException {
+    public void init(String storeId, IdentityConnectorConfig identityConnectorConfig) throws IdentityStoreException {
 
     }
 
@@ -132,7 +132,7 @@ public class InMemoryIdentityStoreConnector implements IdentityStoreConnector {
     }
 
     @Override
-    public IdentityStoreConfig getIdentityStoreConfig() {
+    public IdentityConnectorConfig getIdentityStoreConfig() {
         return null;
     }
 }

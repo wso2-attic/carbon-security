@@ -22,7 +22,6 @@ import org.wso2.carbon.security.caas.user.core.exception.StoreException;
 import org.wso2.carbon.security.caas.user.core.store.AuthorizationStore;
 import org.wso2.carbon.security.caas.user.core.store.IdentityStore;
 
-import java.io.Serializable;
 import java.util.List;
 
 /**
@@ -167,18 +166,10 @@ public class Group {
         authorizationStore.updateRolesInGroup(groupId, identityStoreId, assignList, unAssignList);
     }
 
-    private void setBuilder(GroupBuilder builder) {
-        this.builder = builder;
-    }
-
-    public GroupBuilder getBuilder() {
-        return this.builder;
-    }
-
     /**
      * Builder for group bean.
      */
-    public static class GroupBuilder implements Serializable {
+    public static class GroupBuilder {
 
         private static final long serialVersionUID = 1020795884862200753L;
 
@@ -251,10 +242,8 @@ public class Group {
                 throw new StoreException("Required data missing for building group.");
             }
 
-            Group group = new Group(groupName, groupId, identityStoreId, tenantDomain, identityStore,
+            return new Group(groupName, groupId, identityStoreId, tenantDomain, identityStore,
                     authorizationStore);
-            group.setBuilder(this);
-            return group;
         }
     }
 }

@@ -16,6 +16,9 @@
 
 package org.wso2.carbon.security.caas.user.core.util;
 
+import java.nio.charset.Charset;
+import java.security.SecureRandom;
+import java.util.Random;
 import java.util.UUID;
 
 /**
@@ -30,5 +33,20 @@ public class UserCoreUtil {
     public static String getRandomId() {
 
         return UUID.randomUUID().toString();
+    }
+
+    /**
+     * Get a secure random salt.
+     * @param size Size of the salt.
+     * @return Salt as a String.
+     */
+    public static String getRandomSalt(int size) {
+
+        Random random = new SecureRandom();
+
+        byte[] bytes = new byte[size];
+        random.nextBytes(bytes);
+
+        return new String(bytes, 0, bytes.length, Charset.forName("ASCII"));
     }
 }

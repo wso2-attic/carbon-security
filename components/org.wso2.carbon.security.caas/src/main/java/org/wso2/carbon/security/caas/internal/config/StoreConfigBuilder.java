@@ -19,9 +19,9 @@ package org.wso2.carbon.security.caas.internal.config;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.wso2.carbon.security.caas.api.util.CarbonSecurityConstants;
-import org.wso2.carbon.security.caas.user.core.config.AuthorizationStoreConfig;
-import org.wso2.carbon.security.caas.user.core.config.CredentialStoreConfig;
-import org.wso2.carbon.security.caas.user.core.config.IdentityStoreConfig;
+import org.wso2.carbon.security.caas.user.core.config.AuthorizationConnectorConfig;
+import org.wso2.carbon.security.caas.user.core.config.CredentialConnectorConfig;
+import org.wso2.carbon.security.caas.user.core.config.IdentityConnectorConfig;
 import org.wso2.carbon.security.caas.user.core.config.StoreConfig;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.introspector.BeanAccess;
@@ -94,7 +94,7 @@ public class StoreConfigBuilder {
             if (credentialConnectorMap.size() > 0) {
                 credentialConnectorMap.entrySet().forEach(
                         entry -> storeConfig.addCredentialStoreConfig(entry.getKey
-                                (), new CredentialStoreConfig(entry.getValue().getConnectorType(),
+                                (), new CredentialConnectorConfig(entry.getValue().getConnectorType(),
                                                               entry.getValue().getProperties()))
                 );
             }
@@ -116,7 +116,7 @@ public class StoreConfigBuilder {
             if (identityStoreConnectorMap.size() > 0) {
                 identityStoreConnectorMap.entrySet().forEach(
                         entry -> storeConfig.addIdentityStoreConfig(entry.getKey
-                                (), new IdentityStoreConfig(entry.getValue().getConnectorType(),
+                                (), new IdentityConnectorConfig(entry.getValue().getConnectorType(),
                                                             entry.getValue().getProperties()))
                 );
             }
@@ -138,7 +138,7 @@ public class StoreConfigBuilder {
             if (authorizationStoreConnectorMap.size() > 0) {
                 authorizationStoreConnectorMap.entrySet().forEach(
                         entry -> storeConfig.addAuthorizationStoreConfig(entry.getKey
-                                (), new AuthorizationStoreConfig(entry.getValue().getConnectorType(),
+                                (), new AuthorizationConnectorConfig(entry.getValue().getConnectorType(),
                                                                  entry.getValue().getProperties()))
                 );
             }

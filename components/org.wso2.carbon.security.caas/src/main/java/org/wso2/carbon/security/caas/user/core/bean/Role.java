@@ -21,7 +21,6 @@ import org.wso2.carbon.security.caas.user.core.exception.IdentityStoreException;
 import org.wso2.carbon.security.caas.user.core.exception.StoreException;
 import org.wso2.carbon.security.caas.user.core.store.AuthorizationStore;
 
-import java.io.Serializable;
 import java.util.List;
 
 /**
@@ -186,18 +185,10 @@ public class Role  {
         authorizationStore.updateGroupsInRole(roleId, authorizationStoreId, assignList, unAssignList);
     }
 
-    private void setBuilder(RoleBuilder builder) {
-        this.builder = builder;
-    }
-
-    public RoleBuilder getBuilder() {
-        return this.builder;
-    }
-
     /**
      * Builder for role bean.
      */
-    public static class RoleBuilder implements Serializable {
+    public static class RoleBuilder {
 
         private static final long serialVersionUID = -7097267952117338236L;
 
@@ -233,9 +224,7 @@ public class Role  {
                 throw new StoreException("Required data missing for building role.");
             }
 
-            Role role = new Role(roleName, roleId, authorizationStoreId, authorizationStore);
-            role.setBuilder(this);
-            return role;
+            return new Role(roleName, roleId, authorizationStoreId, authorizationStore);
         }
     }
 }

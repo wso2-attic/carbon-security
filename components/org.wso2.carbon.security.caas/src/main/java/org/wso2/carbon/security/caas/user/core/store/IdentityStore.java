@@ -18,7 +18,7 @@ package org.wso2.carbon.security.caas.user.core.store;
 
 import org.wso2.carbon.security.caas.user.core.bean.Group;
 import org.wso2.carbon.security.caas.user.core.bean.User;
-import org.wso2.carbon.security.caas.user.core.config.IdentityStoreConfig;
+import org.wso2.carbon.security.caas.user.core.config.IdentityConnectorConfig;
 import org.wso2.carbon.security.caas.user.core.exception.GroupNotFoundException;
 import org.wso2.carbon.security.caas.user.core.exception.IdentityStoreException;
 import org.wso2.carbon.security.caas.user.core.exception.UserNotFoundException;
@@ -36,10 +36,10 @@ public interface IdentityStore {
     /**
      * Initialize the identity store instance.
      * @param realmService Parent realm service instance.
-     * @param identityStoreConfigs Store configs related to the identity store.
+     * @param identityConnectorConfigs Connector configs related to the identity store.
      * @throws IdentityStoreException Identity Store Exception.
      */
-    void init(RealmService realmService, Map<String, IdentityStoreConfig> identityStoreConfigs)
+    void init(RealmService realmService, Map<String, IdentityConnectorConfig> identityConnectorConfigs)
             throws IdentityStoreException;
 
     /**
@@ -130,28 +130,28 @@ public interface IdentityStore {
     /**
      * Get the groups assigned to the specified user.
      * @param userId Id of the user.
-     * @param userStoreId Id of the user store which this user belongs.
+     * @param identityStoreId Id of the user store which this user belongs.
      * @return List of Group assigned to the user.
      * @throws IdentityStoreException Identity Store Exception.
      */
-    List<Group> getGroupsOfUser(String userId, String userStoreId) throws IdentityStoreException;
+    List<Group> getGroupsOfUser(String userId, String identityStoreId) throws IdentityStoreException;
 
     /**
      * Get the users assigned to the specified group.
      * @param groupID Id of the group.
-     * @param userStoreId User store id of this group.
+     * @param identityStoreId User store id of this group.
      * @return List of users assigned to the group.
      * @throws IdentityStoreException Identity Store Exception.
      */
-    List<User> getUsersOfGroup(String groupID, String userStoreId) throws IdentityStoreException;
+    List<User> getUsersOfGroup(String groupID, String identityStoreId) throws IdentityStoreException;
 
     /**
      * Checks whether the user is in the group.
      * @param userId Id of the user.
      * @param groupId Id of the group.
-     * @param userStoreId Id of the user store which this user belongs.
+     * @param identityStoreId Id of the identity store which this user belongs.
      * @return True if the user is in the group.
      * @throws IdentityStoreException Identity Store Exception.
      */
-    boolean isUserInGroup(String userId, String groupId, String userStoreId) throws IdentityStoreException;
+    boolean isUserInGroup(String userId, String groupId, String identityStoreId) throws IdentityStoreException;
 }

@@ -26,7 +26,6 @@ import org.wso2.carbon.security.caas.user.core.exception.StoreException;
 import org.wso2.carbon.security.caas.user.core.store.AuthorizationStore;
 import org.wso2.carbon.security.caas.user.core.store.IdentityStore;
 
-import java.io.Serializable;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -154,18 +153,6 @@ public class User {
         return buildClaims(idnStoreMetaClaimMappings, attributeValues);
     }
 
-    private List<Claim> buildClaims(List<IdnStoreMetaClaimMapping> idnStoreMetaClaimMappings,
-                                    Map<String, String> userAttributeValues) {
-
-        return idnStoreMetaClaimMappings.stream()
-                .filter(idnStoreMetaClaimMapping -> userAttributeValues.containsKey(idnStoreMetaClaimMapping
-                        .getAttributeName()) && idnStoreMetaClaimMapping.getMetaClaim() != null)
-                .map(idnStoreMetaClaimMapping -> new Claim(idnStoreMetaClaimMapping.getMetaClaim().getDialectURI(),
-                        idnStoreMetaClaimMapping.getMetaClaim().getClaimURI(), userAttributeValues.get
-                        (idnStoreMetaClaimMapping.getAttributeName())))
-                .collect(Collectors.toList());
-    }
-
     /**
      * Get the groups assigned to this user.
      * @return List of Groups assigned to this user.
@@ -271,24 +258,22 @@ public class User {
         authorizationStore.updateRolesInUser(userID, identityStoreID, assignList, unAssignList);
     }
 
-    /**
-     * Get the builder associated with this bean.
-     * @return UserBuilder.
-     */
-    public UserBuilder getBuilder() {
-        return this.builder;
-    }
+    private List<Claim> buildClaims(List<IdnStoreMetaClaimMapping> idnStoreMetaClaimMappings,
+                                    Map<String, String> userAttributeValues) {
 
-    private void setBuilder(UserBuilder userBuilder) {
-        this.builder = userBuilder;
+        return idnStoreMetaClaimMappings.stream()
+                .filter(idnStoreMetaClaimMapping -> userAttributeValues.containsKey(idnStoreMetaClaimMapping
+                        .getAttributeName()) && idnStoreMetaClaimMapping.getMetaClaim() != null)
+                .map(idnStoreMetaClaimMapping -> new Claim(idnStoreMetaClaimMapping.getMetaClaim().getDialectURI(),
+                        idnStoreMetaClaimMapping.getMetaClaim().getClaimURI(), userAttributeValues.get
+                        (idnStoreMetaClaimMapping.getAttributeName())))
+                .collect(Collectors.toList());
     }
 
     /**
      * Builder for the user bean.
      */
-    public static class UserBuilder implements Serializable {
-
-        private static final long serialVersionUID = 382215500137222190L;
+    public static class UserBuilder {
 
         private String userName;
         private String userId;
@@ -380,10 +365,8 @@ public class User {
                 throw new StoreException("Required data missing for building user.");
             }
 
-            User user = new User(userName, userId, identityStoreId, credentialStoreId, tenantDomain, identityStore,
+            return new User(userName, userId, identityStoreId, credentialStoreId, tenantDomain, identityStore,
                     authorizationStore, claimManager);
-            user.setBuilder(this);
-            return user;
         }
     }
 }

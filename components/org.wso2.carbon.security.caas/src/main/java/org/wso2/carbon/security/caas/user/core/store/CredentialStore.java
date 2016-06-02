@@ -16,8 +16,7 @@
 
 package org.wso2.carbon.security.caas.user.core.store;
 
-import org.wso2.carbon.security.caas.user.core.config.CredentialStoreConfig;
-import org.wso2.carbon.security.caas.user.core.constant.UserCoreConstants;
+import org.wso2.carbon.security.caas.user.core.config.CredentialConnectorConfig;
 import org.wso2.carbon.security.caas.user.core.context.AuthenticationContext;
 import org.wso2.carbon.security.caas.user.core.exception.AuthenticationFailure;
 import org.wso2.carbon.security.caas.user.core.exception.CredentialStoreException;
@@ -31,13 +30,14 @@ import javax.security.auth.callback.Callback;
  * @since 1.0.0
  */
 public interface CredentialStore {
+
     /**
      * Initialize credential store.
      * @param realmService Parent RealmService instance.
-     * @param credentialStoreConfigs Store configs related to the credential store.
+     * @param credentialConnectorConfigs Connector configs related to the credential store.
      * @throws CredentialStoreException Credential Store Exception.
      */
-    void init(RealmService realmService, Map<String, CredentialStoreConfig> credentialStoreConfigs)
+    void init(RealmService realmService, Map<String, CredentialConnectorConfig> credentialConnectorConfigs)
             throws CredentialStoreException;
 
     /**

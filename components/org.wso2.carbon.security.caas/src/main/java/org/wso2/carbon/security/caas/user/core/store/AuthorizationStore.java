@@ -20,7 +20,7 @@ import org.wso2.carbon.security.caas.user.core.bean.Group;
 import org.wso2.carbon.security.caas.user.core.bean.Permission;
 import org.wso2.carbon.security.caas.user.core.bean.Role;
 import org.wso2.carbon.security.caas.user.core.bean.User;
-import org.wso2.carbon.security.caas.user.core.config.AuthorizationStoreConfig;
+import org.wso2.carbon.security.caas.user.core.config.AuthorizationConnectorConfig;
 import org.wso2.carbon.security.caas.user.core.exception.AuthorizationStoreException;
 import org.wso2.carbon.security.caas.user.core.exception.IdentityStoreException;
 import org.wso2.carbon.security.caas.user.core.exception.PermissionNotFoundException;
@@ -38,10 +38,10 @@ public interface AuthorizationStore {
     /**
      * Initialize the authorization store.
      * @param realmService Parent realm service.
-     * @param authorizationStoreConfigs Store configs related to the authorization store.
+     * @param authorizationConnectorConfigs Connector configs related to the authorization store.
      * @throws AuthorizationStoreException Authorization store exception.
      */
-    void init(RealmService realmService, Map<String, AuthorizationStoreConfig> authorizationStoreConfigs)
+    void init(RealmService realmService, Map<String, AuthorizationConnectorConfig> authorizationConnectorConfigs)
             throws AuthorizationStoreException;
 
     /**

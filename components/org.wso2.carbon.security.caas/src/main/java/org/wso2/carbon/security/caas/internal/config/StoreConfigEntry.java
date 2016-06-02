@@ -20,35 +20,32 @@ import java.util.Properties;
 
 /**
  * StoreConfig Bean
- *
  * @since 1.0.0
  */
 public class StoreConfigEntry {
 
     private boolean enableCache;
-
     private String connector;
-
     private Properties properties;
 
     public boolean isEnableCache() {
         return enableCache;
     }
 
-    public void setEnableCache(boolean enableCache) {
-        this.enableCache = enableCache;
-    }
-
     public String getConnector() {
         return connector;
     }
 
-    public void setConnector(String connector) {
-        this.connector = connector;
-    }
-
     public Properties getProperties() {
         return properties;
+    }
+
+    public void setEnableCache(boolean enableCache) {
+        this.enableCache = enableCache;
+    }
+
+    public void setConnector(String connector) {
+        this.connector = connector;
     }
 
     public void setProperties(Properties properties) {

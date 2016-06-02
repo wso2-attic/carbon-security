@@ -18,8 +18,6 @@ package org.wso2.carbon.security.caas.user.core.bean;
 
 import org.wso2.carbon.security.caas.user.core.exception.StoreException;
 
-import java.io.Serializable;
-
 /**
  * Permission bean.
  */
@@ -96,18 +94,10 @@ public class Permission {
         return getPermissionString().hashCode();
     }
 
-    private void setBuilder(PermissionBuilder builder) {
-        this.builder = builder;
-    }
-
-    public PermissionBuilder getBuilder() {
-        return this.builder;
-    }
-
     /**
      * Builder for the permission bean.
      */
-    public static class PermissionBuilder implements Serializable {
+    public static class PermissionBuilder {
 
         private static final long serialVersionUID = 7876352257812187294L;
 
@@ -129,9 +119,7 @@ public class Permission {
                 throw new StoreException("Required data missing for building permission.");
             }
 
-            Permission permission = new Permission(resourceId, action, permissionId, authorizationStoreId);
-            permission.setBuilder(this);
-            return permission;
+            return new Permission(resourceId, action, permissionId, authorizationStoreId);
         }
     }
 }

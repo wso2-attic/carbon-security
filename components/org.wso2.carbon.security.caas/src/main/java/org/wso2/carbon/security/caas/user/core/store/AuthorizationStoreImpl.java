@@ -23,7 +23,7 @@ import org.wso2.carbon.security.caas.user.core.bean.Group;
 import org.wso2.carbon.security.caas.user.core.bean.Permission;
 import org.wso2.carbon.security.caas.user.core.bean.Role;
 import org.wso2.carbon.security.caas.user.core.bean.User;
-import org.wso2.carbon.security.caas.user.core.config.AuthorizationStoreConfig;
+import org.wso2.carbon.security.caas.user.core.config.AuthorizationConnectorConfig;
 import org.wso2.carbon.security.caas.user.core.exception.AuthorizationStoreException;
 import org.wso2.carbon.security.caas.user.core.exception.IdentityStoreException;
 import org.wso2.carbon.security.caas.user.core.exception.PermissionNotFoundException;
@@ -53,17 +53,17 @@ public class AuthorizationStoreImpl implements AuthorizationStore {
     private Map<String, AuthorizationStoreConnector> authorizationStoreConnectors = new HashMap<>();
 
     @Override
-    public void init(RealmService realmService, Map<String, AuthorizationStoreConfig> authorizationStoreConfigs)
+    public void init(RealmService realmService, Map<String, AuthorizationConnectorConfig> authorizationConnectorConfigs)
             throws AuthorizationStoreException {
 
         this.realmService = realmService;
 
-        if (authorizationStoreConfigs.isEmpty()) {
+        if (authorizationConnectorConfigs.isEmpty()) {
             throw new StoreException("At least one authorization store configuration must present.");
         }
 
-        for (Map.Entry<String, AuthorizationStoreConfig> authorizationStoreConfig :
-                authorizationStoreConfigs.entrySet()) {
+        for (Map.Entry<String, AuthorizationConnectorConfig> authorizationStoreConfig :
+                authorizationConnectorConfigs.entrySet()) {
 
             String connectorType = authorizationStoreConfig.getValue().getConnectorType();
             AuthorizationStoreConnectorFactory authorizationStoreConnectorFactory = CarbonSecurityDataHolder

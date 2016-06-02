@@ -20,7 +20,7 @@ import org.wso2.carbon.security.caas.user.core.bean.Group;
 import org.wso2.carbon.security.caas.user.core.bean.Permission;
 import org.wso2.carbon.security.caas.user.core.bean.Role;
 import org.wso2.carbon.security.caas.user.core.bean.User;
-import org.wso2.carbon.security.caas.user.core.config.AuthorizationStoreConfig;
+import org.wso2.carbon.security.caas.user.core.config.AuthorizationConnectorConfig;
 import org.wso2.carbon.security.caas.user.core.exception.AuthorizationStoreException;
 import org.wso2.carbon.security.caas.user.core.exception.PermissionNotFoundException;
 import org.wso2.carbon.security.caas.user.core.exception.RoleNotFoundException;
@@ -35,10 +35,11 @@ public interface AuthorizationStoreConnector {
     /**
      * Initialize the authorization store.
      * @param storeId Id of this store.
-     * @param authorizationStoreConfig Authorization store configurations for this connector.
+     * @param authorizationConnectorConfig Authorization store configurations for this connector.
      * @throws AuthorizationStoreException Authorization store exception.
      */
-    void init(String storeId, AuthorizationStoreConfig authorizationStoreConfig) throws AuthorizationStoreException;
+    void init(String storeId, AuthorizationConnectorConfig authorizationConnectorConfig)
+            throws AuthorizationStoreException;
 
     /**
      * Get the role of from role id.
@@ -165,10 +166,10 @@ public interface AuthorizationStoreConnector {
 
     /**
      * Get the authorization store config.
-     * @return AuthorizationStoreConfig.
+     * @return AuthorizationConnectorConfig.
      * @throws AuthorizationStoreException Authorization Store Exception.
      */
-    AuthorizationStoreConfig getAuthorizationStoreConfig() throws AuthorizationStoreException;
+    AuthorizationConnectorConfig getAuthorizationStoreConfig() throws AuthorizationStoreException;
 
     /**
      * Add a new User list by <b>replacing</b> the existing User list. (PUT)

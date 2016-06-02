@@ -21,7 +21,7 @@ import org.slf4j.LoggerFactory;
 import org.wso2.carbon.security.caas.api.CarbonCallback;
 import org.wso2.carbon.security.caas.internal.CarbonSecurityDataHolder;
 import org.wso2.carbon.security.caas.user.core.bean.User;
-import org.wso2.carbon.security.caas.user.core.config.CredentialStoreConfig;
+import org.wso2.carbon.security.caas.user.core.config.CredentialConnectorConfig;
 import org.wso2.carbon.security.caas.user.core.constant.UserCoreConstants;
 import org.wso2.carbon.security.caas.user.core.context.AuthenticationContext;
 import org.wso2.carbon.security.caas.user.core.exception.AuthenticationFailure;
@@ -49,16 +49,17 @@ public class CredentialStoreImpl implements CredentialStore {
     private Map<String, CredentialStoreConnector> credentialStoreConnectors = new HashMap<>();
 
     @Override
-    public void init(RealmService realmService, Map<String, CredentialStoreConfig> credentialStoreConfigs)
+    public void init(RealmService realmService, Map<String, CredentialConnectorConfig> credentialConnectorConfigs)
             throws CredentialStoreException {
 
         this.realmService = realmService;
 
-        if (credentialStoreConfigs.isEmpty()) {
+        if (credentialConnectorConfigs.isEmpty()) {
             throw new StoreException("At least one credential store configuration must present.");
         }
 
-        for (Map.Entry<String, CredentialStoreConfig> credentialStoreConfig : credentialStoreConfigs.entrySet()) {
+        for (Map.Entry<String, CredentialConnectorConfig> credentialStoreConfig :
+                credentialConnectorConfigs.entrySet()) {
 
             String connectorType = credentialStoreConfig.getValue().getConnectorType();
             CredentialStoreConnectorFactory credentialStoreConnectorFactory = CarbonSecurityDataHolder.getInstance()

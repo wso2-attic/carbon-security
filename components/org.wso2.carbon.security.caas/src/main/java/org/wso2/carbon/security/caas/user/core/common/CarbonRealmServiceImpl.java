@@ -45,18 +45,14 @@ public class CarbonRealmServiceImpl implements RealmService {
             CredentialStoreException {
 
         if (storeConfig.isEnableCache()) {
-            if (storeConfig.isEnableCacheForIdentityStore()) {
-                this.identityStore = new CacheBackedIdentityStore();
-            }
-            if (storeConfig.isEnableCacheForAuthorizationStore()) {
-                this.authorizationStore = new CacheBackedAuthorizationStore();
-            }
+            // TODO: Get the cache config here.
+            this.identityStore = new CacheBackedIdentityStore(null);
+            this.authorizationStore = new CacheBackedAuthorizationStore(null);
         }
 
-        credentialStore.init(this, storeConfig.getCredentialStoreConfigMap());
-        authorizationStore.init(this, storeConfig.getAuthorizationStoreConfigMap());
-        identityStore.init(this, storeConfig.getIdentityStoreConfigMap());
-
+        credentialStore.init(this, storeConfig.getCredentialConnectorConfigMap());
+        authorizationStore.init(this, storeConfig.getAuthorizationConnectorConfigMap());
+        identityStore.init(this, storeConfig.getIdentityConnectorConfigMap());
     }
 
     /**
@@ -98,5 +94,4 @@ public class CarbonRealmServiceImpl implements RealmService {
     public void setClaimManager(ClaimManager claimManager) {
         this.claimManager = claimManager;
     }
-
 }
