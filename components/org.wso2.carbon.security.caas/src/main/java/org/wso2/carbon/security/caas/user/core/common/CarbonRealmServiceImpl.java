@@ -23,27 +23,36 @@ import org.wso2.carbon.security.caas.user.core.exception.CredentialStoreExceptio
 import org.wso2.carbon.security.caas.user.core.exception.IdentityStoreException;
 import org.wso2.carbon.security.caas.user.core.service.RealmService;
 import org.wso2.carbon.security.caas.user.core.store.AuthorizationStore;
+import org.wso2.carbon.security.caas.user.core.store.AuthorizationStoreImpl;
+import org.wso2.carbon.security.caas.user.core.store.CacheBackedAuthorizationStore;
+import org.wso2.carbon.security.caas.user.core.store.CacheBackedIdentityStore;
 import org.wso2.carbon.security.caas.user.core.store.CredentialStore;
+import org.wso2.carbon.security.caas.user.core.store.CredentialStoreImpl;
 import org.wso2.carbon.security.caas.user.core.store.IdentityStore;
+import org.wso2.carbon.security.caas.user.core.store.IdentityStoreImpl;
 
 /**
  * Basic user realm service.
  */
 public class CarbonRealmServiceImpl implements RealmService {
 
-    private CredentialStore credentialStore = new CredentialStore();
-    private AuthorizationStore authorizationStore = new AuthorizationStore();
-    private IdentityStore identityStore = new IdentityStore();
+    private CredentialStore credentialStore = new CredentialStoreImpl();
+    private AuthorizationStore authorizationStore = new AuthorizationStoreImpl();
+    private IdentityStore identityStore = new IdentityStoreImpl();
     private ClaimManager claimManager;
 
     public CarbonRealmServiceImpl(StoreConfig storeConfig) throws IdentityStoreException, AuthorizationStoreException,
             CredentialStoreException {
 
-        super();
-        credentialStore.init(this, storeConfig.getCredentialStoreConfigMap());
-        authorizationStore.init(this, storeConfig.getAuthorizationStoreConfigMap());
-        identityStore.init(this, storeConfig.getIdentityStoreConfigMap());
+        if (storeConfig.isEnableCache()) {
+            this.identityStore = new CacheBackedIdentityStore(storeConfig.getIdentityStoreCacheConfigMap());
+            this.authorizationStore = new CacheBackedAuthorizationStore(storeConfig
+                    .getAuthorizationStoreCacheConfigMap());
+        }
 
+        credentialStore.init(this, storeConfig.getCredentialConnectorConfigMap());
+        authorizationStore.init(this, storeConfig.getAuthorizationConnectorConfigMap());
+        identityStore.init(this, storeConfig.getIdentityConnectorConfigMap());
     }
 
     /**
@@ -82,8 +91,11 @@ public class CarbonRealmServiceImpl implements RealmService {
         return claimManager;
     }
 
+    /**
+     * Set the claim manger.
+     * @param claimManager Claim manager.
+     */
     public void setClaimManager(ClaimManager claimManager) {
         this.claimManager = claimManager;
     }
-
 }

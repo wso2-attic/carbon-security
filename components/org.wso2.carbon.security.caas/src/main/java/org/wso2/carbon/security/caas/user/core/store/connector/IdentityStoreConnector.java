@@ -18,7 +18,7 @@ package org.wso2.carbon.security.caas.user.core.store.connector;
 
 import org.wso2.carbon.security.caas.user.core.bean.Group;
 import org.wso2.carbon.security.caas.user.core.bean.User;
-import org.wso2.carbon.security.caas.user.core.config.IdentityStoreConfig;
+import org.wso2.carbon.security.caas.user.core.config.IdentityConnectorConfig;
 import org.wso2.carbon.security.caas.user.core.exception.GroupNotFoundException;
 import org.wso2.carbon.security.caas.user.core.exception.IdentityStoreException;
 import org.wso2.carbon.security.caas.user.core.exception.UserNotFoundException;
@@ -34,11 +34,11 @@ public interface IdentityStoreConnector {
 
     /**
      * Initialize identity store by passing identity store configurations read from files.
-     * @param identityStoreConfig IdentityStoreConfig for this connector.
+     * @param identityConnectorConfig IdentityConnectorConfig for this connector.
      * @param storeId Id of this store.
      * @throws IdentityStoreException Identity Store Exception.
      */
-    void init(String storeId, IdentityStoreConfig identityStoreConfig) throws IdentityStoreException;
+    void init(String storeId, IdentityConnectorConfig identityConnectorConfig) throws IdentityStoreException;
 
     /**
      * Get user store ID which is unique for a user store.
@@ -161,8 +161,8 @@ public interface IdentityStoreConnector {
     boolean isReadOnly() throws IdentityStoreException;
 
     /**
-     * Returns IdentityStoreConfig which consists of user store configurations.
-     * @return IdentityStoreConfig which consists of user store configurations
+     * Returns IdentityConnectorConfig which consists of user store configurations.
+     * @return IdentityConnectorConfig which consists of user store configurations
      */
-    IdentityStoreConfig getIdentityStoreConfig();
+    IdentityConnectorConfig getIdentityStoreConfig();
 }

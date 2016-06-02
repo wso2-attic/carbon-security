@@ -19,10 +19,10 @@ package org.wso2.carbon.security.caas.internal.config;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.wso2.carbon.security.caas.api.util.CarbonSecurityConstants;
-import org.wso2.carbon.security.caas.user.core.config.AuthorizationStoreConfig;
+import org.wso2.carbon.security.caas.user.core.config.AuthorizationConnectorConfig;
 import org.wso2.carbon.security.caas.user.core.config.CacheConfig;
-import org.wso2.carbon.security.caas.user.core.config.CredentialStoreConfig;
-import org.wso2.carbon.security.caas.user.core.config.IdentityStoreConfig;
+import org.wso2.carbon.security.caas.user.core.config.CredentialConnectorConfig;
+import org.wso2.carbon.security.caas.user.core.config.IdentityConnectorConfig;
 import org.wso2.carbon.security.caas.user.core.config.StoreConfig;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.introspector.BeanAccess;
@@ -46,7 +46,6 @@ import java.util.stream.Collectors;
 
 /**
  * Configuration builder for stores.
- *
  * @since 1.0.0
  */
 public class StoreConfigBuilder {
@@ -152,8 +151,6 @@ public class StoreConfigBuilder {
         if (storeConfigFile.getCredentialStore().getConnector() != null && !storeConfigFile.getCredentialStore()
                 .getConnector().trim().isEmpty()) {
 
-            storeConfig.setEnableCacheForCredentialStore(storeConfigFile.getCredentialStore().isEnableCache());
-
             Map<String, StoreConnectorConfigEntry> credentialConnectorMap =
                     getStoreConnectorsMap(storeConfigFile.getCredentialStore().getConnector(),
                                           storeConfigFile.getCredentialStore(), externalConfigEntries,
@@ -162,7 +159,7 @@ public class StoreConfigBuilder {
             if (credentialConnectorMap.size() > 0) {
                 credentialConnectorMap.entrySet().forEach(
                         entry -> storeConfig.addCredentialStoreConfig(entry.getKey
-                                (), new CredentialStoreConfig(entry.getValue().getConnectorType(),
+                                (), new CredentialConnectorConfig(entry.getValue().getConnectorType(),
                                                               entry.getValue().getProperties()))
                 );
             }
@@ -174,8 +171,6 @@ public class StoreConfigBuilder {
         if (storeConfigFile.getIdentityStore().getConnector() != null && !storeConfigFile.getIdentityStore()
                 .getConnector().trim().isEmpty()) {
 
-            storeConfig.setEnableCacheForIdentityStore(storeConfigFile.getIdentityStore().isEnableCache());
-
             Map<String, StoreConnectorConfigEntry> identityStoreConnectorMap =
                     getStoreConnectorsMap(storeConfigFile.getIdentityStore().getConnector(),
                                           storeConfigFile.getIdentityStore(), externalConfigEntries,
@@ -184,7 +179,7 @@ public class StoreConfigBuilder {
             if (identityStoreConnectorMap.size() > 0) {
                 identityStoreConnectorMap.entrySet().forEach(
                         entry -> storeConfig.addIdentityStoreConfig(entry.getKey
-                                (), new IdentityStoreConfig(entry.getValue().getConnectorType(),
+                                (), new IdentityConnectorConfig(entry.getValue().getConnectorType(),
                                                             entry.getValue().getProperties()))
                 );
             }
@@ -196,8 +191,6 @@ public class StoreConfigBuilder {
         if (storeConfigFile.getAuthorizationStore().getConnector() != null && !storeConfigFile.getAuthorizationStore()
                 .getConnector().trim().isEmpty()) {
 
-            storeConfig.setEnableCacheForAuthorizationStore(storeConfigFile.getAuthorizationStore().isEnableCache());
-
             Map<String, StoreConnectorConfigEntry> authorizationStoreConnectorMap =
                     getStoreConnectorsMap(storeConfigFile.getAuthorizationStore().getConnector(),
                                           storeConfigFile.getAuthorizationStore(), externalConfigEntries,
@@ -206,7 +199,7 @@ public class StoreConfigBuilder {
             if (authorizationStoreConnectorMap.size() > 0) {
                 authorizationStoreConnectorMap.entrySet().forEach(
                         entry -> storeConfig.addAuthorizationStoreConfig(entry.getKey
-                                (), new AuthorizationStoreConfig(entry.getValue().getConnectorType(),
+                                (), new AuthorizationConnectorConfig(entry.getValue().getConnectorType(),
                                                                  entry.getValue().getProperties()))
                 );
             }

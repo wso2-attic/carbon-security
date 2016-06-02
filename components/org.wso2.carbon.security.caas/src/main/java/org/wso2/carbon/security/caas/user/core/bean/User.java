@@ -47,6 +47,8 @@ public class User {
     private AuthorizationStore authorizationStore;
     private ClaimManager claimManager;
 
+    private UserBuilder builder;
+
     private User(String userName, String userID, String identityStoreID, String credentialStoreId,
                  String tenantDomain, IdentityStore identityStore,
                  AuthorizationStore authorizationStore, ClaimManager claimManager) {
@@ -149,18 +151,6 @@ public class User {
         }
 
         return buildClaims(idnStoreMetaClaimMappings, attributeValues);
-    }
-
-    private List<Claim> buildClaims(List<IdnStoreMetaClaimMapping> idnStoreMetaClaimMappings,
-                                    Map<String, String> userAttributeValues) {
-
-        return idnStoreMetaClaimMappings.stream()
-                .filter(idnStoreMetaClaimMapping -> userAttributeValues.containsKey(idnStoreMetaClaimMapping
-                        .getAttributeName()) && idnStoreMetaClaimMapping.getMetaClaim() != null)
-                .map(idnStoreMetaClaimMapping -> new Claim(idnStoreMetaClaimMapping.getMetaClaim().getDialectURI(),
-                        idnStoreMetaClaimMapping.getMetaClaim().getClaimURI(), userAttributeValues.get
-                        (idnStoreMetaClaimMapping.getAttributeName())))
-                .collect(Collectors.toList());
     }
 
     /**
@@ -268,6 +258,18 @@ public class User {
         authorizationStore.updateRolesInUser(userID, identityStoreID, assignList, unAssignList);
     }
 
+    private List<Claim> buildClaims(List<IdnStoreMetaClaimMapping> idnStoreMetaClaimMappings,
+                                    Map<String, String> userAttributeValues) {
+
+        return idnStoreMetaClaimMappings.stream()
+                .filter(idnStoreMetaClaimMapping -> userAttributeValues.containsKey(idnStoreMetaClaimMapping
+                        .getAttributeName()) && idnStoreMetaClaimMapping.getMetaClaim() != null)
+                .map(idnStoreMetaClaimMapping -> new Claim(idnStoreMetaClaimMapping.getMetaClaim().getDialectURI(),
+                        idnStoreMetaClaimMapping.getMetaClaim().getClaimURI(), userAttributeValues.get
+                        (idnStoreMetaClaimMapping.getAttributeName())))
+                .collect(Collectors.toList());
+    }
+
     /**
      * Builder for the user bean.
      */
@@ -279,9 +281,9 @@ public class User {
         private String credentialStoreId;
         private String tenantDomain;
 
-        private IdentityStore identityStore;
-        private AuthorizationStore authorizationStore;
-        private ClaimManager claimManager;
+        private transient IdentityStore identityStore;
+        private transient AuthorizationStore authorizationStore;
+        private transient ClaimManager claimManager;
 
         public String getUserName() {
             return userName;

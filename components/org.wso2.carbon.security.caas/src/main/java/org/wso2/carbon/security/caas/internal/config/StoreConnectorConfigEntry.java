@@ -20,35 +20,32 @@ import java.util.Properties;
 
 /**
  * StoreConnectorConfig Bean
- *
  * @since 1.0.0
  */
 public class StoreConnectorConfigEntry {
 
     private String name;
-
     private String connectorType;
-
     private Properties properties;
 
     public String getName() {
         return name;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
     public Properties getProperties() {
         return properties;
     }
 
-    public void setProperties(Properties properties) {
-        this.properties = properties;
-    }
-
     public String getConnectorType() {
         return connectorType;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setProperties(Properties properties) {
+        this.properties = properties;
     }
 
     public void setConnectorType(String connectorType) {

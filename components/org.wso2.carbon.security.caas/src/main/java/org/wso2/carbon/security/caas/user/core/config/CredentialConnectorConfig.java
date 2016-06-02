@@ -21,13 +21,13 @@ import java.util.Properties;
 /**
  * Credential store configurations.
  */
-public class CredentialStoreConfig {
+public class CredentialConnectorConfig {
 
     String connectorType;
 
     private Properties storeProperties;
 
-    public CredentialStoreConfig(String connectorType, Properties properties) {
+    public CredentialConnectorConfig(String connectorType, Properties properties) {
         this.connectorType = connectorType;
         this.storeProperties = properties;
     }

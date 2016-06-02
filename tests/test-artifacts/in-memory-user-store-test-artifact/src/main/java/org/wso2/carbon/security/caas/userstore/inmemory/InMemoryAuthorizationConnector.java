@@ -20,7 +20,7 @@ import org.wso2.carbon.security.caas.user.core.bean.Group;
 import org.wso2.carbon.security.caas.user.core.bean.Permission;
 import org.wso2.carbon.security.caas.user.core.bean.Role;
 import org.wso2.carbon.security.caas.user.core.bean.User;
-import org.wso2.carbon.security.caas.user.core.config.AuthorizationStoreConfig;
+import org.wso2.carbon.security.caas.user.core.config.AuthorizationConnectorConfig;
 import org.wso2.carbon.security.caas.user.core.exception.AuthorizationStoreException;
 import org.wso2.carbon.security.caas.user.core.store.connector.AuthorizationStoreConnector;
 
@@ -33,7 +33,7 @@ import java.util.List;
 public class InMemoryAuthorizationConnector implements AuthorizationStoreConnector {
 
     @Override
-    public void init(String storeId, AuthorizationStoreConfig authorizationStoreConfig)
+    public void init(String storeId, AuthorizationConnectorConfig authorizationConnectorConfig)
             throws AuthorizationStoreException {
     }
 
@@ -84,7 +84,7 @@ public class InMemoryAuthorizationConnector implements AuthorizationStoreConnect
     }
 
     @Override
-    public AuthorizationStoreConfig getAuthorizationStoreConfig() {
+    public AuthorizationConnectorConfig getAuthorizationStoreConfig() {
         return null;
     }
 

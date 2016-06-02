@@ -28,6 +28,7 @@ import org.osgi.service.permissionadmin.PermissionAdmin;
 import org.osgi.service.permissionadmin.PermissionInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.wso2.carbon.caching.CarbonCachingService;
 import org.wso2.carbon.security.caas.api.CarbonCallbackHandler;
 import org.wso2.carbon.security.caas.api.CarbonJAASConfiguration;
 import org.wso2.carbon.security.caas.api.CarbonPolicy;
@@ -180,6 +181,21 @@ public class CarbonSecurityComponent {
 
     protected void unregisterCredentialStoreConnectorFactory(
             CredentialStoreConnectorFactory credentialStoreConnectorFactory) {
+    }
+
+    @Reference(
+            name = "carbon.caching.service",
+            service = CarbonCachingService.class,
+            cardinality = ReferenceCardinality.MANDATORY,
+            policy = ReferencePolicy.DYNAMIC,
+            unbind = "unRegisterCachingService"
+    )
+    protected void registerCachingService(CarbonCachingService cachingService, Map<String, ?> properties) {
+        CarbonSecurityDataHolder.getInstance().registerCacheService(cachingService);
+    }
+
+    protected void unRegisterCachingService(CarbonCachingService carbonCachingService) {
+        CarbonSecurityDataHolder.getInstance().registerCacheService(null);
     }
 
     @Reference(
