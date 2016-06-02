@@ -19,7 +19,8 @@ package org.wso2.carbon.security.caas.internal.config;
 import java.util.Properties;
 
 /**
- * StoreConnectorConfig Bean
+ * StoreConnectorConfig Bean.
+ *
  * @since 1.0.0
  */
 public class StoreConnectorConfigEntry {

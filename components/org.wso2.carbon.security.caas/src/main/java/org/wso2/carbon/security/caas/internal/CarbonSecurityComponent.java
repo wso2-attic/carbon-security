@@ -216,7 +216,7 @@ public class CarbonSecurityComponent {
                 claimManager.init(CarbonSecurityDataHolder.getInstance().getClaimConfig().getClaimMappings());
                 CarbonSecurityDataHolder.getInstance().getCarbonRealmService().setClaimManager(claimManager);
             } catch (ClaimManagerException e) {
-                log.error("Failed to initialze Claim Manager - " + claimMangerName, e);
+                log.error("Failed to initialize Claim Manager - " + claimMangerName, e);
             }
         }
     }
@@ -227,7 +227,7 @@ public class CarbonSecurityComponent {
     }
 
     /**
-     * Initialize authentication related configs
+     * Initialize authentication related configs.
      *
      * @param bundleContext
      */
@@ -258,7 +258,7 @@ public class CarbonSecurityComponent {
     }
 
     /**
-     * Initialize authorization related configs
+     * Initialize authorization related configs.
      *
      * @param bundleContext
      */
@@ -295,11 +295,11 @@ public class CarbonSecurityComponent {
         for (DefaultPermissionInfo permissionInfo : permissionInfoCollection.getPermissions()) {
 
             if (permissionInfo.getType() == null || permissionInfo.getType().trim().isEmpty()) {
-                throw new IllegalArgumentException("type can't be null or empty.");
+                throw new IllegalArgumentException("Type can't be null or empty.");
 
             }
             if (permissionInfo.getName() == null || permissionInfo.getName().trim().isEmpty()) {
-                throw new IllegalArgumentException("name can't be null or empty.");
+                throw new IllegalArgumentException("Name can't be null or empty.");
             }
 
             permissionInfoList.add(new PermissionInfo(permissionInfo.getType(), permissionInfo.getName(),
@@ -313,7 +313,7 @@ public class CarbonSecurityComponent {
     }
 
     /**
-     * Get PermissionAdmin
+     * Get PermissionAdmin.
      *
      * @param context
      * @return
