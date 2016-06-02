@@ -25,12 +25,9 @@ import java.util.Map;
 public class StoreConfig {
 
     private boolean enableCache;
-    private boolean enableCacheForAuthorizationStore;
-    private boolean enableCacheForIdentityStore;
-    private boolean enableCacheForCredentialStore;
-    private Map<String, AuthorizationStoreConfig> authorizationStoreConfigMap = new HashMap<>();
-    private Map<String, IdentityStoreConfig> identityStoreConfigMap = new HashMap<>();
-    private Map<String, CredentialStoreConfig> credentialStoreConfigMap = new HashMap<>();
+    private Map<String, AuthorizationConnectorConfig> authorizationConnectorConfigMap = new HashMap<>();
+    private Map<String, IdentityConnectorConfig> identityConnectorConfigMap = new HashMap<>();
+    private Map<String, CredentialConnectorConfig> credentialConnectorConfigMap = new HashMap<>();
     private Map<String, CacheConfig> authorizationStoreCacheConfigMap = new HashMap<>();
     private Map<String, CacheConfig> identityStoreCacheConfigMap = new HashMap<>();
     private Map<String, CacheConfig> credentialStoreCacheConfigMap = new HashMap<>();
@@ -43,64 +40,41 @@ public class StoreConfig {
         this.enableCache = enableCache;
     }
 
-    public boolean isEnableCacheForAuthorizationStore() {
-        return enableCacheForAuthorizationStore;
+    public Map<String, AuthorizationConnectorConfig> getAuthorizationConnectorConfigMap() {
+        return authorizationConnectorConfigMap;
     }
 
-    public void setEnableCacheForAuthorizationStore(boolean enableCacheForAuthorizationStore) {
-        this.enableCacheForAuthorizationStore = enableCacheForAuthorizationStore;
+    public void setAuthorizationConnectorConfigMap(Map<String, AuthorizationConnectorConfig>
+                                                           authorizationConnectorConfigMap) {
+        this.authorizationConnectorConfigMap = authorizationConnectorConfigMap;
     }
 
-    public boolean isEnableCacheForIdentityStore() {
-        return enableCacheForIdentityStore;
+    public void addAuthorizationStoreConfig(String name, AuthorizationConnectorConfig authorizationStoreConfig) {
+        this.authorizationConnectorConfigMap.put(name, authorizationStoreConfig);
     }
 
-    public void setEnableCacheForIdentityStore(boolean enableCacheForIdentityStore) {
-        this.enableCacheForIdentityStore = enableCacheForIdentityStore;
+    public Map<String, IdentityConnectorConfig> getIdentityConnectorConfigMap() {
+        return identityConnectorConfigMap;
     }
 
-    public boolean isEnableCacheForCredentialStore() {
-        return enableCacheForCredentialStore;
+    public void setIdentityConnectorConfigMap(Map<String, IdentityConnectorConfig> identityConnectorConfigMap) {
+        this.identityConnectorConfigMap = identityConnectorConfigMap;
     }
 
-    public void setEnableCacheForCredentialStore(boolean enableCacheForCredentialStore) {
-        this.enableCacheForCredentialStore = enableCacheForCredentialStore;
+    public void addIdentityStoreConfig(String name, IdentityConnectorConfig identityStoreConfig) {
+        this.identityConnectorConfigMap.put(name, identityStoreConfig);
     }
 
-    public Map<String, AuthorizationStoreConfig> getAuthorizationStoreConfigMap() {
-        return authorizationStoreConfigMap;
+    public Map<String, CredentialConnectorConfig> getCredentialConnectorConfigMap() {
+        return credentialConnectorConfigMap;
     }
 
-    public void setAuthorizationStoreConfigMap(Map<String, AuthorizationStoreConfig> authorizationStoreConfigMap) {
-        this.authorizationStoreConfigMap = authorizationStoreConfigMap;
+    public void setCredentialConnectorConfigMap(Map<String, CredentialConnectorConfig> credentialConnectorConfigMap) {
+        this.credentialConnectorConfigMap = credentialConnectorConfigMap;
     }
 
-    public void addAuthorizationStoreConfig(String name, AuthorizationStoreConfig authorizationStoreConfig) {
-        this.authorizationStoreConfigMap.put(name, authorizationStoreConfig);
-    }
-
-    public Map<String, IdentityStoreConfig> getIdentityStoreConfigMap() {
-        return identityStoreConfigMap;
-    }
-
-    public void setIdentityStoreConfigMap(Map<String, IdentityStoreConfig> identityStoreConfigMap) {
-        this.identityStoreConfigMap = identityStoreConfigMap;
-    }
-
-    public void addIdentityStoreConfig(String name, IdentityStoreConfig identityStoreConfig) {
-        this.identityStoreConfigMap.put(name, identityStoreConfig);
-    }
-
-    public Map<String, CredentialStoreConfig> getCredentialStoreConfigMap() {
-        return credentialStoreConfigMap;
-    }
-
-    public void setCredentialStoreConfigMap(Map<String, CredentialStoreConfig> credentialStoreConfigMap) {
-        this.credentialStoreConfigMap = credentialStoreConfigMap;
-    }
-
-    public void addCredentialStoreConfig(String name, CredentialStoreConfig credentialStoreConfig) {
-        this.credentialStoreConfigMap.put(name, credentialStoreConfig);
+    public void addCredentialStoreConfig(String name, CredentialConnectorConfig credentialStoreConfig) {
+        this.credentialConnectorConfigMap.put(name, credentialStoreConfig);
     }
 
     public Map<String, CacheConfig> getAuthorizationStoreCacheConfigMap() {

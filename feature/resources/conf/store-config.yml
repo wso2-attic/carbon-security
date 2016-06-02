@@ -1,12 +1,9 @@
 enableCache: true
 credentialStore:
- enableCache: true
  connector: "#JDBCCS1"
 identityStore:
- enableCache: true
  connector: "#JDBCIS1"
 authorizationStore:
- enableCache: true
  connector: "#JDBCAS1"
 
 storeConnectors:

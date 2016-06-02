@@ -25,7 +25,7 @@ import java.util.List;
  */
 public class StoreConfigFile {
 
-    private boolean enableCache;
+    private boolean enableCache = true;
     private StoreConfigEntry credentialStore;
     private StoreConfigEntry identityStore;
     private StoreConfigEntry authorizationStore;

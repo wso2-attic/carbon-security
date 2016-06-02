@@ -301,15 +301,15 @@
         <carbon.security.caas.version>1.0.0-SNAPSHOT</carbon.security.caas.version>
 
         <carbon.feature.plugin.version>2.0.1</carbon.feature.plugin.version>
-        <carbon.kernel.version>5.1.0-alpha2</carbon.kernel.version>
-        <carbon.launcher.version>5.1.0-alpha2</carbon.launcher.version>
-        <carbon.core.version>5.1.0-alpha2</carbon.core.version>
-        <carbon.osgi.test.util.version>5.1.0-alpha2</carbon.osgi.test.util.version>
+        <carbon.kernel.version>5.1.0</carbon.kernel.version>
+        <carbon.launcher.version>5.1.0</carbon.launcher.version>
+        <carbon.core.version>5.1.0</carbon.core.version>
+        <carbon.osgi.test.util.version>5.1.0</carbon.osgi.test.util.version>
         <msf4j.version>1.0.0</msf4j.version>
         <opensaml.version>2.6.4.wso2v1</opensaml.version>
         <commons.dbcp.version>1.4</commons.dbcp.version>
-        <org.wso2.carbon.messaging.version>1.0.2</org.wso2.carbon.messaging.version>
-        <org.wso2.carbon.caching.version>1.0.0-SNAPSHOT</org.wso2.carbon.caching.version>
+        <org.wso2.carbon.messaging.version>1.0.3</org.wso2.carbon.messaging.version>
+        <org.wso2.carbon.caching.version>1.0.0</org.wso2.carbon.caching.version>
 
         <!-- Equinox dependency versions -->
         <osgi.core.api.version>6.0.0</osgi.core.api.version>
