@@ -56,7 +56,7 @@ public class SecurityConfigBuilder {
         Path file = Paths.get(CarbonSecurityConstants.getCarbonHomeDirectory().toString(), "conf", "security",
                               CarbonSecurityConstants.PERMISSION_CONFIG_FILE);
         if (Files.exists(file)) {
-            try (Reader in = new InputStreamReader(Files.newInputStream(file), StandardCharsets.ISO_8859_1)) {
+            try (Reader in = new InputStreamReader(Files.newInputStream(file), StandardCharsets.UTF_8)) {
                 Yaml yaml = new Yaml();
                 yaml.setBeanAccess(BeanAccess.FIELD);
                 permissionInfoCollection = yaml.loadAs(in, DefaultPermissionInfoCollection.class);

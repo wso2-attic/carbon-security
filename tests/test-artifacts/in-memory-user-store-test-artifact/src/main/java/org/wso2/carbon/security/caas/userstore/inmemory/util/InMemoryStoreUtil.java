@@ -19,7 +19,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Util class for in memory user store
+ * Util class for in memory user store.
  */
 public class InMemoryStoreUtil {
 

@@ -67,7 +67,7 @@ public class StoreConfigBuilder {
 
         StoreConfigFile storeConfigFile;
         if (Files.exists(file)) {
-            try (Reader in = new InputStreamReader(Files.newInputStream(file), StandardCharsets.ISO_8859_1)) {
+            try (Reader in = new InputStreamReader(Files.newInputStream(file), StandardCharsets.UTF_8)) {
                 Yaml yaml = new Yaml();
                 yaml.setBeanAccess(BeanAccess.FIELD);
                 storeConfigFile = new Yaml().loadAs(in, StoreConfigFile.class);
