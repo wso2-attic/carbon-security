@@ -1,5 +1,12 @@
 # Carbon Security
+---
 
+|  Branch | Build Status |
+| :------------ |:-------------
+| master      | [![Build Status](https://wso2.org/jenkins/job/carbon-security/badge/icon)](https://wso2.org/jenkins/job/carbon-security) |
+
+
+---
 Carbon Security project provides authentication and authorization implementation for carbon products based on [JAAS](#).
 ## Features:
 * JAAS based authentication.
