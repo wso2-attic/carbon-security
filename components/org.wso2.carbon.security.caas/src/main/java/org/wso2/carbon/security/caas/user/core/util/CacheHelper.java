@@ -40,21 +40,26 @@ public class CacheHelper {
      * @param cacheName Name of the cache.
      * @param keyClass Type of the key class.
      * @param valueClass Type of the value class.
-     * @param expiryTimeInMinutes Cache expire time in minutes.
+     * @param defaultExpiryTime Cache expire time in minutes.
      * @param cacheManager Cache manager to use to create the cache.
      * @param <K> Type of the Key.
      * @param <V> Type of the Value.
      * @return Created cache.
      */
     public static <K, V> Cache<K, V> createCache(String cacheName, Class<K> keyClass, Class<V> valueClass,
-                                                 int expiryTimeInMinutes, CacheManager cacheManager) {
+                                                 int defaultExpiryTime, Map<String, CacheConfig> cacheConfigMap,
+                                                 CacheManager cacheManager) {
 
-        Duration cacheExpiry = new Duration(TimeUnit.MINUTES, expiryTimeInMinutes);
+        Duration cacheExpiry = new Duration(TimeUnit.MINUTES, getExpireTime(cacheConfigMap, cacheName,
+                defaultExpiryTime));
+
+        boolean isStatisticsEnabled = cacheConfigMap.get(cacheName).isStatisticsEnabled();
 
         MutableConfiguration<K, V> configuration = new MutableConfiguration<>();
         configuration.setStoreByValue(false)
                 .setTypes(keyClass, valueClass)
-                .setExpiryPolicyFactory(AccessedExpiryPolicy.factoryOf(cacheExpiry));
+                .setExpiryPolicyFactory(AccessedExpiryPolicy.factoryOf(cacheExpiry))
+                .setStatisticsEnabled(isStatisticsEnabled);
 
         return cacheManager.createCache(cacheName, configuration);
     }

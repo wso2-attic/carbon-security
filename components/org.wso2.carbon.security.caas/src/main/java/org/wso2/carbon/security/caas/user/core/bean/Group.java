@@ -178,8 +178,8 @@ public class Group {
         private String groupName;
         private String tenantDomain;
 
-        private transient IdentityStore identityStore;
-        private transient AuthorizationStore authorizationStore;
+        private IdentityStore identityStore;
+        private AuthorizationStore authorizationStore;
 
         public String getGroupId() {
             return groupId;

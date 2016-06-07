@@ -281,9 +281,9 @@ public class User {
         private String credentialStoreId;
         private String tenantDomain;
 
-        private transient IdentityStore identityStore;
-        private transient AuthorizationStore authorizationStore;
-        private transient ClaimManager claimManager;
+        private IdentityStore identityStore;
+        private AuthorizationStore authorizationStore;
+        private ClaimManager claimManager;
 
         public String getUserName() {
             return userName;
