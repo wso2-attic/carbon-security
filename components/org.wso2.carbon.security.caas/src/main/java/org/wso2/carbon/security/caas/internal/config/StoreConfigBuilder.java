@@ -67,13 +67,13 @@ public class StoreConfigBuilder {
 
         StoreConfigFile storeConfigFile;
         if (Files.exists(file)) {
-            try (Reader in = new InputStreamReader(Files.newInputStream(file), StandardCharsets.ISO_8859_1)) {
+            try (Reader in = new InputStreamReader(Files.newInputStream(file), StandardCharsets.UTF_8)) {
                 Yaml yaml = new Yaml();
                 yaml.setBeanAccess(BeanAccess.FIELD);
                 storeConfigFile = new Yaml().loadAs(in, StoreConfigFile.class);
             } catch (IOException e) {
                 throw new RuntimeException("Error while loading " + CarbonSecurityConstants.STORE_CONFIG_FILE + " " +
-                                           "configuration file", e);
+                                           "configuration file.", e);
             }
         } else {
             throw new RuntimeException("Configuration file " + CarbonSecurityConstants.STORE_CONFIG_FILE + "' is not " +

@@ -19,7 +19,7 @@ package org.wso2.carbon.security.caas.internal.config;
 import java.util.List;
 
 /**
- * Claim Config mapper class
+ * Claim Config mapper class.
  */
 public class ClaimConfigFile {
 

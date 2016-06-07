@@ -14,14 +14,14 @@ public interface CarbonCallbackHandler extends CallbackHandler {
     String SUPPORTED_LOGIN_MODULE = "supported.login.module";
 
     /**
-     * Set CarbonMessage
+     * Set CarbonMessage.
      *
      * @param carbonMessage Carbon Message.
      */
     void setCarbonMessage(CarbonMessage carbonMessage);
 
     /**
-     * Evaluate whether callback handler can process the callbacks
+     * Evaluate whether callback handler can process the callbacks.
      *
      * @return True if Callback handler can handle callbacks
      */

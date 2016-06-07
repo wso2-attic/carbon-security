@@ -20,8 +20,9 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * StoreConfigs Bean
-  * @since 1.0.0
+ * StoreConfigs Bean.
+ *
+ * @since 1.0.0
  */
 public class StoreConfigFile {
 
@@ -74,5 +75,6 @@ public class StoreConfigFile {
     public void setStoreConnectors(List<StoreConnectorConfigEntry> storeConnectors) {
         this.storeConnectors = storeConnectors;
     }
+
 }
 
