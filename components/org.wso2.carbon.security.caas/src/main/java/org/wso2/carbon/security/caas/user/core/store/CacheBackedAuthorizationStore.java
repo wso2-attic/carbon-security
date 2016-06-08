@@ -311,7 +311,9 @@ public class CacheBackedAuthorizationStore implements AuthorizationStore {
 
         if (roles == null) {
             roles = authorizationStore.getRolesOfUser(groupId, identityStoreId);
-            cache.put(groupId + identityStoreId, roles);
+            if (roles != null && !roles.isEmpty()) {
+                cache.put(groupId + identityStoreId, roles);
+            }
         }
 
         return roles;
@@ -332,7 +334,9 @@ public class CacheBackedAuthorizationStore implements AuthorizationStore {
 
         if (permissions == null) {
             permissions = authorizationStore.getPermissionsOfRole(roleId, authorizationStoreId);
-            cache.put(roleId + authorizationStoreId, permissions);
+            if (permissions != null && !permissions.isEmpty()) {
+                cache.put(roleId + authorizationStoreId, permissions);
+            }
         }
 
         return permissions;

@@ -44,7 +44,7 @@ public class CarbonRealmServiceImpl implements RealmService {
     public CarbonRealmServiceImpl(StoreConfig storeConfig) throws IdentityStoreException, AuthorizationStoreException,
             CredentialStoreException {
 
-        if (storeConfig.isEnableCache()) {
+        if (storeConfig.isCacheEnabled()) {
             this.identityStore = new CacheBackedIdentityStore(storeConfig.getIdentityStoreCacheConfigMap());
             this.authorizationStore = new CacheBackedAuthorizationStore(storeConfig
                     .getAuthorizationStoreCacheConfigMap());

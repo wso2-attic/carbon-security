@@ -53,7 +53,11 @@ public class CacheHelper {
         Duration cacheExpiry = new Duration(TimeUnit.MINUTES, getExpireTime(cacheConfigMap, cacheName,
                 defaultExpiryTime));
 
-        boolean isStatisticsEnabled = cacheConfigMap.get(cacheName).isStatisticsEnabled();
+        boolean isStatisticsEnabled = false;
+
+        if (cacheConfigMap.get(cacheName) != null) {
+            isStatisticsEnabled = cacheConfigMap.get(cacheName).isStatisticsEnabled();
+        }
 
         MutableConfiguration<K, V> configuration = new MutableConfiguration<>();
         configuration.setStoreByValue(false)
