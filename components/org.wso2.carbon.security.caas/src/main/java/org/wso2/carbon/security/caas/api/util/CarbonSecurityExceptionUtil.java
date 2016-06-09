@@ -22,6 +22,9 @@ import org.wso2.carbon.security.caas.api.exception.CarbonSecurityServerException
 import org.wso2.carbon.security.caas.user.core.exception.AuthenticationFailure;
 import org.wso2.carbon.security.caas.user.core.exception.CredentialStoreException;
 
+import java.util.Arrays;
+import java.util.Optional;
+
 import static org.wso2.carbon.security.caas.api.exception.CarbonSecurityLoginException.ErrorMessage;
 
 /**
@@ -33,26 +36,28 @@ public class CarbonSecurityExceptionUtil {
     /**
      * Builds a CarbonSecurityLoginException sub type based on the content of the AuthenticationFailure stack trace.
      *
-     * @param authenticationFailure
+     * @param authenticationFailure AuthenticationFailure thrown from the credential store.
      * @return CarbonSecurityLoginException
      */
     public static CarbonSecurityLoginException buildLoginException(AuthenticationFailure authenticationFailure) {
 
         Throwable[] suppressed = authenticationFailure.getSuppressed();
 
-        for (Throwable t : suppressed) {
-            // Checks whether AuthenticationFailure has suppressed a CredentialStoreException and returns
-            // a CarbonSecurityServerException if true.
-            if (t instanceof CredentialStoreException) {
-                return new CarbonSecurityServerException(ErrorMessage.CREDENTIAL_STORE_FAILURE.getCode(),
-                                                         ErrorMessage.CREDENTIAL_STORE_FAILURE.getDescription(),
-                                                         authenticationFailure);
-            }
-        }
+        // Checks whether AuthenticationFailure has suppressed a CredentialStoreException and returns
+        // a CarbonSecurityServerException if true.
+        Optional<Throwable> optional = Arrays.stream(suppressed)
+                                             .filter(t -> t instanceof CredentialStoreException)
+                                             .findAny();
 
-        return new CarbonSecurityAuthenticationException(ErrorMessage.INVALID_CREDENTIALS.getCode(),
-                                                         ErrorMessage.INVALID_CREDENTIALS.getDescription(),
-                                                         authenticationFailure);
+        if (optional.isPresent()) {
+            return new CarbonSecurityServerException(ErrorMessage.CREDENTIAL_STORE_FAILURE.getCode(),
+                                                     ErrorMessage.CREDENTIAL_STORE_FAILURE.getDescription(),
+                                                     authenticationFailure);
+        } else {
+            return new CarbonSecurityAuthenticationException(ErrorMessage.INVALID_CREDENTIALS.getCode(),
+                                                             ErrorMessage.INVALID_CREDENTIALS.getDescription(),
+                                                             authenticationFailure);
+        }
     }
 
 }
