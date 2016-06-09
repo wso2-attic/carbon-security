@@ -31,20 +31,67 @@ public class CarbonSecurityLoginException extends LoginException {
 
     private int code = -1;
 
+    /**
+     * Constructs a CarbonSecurityLoginException with no detail message. A detail
+     * message is a String that describes this particular exception.
+     */
     public CarbonSecurityLoginException() {
         super();
     }
 
+    /**
+     * Constructs a CarbonSecurityLoginException with the specified detail message.
+     * A detail message is a String that describes this particular
+     * exception.
+     *
+     * @param msg the detail message.
+     */
     public CarbonSecurityLoginException(String msg) {
         super(msg);
     }
 
+    /**
+     * Creates a CarbonSecurityLoginException with the specified
+     * detail message and cause.
+     *
+     * @param msg the detail message (which is saved for later retrieval
+     *        by the {@code getMessage()} method).
+     * @param cause the cause (which is saved for later retrieval by the
+     *        {@code getCause()} method).  (A {@code null} value is permitted,
+     *        and indicates that the cause is nonexistent or unknown.)
+     */
     public CarbonSecurityLoginException(String msg, Throwable cause) {
         super(msg);
         this.cause = cause;
         initCause(cause);
     }
 
+    /**
+     * Creates a CarbonSecurityLoginException with the specified
+     * detail message and cause.
+     *
+     * @param code the code corresponding to the error (which is saved for later retrieval by the
+     *        {@code getCode()} method).
+     * @param msg the detail message (which is saved for later retrieval
+     *        by the {@code getMessage()} method).
+     */
+    public CarbonSecurityLoginException(int code, String msg) {
+        super(msg);
+        this.code = code;
+    }
+
+    /**
+     * Creates a CarbonSecurityLoginException with the specified
+     * detail message and cause.
+     *
+     * @param code the code corresponding to the error (which is saved for later retrieval by the
+     *        {@code getCode()} method).
+     * @param msg the detail message (which is saved for later retrieval
+     *        by the {@code getMessage()} method).
+     * @param cause the cause (which is saved for later retrieval by the
+     *        {@code getCause()} method).  (A {@code null} value is permitted,
+     *        and indicates that the cause is nonexistent or unknown.)
+     */
     public CarbonSecurityLoginException(int code, String msg, Throwable cause) {
         super(msg);
         this.code = code;
@@ -52,6 +99,12 @@ public class CarbonSecurityLoginException extends LoginException {
         initCause(cause);
     }
 
+    /**
+     * Returns the error code corresponding to the error.
+     * Returns -1 if the error code is unspecified.
+     *
+     * @return error code.
+     */
     public int getCode() {
         return code;
     }
@@ -67,9 +120,10 @@ public class CarbonSecurityLoginException extends LoginException {
     }
 
     /**
-     * CarbonSecurityLoginException error codes.
+     * Represent an enum which specifies errors used by CarbonSecurityLoginException
+     * and it's sub types.
      */
-    public enum ErrorMessage {
+    public enum CarbonSecurityErrorMessages {
 
         INVALID_CREDENTIALS(10000, "Invalid user credentials."),
         CREDENTIAL_STORE_FAILURE(10001, "One or more credential stores produced errors while authenticating."),
@@ -79,15 +133,32 @@ public class CarbonSecurityLoginException extends LoginException {
         private final int code;
         private final String description;
 
-        ErrorMessage(int code, String description) {
+        /**
+         * Creates a CarbonSecurityErrorMessages enum with the specified errod codeand
+         * detail message.
+         *
+         * @param code the code corresponding to the error (which is saved for later retrieval by the
+         *        {@code getCode()} method).
+         * @param description the detail message (which is saved for later retrieval
+         *        by the {@code getDescription()} method).
+         */
+        CarbonSecurityErrorMessages(int code, String description) {
             this.code = code;
             this.description = description;
         }
 
+        /**
+         * Returns error code.
+         * @return Error code as an int.
+         */
         public int getCode() {
             return code;
         }
 
+        /**
+         * Returns error description.
+         * @return Error description String.
+         */
         public String getDescription() {
             return description;
         }

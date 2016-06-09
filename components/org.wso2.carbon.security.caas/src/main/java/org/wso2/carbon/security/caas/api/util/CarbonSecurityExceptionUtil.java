@@ -25,7 +25,7 @@ import org.wso2.carbon.security.caas.user.core.exception.CredentialStoreExceptio
 import java.util.Arrays;
 import java.util.Optional;
 
-import static org.wso2.carbon.security.caas.api.exception.CarbonSecurityLoginException.ErrorMessage;
+import static org.wso2.carbon.security.caas.api.exception.CarbonSecurityLoginException.CarbonSecurityErrorMessages;
 
 /**
  * Util class for exception handling.
@@ -50,13 +50,13 @@ public class CarbonSecurityExceptionUtil {
                                              .findAny();
 
         if (optional.isPresent()) {
-            return new CarbonSecurityServerException(ErrorMessage.CREDENTIAL_STORE_FAILURE.getCode(),
-                                                     ErrorMessage.CREDENTIAL_STORE_FAILURE.getDescription(),
-                                                     authenticationFailure);
+            return new CarbonSecurityServerException(CarbonSecurityErrorMessages.CREDENTIAL_STORE_FAILURE.getCode(),
+                                                     CarbonSecurityErrorMessages.CREDENTIAL_STORE_FAILURE
+                                                             .getDescription(), authenticationFailure);
         } else {
-            return new CarbonSecurityAuthenticationException(ErrorMessage.INVALID_CREDENTIALS.getCode(),
-                                                             ErrorMessage.INVALID_CREDENTIALS.getDescription(),
-                                                             authenticationFailure);
+            return new CarbonSecurityAuthenticationException(CarbonSecurityErrorMessages.INVALID_CREDENTIALS.getCode(),
+                                                             CarbonSecurityErrorMessages.INVALID_CREDENTIALS
+                                                                     .getDescription(), authenticationFailure);
         }
     }
 

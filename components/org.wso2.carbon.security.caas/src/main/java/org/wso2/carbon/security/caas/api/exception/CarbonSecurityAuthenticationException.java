@@ -33,6 +33,10 @@ public class CarbonSecurityAuthenticationException extends CarbonSecurityLoginEx
         super(msg, cause);
     }
 
+    public CarbonSecurityAuthenticationException(int code, String msg) {
+        super(code, msg);
+    }
+
     public CarbonSecurityAuthenticationException(int code, String msg, Throwable cause) {
         super(code, msg, cause);
     }

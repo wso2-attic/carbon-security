@@ -33,6 +33,10 @@ public class CarbonSecurityClientException extends CarbonSecurityLoginException 
         super(msg, cause);
     }
 
+    public CarbonSecurityClientException(int code, String msg) {
+        super(code, msg);
+    }
+
     public CarbonSecurityClientException(int code, String msg, Throwable cause) {
         super(code, msg, cause);
     }

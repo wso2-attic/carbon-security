@@ -21,7 +21,7 @@ import org.slf4j.LoggerFactory;
 import org.wso2.carbon.kernel.context.PrivilegedCarbonContext;
 import org.wso2.carbon.security.caas.api.CarbonPrincipal;
 import org.wso2.carbon.security.caas.api.exception.CarbonSecurityClientException;
-import org.wso2.carbon.security.caas.api.exception.CarbonSecurityLoginException.ErrorMessage;
+import org.wso2.carbon.security.caas.api.exception.CarbonSecurityLoginException.CarbonSecurityErrorMessages;
 import org.wso2.carbon.security.caas.api.exception.CarbonSecurityServerException;
 import org.wso2.carbon.security.caas.api.util.CarbonSecurityExceptionUtil;
 import org.wso2.carbon.security.caas.internal.CarbonSecurityDataHolder;
@@ -102,11 +102,13 @@ public class UsernamePasswordLoginModule implements LoginModule {
         try {
             callbackHandler.handle(callbacks);
         } catch (UnsupportedCallbackException e) {
-            throw new CarbonSecurityClientException(ErrorMessage.UNSUPPORTED_CALLBACK_EXCEPTION.getCode(),
-                                                    ErrorMessage.UNSUPPORTED_CALLBACK_EXCEPTION.getDescription(), e);
+            throw new CarbonSecurityClientException(
+                    CarbonSecurityErrorMessages.UNSUPPORTED_CALLBACK_EXCEPTION.getCode(),
+                    CarbonSecurityErrorMessages.UNSUPPORTED_CALLBACK_EXCEPTION.getDescription(), e);
         } catch (IOException e) {
-            throw new CarbonSecurityServerException(ErrorMessage.CALLBACK_HANDLE_EXCEPTION.getCode(),
-                                                    ErrorMessage.CALLBACK_HANDLE_EXCEPTION.getDescription(), e);
+            throw new CarbonSecurityServerException(CarbonSecurityErrorMessages.CALLBACK_HANDLE_EXCEPTION.getCode(),
+                                                    CarbonSecurityErrorMessages.CALLBACK_HANDLE_EXCEPTION
+                                                            .getDescription(), e);
         }
 
         username = usernameCallback.getName();
@@ -145,8 +147,7 @@ public class UsernamePasswordLoginModule implements LoginModule {
                 subject.getPrincipals().add(carbonPrincipal);
             }
 
-            PrivilegedCarbonContext privilegedCarbonContext =
-                    (PrivilegedCarbonContext) PrivilegedCarbonContext.getCurrentContext();
+            PrivilegedCarbonContext privilegedCarbonContext = PrivilegedCarbonContext.getCurrentContext();
             privilegedCarbonContext.setUserPrincipal(carbonPrincipal);
 
             username = null;
