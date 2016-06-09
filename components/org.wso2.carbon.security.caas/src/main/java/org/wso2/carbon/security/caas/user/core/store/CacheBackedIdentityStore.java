@@ -44,7 +44,6 @@ import javax.security.auth.callback.Callback;
 public class CacheBackedIdentityStore implements IdentityStore {
 
     private static Logger log = LoggerFactory.getLogger(CacheBackedIdentityStore.class);
-    private static final boolean IS_DEBUG_ENABLED = log.isDebugEnabled();
 
     private IdentityStore identityStore = new IdentityStoreImpl();
     private CacheManager cacheManager;
@@ -78,7 +77,7 @@ public class CacheBackedIdentityStore implements IdentityStore {
         CacheHelper.createCache(CacheNames.GROUPS_USERID_IDENTITYSTOREID, String.class, List.class,
                 CacheHelper.MEDIUM_EXPIRE_TIME, cacheConfigs, cacheManager);
 
-        if (IS_DEBUG_ENABLED) {
+        if (log.isDebugEnabled()) {
             log.debug("Cache backed identity store successfully initialized.");
         }
     }
@@ -96,7 +95,7 @@ public class CacheBackedIdentityStore implements IdentityStore {
         if (user == null) {
             user = identityStore.getUser(username);
             cache.put(username, user);
-            if (IS_DEBUG_ENABLED) {
+            if (log.isDebugEnabled()) {
                 log.debug("User cached for username: {}.", username);
             }
         }
@@ -125,7 +124,7 @@ public class CacheBackedIdentityStore implements IdentityStore {
         if (user == null) {
             user = identityStore.getUserFromId(userId, identityStoreId);
             cache.put(userId + identityStoreId, user);
-            if (IS_DEBUG_ENABLED) {
+            if (log.isDebugEnabled()) {
                 log.debug("User cached for user id: {} and identity store id: {}.", user, identityStoreId);
             }
         }
@@ -162,7 +161,7 @@ public class CacheBackedIdentityStore implements IdentityStore {
         if (group == null) {
             group = identityStore.getGroup(groupName);
             cache.put(groupName, group);
-            if (IS_DEBUG_ENABLED) {
+            if (log.isDebugEnabled()) {
                 log.debug("Group cached for group name: {}.", groupName);
             }
         }
@@ -183,7 +182,7 @@ public class CacheBackedIdentityStore implements IdentityStore {
         if (group == null) {
             group = identityStore.getGroupFromId(groupId, identityStoreId);
             cache.put(groupId + identityStoreId, group);
-            if (IS_DEBUG_ENABLED) {
+            if (log.isDebugEnabled()) {
                 log.debug("Group cached for group id: {} and for identity store id: {}.", groupId, identityStoreId);
             }
         }
@@ -211,7 +210,7 @@ public class CacheBackedIdentityStore implements IdentityStore {
         if (groups == null) {
             groups = identityStore.getGroupsOfUser(userId, identityStoreId);
             cache.put(userId + identityStoreId, groups);
-            if (IS_DEBUG_ENABLED) {
+            if (log.isDebugEnabled()) {
                 log.debug("Groups cached for user id: {} and identity store id: {}.", userId, identityStoreId);
             }
         }

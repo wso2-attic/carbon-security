@@ -48,7 +48,6 @@ import javax.cache.CacheManager;
 public class CacheBackedAuthorizationStore implements AuthorizationStore {
 
     private static final Logger log = LoggerFactory.getLogger(CacheBackedIdentityStore.class);
-    private static final boolean IS_DEBUG_ENABLED = log.isDebugEnabled();
 
     private Map<String, CacheConfig> cacheConfigs;
     private RealmService realmService;
@@ -80,7 +79,7 @@ public class CacheBackedAuthorizationStore implements AuthorizationStore {
         CacheHelper.createCache(CacheNames.PERMISSIONS_ROLEID_AUTHORIZATIONSTOREID, String.class, List.class,
                 CacheHelper.LOW_EXPIRE_TIME, cacheConfigs, cacheManager);
 
-        if (IS_DEBUG_ENABLED) {
+        if (log.isDebugEnabled()) {
             log.debug("Cache backed authorization store initialized successfully.");
         }
     }
@@ -240,7 +239,7 @@ public class CacheBackedAuthorizationStore implements AuthorizationStore {
         if (role == null) {
             role = authorizationStore.getRole(roleName);
             cache.put(roleName, role);
-            if (IS_DEBUG_ENABLED) {
+            if (log.isDebugEnabled()) {
                 log.debug("Role cached for role name: {}.", roleName);
             }
         }
@@ -263,7 +262,7 @@ public class CacheBackedAuthorizationStore implements AuthorizationStore {
         if (permission == null) {
             permission = authorizationStore.getPermission(resourceId, action);
             cache.put(resourceId + action, permission);
-            if (IS_DEBUG_ENABLED) {
+            if (log.isDebugEnabled()) {
                 log.debug("Permission cached for resource id: {} and action: {}.", resourceId, action);
             }
         }
@@ -286,7 +285,7 @@ public class CacheBackedAuthorizationStore implements AuthorizationStore {
         if (roles == null) {
             roles = authorizationStore.getRolesOfUser(userId, identityStoreId);
             cache.put(userId + identityStoreId, roles);
-            if (IS_DEBUG_ENABLED) {
+            if (log.isDebugEnabled()) {
                 log.debug("Roles cached for user id: {} and identity store id: {}.", userId, identityStoreId);
             }
         }
@@ -322,7 +321,7 @@ public class CacheBackedAuthorizationStore implements AuthorizationStore {
             roles = authorizationStore.getRolesOfUser(groupId, identityStoreId);
             if (roles != null && !roles.isEmpty()) {
                 cache.put(groupId + identityStoreId, roles);
-                if (IS_DEBUG_ENABLED) {
+                if (log.isDebugEnabled()) {
                     log.debug("Roles cached for group id: {} and for identity store id: {}.", groupId, identityStoreId);
                 }
             }
@@ -348,7 +347,7 @@ public class CacheBackedAuthorizationStore implements AuthorizationStore {
             permissions = authorizationStore.getPermissionsOfRole(roleId, authorizationStoreId);
             if (permissions != null && !permissions.isEmpty()) {
                 cache.put(roleId + authorizationStoreId, permissions);
-                if (IS_DEBUG_ENABLED) {
+                if (log.isDebugEnabled()) {
                     log.debug("Permissions cached for role id: {} authorization store id: {}.", roleId,
                             authorizationStoreId);
                 }
@@ -371,7 +370,7 @@ public class CacheBackedAuthorizationStore implements AuthorizationStore {
         Role role = authorizationStore.addRole(roleName, permissions, authorizationStoreId);
         cache.put(roleName, role);
 
-        if (IS_DEBUG_ENABLED) {
+        if (log.isDebugEnabled()) {
             log.debug("Role cached for role name: {}.", roleName);
         }
 
@@ -390,7 +389,7 @@ public class CacheBackedAuthorizationStore implements AuthorizationStore {
         Cache<String, Role> cache = cacheManager.getCache(CacheNames.ROLE_ROLENAME, String.class, Role.class);
         cache.remove(role.getName());
 
-        if (IS_DEBUG_ENABLED) {
+        if (log.isDebugEnabled()) {
             log.debug("Role with name : {} removed from the cache.", role.getName());
         }
     }
@@ -409,7 +408,7 @@ public class CacheBackedAuthorizationStore implements AuthorizationStore {
         Permission permission = authorizationStore.addPermission(resourceId, action, authorizationStoreId);
         cache.put(resourceId + action, permission);
 
-        if (IS_DEBUG_ENABLED) {
+        if (log.isDebugEnabled()) {
             log.debug("permissions cached for resource id: {} and action: {}", resourceId, action);
         }
 
@@ -427,7 +426,7 @@ public class CacheBackedAuthorizationStore implements AuthorizationStore {
                 Permission.class);
         cache.remove(permission.getPermissionString());
 
-        if (IS_DEBUG_ENABLED) {
+        if (log.isDebugEnabled()) {
             log.debug("Permissions with permissions string: {} removed from the cache.",
                     permission.getPermissionString());
         }
@@ -446,7 +445,7 @@ public class CacheBackedAuthorizationStore implements AuthorizationStore {
             Cache<String, List> cache = cacheManager.getCache(CacheNames.ROLES_USERID_IDENTITYSTOREID, String.class,
                     List.class);
             cache.put(userId + identityStoreId, newRoleList);
-            if (IS_DEBUG_ENABLED) {
+            if (log.isDebugEnabled()) {
                 log.debug("Roles added to the cache for user id: {} and identity store id: {}.", userId,
                         identityStoreId);
             }
@@ -463,7 +462,7 @@ public class CacheBackedAuthorizationStore implements AuthorizationStore {
             Cache<String, List> cache = cacheManager.getCache(CacheNames.ROLES_USERID_IDENTITYSTOREID, String.class,
                     List.class);
             cache.remove(userId + identityStoreId);
-            if (IS_DEBUG_ENABLED) {
+            if (log.isDebugEnabled()) {
                 log.debug("Roles removed from cache with user id: {} and identity store id: {}", userId,
                         identityStoreId);
             }
@@ -492,7 +491,7 @@ public class CacheBackedAuthorizationStore implements AuthorizationStore {
             Cache<String, List> cache = cacheManager.getCache(CacheNames.ROLES_GROUPID_IDENTITYSTOREID, String.class,
                     List.class);
             cache.put(groupId + identityStoreId, newRoleList);
-            if (IS_DEBUG_ENABLED) {
+            if (log.isDebugEnabled()) {
                 log.debug("Roles added to the cache for group id: {} identity store id: {}", groupId, identityStoreId);
             }
         }
@@ -508,7 +507,7 @@ public class CacheBackedAuthorizationStore implements AuthorizationStore {
             Cache<String, List> cache = cacheManager.getCache(CacheNames.ROLES_GROUPID_IDENTITYSTOREID, String.class,
                     List.class);
             cache.remove(groupId + identityStoreId);
-            if (IS_DEBUG_ENABLED) {
+            if (log.isDebugEnabled()) {
                 log.debug("Roles removed with group id: {} and identity store id: {}.", groupId, identityStoreId);
             }
         }
@@ -536,7 +535,7 @@ public class CacheBackedAuthorizationStore implements AuthorizationStore {
             Cache<String, List> cache = cacheManager.getCache(CacheNames.PERMISSIONS_ROLEID_AUTHORIZATIONSTOREID,
                     String.class, List.class);
             cache.put(roleId + authorizationStoreId, newPermissionList);
-            if (IS_DEBUG_ENABLED) {
+            if (log.isDebugEnabled()) {
                 log.debug("Permissions cached for role id: {} and authorization store id: {}.", roleId,
                         authorizationStoreId);
             }
@@ -555,7 +554,7 @@ public class CacheBackedAuthorizationStore implements AuthorizationStore {
             Cache<String, List> cache = cacheManager.getCache(CacheNames.PERMISSIONS_ROLEID_AUTHORIZATIONSTOREID,
                     String.class, List.class);
             cache.remove(roleId + authorizationStoreId);
-            if (IS_DEBUG_ENABLED) {
+            if (log.isDebugEnabled()) {
                 log.debug("Permissions removed with role id: {} and authorization store id: {}.", roleId,
                         authorizationStoreId);
             }
