@@ -73,7 +73,7 @@ public class CacheBackedIdentityStore implements IdentityStore {
                 cacheConfigs, cacheManager);
         CacheHelper.createCache(CacheNames.GROUP_GROUPNAME, String.class, Group.class, CacheHelper.MEDIUM_EXPIRE_TIME,
                 cacheConfigs, cacheManager);
-        CacheHelper.createCache(CacheNames.GROUP_GROUP_ID, String.class, Group.class, CacheHelper.MEDIUM_EXPIRE_TIME,
+        CacheHelper.createCache(CacheNames.GROUP_GROUPID, String.class, Group.class, CacheHelper.MEDIUM_EXPIRE_TIME,
                 cacheConfigs, cacheManager);
         CacheHelper.createCache(CacheNames.GROUPS_USERID_IDENTITYSTOREID, String.class, List.class,
                 CacheHelper.MEDIUM_EXPIRE_TIME, cacheConfigs, cacheManager);
@@ -96,6 +96,9 @@ public class CacheBackedIdentityStore implements IdentityStore {
         if (user == null) {
             user = identityStore.getUser(username);
             cache.put(username, user);
+            if (IS_DEBUG_ENABLED) {
+                log.debug("User cached for username: {}.", username);
+            }
         }
 
         return user;
@@ -122,6 +125,9 @@ public class CacheBackedIdentityStore implements IdentityStore {
         if (user == null) {
             user = identityStore.getUserFromId(userId, identityStoreId);
             cache.put(userId + identityStoreId, user);
+            if (IS_DEBUG_ENABLED) {
+                log.debug("User cached for user id: {} and identity store id: {}.", user, identityStoreId);
+            }
         }
 
         return user;
@@ -156,6 +162,9 @@ public class CacheBackedIdentityStore implements IdentityStore {
         if (group == null) {
             group = identityStore.getGroup(groupName);
             cache.put(groupName, group);
+            if (IS_DEBUG_ENABLED) {
+                log.debug("Group cached for group name: {}.", groupName);
+            }
         }
 
         return group;
@@ -164,16 +173,19 @@ public class CacheBackedIdentityStore implements IdentityStore {
     @Override
     public Group getGroupFromId(String groupId, String identityStoreId) throws IdentityStoreException {
 
-        if (CacheHelper.isCacheDisabled(cacheConfigs, CacheNames.GROUP_GROUP_ID)) {
+        if (CacheHelper.isCacheDisabled(cacheConfigs, CacheNames.GROUP_GROUPID)) {
             return identityStore.getGroupFromId(groupId, identityStoreId);
         }
 
-        Cache<String, Group> cache = cacheManager.getCache(CacheNames.GROUP_GROUP_ID, String.class, Group.class);
+        Cache<String, Group> cache = cacheManager.getCache(CacheNames.GROUP_GROUPID, String.class, Group.class);
         Group group = cache.get(groupId + identityStoreId);
 
         if (group == null) {
             group = identityStore.getGroupFromId(groupId, identityStoreId);
             cache.put(groupId + identityStoreId, group);
+            if (IS_DEBUG_ENABLED) {
+                log.debug("Group cached for group id: {} and for identity store id: {}.", groupId, identityStoreId);
+            }
         }
 
         return group;
@@ -199,6 +211,9 @@ public class CacheBackedIdentityStore implements IdentityStore {
         if (groups == null) {
             groups = identityStore.getGroupsOfUser(userId, identityStoreId);
             cache.put(userId + identityStoreId, groups);
+            if (IS_DEBUG_ENABLED) {
+                log.debug("Groups cached for user id: {} and identity store id: {}.", userId, identityStoreId);
+            }
         }
 
         return groups;
