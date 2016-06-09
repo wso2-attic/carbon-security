@@ -30,6 +30,7 @@ import org.wso2.carbon.kernel.utils.CarbonServerInfo;
 import org.wso2.carbon.messaging.CarbonMessage;
 import org.wso2.carbon.messaging.DefaultCarbonMessage;
 import org.wso2.carbon.security.caas.api.ProxyCallbackHandler;
+import org.wso2.carbon.security.caas.api.exception.CarbonSecurityAuthenticationException;
 import org.wso2.carbon.security.caas.test.osgi.util.SecurityOSGiTestUtils;
 
 import java.nio.file.Paths;
@@ -101,11 +102,11 @@ public class JAASTests {
             Assert.assertTrue(false, "Login succeeded for invalid credentials.");
         } catch (LoginException e) {
 
-            if (e.getMessage() != null) {
-                boolean assertion = e.getMessage().contains("Authentication failure.");
-                Assert.assertTrue(assertion);
+            if (e instanceof CarbonSecurityAuthenticationException) {
+                Assert.assertTrue(true);
             } else {
-                Assert.assertTrue(false, "Error message for failed login attempt should not be 'null'.");
+                Assert.assertTrue(false, "Expected: " + CarbonSecurityAuthenticationException.class.getName() +
+                                         " Caught: " + e.getClass().getName());
             }
         }
     }

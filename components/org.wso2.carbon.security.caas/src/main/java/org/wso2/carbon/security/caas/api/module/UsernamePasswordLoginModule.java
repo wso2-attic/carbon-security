@@ -20,6 +20,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.wso2.carbon.kernel.context.PrivilegedCarbonContext;
 import org.wso2.carbon.security.caas.api.CarbonPrincipal;
+import org.wso2.carbon.security.caas.api.exception.CarbonSecurityClientException;
+import org.wso2.carbon.security.caas.api.exception.CarbonSecurityLoginException.ErrorMessage;
+import org.wso2.carbon.security.caas.api.exception.CarbonSecurityServerException;
+import org.wso2.carbon.security.caas.api.util.CarbonSecurityExceptionUtil;
 import org.wso2.carbon.security.caas.internal.CarbonSecurityDataHolder;
 import org.wso2.carbon.security.caas.user.core.bean.User;
 import org.wso2.carbon.security.caas.user.core.context.AuthenticationContext;
@@ -97,9 +101,12 @@ public class UsernamePasswordLoginModule implements LoginModule {
 
         try {
             callbackHandler.handle(callbacks);
-        } catch (IOException | UnsupportedCallbackException e) {
-            log.error("Error while handling callbacks.", e);
-            throw new LoginException("Error while handling callbacks.");
+        } catch (UnsupportedCallbackException e) {
+            throw new CarbonSecurityClientException(ErrorMessage.UNSUPPORTED_CALLBACK_EXCEPTION.getCode(),
+                                                    ErrorMessage.UNSUPPORTED_CALLBACK_EXCEPTION.getDescription(), e);
+        } catch (IOException e) {
+            throw new CarbonSecurityServerException(ErrorMessage.CALLBACK_HANDLE_EXCEPTION.getCode(),
+                                                    ErrorMessage.CALLBACK_HANDLE_EXCEPTION.getDescription(), e);
         }
 
         username = usernameCallback.getName();
@@ -110,7 +117,7 @@ public class UsernamePasswordLoginModule implements LoginModule {
                     .getCredentialStore().authenticate(callbacks);
             user = authenticationContext.getUser();
         } catch (AuthenticationFailure authenticationFailure) {
-            throw new LoginException("Authentication failure.");
+            throw CarbonSecurityExceptionUtil.buildLoginException(authenticationFailure);
         }
 
         //TODO Add Audit logs CARBON-15870
