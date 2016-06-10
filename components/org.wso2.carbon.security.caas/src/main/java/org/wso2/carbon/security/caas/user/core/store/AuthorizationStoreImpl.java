@@ -306,7 +306,7 @@ public class AuthorizationStoreImpl implements AuthorizationStore {
                 .get(authorizationStoreId);
 
         if (authorizationStoreConnector == null) {
-            throw new StoreException(String.format("No authorization store found for the given id: %s>",
+            throw new StoreException(String.format("No authorization store found for the given id: %s.",
                     authorizationStoreId));
         }
 
