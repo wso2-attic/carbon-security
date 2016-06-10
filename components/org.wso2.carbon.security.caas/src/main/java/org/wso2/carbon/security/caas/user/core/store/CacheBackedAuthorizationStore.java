@@ -381,10 +381,9 @@ public class CacheBackedAuthorizationStore implements AuthorizationStore {
     public void deleteRole(Role role) throws AuthorizationStoreException {
 
         if (CacheHelper.isCacheDisabled(cacheConfigs, CacheNames.ROLE_ROLENAME)) {
-            authorizationStore.deleteRole(role);;
+            authorizationStore.deleteRole(role);
+            return;
         }
-
-        authorizationStore.deleteRole(role);
 
         Cache<String, Role> cache = cacheManager.getCache(CacheNames.ROLE_ROLENAME, String.class, Role.class);
         cache.remove(role.getName());
@@ -392,6 +391,8 @@ public class CacheBackedAuthorizationStore implements AuthorizationStore {
         if (log.isDebugEnabled()) {
             log.debug("Role with name : {} removed from the cache.", role.getName());
         }
+
+        authorizationStore.deleteRole(role);
     }
 
     @Override
@@ -420,6 +421,7 @@ public class CacheBackedAuthorizationStore implements AuthorizationStore {
 
         if (CacheHelper.isCacheDisabled(cacheConfigs, CacheNames.PERMISSION_REOURCEID_ACTION)) {
             authorizationStore.deletePermission(permission);
+            return;
         }
 
         Cache<String, Permission> cache = cacheManager.getCache(CacheNames.PERMISSION_REOURCEID_ACTION, String.class,
@@ -430,7 +432,6 @@ public class CacheBackedAuthorizationStore implements AuthorizationStore {
             log.debug("Permissions with permissions string: {} removed from the cache.",
                     permission.getPermissionString());
         }
-
 
         authorizationStore.deletePermission(permission);
     }
