@@ -98,7 +98,6 @@
                             <goal>generate</goal>
                         </goals>
                         <configuration>
-
                             <propertyFile>etc/feature.properties</propertyFile>
                             <adviceFileContents>
                                 <advice>
@@ -124,6 +123,16 @@
                                     <version>${json.smart.version}</version>
                                 </bundle>
                             </bundles>
+                            <importFeatures>
+                                <feature>
+                                    <id>org.wso2.carbon.messaging.feature</id>
+                                    <version>${org.wso2.carbon.messaging.version}</version>
+                                </feature>
+                                <feature>
+                                    <id>org.wso2.carbon.caching.feature</id>
+                                    <version>${org.wso2.carbon.caching.version}</version>
+                                </feature>
+                            </importFeatures>
                         </configuration>
                     </execution>
                 </executions>

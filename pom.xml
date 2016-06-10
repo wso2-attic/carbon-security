@@ -128,11 +128,6 @@
                 <version>${org.snakeyaml.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.wso2.orbit.org.opensaml</groupId>
-                <artifactId>opensaml</artifactId>
-                <version>${opensaml.version}</version>
-            </dependency>
-            <dependency>
                 <groupId>org.osgi</groupId>
                 <artifactId>org.osgi.core</artifactId>
                 <version>${osgi.core.api.version}</version>
@@ -306,7 +301,6 @@
         <carbon.core.version>5.1.0</carbon.core.version>
         <carbon.osgi.test.util.version>5.1.0</carbon.osgi.test.util.version>
         <msf4j.version>1.0.0</msf4j.version>
-        <opensaml.version>2.6.4.wso2v1</opensaml.version>
         <commons.dbcp.version>1.4</commons.dbcp.version>
         <org.wso2.carbon.messaging.version>1.0.3</org.wso2.carbon.messaging.version>
         <org.wso2.carbon.caching.version>1.0.0</org.wso2.carbon.caching.version>
