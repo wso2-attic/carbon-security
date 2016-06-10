@@ -18,6 +18,7 @@ package org.wso2.carbon.security.caas.user.core.store;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.wso2.carbon.kernel.utils.LambdaExceptionUtils;
 import org.wso2.carbon.security.caas.internal.CarbonSecurityDataHolder;
 import org.wso2.carbon.security.caas.user.core.bean.Group;
 import org.wso2.carbon.security.caas.user.core.bean.User;
@@ -140,17 +141,15 @@ public class IdentityStoreImpl implements IdentityStore {
 
         List<User> users = new ArrayList<>();
 
-        for (IdentityStoreConnector identityStoreConnector : identityStoreConnectors.values()) {
-            users.addAll(identityStoreConnector.listUsers(filterPattern, offset, length)
-                    .stream()
-                    .map(userBuilder -> userBuilder
-                            .setIdentityStore(realmService.getIdentityStore())
-                            .setAuthorizationStore(realmService.getAuthorizationStore())
-                            .setClaimManager(realmService.getClaimManager())
-                            .build())
-                    .collect(Collectors.toList()));
-        }
-
+        identityStoreConnectors.values().forEach(LambdaExceptionUtils.rethrowConsumer(identityStoreConnector ->
+                users.addAll(identityStoreConnector.listUsers(filterPattern, offset, length)
+                        .stream()
+                        .map(userBuilder -> userBuilder
+                                .setIdentityStore(realmService.getIdentityStore())
+                                .setAuthorizationStore(realmService.getAuthorizationStore())
+                                .setClaimManager(realmService.getClaimManager())
+                                .build())
+                        .collect(Collectors.toList()))));
         return users;
     }
 
@@ -209,16 +208,14 @@ public class IdentityStoreImpl implements IdentityStore {
 
         List<Group> groups = new ArrayList<>();
 
-        for (IdentityStoreConnector identityStoreConnector : identityStoreConnectors.values()) {
-            groups.addAll(identityStoreConnector.listGroups(filterPattern, offset, length)
-                    .stream()
-                    .map(groupBuilder -> groupBuilder
-                            .setIdentityStore(realmService.getIdentityStore())
-                            .setAuthorizationStore(realmService.getAuthorizationStore())
-                            .build())
-                    .collect(Collectors.toList()));
-        }
-
+        identityStoreConnectors.values().forEach(LambdaExceptionUtils.rethrowConsumer(identityStoreConnector ->
+                groups.addAll(identityStoreConnector.listGroups(filterPattern, offset, length)
+                        .stream()
+                        .map(groupBuilder -> groupBuilder
+                                .setIdentityStore(realmService.getIdentityStore())
+                                .setAuthorizationStore(realmService.getAuthorizationStore())
+                                .build())
+                        .collect(Collectors.toList()))));
         return groups;
     }
 

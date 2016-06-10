@@ -141,7 +141,7 @@ public class AuthorizationStoreImpl implements AuthorizationStore {
                 .get(authorizationStoreId);
 
         if (authorizationStoreConnector == null) {
-            throw new StoreException(String.format("No authorization store found for the given id %s",
+            throw new StoreException(String.format("No authorization store found for the given id: %s.",
                     authorizationStoreId));
         }
 
@@ -149,11 +149,11 @@ public class AuthorizationStoreImpl implements AuthorizationStore {
                 .getPermissionsForRole(roleId);
 
         if (permissionBuilders.isEmpty()) {
-            throw new StoreException("No permissions assigned for this role");
+            throw new StoreException("No permissions assigned for this role.");
         }
 
         for (Permission.PermissionBuilder permissionBuilder : permissionBuilders) {
-            if (permissionBuilder.build().getPermissionString().equals(permission.getPermissionString())) {
+            if (permissionBuilder.build().equals(permission)) {
                 return true;
             }
         }
@@ -243,7 +243,7 @@ public class AuthorizationStoreImpl implements AuthorizationStore {
                 .get(authorizationStoreId);
 
         if (authorizationStoreConnector == null) {
-            throw new StoreException(String.format("No authorization store found for the given id %s",
+            throw new StoreException(String.format("No authorization store found for the given id: %s.",
                     authorizationStoreId));
         }
 
@@ -266,7 +266,7 @@ public class AuthorizationStoreImpl implements AuthorizationStore {
                 .get(authorizationStoreId);
 
         if (authorizationStoreConnector == null) {
-            throw new StoreException(String.format("No authorization store found for the given id %s",
+            throw new StoreException(String.format("No authorization store found for the given id: %s.",
                     authorizationStoreId));
         }
 
@@ -306,7 +306,7 @@ public class AuthorizationStoreImpl implements AuthorizationStore {
                 .get(authorizationStoreId);
 
         if (authorizationStoreConnector == null) {
-            throw new StoreException(String.format("No authorization store found for the given id %s",
+            throw new StoreException(String.format("No authorization store found for the given id: %s.",
                     authorizationStoreId));
         }
 
@@ -324,7 +324,7 @@ public class AuthorizationStoreImpl implements AuthorizationStore {
                 .get(authorizationStoreId);
 
         if (authorizationStoreConnector == null) {
-            throw new StoreException(String.format("No authorization store found for the given id %s",
+            throw new StoreException(String.format("No authorization store found for the given id: %s.",
                     authorizationStoreId));
         }
 
@@ -344,7 +344,7 @@ public class AuthorizationStoreImpl implements AuthorizationStore {
                 .getAuthorizationStoreId());
 
         if (authorizationStoreConnector == null) {
-            throw new StoreException(String.format("No authorization store found for the given id %s",
+            throw new StoreException(String.format("No authorization store found for the given id: %s.",
                     role.getAuthorizationStoreId()));
         }
 
@@ -359,7 +359,7 @@ public class AuthorizationStoreImpl implements AuthorizationStore {
                 .get(authorizationStoreId);
 
         if (authorizationStoreConnector == null) {
-            throw new StoreException(String.format("No authorization store found for the given id %s",
+            throw new StoreException(String.format("No authorization store found for the given id: %s.",
                     authorizationStoreId));
         }
 
@@ -373,7 +373,7 @@ public class AuthorizationStoreImpl implements AuthorizationStore {
                 .get(permission.getAuthorizationStoreId());
 
         if (authorizationStoreConnector == null) {
-            throw new StoreException(String.format("No authorization store found for the given id %s",
+            throw new StoreException(String.format("No authorization store found for the given id: %s.",
                     permission.getAuthorizationStoreId()));
         }
 
@@ -397,7 +397,7 @@ public class AuthorizationStoreImpl implements AuthorizationStore {
             AuthorizationStoreConnector authorizationStoreConnector = authorizationStoreConnectors
                     .get(roleEntry.getKey());
             if (authorizationStoreConnector == null) {
-                throw new StoreException(String.format("No authorization store found for the given id %s",
+                throw new StoreException(String.format("No authorization store found for the given id: %s.",
                         roleEntry.getKey()));
             }
             authorizationStoreConnector.updateRolesInUser(userId, identityStoreId, roleEntry.getValue());
@@ -420,7 +420,7 @@ public class AuthorizationStoreImpl implements AuthorizationStore {
             AuthorizationStoreConnector authorizationStoreConnector = authorizationStoreConnectors.get(key);
 
             if (authorizationStoreConnector == null) {
-                throw new StoreException(String.format("No authorization store found for the given id %s.", key));
+                throw new StoreException(String.format("No authorization store found for the given id: %s.", key));
             }
 
             authorizationStoreConnector.updateRolesInUser(userId, identityStoreId, rolesToBeAssignWithStoreId.get(key),
@@ -436,7 +436,7 @@ public class AuthorizationStoreImpl implements AuthorizationStore {
                 .get(authorizationStoreId);
 
         if (authorizationStoreConnector == null) {
-            throw new StoreException(String.format("No authorization store found for the given id %s",
+            throw new StoreException(String.format("No authorization store found for the given id: %s.",
                     authorizationStoreId));
         }
 
@@ -451,7 +451,7 @@ public class AuthorizationStoreImpl implements AuthorizationStore {
                 .get(authorizationStoreId);
 
         if (authorizationStoreConnector == null) {
-            throw new StoreException(String.format("No authorization store found for the given id %s",
+            throw new StoreException(String.format("No authorization store found for the given id: %s.",
                     authorizationStoreId));
         }
 
@@ -475,7 +475,7 @@ public class AuthorizationStoreImpl implements AuthorizationStore {
             AuthorizationStoreConnector authorizationStoreConnector = authorizationStoreConnectors
                     .get(roleEntry.getKey());
             if (authorizationStoreConnector == null) {
-                throw new StoreException(String.format("No authorization store found for the given id %s",
+                throw new StoreException(String.format("No authorization store found for the given id: %s.",
                         roleEntry.getKey()));
             }
             authorizationStoreConnector.updateRolesInGroup(groupId, identityStoreId, roleEntry.getValue());
@@ -498,7 +498,7 @@ public class AuthorizationStoreImpl implements AuthorizationStore {
             AuthorizationStoreConnector authorizationStoreConnector = authorizationStoreConnectors.get(key);
 
             if (authorizationStoreConnector == null) {
-                throw new StoreException(String.format("No authorization store found for the given id %s.", key));
+                throw new StoreException(String.format("No authorization store found for the given id: %s.", key));
             }
 
             authorizationStoreConnector.updateRolesInGroup(groupId, identityStoreId,
@@ -514,7 +514,7 @@ public class AuthorizationStoreImpl implements AuthorizationStore {
                 .get(authorizationStoreId);
 
         if (authorizationStoreConnector == null) {
-            throw new StoreException(String.format("No authorization store found for the given id %s",
+            throw new StoreException(String.format("No authorization store found for the given id: %s.",
                     authorizationStoreId));
         }
 
@@ -529,7 +529,7 @@ public class AuthorizationStoreImpl implements AuthorizationStore {
                 .get(authorizationStoreId);
 
         if (authorizationStoreConnector == null) {
-            throw new StoreException(String.format("No authorization store found for the given id %s",
+            throw new StoreException(String.format("No authorization store found for the given id: %s.",
                     authorizationStoreId));
         }
 
@@ -544,7 +544,7 @@ public class AuthorizationStoreImpl implements AuthorizationStore {
                 .get(authorizationStoreId);
 
         if (authorizationStoreConnector == null) {
-            throw new StoreException(String.format("No authorization store found for the given id %s",
+            throw new StoreException(String.format("No authorization store found for the given id: %s.",
                     authorizationStoreId));
         }
 
@@ -560,7 +560,7 @@ public class AuthorizationStoreImpl implements AuthorizationStore {
                 .get(authorizationStoreId);
 
         if (authorizationStoreConnector == null) {
-            throw new StoreException(String.format("No authorization store found for the given id %s",
+            throw new StoreException(String.format("No authorization store found for the given id: %s.",
                     authorizationStoreId));
         }
 

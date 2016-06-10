@@ -29,32 +29,32 @@ public class CacheConfig {
     private boolean enable = true;
     private boolean statisticsEnabled;
 
-    public int getMaxCapacity() {
-        return maxCapacity;
-    }
-
-    public void setMaxCapacity(int maxCapacity) {
-        this.maxCapacity = maxCapacity;
+    public boolean isEnable() {
+        return enable;
     }
 
     public boolean isStatisticsEnabled() {
         return statisticsEnabled;
     }
 
-    public void setStatisticsEnabled(boolean statisticsEnabled) {
-        this.statisticsEnabled = statisticsEnabled;
+    public int getMaxCapacity() {
+        return maxCapacity;
     }
 
-    public boolean isEnable() {
-        return enable;
+    public int getExpireTime() {
+        return expireTime;
     }
 
     public void setEnable(boolean enable) {
         this.enable = enable;
     }
 
-    public int getExpireTime() {
-        return expireTime;
+    public void setStatisticsEnabled(boolean statisticsEnabled) {
+        this.statisticsEnabled = statisticsEnabled;
+    }
+
+    public void setMaxCapacity(int maxCapacity) {
+        this.maxCapacity = maxCapacity;
     }
 
     public void setExpireTime(int expireTime) {

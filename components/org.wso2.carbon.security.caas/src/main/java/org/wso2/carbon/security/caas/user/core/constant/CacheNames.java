@@ -25,10 +25,13 @@ public class CacheNames {
     public static final String USER_USERNAME = "user-username";
     public static final String USER_USERID = "user-userid";
     public static final String GROUP_GROUPNAME = "group-groupname";
-    public static final String GROUP_GROUP_ID = "group-groupid";
+    public static final String GROUP_GROUPID = "group-groupid";
     public static final String GROUPS_USERID_IDENTITYSTOREID = "groups-userid-identitystoreid";
 
     // Authorization store related.
+    public static final String ROLE_ROLENAME = "role-rolename";
     public static final String ROLES_USERID_IDENTITYSTOREID = "roles-userid-identitystoreid";
     public static final String ROLES_GROUPID_IDENTITYSTOREID = "roles-groupid-identitystoreid";
+    public static final String PERMISSION_REOURCEID_ACTION = "permission-resourceid-action";
+    public static final String PERMISSIONS_ROLEID_AUTHORIZATIONSTOREID = "permissions-roleid-authorizationstoreid";
 }

@@ -19,7 +19,7 @@ package org.wso2.carbon.security.caas.user.core.util;
 import java.security.NoSuchAlgorithmException;
 
 /**
- * Pluggable password handler.
+ * Plug-able password handler.
  */
 public interface PasswordHandler {
 

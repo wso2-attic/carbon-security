@@ -32,7 +32,7 @@ public class StoreConfig {
     private Map<String, CacheConfig> identityStoreCacheConfigMap = new HashMap<>();
     private Map<String, CacheConfig> credentialStoreCacheConfigMap = new HashMap<>();
 
-    public boolean isEnableCache() {
+    public boolean isCacheEnabled() {
         return enableCache;
     }
 

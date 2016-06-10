@@ -44,7 +44,6 @@ import javax.security.auth.callback.Callback;
 public class CacheBackedIdentityStore implements IdentityStore {
 
     private static Logger log = LoggerFactory.getLogger(CacheBackedIdentityStore.class);
-    private static final boolean IS_DEBUG_ENABLED = log.isDebugEnabled();
 
     private IdentityStore identityStore = new IdentityStoreImpl();
     private CacheManager cacheManager;
@@ -66,7 +65,19 @@ public class CacheBackedIdentityStore implements IdentityStore {
                 .getCacheManager();
         identityStore.init(realmService, identityConnectorConfigs);
 
-        if (IS_DEBUG_ENABLED) {
+        // Initialize all caches.
+        CacheHelper.createCache(CacheNames.USER_USERNAME, String.class, User.class, CacheHelper.MEDIUM_EXPIRE_TIME,
+                cacheConfigs, cacheManager);
+        CacheHelper.createCache(CacheNames.USER_USERID, String.class, User.class, CacheHelper.MEDIUM_EXPIRE_TIME,
+                cacheConfigs, cacheManager);
+        CacheHelper.createCache(CacheNames.GROUP_GROUPNAME, String.class, Group.class, CacheHelper.MEDIUM_EXPIRE_TIME,
+                cacheConfigs, cacheManager);
+        CacheHelper.createCache(CacheNames.GROUP_GROUPID, String.class, Group.class, CacheHelper.MEDIUM_EXPIRE_TIME,
+                cacheConfigs, cacheManager);
+        CacheHelper.createCache(CacheNames.GROUPS_USERID_IDENTITYSTOREID, String.class, List.class,
+                CacheHelper.MEDIUM_EXPIRE_TIME, cacheConfigs, cacheManager);
+
+        if (log.isDebugEnabled()) {
             log.debug("Cache backed identity store successfully initialized.");
         }
     }
@@ -78,22 +89,15 @@ public class CacheBackedIdentityStore implements IdentityStore {
             return identityStore.getUser(username);
         }
 
-        int expireTime = CacheHelper.getExpireTime(cacheConfigs, CacheNames.USER_USERNAME,
-                CacheHelper.MEDIUM_EXPIRE_TIME);
-
         Cache<String, User> cache = cacheManager.getCache(CacheNames.USER_USERNAME, String.class, User.class);
-        User user = null;
-
-        if (cache == null) {
-            cache =  CacheHelper.createCache(CacheNames.USER_USERNAME, String.class, User.class, expireTime,
-                    cacheManager);
-        } else {
-            user = cache.get(username);
-        }
+        User user = cache.get(username);
 
         if (user == null) {
             user = identityStore.getUser(username);
             cache.put(username, user);
+            if (log.isDebugEnabled()) {
+                log.debug("User cached for username: {}.", username);
+            }
         }
 
         return user;
@@ -114,22 +118,15 @@ public class CacheBackedIdentityStore implements IdentityStore {
             return identityStore.getUserFromId(userId, identityStoreId);
         }
 
-        int expireTime = CacheHelper.getExpireTime(cacheConfigs, CacheNames.USER_USERID,
-                CacheHelper.MEDIUM_EXPIRE_TIME);
-
         Cache<String, User> cache = cacheManager.getCache(CacheNames.USER_USERID, String.class, User.class);
-        User user = null;
-
-        if (cache == null) {
-            cache =  CacheHelper.createCache(CacheNames.USER_USERID, String.class, User.class, expireTime,
-                    cacheManager);
-        } else {
-            user = cache.get(userId + identityStoreId);
-        }
+        User user = cache.get(userId + identityStoreId);
 
         if (user == null) {
             user = identityStore.getUserFromId(userId, identityStoreId);
             cache.put(userId + identityStoreId, user);
+            if (log.isDebugEnabled()) {
+                log.debug("User cached for user id: {} and identity store id: {}.", user, identityStoreId);
+            }
         }
 
         return user;
@@ -158,22 +155,15 @@ public class CacheBackedIdentityStore implements IdentityStore {
             return identityStore.getGroup(groupName);
         }
 
-        int expireTime = CacheHelper.getExpireTime(cacheConfigs, CacheNames.GROUP_GROUPNAME,
-                CacheHelper.MEDIUM_EXPIRE_TIME);
-
         Cache<String, Group> cache = cacheManager.getCache(CacheNames.GROUP_GROUPNAME, String.class, Group.class);
-        Group group = null;
-
-        if (cache == null) {
-            cache = CacheHelper.createCache(CacheNames.GROUP_GROUPNAME, String.class, Group.class, expireTime,
-                    cacheManager);
-        } else {
-            group = cache.get(groupName);
-        }
+        Group group = cache.get(groupName);
 
         if (group == null) {
             group = identityStore.getGroup(groupName);
             cache.put(groupName, group);
+            if (log.isDebugEnabled()) {
+                log.debug("Group cached for group name: {}.", groupName);
+            }
         }
 
         return group;
@@ -182,26 +172,19 @@ public class CacheBackedIdentityStore implements IdentityStore {
     @Override
     public Group getGroupFromId(String groupId, String identityStoreId) throws IdentityStoreException {
 
-        if (CacheHelper.isCacheDisabled(cacheConfigs, CacheNames.GROUP_GROUP_ID)) {
+        if (CacheHelper.isCacheDisabled(cacheConfigs, CacheNames.GROUP_GROUPID)) {
             return identityStore.getGroupFromId(groupId, identityStoreId);
         }
 
-        int expireTime = CacheHelper.getExpireTime(cacheConfigs, CacheNames.GROUP_GROUP_ID,
-                CacheHelper.MEDIUM_EXPIRE_TIME);
-
-        Cache<String, Group> cache = cacheManager.getCache(CacheNames.GROUP_GROUP_ID, String.class, Group.class);
-        Group group = null;
-
-        if (cache == null) {
-            cache = CacheHelper.createCache(CacheNames.GROUP_GROUP_ID, String.class, Group.class, expireTime,
-                    cacheManager);
-        } else {
-            group = cache.get(groupId + identityStoreId);
-        }
+        Cache<String, Group> cache = cacheManager.getCache(CacheNames.GROUP_GROUPID, String.class, Group.class);
+        Group group = cache.get(groupId + identityStoreId);
 
         if (group == null) {
             group = identityStore.getGroupFromId(groupId, identityStoreId);
             cache.put(groupId + identityStoreId, group);
+            if (log.isDebugEnabled()) {
+                log.debug("Group cached for group id: {} and for identity store id: {}.", groupId, identityStoreId);
+            }
         }
 
         return group;
@@ -219,23 +202,17 @@ public class CacheBackedIdentityStore implements IdentityStore {
             return identityStore.getGroupsOfUser(userId, identityStoreId);
         }
 
-        int expireTime = CacheHelper.getExpireTime(cacheConfigs, CacheNames.GROUPS_USERID_IDENTITYSTOREID,
-                CacheHelper.LOW_EXPIRE_TIME);
-
         Cache<String, List> cache = cacheManager.getCache(CacheNames.GROUPS_USERID_IDENTITYSTOREID, String.class,
                 List.class);
 
-        List<Group> groups = null;
-        if (cache == null) {
-            cache = CacheHelper.createCache(CacheNames.GROUPS_USERID_IDENTITYSTOREID, String.class, List.class,
-                    expireTime, cacheManager);
-        } else {
-            groups = cache.get(userId + identityStoreId);
-        }
+        List<Group> groups = cache.get(userId + identityStoreId);
 
         if (groups == null) {
             groups = identityStore.getGroupsOfUser(userId, identityStoreId);
             cache.put(userId + identityStoreId, groups);
+            if (log.isDebugEnabled()) {
+                log.debug("Groups cached for user id: {} and identity store id: {}.", userId, identityStoreId);
+            }
         }
 
         return groups;
@@ -257,21 +234,17 @@ public class CacheBackedIdentityStore implements IdentityStore {
                 List.class);
 
         boolean isUserInGroup = false;
+        List<Group> groups = cache.get(userId + identityStoreId);
 
-        if (cache == null) {
+        if (groups == null) {
             isUserInGroup = identityStore.isUserInGroup(userId, groupId, identityStoreId);
         } else {
-            List<Group> groups = cache.get(userId + identityStoreId);
-            if (groups == null) {
-                isUserInGroup = identityStore.isUserInGroup(userId, groupId, identityStoreId);
-            } else {
-                // If there are groups for this user id and identity store id in the cache,
-                // do the validation logic here.
-                for (Group group : groups) {
-                    if (group.getGroupId().equals(groupId)) {
-                        isUserInGroup = true;
-                        break;
-                    }
+            // If there are groups for this user id and identity store id in the cache,
+            // do the validation logic here.
+            for (Group group : groups) {
+                if (group.getGroupId().equals(groupId)) {
+                    isUserInGroup = true;
+                    break;
                 }
             }
         }
