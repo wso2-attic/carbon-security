@@ -54,7 +54,6 @@ public class StoreConfigBuilder {
 
     /**
      * Builder a config object based on the store-config.yml properties.
-     *
      * @return StoreConfig
      */
     public static StoreConfig buildStoreConfigs() {
@@ -65,6 +64,7 @@ public class StoreConfigBuilder {
         Path file = Paths.get(CarbonSecurityConstants.getCarbonHomeDirectory().toString(), "conf", "security",
                               CarbonSecurityConstants.STORE_CONFIG_FILE);
 
+        // store-config.yml is a mandatory configuration file.
         StoreConfigFile storeConfigFile;
         if (Files.exists(file)) {
             try (Reader in = new InputStreamReader(Files.newInputStream(file), StandardCharsets.UTF_8)) {
@@ -80,26 +80,29 @@ public class StoreConfigBuilder {
                                        "available.");
         }
 
+        // Validate for all mandatory parts in the store config file.
         if (storeConfigFile == null || storeConfigFile.getCredentialStore() == null
             || storeConfigFile.getAuthorizationStore() == null || storeConfigFile.getIdentityStore() == null) {
             throw new IllegalArgumentException("Invalid or missing configurations in the file - " +
                                                CarbonSecurityConstants.STORE_CONFIG_FILE);
         }
 
+        // Check if the global cache is enabled.
         boolean cacheEnabled = storeConfigFile.isEnableCache();
         storeConfig.setEnableCache(cacheEnabled);
 
+        // Load cache entries for credential store if the global cache is enabled.
         List<CacheEntry> credentialStoreCacheEntries = storeConfigFile.getCredentialStore().getCaches();
         Map<String, CacheConfig> credentialStoreCacheConfigMap;
 
         if (cacheEnabled && credentialStoreCacheEntries != null && !credentialStoreCacheEntries.isEmpty()) {
             credentialStoreCacheConfigMap = credentialStoreCacheEntries.stream()
-                    .filter(t -> !(t.getName() == null || t.getName().isEmpty()))
-                    .map(t -> {
-                        if (t.getCacheConfig() == null) {
-                            t.setCacheConfig(new CacheConfig());
+                    .filter(cacheEntry -> !(cacheEntry.getName() == null || cacheEntry.getName().isEmpty()))
+                    .map(cacheEntry -> {
+                        if (cacheEntry.getCacheConfig() == null) {
+                            cacheEntry.setCacheConfig(new CacheConfig());
                         }
-                        return t;
+                        return cacheEntry;
                     })
                     .collect(Collectors.toMap(CacheEntry::getName, CacheEntry::getCacheConfig));
         } else {
@@ -108,18 +111,19 @@ public class StoreConfigBuilder {
 
         storeConfig.setCredentialStoreCacheConfigMap(credentialStoreCacheConfigMap);
 
+        // Load cache entries for identity store if the global cache is enabled.
         List<CacheEntry> identityStoreCacheEntries = storeConfigFile.getIdentityStore().getCaches();
         Map<String, CacheConfig> identityStoreCacheConfigMap;
 
         if (cacheEnabled && identityStoreCacheEntries != null && !identityStoreCacheEntries.isEmpty()) {
 
             identityStoreCacheConfigMap = identityStoreCacheEntries.stream()
-                    .filter(t -> !(t.getName() == null || t.getName().isEmpty()))
-                    .map(t -> {
-                        if (t.getCacheConfig() == null) {
-                            t.setCacheConfig(new CacheConfig());
+                    .filter(cacheEntry -> !(cacheEntry.getName() == null || cacheEntry.getName().isEmpty()))
+                    .map(cacheEntry -> {
+                        if (cacheEntry.getCacheConfig() == null) {
+                            cacheEntry.setCacheConfig(new CacheConfig());
                         }
-                        return t;
+                        return cacheEntry;
                     })
                     .collect(Collectors.toMap(CacheEntry::getName, CacheEntry::getCacheConfig));
         } else {
@@ -128,26 +132,27 @@ public class StoreConfigBuilder {
 
         storeConfig.setIdentityStoreCacheConfigMap(identityStoreCacheConfigMap);
 
+        // Load cache entries for authorization store if the global cache is enabled.
         List<CacheEntry> authorizationStoreCacheEntries = storeConfigFile.getAuthorizationStore().getCaches();
         Map<String, CacheConfig> authorizationStoreCacheConfigMap;
 
         if (cacheEnabled && authorizationStoreCacheEntries != null && !authorizationStoreCacheEntries.isEmpty()) {
 
             authorizationStoreCacheConfigMap = authorizationStoreCacheEntries.stream()
-                    .filter(t -> !(t.getName() == null || t.getName().isEmpty()))
-                    .map(t -> {
-                        if (t.getCacheConfig() == null) {
-                            t.setCacheConfig(new CacheConfig());
+                    .filter(cacheEntry -> !(cacheEntry.getName() == null || cacheEntry.getName().isEmpty()))
+                    .map(cacheEntry -> {
+                        if (cacheEntry.getCacheConfig() == null) {
+                            cacheEntry.setCacheConfig(new CacheConfig());
                         }
-                        return t;
+                        return cacheEntry;
                     })
                     .collect(Collectors.toMap(CacheEntry::getName, CacheEntry::getCacheConfig));
         } else {
             authorizationStoreCacheConfigMap = Collections.emptyMap();
         }
-
         storeConfig.setAuthorizationStoreCacheConfigMap(authorizationStoreCacheConfigMap);
 
+        // Load connector properties for the credential store.
         if (storeConfigFile.getCredentialStore().getConnector() != null && !storeConfigFile.getCredentialStore()
                 .getConnector().trim().isEmpty()) {
 
@@ -164,10 +169,11 @@ public class StoreConfigBuilder {
                 );
             }
         } else {
-            new RuntimePermission("Valid credentialStore configuration is not available in " +
+            throw new RuntimeException("Valid credentialStore configuration is not available in " +
                                   CarbonSecurityConstants.STORE_CONFIG_FILE);
         }
 
+        // Load connector properties for the identity store.
         if (storeConfigFile.getIdentityStore().getConnector() != null && !storeConfigFile.getIdentityStore()
                 .getConnector().trim().isEmpty()) {
 
@@ -184,10 +190,11 @@ public class StoreConfigBuilder {
                 );
             }
         } else {
-            new RuntimePermission("Valid identityStore configuration is not available in " +
+            throw new RuntimeException("Valid identityStore configuration is not available in " +
                                   CarbonSecurityConstants.STORE_CONFIG_FILE);
         }
 
+        // Load connector properties for the authorization store.
         if (storeConfigFile.getAuthorizationStore().getConnector() != null && !storeConfigFile.getAuthorizationStore()
                 .getConnector().trim().isEmpty()) {
 
@@ -204,61 +211,72 @@ public class StoreConfigBuilder {
                 );
             }
         } else {
-            new RuntimePermission("Valid authorizationStore configuration is not available in " +
+            throw new RuntimeException("Valid authorizationStore configuration is not available in " +
                                   CarbonSecurityConstants.STORE_CONFIG_FILE);
         }
 
         return storeConfig;
     }
 
-    private static Map<String, StoreConnectorConfigEntry> getStoreConnectorsMap(
-            String connector, StoreConfigEntry storeConfigEntry, Map<String,
-            StoreConnectorConfigEntry> externalConfigEntries,
+    private static Map<String, StoreConnectorConfigEntry> getStoreConnectorsMap(String connector,
+            StoreConfigEntry storeConfigEntry, Map<String, StoreConnectorConfigEntry> externalConfigEntries,
             List<StoreConnectorConfigEntry> storeConnectorConfigEntries) {
 
         Map<String, StoreConnectorConfigEntry> mergedConfigEntryMap = new HashMap<>();
-        Arrays.asList(connector.split(",")).forEach(
-                name -> {
-                    if (name.startsWith("#")) {
-                        String nameWithoutHash = name.substring(1);
-                        Properties updatedProperties = new Properties();
-                        StoreConnectorConfigEntry mergedConfigEntry = new StoreConnectorConfigEntry();
-                        storeConnectorConfigEntries.stream()
-                                .filter(configEntry -> nameWithoutHash.equals(configEntry.getName())
-                                                  && configEntry.getProperties() != null
-                                                  && !configEntry.getProperties().isEmpty())
-                                .findFirst()
-                                .ifPresent(config -> {
-                                    mergedConfigEntry.setConnectorType(config.getConnectorType());
-                                    config.getProperties().forEach(updatedProperties::put);
-                                });
+        Arrays.asList(connector.split(","))
+                .stream()
+                .map(String::trim)
+                .forEach(name ->
+                        {
+                            // If the name starts with the '#' that means we are getting configs from the inside of the
+                            // store-config.yml
+                            if (name.startsWith("#")) {
+                                String nameWithoutHash = name.substring(1);
+                                Properties updatedProperties = new Properties();
+                                StoreConnectorConfigEntry mergedConfigEntry = new StoreConnectorConfigEntry();
+                                storeConnectorConfigEntries.stream()
+                                        .filter(configEntry -> nameWithoutHash.equals(configEntry.getName())
+                                                && configEntry.getProperties() != null
+                                                && !configEntry.getProperties().isEmpty())
+                                        .findFirst()
+                                        .ifPresent(config -> {
+                                            mergedConfigEntry.setConnectorType(config.getConnectorType());
+                                            config.getProperties().forEach(updatedProperties::put);
+                                        });
 
-                        if (storeConfigEntry.getProperties() != null && !storeConfigEntry.getProperties().isEmpty()) {
-                            storeConfigEntry.getProperties().forEach(updatedProperties::put);
+                                if (storeConfigEntry.getProperties() != null && !storeConfigEntry.getProperties()
+                                        .isEmpty()) {
+                                    storeConfigEntry.getProperties().forEach(updatedProperties::put);
+                                }
+                                mergedConfigEntry.setProperties(updatedProperties);
+                                mergedConfigEntryMap.put(nameWithoutHash, mergedConfigEntry);
+                            } else {
+                                StoreConnectorConfigEntry configEntry = externalConfigEntries.get(name);
+                                Properties updatedProperties = new Properties();
+                                if (configEntry != null && configEntry.getProperties() != null && !configEntry.
+                                        getProperties().isEmpty()) {
+                                    configEntry.getProperties().forEach(updatedProperties::put);
+                                }
+                                if (storeConfigEntry.getProperties() != null && !storeConfigEntry.getProperties()
+                                        .isEmpty()) {
+                                    storeConfigEntry.getProperties().forEach(updatedProperties::put);
+                                }
+                                StoreConnectorConfigEntry mergedConfigEntry = new StoreConnectorConfigEntry();
+                                mergedConfigEntry.setConnectorType(configEntry != null ? configEntry.getConnectorType()
+                                        : null);
+                                mergedConfigEntry.setProperties(updatedProperties);
+                                mergedConfigEntryMap.put(name, mergedConfigEntry);
+                            }
                         }
-                        mergedConfigEntry.setProperties(updatedProperties);
-                        mergedConfigEntryMap.put(nameWithoutHash, mergedConfigEntry);
-                    } else {
-                        StoreConnectorConfigEntry configEntry = externalConfigEntries.get(name);
-                        Properties updatedProperties = new Properties();
-                        if (configEntry != null && configEntry.getProperties() != null && !configEntry.getProperties()
-                                .isEmpty()) {
-                            configEntry.getProperties().forEach(updatedProperties::put);
-                        }
-                        if (storeConfigEntry.getProperties() != null && !storeConfigEntry.getProperties().isEmpty()) {
-                            storeConfigEntry.getProperties().forEach(updatedProperties::put);
-                        }
-                        StoreConnectorConfigEntry mergedConfigEntry = new StoreConnectorConfigEntry();
-                        mergedConfigEntry.setConnectorType(configEntry != null ? configEntry.getConnectorType() : null);
-                        mergedConfigEntry.setProperties(updatedProperties);
-                        mergedConfigEntryMap.put(name, mergedConfigEntry);
-                    }
-                }
-        );
+                );
 
         return mergedConfigEntryMap;
     }
 
+    /**
+     * Read the config entries from external connector.yml files.
+     * @return Map of Store config entries.
+     */
     private static Map<String, StoreConnectorConfigEntry> getExternalConfigEntries() {
 
         Map<String, StoreConnectorConfigEntry> configEntryMap = new HashMap<>();
