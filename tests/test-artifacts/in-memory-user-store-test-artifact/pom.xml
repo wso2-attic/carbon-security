@@ -22,7 +22,7 @@
         <relativePath>../pom.xml</relativePath>
     </parent>
 
-    <groupId>org.wso2.carbon.security.caas.tests.artifacts.userstore.inmemory</groupId>
+    <groupId>org.wso2.carbon.security.caas.tests.artifacts.userstore</groupId>
     <artifactId>org.wso2.carbon.security.caas.userstore.inmemory.parent</artifactId>
     <modelVersion>4.0.0</modelVersion>
     <packaging>pom</packaging>

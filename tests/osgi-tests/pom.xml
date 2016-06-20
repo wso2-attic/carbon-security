@@ -60,7 +60,7 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.wso2.carbon.security.caas.tests.artifacts.userstore.inmemory</groupId>
+            <groupId>org.wso2.carbon.security.caas.tests.artifacts.userstore</groupId>
             <artifactId>org.wso2.carbon.security.caas.userstore.inmemory</artifactId>
         </dependency>
         <dependency>
