@@ -1,4 +1,4 @@
-###############################################################################
+################################################################################
 #   Copyright (c) 2016, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,8 +12,7 @@
 #   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
-###############################################################################
-enableCache: true
+################################################################################
 credentialStore:
  connector: "#JDBCCS1"
 identityStore:
@@ -24,20 +23,21 @@ authorizationStore:
 storeConnectors:
  -
   name: "JDBCCS1"
-  connectorType: "JDBCCredentialStore"
+  connectorType: "InMemoryCredentialStore"
   properties:
    dataSource: "WSO2_CARBON_DB"
    hashAlgorithm: "SHA-256"
    databaseType: "MySQL"
  -
   name: "JDBCIS1"
-  connectorType: "JDBCIdentityStore"
+  connectorType: "InMemoryIdentityStore"
   properties:
    dataSource: "WSO2_CARBON_DB"
    databaseType: "MySQL"
  -
   name: "JDBCAS1"
-  connectorType: "JDBCAuthorizationStore"
+  connectorType: "InMemoryAuthorizationStore"
   properties:
    dataSource: "WSO2_CARBON_DB"
    databaseType: "MySQL"
+
