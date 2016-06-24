@@ -18,9 +18,12 @@ package org.wso2.carbon.security.caas.user.core.store;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.wso2.carbon.kernel.utils.LambdaExceptionUtils;
 import org.wso2.carbon.security.caas.internal.CarbonSecurityDataHolder;
+import org.wso2.carbon.security.caas.user.core.bean.Action;
 import org.wso2.carbon.security.caas.user.core.bean.Group;
 import org.wso2.carbon.security.caas.user.core.bean.Permission;
+import org.wso2.carbon.security.caas.user.core.bean.Resource;
 import org.wso2.carbon.security.caas.user.core.bean.Role;
 import org.wso2.carbon.security.caas.user.core.bean.User;
 import org.wso2.carbon.security.caas.user.core.config.AuthorizationConnectorConfig;
@@ -88,6 +91,11 @@ public class AuthorizationStoreImpl implements AuthorizationStore {
     public boolean isUserAuthorized(String userId, Permission permission, String identityStoreId)
             throws AuthorizationStoreException, IdentityStoreException {
 
+        // If this user owns this resource, we assume this user has all permissions.
+        if (permission.getResource().getOwner().getUserId().equals(userId)) {
+            return true;
+        }
+
         // Get the roles directly associated to the user.
         List<Role> roles = new ArrayList<>();
         for (AuthorizationStoreConnector authorizationStoreConnector : authorizationStoreConnectors.values()) {
@@ -146,7 +154,7 @@ public class AuthorizationStoreImpl implements AuthorizationStore {
         }
 
         List<Permission.PermissionBuilder> permissionBuilders = authorizationStoreConnector
-                .getPermissionsForRole(roleId);
+                .getPermissionsForRole(roleId, permission.getResource());
 
         if (permissionBuilders.isEmpty()) {
             throw new StoreException("No permissions assigned for this role.");
@@ -205,7 +213,7 @@ public class AuthorizationStoreImpl implements AuthorizationStore {
     }
 
     @Override
-    public Permission getPermission(String resourceId, String action) throws PermissionNotFoundException,
+    public Permission getPermission(Resource resource, Action action) throws PermissionNotFoundException,
             AuthorizationStoreException {
 
         PermissionNotFoundException permissionNotFoundException =
@@ -213,7 +221,7 @@ public class AuthorizationStoreImpl implements AuthorizationStore {
 
         for (AuthorizationStoreConnector authorizationStoreConnector : authorizationStoreConnectors.values()) {
             try {
-                return authorizationStoreConnector.getPermission(resourceId, action).build();
+                return authorizationStoreConnector.getPermission(resource, action).build();
             } catch (PermissionNotFoundException e) {
                 permissionNotFoundException.addSuppressed(e);
             }
@@ -247,15 +255,11 @@ public class AuthorizationStoreImpl implements AuthorizationStore {
                     authorizationStoreId));
         }
 
-        List<User> users = new ArrayList<>();
-
-        // TODO: Can replace with JAVA 8 map when the carbon kernel support rethrow exceptions.
-        for (User.UserBuilder userBuilder : authorizationStoreConnector.getUsersOfRole(roleId)) {
-            users.add(realmService.getIdentityStore().getUserFromId(userBuilder.getUserId(),
-                    userBuilder.getIdentityStoreId()));
-        }
-
-        return users;
+        return authorizationStoreConnector.getUsersOfRole(roleId)
+                .stream()
+                .map(LambdaExceptionUtils.rethrowFunction(userBuilder -> realmService.getIdentityStore()
+                        .getUserFromId(userBuilder.getUserId(), userBuilder.getIdentityStoreId())))
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -270,15 +274,11 @@ public class AuthorizationStoreImpl implements AuthorizationStore {
                     authorizationStoreId));
         }
 
-        List<Group> groups = new ArrayList<>();
-
-        // TODO: Can replace with JAVA 8 map when the carbon kernel support rethrow exceptions.
-        for (Group.GroupBuilder groupBuilder : authorizationStoreConnector.getGroupsOfRole(roleId)) {
-            groups.add(realmService.getIdentityStore().getGroupFromId(groupBuilder.getGroupId(),
-                    groupBuilder.getIdentityStoreId()));
-        }
-
-        return groups;
+        return authorizationStoreConnector.getGroupsOfRole(roleId)
+                .stream()
+                .map(LambdaExceptionUtils.rethrowFunction(groupBuilder -> realmService.getIdentityStore()
+                        .getGroupFromId(groupBuilder.getGroupId(), groupBuilder.getIdentityStoreId())))
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -310,7 +310,7 @@ public class AuthorizationStoreImpl implements AuthorizationStore {
                     authorizationStoreId));
         }
 
-        return authorizationStoreConnector.getPermissionsForRole(roleId)
+        return authorizationStoreConnector.getPermissionsForRole(roleId, Resource.getUniversalResource())
                 .stream()
                 .map(Permission.PermissionBuilder::build)
                 .collect(Collectors.toList());
@@ -352,7 +352,7 @@ public class AuthorizationStoreImpl implements AuthorizationStore {
     }
 
     @Override
-    public Permission addPermission(String resourceId, String action, String authorizationStoreId)
+    public Permission addPermission(Resource resource, Action action, String authorizationStoreId)
             throws AuthorizationStoreException {
 
         AuthorizationStoreConnector authorizationStoreConnector = authorizationStoreConnectors
@@ -363,7 +363,7 @@ public class AuthorizationStoreImpl implements AuthorizationStore {
                     authorizationStoreId));
         }
 
-        return authorizationStoreConnector.addPermission(resourceId, action).build();
+        return authorizationStoreConnector.addPermission(resource, action).build();
     }
 
     @Override

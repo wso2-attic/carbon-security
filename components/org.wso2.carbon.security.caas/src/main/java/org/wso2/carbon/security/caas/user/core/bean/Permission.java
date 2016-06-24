@@ -26,18 +26,16 @@ public class Permission {
     private String authorizationStoreId;
     private String permissionId;
 
-    private String resourceId;
-    private String action;
+    private Resource resource;
+    private Action action;
 
-    private PermissionBuilder builder;
-
-    public Permission(String resourceId, String action) {
-        this.resourceId = resourceId;
+    public Permission(Resource resource, Action action) {
+        this.resource = resource;
         this.action = action;
     }
 
-    private Permission(String resourceId, String action, String permissionId, String authorizationStoreId) {
-        this.resourceId = resourceId;
+    private Permission(Resource resource, Action action, String permissionId, String authorizationStoreId) {
+        this.resource = resource;
         this.action = action;
         this.permissionId = permissionId;
         this.authorizationStoreId = authorizationStoreId;
@@ -64,29 +62,29 @@ public class Permission {
      * @return Permission string.
      */
     public String getPermissionString() {
-        return resourceId + action;
+        return resource.getResourceId() + action.getActionString();
     }
 
     /**
      * Get the resource id.
      * @return Resource id.
      */
-    public String getResourceId() {
-        return resourceId;
+    public Resource getResource() {
+        return resource;
     }
 
     /**
      * Get the action.
      * @return Action.
      */
-    public String getAction() {
+    public Action getAction() {
         return action;
     }
 
     @Override
     public boolean equals(Object permission) {
         return permission instanceof Permission && ((Permission) permission).getPermissionString()
-                .equals(resourceId + action);
+                .equals(this.getPermissionString());
     }
 
     @Override
@@ -99,15 +97,13 @@ public class Permission {
      */
     public static class PermissionBuilder {
 
-        private static final long serialVersionUID = 7876352257812187294L;
-
-        private String resourceId;
-        private String action;
+        private Resource resource;
+        private Action action;
         private String permissionId;
         private String authorizationStoreId;
 
-        public PermissionBuilder(String resourceId, String action, String permissionId, String authorizationStoreId) {
-            this.resourceId = resourceId;
+        public PermissionBuilder(Resource resource, Action action, String permissionId, String authorizationStoreId) {
+            this.resource = resource;
             this.action = action;
             this.permissionId = permissionId;
             this.authorizationStoreId = authorizationStoreId;
@@ -115,11 +111,11 @@ public class Permission {
 
         public Permission build() {
 
-            if (resourceId == null || action == null || permissionId == null || authorizationStoreId == null) {
+            if (resource == null || action == null || permissionId == null || authorizationStoreId == null) {
                 throw new StoreException("Required data missing for building permission.");
             }
 
-            return new Permission(resourceId, action, permissionId, authorizationStoreId);
+            return new Permission(resource, action, permissionId, authorizationStoreId);
         }
     }
 }

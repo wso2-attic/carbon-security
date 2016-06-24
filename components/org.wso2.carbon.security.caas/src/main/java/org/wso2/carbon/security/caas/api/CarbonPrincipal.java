@@ -18,7 +18,9 @@ package org.wso2.carbon.security.caas.api;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.wso2.carbon.security.caas.user.core.bean.Action;
 import org.wso2.carbon.security.caas.user.core.bean.Permission;
+import org.wso2.carbon.security.caas.user.core.bean.Resource;
 import org.wso2.carbon.security.caas.user.core.bean.User;
 import org.wso2.carbon.security.caas.user.core.exception.AuthorizationStoreException;
 import org.wso2.carbon.security.caas.user.core.exception.IdentityStoreException;
@@ -73,15 +75,25 @@ public class CarbonPrincipal implements Principal {
      */
     public boolean isAuthorized(CarbonPermission carbonPermission) {
 
+        String resourceDomain = carbonPermission.getName()
+                .substring(0, carbonPermission.getName().indexOf(Resource.DELIMITER));
+        String resourceId = carbonPermission.getName()
+                .substring(carbonPermission.getName().indexOf(Resource.DELIMITER));
+
+        String actionDomain = carbonPermission.getActions()
+                .substring(0, carbonPermission.getActions().indexOf(Action.DELIMITER));
+        String actionName = carbonPermission.getActions()
+                .substring(carbonPermission.getActions().indexOf(Action.DELIMITER));
+
+        Resource resource = new Resource(resourceDomain, resourceId);
+        Action action = new Action(actionDomain, actionName);
+
         try {
-            return user.isAuthorized(new Permission(carbonPermission.getName(), carbonPermission.getActions()));
+            return user.isAuthorized(new Permission(resource, action));
         } catch (AuthorizationStoreException | IdentityStoreException e) {
             log.error("Access denied for permission " + carbonPermission.getName() + " for user " + user.getUserId()
                       + " due to a server error", e);
             return false;
         }
-
     }
-
-
 }

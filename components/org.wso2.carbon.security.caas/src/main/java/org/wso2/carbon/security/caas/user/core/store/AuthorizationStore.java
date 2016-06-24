@@ -16,8 +16,10 @@
 
 package org.wso2.carbon.security.caas.user.core.store;
 
+import org.wso2.carbon.security.caas.user.core.bean.Action;
 import org.wso2.carbon.security.caas.user.core.bean.Group;
 import org.wso2.carbon.security.caas.user.core.bean.Permission;
+import org.wso2.carbon.security.caas.user.core.bean.Resource;
 import org.wso2.carbon.security.caas.user.core.bean.Role;
 import org.wso2.carbon.security.caas.user.core.bean.User;
 import org.wso2.carbon.security.caas.user.core.config.AuthorizationConnectorConfig;
@@ -111,13 +113,13 @@ public interface AuthorizationStore {
 
     /**
      * Get the permission from resource id and action.
-     * @param resourceId Resource id of the permission.
+     * @param resource Resource of the permission.
      * @param action Action of the permission.
      * @return Permission.
      * @throws PermissionNotFoundException Permission not found exception.
      * @throws AuthorizationStoreException Authorization store exception.
      */
-    Permission getPermission(String resourceId, String action) throws PermissionNotFoundException,
+    Permission getPermission(Resource resource, Action action) throws PermissionNotFoundException,
             AuthorizationStoreException;
 
     /**
@@ -190,13 +192,13 @@ public interface AuthorizationStore {
 
     /**
      * Add new permission.
-     * @param resourceId Resource id.
-     * @param action Action name.
+     * @param resource Resource.
+     * @param action Action.
      * @param authorizationStoreId Id of the authorizations store where the permission should store.
      * @return Created Permission.
      * @throws AuthorizationStoreException Authorization store exception.
      */
-    Permission addPermission(String resourceId, String action, String authorizationStoreId)
+    Permission addPermission(Resource resource, Action action, String authorizationStoreId)
             throws AuthorizationStoreException;
 
     /**

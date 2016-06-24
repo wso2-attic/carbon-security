@@ -20,8 +20,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.wso2.carbon.kernel.utils.LambdaExceptionUtils;
 import org.wso2.carbon.security.caas.internal.CarbonSecurityDataHolder;
+import org.wso2.carbon.security.caas.user.core.bean.Action;
 import org.wso2.carbon.security.caas.user.core.bean.Group;
 import org.wso2.carbon.security.caas.user.core.bean.Permission;
+import org.wso2.carbon.security.caas.user.core.bean.Resource;
 import org.wso2.carbon.security.caas.user.core.bean.Role;
 import org.wso2.carbon.security.caas.user.core.bean.User;
 import org.wso2.carbon.security.caas.user.core.config.AuthorizationConnectorConfig;
@@ -248,22 +250,23 @@ public class CacheBackedAuthorizationStore implements AuthorizationStore {
     }
 
     @Override
-    public Permission getPermission(String resourceId, String action) throws PermissionNotFoundException,
+    public Permission getPermission(Resource resource, Action action) throws PermissionNotFoundException,
             AuthorizationStoreException {
 
         if (CacheHelper.isCacheDisabled(cacheConfigs, CacheNames.PERMISSION_REOURCEID_ACTION)) {
-            return authorizationStore.getPermission(resourceId, action);
+            return authorizationStore.getPermission(resource, action);
         }
 
         Cache<String, Permission> cache = cacheManager.getCache(CacheNames.PERMISSION_REOURCEID_ACTION, String.class,
                 Permission.class);
-        Permission permission = cache.get(resourceId + action);
+        Permission permission = cache.get(resource.getResourceString() + action.getActionString());
 
         if (permission == null) {
-            permission = authorizationStore.getPermission(resourceId, action);
-            cache.put(resourceId + action, permission);
+            permission = authorizationStore.getPermission(resource, action);
+            cache.put(resource.getResourceString() + action.getActionString(), permission);
             if (log.isDebugEnabled()) {
-                log.debug("Permission cached for resource id: {} and action: {}.", resourceId, action);
+                log.debug("Permission cached for resource id: {} and action: {}.", resource.getResourceString(),
+                        action.getActionString());
             }
         }
 
@@ -396,21 +399,21 @@ public class CacheBackedAuthorizationStore implements AuthorizationStore {
     }
 
     @Override
-    public Permission addPermission(String resourceId, String action, String authorizationStoreId)
+    public Permission addPermission(Resource resource, Action action, String authorizationStoreId)
             throws AuthorizationStoreException {
 
         if (CacheHelper.isCacheDisabled(cacheConfigs, CacheNames.PERMISSION_REOURCEID_ACTION)) {
-            return authorizationStore.addPermission(resourceId, action, authorizationStoreId);
+            return authorizationStore.addPermission(resource, action, authorizationStoreId);
         }
 
         Cache<String, Permission> cache = cacheManager.getCache(CacheNames.PERMISSION_REOURCEID_ACTION, String.class,
                 Permission.class);
 
-        Permission permission = authorizationStore.addPermission(resourceId, action, authorizationStoreId);
-        cache.put(resourceId + action, permission);
+        Permission permission = authorizationStore.addPermission(resource, action, authorizationStoreId);
+        cache.put(resource.getResourceString() + action.getActionString(), permission);
 
         if (log.isDebugEnabled()) {
-            log.debug("permissions cached for resource id: {} and action: {}", resourceId, action);
+            log.debug("permissions cached for resource id: {} and action: {}", resource, action);
         }
 
         return permission;

@@ -16,8 +16,10 @@
 
 package org.wso2.carbon.security.caas.user.core.store.connector;
 
+import org.wso2.carbon.security.caas.user.core.bean.Action;
 import org.wso2.carbon.security.caas.user.core.bean.Group;
 import org.wso2.carbon.security.caas.user.core.bean.Permission;
+import org.wso2.carbon.security.caas.user.core.bean.Resource;
 import org.wso2.carbon.security.caas.user.core.bean.Role;
 import org.wso2.carbon.security.caas.user.core.bean.User;
 import org.wso2.carbon.security.caas.user.core.config.AuthorizationConnectorConfig;
@@ -51,12 +53,12 @@ public interface AuthorizationStoreConnector {
 
     /**
      * Get permission from the resource id and action.
-     * @param resourceId Resource id of this permission.
+     * @param resource Resource of this permission.
      * @param action Action of the permission.
      * @return Permission.PermissionBuilder.
      * @throws AuthorizationStoreException Authorization Store Exception
      */
-    Permission.PermissionBuilder getPermission(String resourceId, String action) throws PermissionNotFoundException,
+    Permission.PermissionBuilder getPermission(Resource resource, Action action) throws PermissionNotFoundException,
             AuthorizationStoreException;
 
     /**
@@ -80,20 +82,22 @@ public interface AuthorizationStoreConnector {
 
     /**
      * Get permissions associated to the role.
-     * @param roleName Role name of the required role.
+     * @param roleId Role id of the required role.
+     * @param resource Resource which the permissions should take.
      * @return List of permissions associated to the user.
      * @throws AuthorizationStoreException Authorization Store Exception.
      */
-    List<Permission.PermissionBuilder> getPermissionsForRole(String roleName) throws AuthorizationStoreException;
+    List<Permission.PermissionBuilder> getPermissionsForRole(String roleId, Resource resource)
+            throws AuthorizationStoreException;
 
     /**
      * Add new permission.
-     * @param resourceId Resource id.
-     * @param action Action name.
+     * @param resource Resource.
+     * @param action Action.
      * @return New permission.
      * @throws AuthorizationStoreException Authorization Store Exception.
      */
-    Permission.PermissionBuilder addPermission(String resourceId, String action) throws AuthorizationStoreException;
+    Permission.PermissionBuilder addPermission(Resource resource, Action action) throws AuthorizationStoreException;
 
     /**
      * Add new role.

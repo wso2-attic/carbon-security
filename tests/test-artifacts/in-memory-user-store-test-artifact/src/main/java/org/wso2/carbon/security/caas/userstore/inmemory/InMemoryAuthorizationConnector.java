@@ -16,8 +16,10 @@
 
 package org.wso2.carbon.security.caas.userstore.inmemory;
 
+import org.wso2.carbon.security.caas.user.core.bean.Action;
 import org.wso2.carbon.security.caas.user.core.bean.Group;
 import org.wso2.carbon.security.caas.user.core.bean.Permission;
+import org.wso2.carbon.security.caas.user.core.bean.Resource;
 import org.wso2.carbon.security.caas.user.core.bean.Role;
 import org.wso2.carbon.security.caas.user.core.bean.User;
 import org.wso2.carbon.security.caas.user.core.config.AuthorizationConnectorConfig;
@@ -48,7 +50,7 @@ public class InMemoryAuthorizationConnector implements AuthorizationStoreConnect
     }
 
     @Override
-    public Permission.PermissionBuilder getPermission(String resourceId, String action)
+    public Permission.PermissionBuilder getPermission(Resource resource, Action action)
             throws AuthorizationStoreException {
         return null;
     }
@@ -66,13 +68,13 @@ public class InMemoryAuthorizationConnector implements AuthorizationStoreConnect
     }
 
     @Override
-    public List<Permission.PermissionBuilder> getPermissionsForRole(String roleName)
+    public List<Permission.PermissionBuilder> getPermissionsForRole(String roleName, Resource resource)
             throws AuthorizationStoreException {
         return null;
     }
 
     @Override
-    public Permission.PermissionBuilder addPermission(String resourceId, String action)
+    public Permission.PermissionBuilder addPermission(Resource resource, Action action)
             throws AuthorizationStoreException {
         return null;
     }
