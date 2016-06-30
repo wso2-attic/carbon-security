@@ -250,7 +250,7 @@ public class CacheBackedAuthorizationStore implements AuthorizationStore {
     }
 
     @Override
-    public Permission getPermission(Resource resource, Action action) throws PermissionNotFoundException,
+    public Permission getPermission(String resource, String action) throws PermissionNotFoundException,
             AuthorizationStoreException {
 
         if (CacheHelper.isCacheDisabled(cacheConfigs, CacheNames.PERMISSION_REOURCEID_ACTION)) {
@@ -259,14 +259,13 @@ public class CacheBackedAuthorizationStore implements AuthorizationStore {
 
         Cache<String, Permission> cache = cacheManager.getCache(CacheNames.PERMISSION_REOURCEID_ACTION, String.class,
                 Permission.class);
-        Permission permission = cache.get(resource.getResourceString() + action.getActionString());
+        Permission permission = cache.get(resource + action);
 
         if (permission == null) {
             permission = authorizationStore.getPermission(resource, action);
-            cache.put(resource.getResourceString() + action.getActionString(), permission);
+            cache.put(resource + action, permission);
             if (log.isDebugEnabled()) {
-                log.debug("Permission cached for resource id: {} and action: {}.", resource.getResourceString(),
-                        action.getActionString());
+                log.debug("Permission cached for resource id: {} and action: {}.", resource, action);
             }
         }
 

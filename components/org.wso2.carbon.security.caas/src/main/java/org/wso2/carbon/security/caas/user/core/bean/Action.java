@@ -16,6 +16,8 @@
 
 package org.wso2.carbon.security.caas.user.core.bean;
 
+import org.wso2.carbon.security.caas.user.core.exception.StoreException;
+
 /**
  * Represents a action for resource.
  */
@@ -25,6 +27,16 @@ public class Action {
 
     private String actionDomain;
     private String action;
+
+    public Action(String actionString) {
+
+        if (!actionString.contains(DELIMITER)) {
+            throw new StoreException("Invalid or cannot find the delimiter.");
+        }
+
+        actionDomain = actionString.substring(0, actionString.indexOf(DELIMITER));
+        action = actionString.substring(actionString.indexOf(DELIMITER) + 1, actionString.length());
+    }
 
     public Action(String actionDomain, String action) {
         this.actionDomain = actionDomain;

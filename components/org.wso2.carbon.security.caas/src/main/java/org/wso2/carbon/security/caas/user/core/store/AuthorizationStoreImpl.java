@@ -213,7 +213,7 @@ public class AuthorizationStoreImpl implements AuthorizationStore {
     }
 
     @Override
-    public Permission getPermission(Resource resource, Action action) throws PermissionNotFoundException,
+    public Permission getPermission(String resource, String action) throws PermissionNotFoundException,
             AuthorizationStoreException {
 
         PermissionNotFoundException permissionNotFoundException =
@@ -221,7 +221,7 @@ public class AuthorizationStoreImpl implements AuthorizationStore {
 
         for (AuthorizationStoreConnector authorizationStoreConnector : authorizationStoreConnectors.values()) {
             try {
-                return authorizationStoreConnector.getPermission(resource, action).build();
+                return authorizationStoreConnector.getPermission(new Resource(resource), new Action(action)).build();
             } catch (PermissionNotFoundException e) {
                 permissionNotFoundException.addSuppressed(e);
             }

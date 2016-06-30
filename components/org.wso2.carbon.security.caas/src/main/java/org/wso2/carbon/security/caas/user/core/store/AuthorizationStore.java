@@ -119,7 +119,7 @@ public interface AuthorizationStore {
      * @throws PermissionNotFoundException Permission not found exception.
      * @throws AuthorizationStoreException Authorization store exception.
      */
-    Permission getPermission(Resource resource, Action action) throws PermissionNotFoundException,
+    Permission getPermission(String resource, String action) throws PermissionNotFoundException,
             AuthorizationStoreException;
 
     /**

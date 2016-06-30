@@ -29,6 +29,11 @@ public class Permission {
     private Resource resource;
     private Action action;
 
+    public Permission(String resource, String action) {
+        this.resource = new Resource(resource);
+        this.action = new Action(action);
+    }
+
     public Permission(Resource resource, Action action) {
         this.resource = resource;
         this.action = action;

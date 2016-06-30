@@ -16,6 +16,8 @@
 
 package org.wso2.carbon.security.caas.user.core.bean;
 
+import org.wso2.carbon.security.caas.user.core.exception.StoreException;
+
 /**
  * Represents a resource.
  */
@@ -27,6 +29,16 @@ public class Resource {
     private String resourceId;
     private String userId;
     private String identityStoreId;
+
+    public Resource(String resourceString) {
+
+        if (!resourceString.contains(DELIMITER)) {
+            throw new StoreException("Invalid or cannot find the delimiter.");
+        }
+
+        resourceDomain = resourceString.substring(0, resourceString.indexOf(DELIMITER));
+        resourceId = resourceString.substring(resourceString.indexOf(DELIMITER) + 1, resourceString.length());
+    }
 
     public Resource(String resourceDomain, String resourceId) {
 
