@@ -333,11 +333,11 @@ public class CacheBackedAuthorizationStore implements AuthorizationStore {
     }
 
     @Override
-    public List<Permission> getPermissionsOfRole(String roleId, String authorizationStoreId)
+    public List<Permission> getPermissionsOfRole(String roleId, String authorizationStoreId, Resource resource)
             throws AuthorizationStoreException {
 
         if (CacheHelper.isCacheDisabled(cacheConfigs, CacheNames.PERMISSIONS_ROLEID_AUTHORIZATIONSTOREID)) {
-            return authorizationStore.getPermissionsOfRole(roleId, authorizationStoreId);
+            return authorizationStore.getPermissionsOfRole(roleId, authorizationStoreId, resource);
         }
 
         Cache<String, List> cache = cacheManager.getCache(CacheNames.PERMISSIONS_ROLEID_AUTHORIZATIONSTOREID,
@@ -346,9 +346,9 @@ public class CacheBackedAuthorizationStore implements AuthorizationStore {
         List<Permission> permissions = cache.get(roleId + authorizationStoreId);
 
         if (permissions == null) {
-            permissions = authorizationStore.getPermissionsOfRole(roleId, authorizationStoreId);
+            permissions = authorizationStore.getPermissionsOfRole(roleId, authorizationStoreId, resource);
             if (permissions != null && !permissions.isEmpty()) {
-                cache.put(roleId + authorizationStoreId, permissions);
+                cache.put(roleId + authorizationStoreId + resource.getResourceId(), permissions);
                 if (log.isDebugEnabled()) {
                     log.debug("Permissions cached for role id: {} authorization store id: {}.", roleId,
                             authorizationStoreId);
@@ -357,6 +357,13 @@ public class CacheBackedAuthorizationStore implements AuthorizationStore {
         }
 
         return permissions;
+    }
+
+    @Override
+    public List<Permission> getPermissionsOfRole(String roleId, String authorizationStoreId)
+            throws AuthorizationStoreException {
+
+        return getPermissionsOfRole(roleId, authorizationStoreId, Resource.getUniversalResource());
     }
 
     @Override

@@ -299,7 +299,7 @@ public class AuthorizationStoreImpl implements AuthorizationStore {
     }
 
     @Override
-    public List<Permission> getPermissionsOfRole(String roleId, String authorizationStoreId)
+    public List<Permission> getPermissionsOfRole(String roleId, String authorizationStoreId, Resource resource)
             throws AuthorizationStoreException {
 
         AuthorizationStoreConnector authorizationStoreConnector = authorizationStoreConnectors
@@ -310,10 +310,17 @@ public class AuthorizationStoreImpl implements AuthorizationStore {
                     authorizationStoreId));
         }
 
-        return authorizationStoreConnector.getPermissionsForRole(roleId, Resource.getUniversalResource())
+        return authorizationStoreConnector.getPermissionsForRole(roleId, resource)
                 .stream()
                 .map(Permission.PermissionBuilder::build)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<Permission> getPermissionsOfRole(String roleId, String authorizationStoreId)
+            throws AuthorizationStoreException {
+
+        return getPermissionsOfRole(roleId, authorizationStoreId, Resource.getUniversalResource());
     }
 
     @Override

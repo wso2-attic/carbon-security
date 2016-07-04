@@ -163,7 +163,18 @@ public interface AuthorizationStore {
     List<Role> getRolesOfGroup(String groupId, String identityStoreId) throws AuthorizationStoreException;
 
     /**
-     * Get permissions assigned to the specific role.
+     * Get permissions for specific role and resource.
+     * @param roleId Id of the role.
+     * @param authorizationStoreId Id of the authorization store.
+     * @param resource Resource.
+     * @return List of permissions.
+     * @throws AuthorizationStoreException
+     */
+    List<Permission> getPermissionsOfRole(String roleId, String authorizationStoreId, Resource resource)
+            throws AuthorizationStoreException;
+
+    /**
+     * Get all permissions assigned to the specific role.
      * @param roleId Role id.
      * @param authorizationStoreId Authorization store id of the role.
      * @return List of Permissions.
