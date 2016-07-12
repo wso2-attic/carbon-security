@@ -25,7 +25,7 @@ public class Resource {
 
     public static final String DELIMITER = ":";
 
-    private String resourceDomain;
+    private String resourceNamespace;
     private String resourceId;
     private String userId;
     private String identityStoreId;
@@ -36,19 +36,19 @@ public class Resource {
             throw new StoreException("Invalid or cannot find the delimiter.");
         }
 
-        resourceDomain = resourceString.substring(0, resourceString.indexOf(DELIMITER));
+        resourceNamespace = resourceString.substring(0, resourceString.indexOf(DELIMITER));
         resourceId = resourceString.substring(resourceString.indexOf(DELIMITER) + 1, resourceString.length());
     }
 
-    public Resource(String resourceDomain, String resourceId) {
+    public Resource(String resourceNamespace, String resourceId) {
 
-        this.resourceDomain = resourceDomain;
+        this.resourceNamespace = resourceNamespace;
         this.resourceId = resourceId;
     }
 
-    public Resource(String resourceDomain, String resourceId, String userId, String identityStoreId) {
+    public Resource(String resourceNamespace, String resourceId, String userId, String identityStoreId) {
 
-        this.resourceDomain = resourceDomain;
+        this.resourceNamespace = resourceNamespace;
         this.resourceId = resourceId;
         this.userId = userId;
         this.identityStoreId = identityStoreId;
@@ -58,8 +58,8 @@ public class Resource {
         return new Resource("*", "*");
     }
 
-    public String getResourceDomain() {
-        return resourceDomain;
+    public String getResourceNamespace() {
+        return resourceNamespace;
     }
 
     public String getResourceId() {
@@ -67,7 +67,7 @@ public class Resource {
     }
 
     public String getResourceString() {
-        return resourceDomain + DELIMITER + resourceId;
+        return resourceNamespace + DELIMITER + resourceId;
     }
 
     public User.UserBuilder getOwner() {

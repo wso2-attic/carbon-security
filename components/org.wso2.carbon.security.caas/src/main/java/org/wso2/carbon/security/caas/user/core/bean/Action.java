@@ -25,7 +25,7 @@ public class Action {
 
     public static final String DELIMITER = ":";
 
-    private String actionDomain;
+    private String actionNamespace;
     private String action;
 
     public Action(String actionString) {
@@ -34,17 +34,17 @@ public class Action {
             throw new StoreException("Invalid or cannot find the delimiter.");
         }
 
-        actionDomain = actionString.substring(0, actionString.indexOf(DELIMITER));
+        actionNamespace = actionString.substring(0, actionString.indexOf(DELIMITER));
         action = actionString.substring(actionString.indexOf(DELIMITER) + 1, actionString.length());
     }
 
-    public Action(String actionDomain, String action) {
-        this.actionDomain = actionDomain;
+    public Action(String actionNamespace, String action) {
+        this.actionNamespace = actionNamespace;
         this.action = action;
     }
 
-    public String getActionDomain() {
-        return actionDomain;
+    public String getActionNamespace() {
+        return actionNamespace;
     }
 
     public String getAction() {
@@ -52,6 +52,6 @@ public class Action {
     }
 
     public String getActionString() {
-        return actionDomain + DELIMITER + action;
+        return actionNamespace + DELIMITER + action;
     }
 }

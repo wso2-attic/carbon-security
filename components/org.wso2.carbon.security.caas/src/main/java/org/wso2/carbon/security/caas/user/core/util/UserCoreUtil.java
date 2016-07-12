@@ -32,11 +32,12 @@ public class UserCoreUtil {
      */
     public static String getRandomId() {
 
-        return UUID.randomUUID().toString();
+        // Return a UUID without dashes.
+        return UUID.randomUUID().toString().replace("-", "");
     }
 
     /**
-     * Get a secure random salt.
+     * Get a secure random salt in ASCII.
      * @param size Size of the salt.
      * @return Salt as a String.
      */
