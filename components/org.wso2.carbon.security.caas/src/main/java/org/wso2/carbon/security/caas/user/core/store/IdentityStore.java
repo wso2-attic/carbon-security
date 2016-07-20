@@ -128,6 +128,26 @@ public interface IdentityStore {
     List<Group> listGroups(String filterPattern, int offset, int length) throws IdentityStoreException;
 
     /**
+     * Get all of the attributes that belongs to this group.
+     * @param groupId Id of the group.
+     * @param identityStoreId Id of the identity store.
+     * @return Map of attributes.
+     * @throws IdentityStoreException
+     */
+    Map<String, String> getGroupAttributeValues(String groupId, String identityStoreId) throws IdentityStoreException;
+
+    /**
+     * Get attribute values for the given names in the group.
+     * @param groupId Id of the group.
+     * @param identityStoreId Id of the identity store.
+     * @param attributeNames List of attribute names.
+     * @return Map of attributes.
+     * @throws IdentityStoreException
+     */
+    Map<String, String> getGroupAttributeValues(String groupId, String identityStoreId, List<String> attributeNames)
+            throws IdentityStoreException;
+
+    /**
      * Get the groups assigned to the specified user.
      * @param userId Id of the user.
      * @param identityStoreId Id of the user store which this user belongs.

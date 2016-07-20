@@ -112,6 +112,17 @@ public class InMemoryIdentityStoreConnector implements IdentityStoreConnector {
     }
 
     @Override
+    public Map<String, String> getGroupAttributeValues(String groupId) throws IdentityStoreException {
+        return null;
+    }
+
+    @Override
+    public Map<String, String> getGroupAttributeValues(String groupId, List<String> attributeNames)
+            throws IdentityStoreException {
+        return null;
+    }
+
+    @Override
     public List<Group.GroupBuilder> getGroupsOfUser(String userID) throws IdentityStoreException {
         return null;
     }
