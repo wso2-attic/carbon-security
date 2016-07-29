@@ -55,7 +55,17 @@
             org.wso2.carbon.security.caas.user.core.config.*;version="${org.wso2.carbon.security.caas.version.range}",
             org.wso2.carbon.security.caas.user.core.exception.*;version="${org.wso2.carbon.security.caas.version.range}",
             org.wso2.carbon.security.caas.user.core.store.connector.*;version="${org.wso2.carbon.security.caas.version.range}",
+            org.wso2.carbon.kernel.*
         </import.package>
+
+        <carbon.component>
+            osgi.service;
+            objectClass="org.wso2.carbon.security.caas.user.core.store.connector.AuthorizationStoreConnectorFactory",
+            osgi.service;
+            objectClass="org.wso2.carbon.security.caas.user.core.store.connector.CredentialStoreConnectorFactory",
+            osgi.service;
+            objectClass="org.wso2.carbon.security.caas.user.core.store.connector.IdentityStoreConnectorFactory"
+        </carbon.component>
 
         <dsannotations>*</dsannotations>
 

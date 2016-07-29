@@ -34,4 +34,8 @@ public class CacheNames {
     public static final String ROLES_GROUPID_IDENTITYSTOREID = "roles-groupid-identitystoreid";
     public static final String PERMISSION_REOURCEID_ACTION = "permission-resourceid-action";
     public static final String PERMISSIONS_ROLEID_AUTHORIZATIONSTOREID = "permissions-roleid-authorizationstoreid";
+    public static final String PERMISSIONS_ROLEID_AUTHORIZATIONSTOREID_RESOURCE =
+            "permissions-roleid-authorizationstoreid-resource";
+    public static final String PERMISSIONS_ROLEID_AUTHORIZATIONSTOREID_ACTION =
+            "permissions-roleid-authorizationstoreid-action";
 }

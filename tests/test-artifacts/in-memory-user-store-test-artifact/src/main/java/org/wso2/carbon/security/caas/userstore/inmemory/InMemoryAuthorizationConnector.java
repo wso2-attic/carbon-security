@@ -74,6 +74,12 @@ public class InMemoryAuthorizationConnector implements AuthorizationStoreConnect
     }
 
     @Override
+    public List<Permission.PermissionBuilder> getPermissionsForRole(String roleId, Action action)
+            throws AuthorizationStoreException {
+        return null;
+    }
+
+    @Override
     public Permission.PermissionBuilder addPermission(Resource resource, Action action)
             throws AuthorizationStoreException {
         return null;

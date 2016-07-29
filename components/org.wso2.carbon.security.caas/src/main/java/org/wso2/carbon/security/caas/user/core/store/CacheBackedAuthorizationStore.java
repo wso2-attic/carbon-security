@@ -343,7 +343,7 @@ public class CacheBackedAuthorizationStore implements AuthorizationStore {
         Cache<String, List> cache = cacheManager.getCache(CacheNames.PERMISSIONS_ROLEID_AUTHORIZATIONSTOREID,
                 String.class, List.class);
 
-        List<Permission> permissions = cache.get(roleId + authorizationStoreId);
+        List<Permission> permissions = cache.get(roleId + authorizationStoreId + resource.getResourceId());
 
         if (permissions == null) {
             permissions = authorizationStore.getPermissionsOfRole(roleId, authorizationStoreId, resource);
@@ -360,10 +360,91 @@ public class CacheBackedAuthorizationStore implements AuthorizationStore {
     }
 
     @Override
+    public List<Permission> getPermissionsOfRole(String roleId, String authorizationStoreId, Action action)
+            throws AuthorizationStoreException {
+
+        if (CacheHelper.isCacheDisabled(cacheConfigs, CacheNames.PERMISSIONS_ROLEID_AUTHORIZATIONSTOREID)) {
+            return authorizationStore.getPermissionsOfRole(roleId, authorizationStoreId, action);
+        }
+
+        Cache<String, List> cache = cacheManager.getCache(CacheNames.PERMISSIONS_ROLEID_AUTHORIZATIONSTOREID,
+                String.class, List.class);
+
+        List<Permission> permissions = cache.get(roleId + authorizationStoreId + action.getActionString());
+
+        if (permissions == null) {
+            permissions = authorizationStore.getPermissionsOfRole(roleId, authorizationStoreId, action);
+            if (permissions != null && !permissions.isEmpty()) {
+                cache.put(roleId + authorizationStoreId + action.getActionString(), permissions);
+                if (log.isDebugEnabled()) {
+                    log.debug("Permissions cached for role id: {} authorization store id: {}.", roleId,
+                            authorizationStoreId);
+                }
+            }
+        }
+
+        return permissions;
+    }
+
+    @Override
     public List<Permission> getPermissionsOfRole(String roleId, String authorizationStoreId)
             throws AuthorizationStoreException {
 
         return getPermissionsOfRole(roleId, authorizationStoreId, Resource.getUniversalResource());
+    }
+
+    @Override
+    public List<Permission> getPermissionsOfUser(String userId, String identityStoreId, Resource resource)
+            throws AuthorizationStoreException {
+
+        if (CacheHelper.isCacheDisabled(cacheConfigs, CacheNames.PERMISSIONS_ROLEID_AUTHORIZATIONSTOREID_RESOURCE)) {
+            return authorizationStore.getPermissionsOfUser(userId, identityStoreId, resource);
+        }
+
+        Cache<String, List> cache = cacheManager.getCache(CacheNames.PERMISSIONS_ROLEID_AUTHORIZATIONSTOREID_RESOURCE,
+                String.class, List.class);
+
+        List<Permission> permissions = cache.get(userId + identityStoreId + resource.getResourceId());
+
+        if (permissions == null) {
+            permissions = authorizationStore.getPermissionsOfUser(userId, identityStoreId, resource);
+            if (permissions != null && !permissions.isEmpty()) {
+                cache.put(userId + identityStoreId + resource.getResourceId(), permissions);
+                if (log.isDebugEnabled()) {
+                    log.debug("Permissions cached for role id: {} authorization store id: {} and resource {}.", userId,
+                            identityStoreId, resource.getResourceId());
+                }
+            }
+        }
+
+        return permissions;
+    }
+
+    @Override
+    public List<Permission> getPermissionsOfUser(String userId, String identityStoreId, Action action)
+            throws AuthorizationStoreException {
+
+        if (CacheHelper.isCacheDisabled(cacheConfigs, CacheNames.PERMISSIONS_ROLEID_AUTHORIZATIONSTOREID_ACTION)) {
+            return authorizationStore.getPermissionsOfUser(userId, identityStoreId, action);
+        }
+
+        Cache<String, List> cache = cacheManager.getCache(CacheNames.PERMISSIONS_ROLEID_AUTHORIZATIONSTOREID_ACTION,
+                String.class, List.class);
+
+        List<Permission> permissions = cache.get(userId + identityStoreId + action.getActionString());
+
+        if (permissions == null) {
+            permissions = authorizationStore.getPermissionsOfUser(userId, identityStoreId, action);
+            if (permissions != null && !permissions.isEmpty()) {
+                cache.put(userId + identityStoreId + action.getActionString(), permissions);
+                if (log.isDebugEnabled()) {
+                    log.debug("Permissions cached for role id: {} authorization store id: {} and action {}.", userId,
+                            identityStoreId, action.getActionString());
+                }
+            }
+        }
+
+        return permissions;
     }
 
     @Override

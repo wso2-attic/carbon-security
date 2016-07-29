@@ -21,7 +21,7 @@
     <parent>
         <groupId>org.wso2</groupId>
         <artifactId>wso2</artifactId>
-        <version>4</version>
+        <version>5</version>
     </parent>
 
     <groupId>org.wso2.carbon.security.caas</groupId>
@@ -300,7 +300,7 @@
         <carbon.launcher.version>5.1.0</carbon.launcher.version>
         <carbon.core.version>5.1.0</carbon.core.version>
         <carbon.osgi.test.util.version>5.1.0</carbon.osgi.test.util.version>
-        <msf4j.version>1.0.0</msf4j.version>
+        <msf4j.version>2.0.0</msf4j.version>
         <commons.dbcp.version>1.4</commons.dbcp.version>
         <org.wso2.carbon.messaging.version>1.0.3</org.wso2.carbon.messaging.version>
         <org.wso2.carbon.caching.version>1.0.0</org.wso2.carbon.caching.version>

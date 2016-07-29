@@ -173,6 +173,9 @@ public interface AuthorizationStore {
     List<Permission> getPermissionsOfRole(String roleId, String authorizationStoreId, Resource resource)
             throws AuthorizationStoreException;
 
+    List<Permission> getPermissionsOfRole(String roleId, String authorizationStoreId, Action action)
+            throws AuthorizationStoreException;
+
     /**
      * Get all permissions assigned to the specific role.
      * @param roleId Role id.
@@ -181,6 +184,28 @@ public interface AuthorizationStore {
      * @throws AuthorizationStoreException Authorization store exception.
      */
     List<Permission> getPermissionsOfRole(String roleId, String authorizationStoreId)
+            throws AuthorizationStoreException;
+
+    /**
+     * Get permissions of this user filtered from the given resource.
+     * @param userId Id of the user.
+     * @param identityStoreId Id of the identity store.
+     * @param resource Resource to use for filter.
+     * @return List of permissions.
+     * @throws AuthorizationStoreException
+     */
+    List<Permission> getPermissionsOfUser(String userId, String identityStoreId, Resource resource)
+            throws AuthorizationStoreException;
+
+    /**
+     * Get permissions of this user filtered from the given action.
+     * @param userId Id of the user.
+     * @param identityStoreId Id of the identity store.
+     * @param action Action to use for filter.
+     * @return List of permissions.
+     * @throws AuthorizationStoreException
+     */
+    List<Permission> getPermissionsOfUser(String userId, String identityStoreId, Action action)
             throws AuthorizationStoreException;
 
     /**

@@ -84,10 +84,20 @@ public interface AuthorizationStoreConnector {
      * Get permissions associated to the role.
      * @param roleId Role id of the required role.
      * @param resource Resource which the permissions should take.
-     * @return List of permissions associated to the user.
+     * @return List of permissions associated to the Role.
      * @throws AuthorizationStoreException Authorization Store Exception.
      */
     List<Permission.PermissionBuilder> getPermissionsForRole(String roleId, Resource resource)
+            throws AuthorizationStoreException;
+
+    /**
+     * Get permissions associated to the role.
+     * @param roleId Role id of the required role.
+     * @param action Action which the permissions should take.
+     * @return List of permissions associated to the Role.
+     * @throws AuthorizationStoreException Authorization Store Exception.
+     */
+    List<Permission.PermissionBuilder> getPermissionsForRole(String roleId, Action action)
             throws AuthorizationStoreException;
 
     /**

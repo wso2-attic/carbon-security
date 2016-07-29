@@ -37,6 +37,7 @@ import org.wso2.carbon.security.caas.user.core.store.connector.AuthorizationStor
 import org.wso2.carbon.security.caas.user.core.store.connector.AuthorizationStoreConnectorFactory;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -317,10 +318,52 @@ public class AuthorizationStoreImpl implements AuthorizationStore {
     }
 
     @Override
+    public List<Permission> getPermissionsOfRole(String roleId, String authorizationStoreId, Action action)
+            throws AuthorizationStoreException {
+
+        AuthorizationStoreConnector authorizationStoreConnector = authorizationStoreConnectors
+                .get(authorizationStoreId);
+
+        if (authorizationStoreConnector == null) {
+            throw new StoreException(String.format("No authorization store found for the given id: %s.",
+                    authorizationStoreId));
+        }
+
+        return authorizationStoreConnector.getPermissionsForRole(roleId, action)
+                .stream()
+                .map(Permission.PermissionBuilder::build)
+                .collect(Collectors.toList());
+    }
+
+    @Override
     public List<Permission> getPermissionsOfRole(String roleId, String authorizationStoreId)
             throws AuthorizationStoreException {
 
         return getPermissionsOfRole(roleId, authorizationStoreId, Resource.getUniversalResource());
+    }
+
+    @Override
+    public List<Permission> getPermissionsOfUser(String userId, String identityStoreId, Resource resource)
+            throws AuthorizationStoreException {
+
+        return getRolesOfUser(userId, identityStoreId)
+                .stream()
+                .map(LambdaExceptionUtils.rethrowFunction(role ->
+                        getPermissionsOfRole(role.getRoleId(), role.getAuthorizationStoreId(), resource)))
+                .flatMap(Collection::stream)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<Permission> getPermissionsOfUser(String userId, String identityStoreId, Action action)
+            throws AuthorizationStoreException {
+
+        return getRolesOfUser(userId, identityStoreId)
+                .stream()
+                .map(LambdaExceptionUtils.rethrowFunction(role ->
+                        getPermissionsOfRole(role.getRoleId(), role.getAuthorizationStoreId(), action)))
+                .flatMap(Collection::stream)
+                .collect(Collectors.toList());
     }
 
     @Override
