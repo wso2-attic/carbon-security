@@ -486,6 +486,19 @@ public class CacheBackedAuthorizationStore implements AuthorizationStore {
     }
 
     @Override
+    public Resource addResource(String resourceNamespace, String resourceId, String authorizationStoreId, String userId,
+                                String identityStoreId) throws AuthorizationStoreException {
+        return authorizationStore.addResource(resourceNamespace, resourceId, authorizationStoreId, userId,
+                identityStoreId);
+    }
+
+    @Override
+    public Action addAction(String actionNamespace, String actionName, String authorizationStoreId)
+            throws AuthorizationStoreException {
+        return authorizationStore.addAction(actionNamespace, actionName, authorizationStoreId);
+    }
+
+    @Override
     public Permission addPermission(Resource resource, Action action, String authorizationStoreId)
             throws AuthorizationStoreException {
 

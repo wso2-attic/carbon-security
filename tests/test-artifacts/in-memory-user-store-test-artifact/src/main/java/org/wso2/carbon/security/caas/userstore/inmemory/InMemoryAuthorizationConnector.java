@@ -80,6 +80,17 @@ public class InMemoryAuthorizationConnector implements AuthorizationStoreConnect
     }
 
     @Override
+    public Resource addResource(String resourceNamespace, String resourceId, String userId, String identityStoreId)
+            throws AuthorizationStoreException {
+        return null;
+    }
+
+    @Override
+    public Action addAction(String actionNamespace, String actionName) throws AuthorizationStoreException {
+        return null;
+    }
+
+    @Override
     public Permission.PermissionBuilder addPermission(Resource resource, Action action)
             throws AuthorizationStoreException {
         return null;

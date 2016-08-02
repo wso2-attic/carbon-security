@@ -101,6 +101,27 @@ public interface AuthorizationStoreConnector {
             throws AuthorizationStoreException;
 
     /**
+     * Add new resource.
+     * @param resourceNamespace Namespace of the resource.
+     * @param resourceId Id of the resource.
+     * @param userId User id of the owner.
+     * @param identityStoreId Identity store id of the owner.
+     * @return New Resource.
+     * @throws AuthorizationStoreException
+     */
+    Resource addResource(String resourceNamespace, String resourceId, String userId, String identityStoreId)
+            throws AuthorizationStoreException;
+
+    /**
+     * Add new action.
+     * @param actionNamespace Namespace of the action.
+     * @param actionName Name of the action.
+     * @return New action.
+     * @throws AuthorizationStoreException
+     */
+    Action addAction(String actionNamespace, String actionName) throws AuthorizationStoreException;
+
+    /**
      * Add new permission.
      * @param resource Resource.
      * @param action Action.

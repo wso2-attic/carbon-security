@@ -402,6 +402,36 @@ public class AuthorizationStoreImpl implements AuthorizationStore {
     }
 
     @Override
+    public Resource addResource(String resourceNamespace, String resourceId, String authorizationStoreId, String userId,
+                                String identityStoreId) throws AuthorizationStoreException {
+
+        AuthorizationStoreConnector authorizationStoreConnector = authorizationStoreConnectors
+                .get(authorizationStoreId);
+
+        if (authorizationStoreConnector == null) {
+            throw new StoreException(String.format("No authorization store found for the given id: %s.",
+                    authorizationStoreId));
+        }
+
+        return authorizationStoreConnector.addResource(resourceNamespace, resourceId, userId, identityStoreId);
+    }
+
+    @Override
+    public Action addAction(String actionNamespace, String actionName, String authorizationStoreId)
+            throws AuthorizationStoreException {
+
+        AuthorizationStoreConnector authorizationStoreConnector = authorizationStoreConnectors
+                .get(authorizationStoreId);
+
+        if (authorizationStoreConnector == null) {
+            throw new StoreException(String.format("No authorization store found for the given id: %s.",
+                    authorizationStoreId));
+        }
+
+        return authorizationStoreConnector.addAction(actionNamespace, actionName);
+    }
+
+    @Override
     public Permission addPermission(Resource resource, Action action, String authorizationStoreId)
             throws AuthorizationStoreException {
 

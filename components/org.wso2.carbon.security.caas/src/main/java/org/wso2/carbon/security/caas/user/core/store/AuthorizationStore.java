@@ -173,6 +173,14 @@ public interface AuthorizationStore {
     List<Permission> getPermissionsOfRole(String roleId, String authorizationStoreId, Resource resource)
             throws AuthorizationStoreException;
 
+    /**
+     * Get permissions for the specific role and action.
+     * @param roleId Id of the role.
+     * @param authorizationStoreId Id of the authorization store.
+     * @param action Action.
+     * @return List of permissions.
+     * @throws AuthorizationStoreException
+     */
     List<Permission> getPermissionsOfRole(String roleId, String authorizationStoreId, Action action)
             throws AuthorizationStoreException;
 
@@ -225,6 +233,30 @@ public interface AuthorizationStore {
      * @throws AuthorizationStoreException Authorization store exception.
      */
     void deleteRole(Role role) throws AuthorizationStoreException;
+
+    /**
+     * Add new resource.
+     * @param resourceNamespace Namespace of the resource.
+     * @param resourceId Id of the resource.
+     * @param authorizationStoreId Id of the authorization store.
+     * @param userId Id of the owner.
+     * @param identityStoreId Identity store id if the owner.
+     * @return New Resource.
+     * @throws AuthorizationStoreException
+     */
+    Resource addResource(String resourceNamespace, String resourceId, String authorizationStoreId, String userId,
+                         String identityStoreId) throws AuthorizationStoreException;
+
+    /**
+     * Add new action.
+     * @param actionNamespace Namespace of the action.
+     * @param actionName Name of the action.
+     * @param authorizationStoreId Id of the authorization store.
+     * @return New action.
+     * @throws AuthorizationStoreException
+     */
+    Action addAction(String actionNamespace, String actionName, String authorizationStoreId)
+            throws AuthorizationStoreException;
 
     /**
      * Add new permission.
