@@ -53,12 +53,12 @@ public class InMemoryIdentityStoreConnector implements IdentityStoreConnector {
     }
 
     @Override
-    public User.UserBuilder getUser(String username) throws IdentityStoreException {
+    public User.UserBuilder getUser(String username) throws UserNotFoundException, IdentityStoreException {
         if (InMemoryStoreUtil.getPassword(username) != null) {
             return new User.UserBuilder().setUserName(username).setUserId(UUID.randomUUID().toString())
                     .setIdentityStoreId("PRIMARY").setCredentialStoreId("PRIMARY").setTenantDomain("carbon.super");
         }
-        return null;
+        throw new UserNotFoundException("No user found for username: " + username + " in In-Memory identity store.");
     }
 
     @Override
@@ -75,7 +75,8 @@ public class InMemoryIdentityStoreConnector implements IdentityStoreConnector {
             return new User.UserBuilder().setUserName(username).setUserId(UUID.randomUUID().toString())
                     .setIdentityStoreId("PRIMARY").setCredentialStoreId("PRIMARY").setTenantDomain("carbon.super");
         }
-        return null;
+        throw new UserNotFoundException("No user found for username: " + username + " in In-Memory identity store.");
+
     }
 
     @Override
