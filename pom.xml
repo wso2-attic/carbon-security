@@ -21,7 +21,7 @@
     <parent>
         <groupId>org.wso2</groupId>
         <artifactId>wso2</artifactId>
-        <version>4</version>
+        <version>5</version>
     </parent>
 
     <groupId>org.wso2.carbon.security.caas</groupId>
@@ -307,7 +307,7 @@
         <carbon.launcher.version>5.1.0</carbon.launcher.version>
         <carbon.core.version>5.1.0</carbon.core.version>
         <carbon.osgi.test.util.version>5.1.0</carbon.osgi.test.util.version>
-        <msf4j.version>1.0.0</msf4j.version>
+        <msf4j.version>2.0.0</msf4j.version>
         <commons.dbcp.version>1.4</commons.dbcp.version>
         <org.wso2.carbon.messaging.version>1.0.3</org.wso2.carbon.messaging.version>
         <org.wso2.carbon.caching.version>1.0.0</org.wso2.carbon.caching.version>
@@ -317,7 +317,6 @@
         <equinox.osgi.version>3.10.2.v20150203-1939</equinox.osgi.version>
         <equinox.osgi.services.version>3.4.0.v20140312-2051</equinox.osgi.services.version>
         <equinox.ds.version>1.4.200.v20131126-2331</equinox.ds.version>
-        <equinox.common.version>3.6.200.v20130402-1505</equinox.common.version>
 
         <osgi.api.version>6.0.0</osgi.api.version>
         <netty.version>4.0.30.Final</netty.version>
@@ -344,7 +343,6 @@
         <apache.felix.gogo.runtime.version>0.10.0.v201209301036</apache.felix.gogo.runtime.version>
         <apache.felix.gogo.shell.version>0.10.0.v201212101605</apache.felix.gogo.shell.version>
         <equinox.app.version>1.3.200.v20130910-1609</equinox.app.version>
-        <equinox.common.version>3.6.200.v20130402-1505</equinox.common.version>
         <equinox.concurrent.version>1.1.0.v20130327-1442</equinox.concurrent.version>
         <equinox.console.version>1.1.0.v20140131-1639</equinox.console.version>
         <equinox.ds.version>1.4.200.v20131126-2331</equinox.ds.version>

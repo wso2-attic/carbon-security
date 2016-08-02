@@ -37,8 +37,8 @@ import java.util.stream.Collectors;
  */
 public class User {
 
-    private String userID;
-    private String identityStoreID;
+    private String userId;
+    private String identityStoreId;
     private String credentialStoreId;
     private String tenantDomain;
     private String userName;
@@ -47,15 +47,13 @@ public class User {
     private AuthorizationStore authorizationStore;
     private ClaimManager claimManager;
 
-    private UserBuilder builder;
-
-    private User(String userName, String userID, String identityStoreID, String credentialStoreId,
+    private User(String userName, String userId, String identityStoreId, String credentialStoreId,
                  String tenantDomain, IdentityStore identityStore,
                  AuthorizationStore authorizationStore, ClaimManager claimManager) {
 
         this.userName = userName;
-        this.userID = userID;
-        this.identityStoreID = identityStoreID;
+        this.userId = userId;
+        this.identityStoreId = identityStoreId;
         this.credentialStoreId = credentialStoreId;
         this.tenantDomain = tenantDomain;
         this.identityStore = identityStore;
@@ -76,7 +74,7 @@ public class User {
      * @return User id.
      */
     public String getUserId() {
-        return userID;
+        return userId;
     }
 
     /**
@@ -84,7 +82,7 @@ public class User {
      * @return Identity store id.
      */
     public String getIdentityStoreId() {
-        return identityStoreID;
+        return identityStoreId;
     }
 
     /**
@@ -111,13 +109,13 @@ public class User {
      */
     public List<Claim> getClaims() throws IdentityStoreException, ClaimManagerException {
 
-        Map<String, String> userAttributeValues = identityStore.getUserAttributeValues(userID, identityStoreID);
+        Map<String, String> userAttributeValues = identityStore.getUserAttributeValues(userId, identityStoreId);
         if (userAttributeValues == null || userAttributeValues.isEmpty()) {
             return Collections.emptyList();
         }
 
         List<IdnStoreMetaClaimMapping> idnStoreMetaClaimMappings = claimManager
-                .getMetaClaimMappingsByIdentityStoreId(identityStoreID);
+                .getMetaClaimMappingsByIdentityStoreId(identityStoreId);
         if (idnStoreMetaClaimMappings == null || idnStoreMetaClaimMappings.isEmpty()) {
             return Collections.emptyList();
         }
@@ -135,7 +133,7 @@ public class User {
     public List<Claim> getClaims(List<String> claimURIs) throws IdentityStoreException, ClaimManagerException {
 
         List<IdnStoreMetaClaimMapping> idnStoreMetaClaimMappings = claimManager
-                .getMetaClaimMappingsByIdentityStoreId(identityStoreID, claimURIs);
+                .getMetaClaimMappingsByIdentityStoreId(identityStoreId, claimURIs);
         if (idnStoreMetaClaimMappings == null || idnStoreMetaClaimMappings.isEmpty()) {
             return Collections.emptyList();
         }
@@ -145,7 +143,7 @@ public class User {
                 .collect(Collectors.toList());
 
         Map<String, String> attributeValues = identityStore
-                .getUserAttributeValues(userID, attributeNames, identityStoreID);
+                .getUserAttributeValues(userId, attributeNames, identityStoreId);
         if (attributeValues == null || attributeValues.isEmpty()) {
             return Collections.emptyList();
         }
@@ -159,7 +157,7 @@ public class User {
      * @throws IdentityStoreException Identity store exception.
      */
     public List<Group> getGroups() throws IdentityStoreException {
-        return identityStore.getGroupsOfUser(userID, identityStoreID);
+        return identityStore.getGroupsOfUser(userId, identityStoreId);
     }
 
     /**
@@ -168,7 +166,27 @@ public class User {
      * @throws AuthorizationStoreException Authorization store exception,
      */
     public List<Role> getRoles() throws AuthorizationStoreException {
-        return authorizationStore.getRolesOfUser(userID, identityStoreID);
+        return authorizationStore.getRolesOfUser(userId, identityStoreId);
+    }
+
+    /**
+     * Get permissions filtered from the given resource.
+     * @param resource Resource to filter.
+     * @return List of permissions.
+     * @throws AuthorizationStoreException
+     */
+    public List<Permission> getPermissions(Resource resource) throws AuthorizationStoreException {
+        return authorizationStore.getPermissionsOfUser(userId, identityStoreId, resource);
+    }
+
+    /**
+     * Ger permissions filtered from the givrn action.
+     * @param action Action to filter.
+     * @return List of permissions.
+     * @throws AuthorizationStoreException
+     */
+    public List<Permission> getPermissions(Action action) throws AuthorizationStoreException {
+        return authorizationStore.getPermissionsOfUser(userId, identityStoreId, action);
     }
 
     /**
@@ -179,7 +197,7 @@ public class User {
      * @throws IdentityStoreException Identity store exception.
      */
     public boolean isAuthorized(Permission permission) throws AuthorizationStoreException, IdentityStoreException {
-        return authorizationStore.isUserAuthorized(userID, permission, identityStoreID);
+        return authorizationStore.isUserAuthorized(userId, permission, identityStoreId);
     }
 
     /**
@@ -189,7 +207,7 @@ public class User {
      * @throws AuthorizationStoreException Authorization store exception.
      */
     public boolean isInRole(String roleName) throws AuthorizationStoreException {
-        return authorizationStore.isUserInRole(userID, identityStoreID, roleName);
+        return authorizationStore.isUserInRole(userId, identityStoreId, roleName);
     }
 
     /**
@@ -199,7 +217,7 @@ public class User {
      * @throws IdentityStoreException Identity store exception.
      */
     public boolean isInGroup(String groupName) throws IdentityStoreException {
-        return identityStore.isUserInGroup(userID, groupName, identityStoreID);
+        return identityStore.isUserInGroup(userId, groupName, identityStoreId);
     }
 
     /**
@@ -245,7 +263,7 @@ public class User {
      * @throws IdentityStoreException Identity store exception.
      */
     public void updateRoles(List<Role> newRolesList) throws AuthorizationStoreException, IdentityStoreException {
-        authorizationStore.updateRolesInUser(userID, identityStoreID, newRolesList);
+        authorizationStore.updateRolesInUser(userId, identityStoreId, newRolesList);
     }
 
     /**
@@ -255,7 +273,7 @@ public class User {
      * @throws AuthorizationStoreException Authorization Store Exception.
      */
     public void updateRoles(List<Role> assignList, List<Role> unAssignList) throws AuthorizationStoreException {
-        authorizationStore.updateRolesInUser(userID, identityStoreID, assignList, unAssignList);
+        authorizationStore.updateRolesInUser(userId, identityStoreId, assignList, unAssignList);
     }
 
     private List<Claim> buildClaims(List<IdnStoreMetaClaimMapping> idnStoreMetaClaimMappings,

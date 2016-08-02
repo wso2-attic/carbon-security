@@ -80,8 +80,5 @@ public class CarbonPrincipal implements Principal {
                       + " due to a server error", e);
             return false;
         }
-
     }
-
-
 }

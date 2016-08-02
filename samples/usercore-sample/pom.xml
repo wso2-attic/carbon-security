@@ -58,19 +58,20 @@
     </dependencies>
 
     <properties>
-        <export.package>org.wso2.carbon.security.usercore.sample.*</export.package>
+        <export.package>org.wso2.carbon.security.caas.user.core.sample.*</export.package>
         <import.package>
             org.osgi.framework.*;version="${osgi.framework.package.import.version.range}",
             org.slf4j.*;version="${slf4j.logging.package.import.version.range}",
-            org.wso2.carbon.security.usercore.service.*,
-            org.wso2.carbon.security.usercore.store.*,
-            org.wso2.carbon.security.usercore.exception.*,
+            org.wso2.carbon.security.caas.user.core.*,
             org.wso2.msf4j.*,
             javax.ws.rs.*,
             javax.xml.bind.*
         </import.package>
         <osgi.framework.package.import.version.range>[1.8.0, 2.0.0)</osgi.framework.package.import.version.range>
         <slf4j.logging.package.import.version.range>[1.7.1, 2.0.0)</slf4j.logging.package.import.version.range>
+        <carbon.component>
+            osgi.service;objectClass="org.wso2.msf4j.Microservice"
+        </carbon.component>
     </properties>
 
 </project>

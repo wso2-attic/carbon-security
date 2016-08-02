@@ -18,9 +18,12 @@ package org.wso2.carbon.security.caas.user.core.store;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.wso2.carbon.kernel.utils.LambdaExceptionUtils;
 import org.wso2.carbon.security.caas.internal.CarbonSecurityDataHolder;
+import org.wso2.carbon.security.caas.user.core.bean.Action;
 import org.wso2.carbon.security.caas.user.core.bean.Group;
 import org.wso2.carbon.security.caas.user.core.bean.Permission;
+import org.wso2.carbon.security.caas.user.core.bean.Resource;
 import org.wso2.carbon.security.caas.user.core.bean.Role;
 import org.wso2.carbon.security.caas.user.core.bean.User;
 import org.wso2.carbon.security.caas.user.core.config.AuthorizationConnectorConfig;
@@ -34,6 +37,7 @@ import org.wso2.carbon.security.caas.user.core.store.connector.AuthorizationStor
 import org.wso2.carbon.security.caas.user.core.store.connector.AuthorizationStoreConnectorFactory;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -87,6 +91,11 @@ public class AuthorizationStoreImpl implements AuthorizationStore {
     @Override
     public boolean isUserAuthorized(String userId, Permission permission, String identityStoreId)
             throws AuthorizationStoreException, IdentityStoreException {
+
+        // If this user owns this resource, we assume this user has all permissions.
+        if (permission.getResource().getOwner().getUserId().equals(userId)) {
+            return true;
+        }
 
         // Get the roles directly associated to the user.
         List<Role> roles = new ArrayList<>();
@@ -146,7 +155,7 @@ public class AuthorizationStoreImpl implements AuthorizationStore {
         }
 
         List<Permission.PermissionBuilder> permissionBuilders = authorizationStoreConnector
-                .getPermissionsForRole(roleId);
+                .getPermissionsForRole(roleId, permission.getResource());
 
         if (permissionBuilders.isEmpty()) {
             throw new StoreException("No permissions assigned for this role.");
@@ -205,7 +214,7 @@ public class AuthorizationStoreImpl implements AuthorizationStore {
     }
 
     @Override
-    public Permission getPermission(String resourceId, String action) throws PermissionNotFoundException,
+    public Permission getPermission(String resource, String action) throws PermissionNotFoundException,
             AuthorizationStoreException {
 
         PermissionNotFoundException permissionNotFoundException =
@@ -213,7 +222,7 @@ public class AuthorizationStoreImpl implements AuthorizationStore {
 
         for (AuthorizationStoreConnector authorizationStoreConnector : authorizationStoreConnectors.values()) {
             try {
-                return authorizationStoreConnector.getPermission(resourceId, action).build();
+                return authorizationStoreConnector.getPermission(new Resource(resource), new Action(action)).build();
             } catch (PermissionNotFoundException e) {
                 permissionNotFoundException.addSuppressed(e);
             }
@@ -247,15 +256,11 @@ public class AuthorizationStoreImpl implements AuthorizationStore {
                     authorizationStoreId));
         }
 
-        List<User> users = new ArrayList<>();
-
-        // TODO: Can replace with JAVA 8 map when the carbon kernel support rethrow exceptions.
-        for (User.UserBuilder userBuilder : authorizationStoreConnector.getUsersOfRole(roleId)) {
-            users.add(realmService.getIdentityStore().getUserFromId(userBuilder.getUserId(),
-                    userBuilder.getIdentityStoreId()));
-        }
-
-        return users;
+        return authorizationStoreConnector.getUsersOfRole(roleId)
+                .stream()
+                .map(LambdaExceptionUtils.rethrowFunction(userBuilder -> realmService.getIdentityStore()
+                        .getUserFromId(userBuilder.getUserId(), userBuilder.getIdentityStoreId())))
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -270,15 +275,11 @@ public class AuthorizationStoreImpl implements AuthorizationStore {
                     authorizationStoreId));
         }
 
-        List<Group> groups = new ArrayList<>();
-
-        // TODO: Can replace with JAVA 8 map when the carbon kernel support rethrow exceptions.
-        for (Group.GroupBuilder groupBuilder : authorizationStoreConnector.getGroupsOfRole(roleId)) {
-            groups.add(realmService.getIdentityStore().getGroupFromId(groupBuilder.getGroupId(),
-                    groupBuilder.getIdentityStoreId()));
-        }
-
-        return groups;
+        return authorizationStoreConnector.getGroupsOfRole(roleId)
+                .stream()
+                .map(LambdaExceptionUtils.rethrowFunction(groupBuilder -> realmService.getIdentityStore()
+                        .getGroupFromId(groupBuilder.getGroupId(), groupBuilder.getIdentityStoreId())))
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -299,7 +300,7 @@ public class AuthorizationStoreImpl implements AuthorizationStore {
     }
 
     @Override
-    public List<Permission> getPermissionsOfRole(String roleId, String authorizationStoreId)
+    public List<Permission> getPermissionsOfRole(String roleId, String authorizationStoreId, Resource resource)
             throws AuthorizationStoreException {
 
         AuthorizationStoreConnector authorizationStoreConnector = authorizationStoreConnectors
@@ -310,9 +311,58 @@ public class AuthorizationStoreImpl implements AuthorizationStore {
                     authorizationStoreId));
         }
 
-        return authorizationStoreConnector.getPermissionsForRole(roleId)
+        return authorizationStoreConnector.getPermissionsForRole(roleId, resource)
                 .stream()
                 .map(Permission.PermissionBuilder::build)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<Permission> getPermissionsOfRole(String roleId, String authorizationStoreId, Action action)
+            throws AuthorizationStoreException {
+
+        AuthorizationStoreConnector authorizationStoreConnector = authorizationStoreConnectors
+                .get(authorizationStoreId);
+
+        if (authorizationStoreConnector == null) {
+            throw new StoreException(String.format("No authorization store found for the given id: %s.",
+                    authorizationStoreId));
+        }
+
+        return authorizationStoreConnector.getPermissionsForRole(roleId, action)
+                .stream()
+                .map(Permission.PermissionBuilder::build)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<Permission> getPermissionsOfRole(String roleId, String authorizationStoreId)
+            throws AuthorizationStoreException {
+
+        return getPermissionsOfRole(roleId, authorizationStoreId, Resource.getUniversalResource());
+    }
+
+    @Override
+    public List<Permission> getPermissionsOfUser(String userId, String identityStoreId, Resource resource)
+            throws AuthorizationStoreException {
+
+        return getRolesOfUser(userId, identityStoreId)
+                .stream()
+                .map(LambdaExceptionUtils.rethrowFunction(role ->
+                        getPermissionsOfRole(role.getRoleId(), role.getAuthorizationStoreId(), resource)))
+                .flatMap(Collection::stream)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<Permission> getPermissionsOfUser(String userId, String identityStoreId, Action action)
+            throws AuthorizationStoreException {
+
+        return getRolesOfUser(userId, identityStoreId)
+                .stream()
+                .map(LambdaExceptionUtils.rethrowFunction(role ->
+                        getPermissionsOfRole(role.getRoleId(), role.getAuthorizationStoreId(), action)))
+                .flatMap(Collection::stream)
                 .collect(Collectors.toList());
     }
 
@@ -352,7 +402,22 @@ public class AuthorizationStoreImpl implements AuthorizationStore {
     }
 
     @Override
-    public Permission addPermission(String resourceId, String action, String authorizationStoreId)
+    public Resource addResource(String resourceNamespace, String resourceId, String authorizationStoreId, String userId,
+                                String identityStoreId) throws AuthorizationStoreException {
+
+        AuthorizationStoreConnector authorizationStoreConnector = authorizationStoreConnectors
+                .get(authorizationStoreId);
+
+        if (authorizationStoreConnector == null) {
+            throw new StoreException(String.format("No authorization store found for the given id: %s.",
+                    authorizationStoreId));
+        }
+
+        return authorizationStoreConnector.addResource(resourceNamespace, resourceId, userId, identityStoreId);
+    }
+
+    @Override
+    public Action addAction(String actionNamespace, String actionName, String authorizationStoreId)
             throws AuthorizationStoreException {
 
         AuthorizationStoreConnector authorizationStoreConnector = authorizationStoreConnectors
@@ -363,7 +428,22 @@ public class AuthorizationStoreImpl implements AuthorizationStore {
                     authorizationStoreId));
         }
 
-        return authorizationStoreConnector.addPermission(resourceId, action).build();
+        return authorizationStoreConnector.addAction(actionNamespace, actionName);
+    }
+
+    @Override
+    public Permission addPermission(Resource resource, Action action, String authorizationStoreId)
+            throws AuthorizationStoreException {
+
+        AuthorizationStoreConnector authorizationStoreConnector = authorizationStoreConnectors
+                .get(authorizationStoreId);
+
+        if (authorizationStoreConnector == null) {
+            throw new StoreException(String.format("No authorization store found for the given id: %s.",
+                    authorizationStoreId));
+        }
+
+        return authorizationStoreConnector.addPermission(resource, action).build();
     }
 
     @Override

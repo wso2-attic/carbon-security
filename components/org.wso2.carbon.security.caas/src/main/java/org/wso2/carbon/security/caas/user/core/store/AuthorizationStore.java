@@ -16,8 +16,10 @@
 
 package org.wso2.carbon.security.caas.user.core.store;
 
+import org.wso2.carbon.security.caas.user.core.bean.Action;
 import org.wso2.carbon.security.caas.user.core.bean.Group;
 import org.wso2.carbon.security.caas.user.core.bean.Permission;
+import org.wso2.carbon.security.caas.user.core.bean.Resource;
 import org.wso2.carbon.security.caas.user.core.bean.Role;
 import org.wso2.carbon.security.caas.user.core.bean.User;
 import org.wso2.carbon.security.caas.user.core.config.AuthorizationConnectorConfig;
@@ -111,13 +113,13 @@ public interface AuthorizationStore {
 
     /**
      * Get the permission from resource id and action.
-     * @param resourceId Resource id of the permission.
+     * @param resource Resource of the permission.
      * @param action Action of the permission.
      * @return Permission.
      * @throws PermissionNotFoundException Permission not found exception.
      * @throws AuthorizationStoreException Authorization store exception.
      */
-    Permission getPermission(String resourceId, String action) throws PermissionNotFoundException,
+    Permission getPermission(String resource, String action) throws PermissionNotFoundException,
             AuthorizationStoreException;
 
     /**
@@ -161,13 +163,57 @@ public interface AuthorizationStore {
     List<Role> getRolesOfGroup(String groupId, String identityStoreId) throws AuthorizationStoreException;
 
     /**
-     * Get permissions assigned to the specific role.
+     * Get permissions for specific role and resource.
+     * @param roleId Id of the role.
+     * @param authorizationStoreId Id of the authorization store.
+     * @param resource Resource.
+     * @return List of permissions.
+     * @throws AuthorizationStoreException
+     */
+    List<Permission> getPermissionsOfRole(String roleId, String authorizationStoreId, Resource resource)
+            throws AuthorizationStoreException;
+
+    /**
+     * Get permissions for the specific role and action.
+     * @param roleId Id of the role.
+     * @param authorizationStoreId Id of the authorization store.
+     * @param action Action.
+     * @return List of permissions.
+     * @throws AuthorizationStoreException
+     */
+    List<Permission> getPermissionsOfRole(String roleId, String authorizationStoreId, Action action)
+            throws AuthorizationStoreException;
+
+    /**
+     * Get all permissions assigned to the specific role.
      * @param roleId Role id.
      * @param authorizationStoreId Authorization store id of the role.
      * @return List of Permissions.
      * @throws AuthorizationStoreException Authorization store exception.
      */
     List<Permission> getPermissionsOfRole(String roleId, String authorizationStoreId)
+            throws AuthorizationStoreException;
+
+    /**
+     * Get permissions of this user filtered from the given resource.
+     * @param userId Id of the user.
+     * @param identityStoreId Id of the identity store.
+     * @param resource Resource to use for filter.
+     * @return List of permissions.
+     * @throws AuthorizationStoreException
+     */
+    List<Permission> getPermissionsOfUser(String userId, String identityStoreId, Resource resource)
+            throws AuthorizationStoreException;
+
+    /**
+     * Get permissions of this user filtered from the given action.
+     * @param userId Id of the user.
+     * @param identityStoreId Id of the identity store.
+     * @param action Action to use for filter.
+     * @return List of permissions.
+     * @throws AuthorizationStoreException
+     */
+    List<Permission> getPermissionsOfUser(String userId, String identityStoreId, Action action)
             throws AuthorizationStoreException;
 
     /**
@@ -189,14 +235,38 @@ public interface AuthorizationStore {
     void deleteRole(Role role) throws AuthorizationStoreException;
 
     /**
+     * Add new resource.
+     * @param resourceNamespace Namespace of the resource.
+     * @param resourceId Id of the resource.
+     * @param authorizationStoreId Id of the authorization store.
+     * @param userId Id of the owner.
+     * @param identityStoreId Identity store id if the owner.
+     * @return New Resource.
+     * @throws AuthorizationStoreException
+     */
+    Resource addResource(String resourceNamespace, String resourceId, String authorizationStoreId, String userId,
+                         String identityStoreId) throws AuthorizationStoreException;
+
+    /**
+     * Add new action.
+     * @param actionNamespace Namespace of the action.
+     * @param actionName Name of the action.
+     * @param authorizationStoreId Id of the authorization store.
+     * @return New action.
+     * @throws AuthorizationStoreException
+     */
+    Action addAction(String actionNamespace, String actionName, String authorizationStoreId)
+            throws AuthorizationStoreException;
+
+    /**
      * Add new permission.
-     * @param resourceId Resource id.
-     * @param action Action name.
+     * @param resource Resource.
+     * @param action Action.
      * @param authorizationStoreId Id of the authorizations store where the permission should store.
      * @return Created Permission.
      * @throws AuthorizationStoreException Authorization store exception.
      */
-    Permission addPermission(String resourceId, String action, String authorizationStoreId)
+    Permission addPermission(Resource resource, Action action, String authorizationStoreId)
             throws AuthorizationStoreException;
 
     /**

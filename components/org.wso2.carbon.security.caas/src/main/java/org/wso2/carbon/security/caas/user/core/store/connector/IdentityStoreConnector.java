@@ -129,6 +129,24 @@ public interface IdentityStoreConnector {
     List<Group.GroupBuilder> listGroups(String filterPattern, int offset, int length) throws IdentityStoreException;
 
     /**
+     * Get all of the attributes that belongs to this group.
+     * @param groupId Id of the group.
+     * @return Map of attributes.
+     * @throws IdentityStoreException
+     */
+    Map<String, String> getGroupAttributeValues(String groupId) throws IdentityStoreException;
+
+    /**
+     * Get attribute values for the given names in the group.
+     * @param groupId Id of the group.
+     * @param attributeNames List of attribute names.
+     * @return Map of attributes.
+     * @throws IdentityStoreException
+     */
+    Map<String, String> getGroupAttributeValues(String groupId, List<String> attributeNames)
+            throws IdentityStoreException;
+
+    /**
      * Retrieve groups of a given User with unique ID.
      * @param userID Id of the User.
      * @return List of Groups which this user is assigned to

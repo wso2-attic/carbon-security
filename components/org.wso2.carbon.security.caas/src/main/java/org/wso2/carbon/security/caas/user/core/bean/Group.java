@@ -23,6 +23,7 @@ import org.wso2.carbon.security.caas.user.core.store.AuthorizationStore;
 import org.wso2.carbon.security.caas.user.core.store.IdentityStore;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * Group represents a group of users.
@@ -78,6 +79,25 @@ public class Group {
      */
     public String getTenantDomain() {
         return tenantDomain;
+    }
+
+    /**
+     * Get attributes of this group.
+     * @return Map of attributes.
+     * @throws IdentityStoreException
+     */
+    public Map<String, String> getAttributes() throws IdentityStoreException {
+        return identityStore.getGroupAttributeValues(groupId, identityStoreId);
+    }
+
+    /**
+     * Get attributes for given attribute names.
+     * @param attributeNames List of attribute names.
+     * @return Map of group attributes.
+     * @throws IdentityStoreException
+     */
+    public Map<String, String> getAttributes(List<String> attributeNames) throws IdentityStoreException {
+        return identityStore.getGroupAttributeValues(groupId, identityStoreId, attributeNames);
     }
 
     /**

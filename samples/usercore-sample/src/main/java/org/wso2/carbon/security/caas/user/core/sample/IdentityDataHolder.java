@@ -38,6 +38,10 @@ public class IdentityDataHolder {
         this.carbonRealmService = carbonRealmService;
     }
 
+    public void unregisterCarbonRealmServer() {
+        this.carbonRealmService = null;
+    }
+
     public RealmService getCarbonRealmService() {
         return this.carbonRealmService;
     }

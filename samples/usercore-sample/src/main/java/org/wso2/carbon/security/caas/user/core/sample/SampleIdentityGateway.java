@@ -22,6 +22,7 @@ import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.component.annotations.ReferenceCardinality;
 import org.osgi.service.component.annotations.ReferencePolicy;
+import org.slf4j.LoggerFactory;
 import org.wso2.carbon.security.caas.user.core.bean.User;
 import org.wso2.carbon.security.caas.user.core.exception.IdentityStoreException;
 import org.wso2.carbon.security.caas.user.core.exception.UserNotFoundException;
@@ -47,8 +48,11 @@ import javax.ws.rs.core.Response;
 @Path("/identity-gateway")
 public class SampleIdentityGateway implements Microservice {
 
+    private static final org.slf4j.Logger log = LoggerFactory.getLogger(SampleIdentityGateway.class);
+
     @Activate
-    public void activate(BundleContext context) {
+    protected void activate(BundleContext context) {
+        log.info("Sample identity gateway activated.");
     }
 
     @Reference(
@@ -60,9 +64,12 @@ public class SampleIdentityGateway implements Microservice {
     )
     public void registerCarbonRealm(RealmService carbonRealmService) {
         IdentityDataHolder.getInstance().registerCarbonRealmService(carbonRealmService);
+        log.info("Realm service successfully registered.");
     }
 
     public void unregisterCarbonRealm(RealmService carbonRealmService) {
+        IdentityDataHolder.getInstance().unregisterCarbonRealmServer();
+        log.info("Realm service successfully unregistered.");
     }
 
     @GET
@@ -73,7 +80,7 @@ public class SampleIdentityGateway implements Microservice {
         IdentityStore identityStore = IdentityDataHolder.getInstance().getCarbonRealmService().getIdentityStore();
         try {
             User user = identityStore.getUser(symbol);
-            return Response.ok(user, MediaType.APPLICATION_JSON_TYPE).build();
+            return Response.ok(user.getUserId(), MediaType.APPLICATION_JSON_TYPE).build();
         } catch (IdentityStoreException e) {
             return Response.serverError().build();
         } catch (UserNotFoundException e) {

@@ -196,6 +196,18 @@ public class CacheBackedIdentityStore implements IdentityStore {
     }
 
     @Override
+    public Map<String, String> getGroupAttributeValues(String groupId, String identityStoreId)
+            throws IdentityStoreException {
+        return identityStore.getGroupAttributeValues(groupId, identityStoreId);
+    }
+
+    @Override
+    public Map<String, String> getGroupAttributeValues(String groupId, String identityStoreId,
+                                                       List<String> attributeNames) throws IdentityStoreException {
+        return identityStore.getGroupAttributeValues(groupId, identityStoreId, attributeNames);
+    }
+
+    @Override
     public List<Group> getGroupsOfUser(String userId, String identityStoreId) throws IdentityStoreException {
 
         if (CacheHelper.isCacheDisabled(cacheConfigs, CacheNames.GROUPS_USERID_IDENTITYSTOREID)) {

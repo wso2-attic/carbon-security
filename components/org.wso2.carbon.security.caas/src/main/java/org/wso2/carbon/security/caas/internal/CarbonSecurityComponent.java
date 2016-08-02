@@ -29,6 +29,7 @@ import org.osgi.service.permissionadmin.PermissionInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.wso2.carbon.caching.CarbonCachingService;
+import org.wso2.carbon.kernel.startupresolver.RequiredCapabilityListener;
 import org.wso2.carbon.security.caas.api.CarbonCallbackHandler;
 import org.wso2.carbon.security.caas.api.CarbonJAASConfiguration;
 import org.wso2.carbon.security.caas.api.CarbonPolicy;
@@ -68,9 +69,12 @@ import javax.security.auth.spi.LoginModule;
  */
 @Component(
         name = "org.wso2.carbon.security.caas.internal.CarbonSecurityComponent",
-        immediate = true
+        immediate = true,
+        property = {
+                "componentName=wso2-caas"
+        }
 )
-public class CarbonSecurityComponent {
+public class CarbonSecurityComponent implements RequiredCapabilityListener {
 
     private static final Logger log = LoggerFactory.getLogger(CarbonSecurityComponent.class);
 
@@ -79,39 +83,8 @@ public class CarbonSecurityComponent {
     @Activate
     public void registerCarbonSecurityProvider(BundleContext bundleContext) {
 
+        CarbonSecurityDataHolder.getInstance().setBundleContext(bundleContext);
         initAuthenticationConfigs(bundleContext);
-
-        // if security manager is enabled init authorization configs
-        if (System.getProperty("java.security.manager") != null) {
-            initAuthorizationConfigs(bundleContext);
-        }
-
-        // Register the carbon realm service.
-        try {
-
-            StoreConfig storeConfig = StoreConfigBuilder.buildStoreConfigs();
-            CarbonRealmServiceImpl carbonRealmService = new CarbonRealmServiceImpl(storeConfig);
-            CarbonSecurityDataHolder.getInstance().registerCarbonRealmService(carbonRealmService);
-            realmServiceRegistration = bundleContext
-                    .registerService(RealmService.class.getName(), carbonRealmService, null);
-        } catch (Throwable e) {
-            log.error(e.getMessage(), e);
-        }
-
-        ClaimConfig claimConfig = ClaimConfigBuilder.getClaimConfig();
-        CarbonSecurityDataHolder.getInstance().setClaimConfig(claimConfig);
-        if ("DEFAULT".equals(claimConfig.getClaimManager())) {
-            InMemoryClaimManager claimManager = new InMemoryClaimManager();
-            try {
-                claimManager.init(claimConfig.getClaimMappings());
-            } catch (ClaimManagerException e) {
-                log.error("Failed to initialze Inmemory Claim Manager", e);
-            }
-            CarbonSecurityDataHolder.getInstance().getCarbonRealmService().setClaimManager(claimManager);
-        }
-
-        log.info("Realm service registered successfully.");
-        log.info("Carbon-Security bundle activated successfully.");
     }
 
     @Deactivate
@@ -236,13 +209,11 @@ public class CarbonSecurityComponent {
         // Initialize proxy login module
         ProxyLoginModule.init(bundleContext);
 
-        CarbonSecurityDataHolder.getInstance().setBundleContext(bundleContext);
-
         // Set CarbonJAASConfiguration as the implantation of Configuration
         CarbonJAASConfiguration configuration = new CarbonJAASConfiguration();
         configuration.init();
 
-        //Registering login module provided by the bundle
+        // Registering login module provided by the bundle
         Hashtable<String, String> usernamePasswordLoginModuleProps = new Hashtable<>();
         usernamePasswordLoginModuleProps.put(ProxyLoginModule.LOGIN_MODULE_SEARCH_KEY,
                 UsernamePasswordLoginModule.class.getName());
@@ -275,7 +246,7 @@ public class CarbonSecurityComponent {
     /**
      * Set default permissions for all bundles using PermissionAdmin.
      *
-     * @param context
+     * @param context Bundle context.
      */
     private void setDefaultPermissions(BundleContext context) {
 
@@ -308,18 +279,60 @@ public class CarbonSecurityComponent {
                             permissionInfo.getActions().trim() : null));
         }
 
-        permissionAdmin.setDefaultPermissions(permissionInfoList.toArray(new PermissionInfo[permissionInfoList.size()
-                ]));
+        permissionAdmin.setDefaultPermissions(
+                permissionInfoList.toArray(new PermissionInfo[permissionInfoList.size()]));
     }
 
     /**
      * Get PermissionAdmin.
      *
-     * @param context
-     * @return
+     * @param context Bundle context.
+     * @return Permission admin.
      */
     private PermissionAdmin getPermissionAdmin(BundleContext context) {
         return (PermissionAdmin) context.getService(context.getServiceReference(PermissionAdmin.class.getName()));
+    }
+
+    @Override
+    public void onAllRequiredCapabilitiesAvailable() {
+
+        BundleContext bundleContext = CarbonSecurityDataHolder.getInstance().getBundleContext();
+
+        // If security manager is enabled init authorization configs
+        if (System.getProperty("java.security.manager") != null) {
+            initAuthorizationConfigs(bundleContext);
+        }
+
+        // Register the carbon realm service.
+        try {
+            StoreConfig storeConfig = StoreConfigBuilder.buildStoreConfigs();
+            CarbonRealmServiceImpl carbonRealmService = new CarbonRealmServiceImpl(storeConfig);
+            CarbonSecurityDataHolder.getInstance().registerCarbonRealmService(carbonRealmService);
+            realmServiceRegistration = bundleContext.registerService(RealmService.class.getName(), carbonRealmService,
+                    null);
+            log.info("Realm service registered successfully.");
+        } catch (Throwable e) {
+            log.error(e.getMessage(), e);
+        }
+
+        // Initialize and register the claim manager.
+
+        ClaimConfig claimConfig = ClaimConfigBuilder.getClaimConfig();
+        CarbonSecurityDataHolder.getInstance().setClaimConfig(claimConfig);
+
+        if ("DEFAULT".equals(claimConfig.getClaimManager())) {
+            InMemoryClaimManager claimManager = new InMemoryClaimManager();
+            try {
+                claimManager.init(claimConfig.getClaimMappings());
+                log.info("Claim manager initialized successfully.");
+            } catch (ClaimManagerException e) {
+                log.error("Failed to initialize In-memory Claim Manager", e);
+            }
+            CarbonSecurityDataHolder.getInstance().getCarbonRealmService().setClaimManager(claimManager);
+            log.info("Claim manager registered successfully.");
+        }
+
+        log.info("Carbon-Security bundle activated successfully.");
     }
 }
 
