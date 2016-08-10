@@ -27,7 +27,7 @@ storeConnectors:
   connectorType: "JDBCCredentialStore"
   properties:
    dataSource: "WSO2_CARBON_DB"
-   hashAlgorithm: "SHA-256"
+   hashAlgorithm: "SHA256"
    databaseType: "MySQL"
  -
   name: "JDBCIS1"

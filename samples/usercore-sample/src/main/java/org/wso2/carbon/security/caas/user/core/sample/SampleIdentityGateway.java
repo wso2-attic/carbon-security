@@ -23,6 +23,10 @@ import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.component.annotations.ReferenceCardinality;
 import org.osgi.service.component.annotations.ReferencePolicy;
 import org.slf4j.LoggerFactory;
+import org.wso2.carbon.kernel.context.PrivilegedCarbonContext;
+import org.wso2.carbon.messaging.CarbonMessage;
+import org.wso2.carbon.messaging.DefaultCarbonMessage;
+import org.wso2.carbon.security.caas.api.ProxyCallbackHandler;
 import org.wso2.carbon.security.caas.user.core.bean.User;
 import org.wso2.carbon.security.caas.user.core.exception.IdentityStoreException;
 import org.wso2.carbon.security.caas.user.core.exception.UserNotFoundException;
@@ -30,6 +34,10 @@ import org.wso2.carbon.security.caas.user.core.service.RealmService;
 import org.wso2.carbon.security.caas.user.core.store.IdentityStore;
 import org.wso2.msf4j.Microservice;
 
+import java.io.UnsupportedEncodingException;
+import java.util.Base64;
+import javax.security.auth.login.LoginContext;
+import javax.security.auth.login.LoginException;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -70,6 +78,30 @@ public class SampleIdentityGateway implements Microservice {
     public void unregisterCarbonRealm(RealmService carbonRealmService) {
         IdentityDataHolder.getInstance().unregisterCarbonRealmServer();
         log.info("Realm service successfully unregistered.");
+    }
+
+    @GET
+    @Path("authenticate/")
+    public Response authenticate() {
+
+        try {
+            PrivilegedCarbonContext.destroyCurrentContext();
+
+            CarbonMessage carbonMessage = new DefaultCarbonMessage();
+            carbonMessage.setHeader("Authorization", "Basic " + Base64.getEncoder()
+                    .encodeToString("admin:admin".getBytes("UTF-8")));
+            ProxyCallbackHandler callbackHandler = new ProxyCallbackHandler(carbonMessage);
+
+            LoginContext loginContext = new LoginContext("CarbonSecurityConfig", callbackHandler);
+            loginContext.login();
+
+        } catch (LoginException e) {
+            return Response.serverError().build();
+        } catch (UnsupportedEncodingException e) {
+            return Response.serverError().build();
+        }
+
+        return Response.accepted().build();
     }
 
     @GET

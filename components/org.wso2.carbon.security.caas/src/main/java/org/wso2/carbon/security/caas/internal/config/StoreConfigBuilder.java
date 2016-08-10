@@ -96,15 +96,7 @@ public class StoreConfigBuilder {
         Map<String, CacheConfig> credentialStoreCacheConfigMap;
 
         if (cacheEnabled && credentialStoreCacheEntries != null && !credentialStoreCacheEntries.isEmpty()) {
-            credentialStoreCacheConfigMap = credentialStoreCacheEntries.stream()
-                    .filter(cacheEntry -> !(cacheEntry.getName() == null || cacheEntry.getName().isEmpty()))
-                    .map(cacheEntry -> {
-                        if (cacheEntry.getCacheConfig() == null) {
-                            cacheEntry.setCacheConfig(new CacheConfig());
-                        }
-                        return cacheEntry;
-                    })
-                    .collect(Collectors.toMap(CacheEntry::getName, CacheEntry::getCacheConfig));
+            credentialStoreCacheConfigMap = getCacheConfigs(credentialStoreCacheEntries);
         } else {
             credentialStoreCacheConfigMap = Collections.emptyMap();
         }
@@ -116,16 +108,7 @@ public class StoreConfigBuilder {
         Map<String, CacheConfig> identityStoreCacheConfigMap;
 
         if (cacheEnabled && identityStoreCacheEntries != null && !identityStoreCacheEntries.isEmpty()) {
-
-            identityStoreCacheConfigMap = identityStoreCacheEntries.stream()
-                    .filter(cacheEntry -> !(cacheEntry.getName() == null || cacheEntry.getName().isEmpty()))
-                    .map(cacheEntry -> {
-                        if (cacheEntry.getCacheConfig() == null) {
-                            cacheEntry.setCacheConfig(new CacheConfig());
-                        }
-                        return cacheEntry;
-                    })
-                    .collect(Collectors.toMap(CacheEntry::getName, CacheEntry::getCacheConfig));
+            identityStoreCacheConfigMap = getCacheConfigs(identityStoreCacheEntries);
         } else {
             identityStoreCacheConfigMap = Collections.emptyMap();
         }
@@ -137,16 +120,7 @@ public class StoreConfigBuilder {
         Map<String, CacheConfig> authorizationStoreCacheConfigMap;
 
         if (cacheEnabled && authorizationStoreCacheEntries != null && !authorizationStoreCacheEntries.isEmpty()) {
-
-            authorizationStoreCacheConfigMap = authorizationStoreCacheEntries.stream()
-                    .filter(cacheEntry -> !(cacheEntry.getName() == null || cacheEntry.getName().isEmpty()))
-                    .map(cacheEntry -> {
-                        if (cacheEntry.getCacheConfig() == null) {
-                            cacheEntry.setCacheConfig(new CacheConfig());
-                        }
-                        return cacheEntry;
-                    })
-                    .collect(Collectors.toMap(CacheEntry::getName, CacheEntry::getCacheConfig));
+            authorizationStoreCacheConfigMap = getCacheConfigs(authorizationStoreCacheEntries);
         } else {
             authorizationStoreCacheConfigMap = Collections.emptyMap();
         }
@@ -303,5 +277,23 @@ public class StoreConfigBuilder {
         }
 
         return configEntryMap;
+    }
+
+    /**
+     * Get cache configs for each connector.
+     * @param cacheEntries Cache entry of the connector.
+     * @return Map of CacheConfigs.
+     */
+    private static Map<String, CacheConfig> getCacheConfigs(List<CacheEntry> cacheEntries) {
+
+        return cacheEntries.stream()
+                .filter(cacheEntry -> !(cacheEntry.getName() == null || cacheEntry.getName().isEmpty()))
+                .map(cacheEntry -> {
+                    if (cacheEntry.getCacheConfig() == null) {
+                        cacheEntry.setCacheConfig(new CacheConfig());
+                    }
+                    return cacheEntry;
+                })
+                .collect(Collectors.toMap(CacheEntry::getName, CacheEntry::getCacheConfig));
     }
 }

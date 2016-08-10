@@ -86,6 +86,24 @@ public class Role  {
     }
 
     /**
+     * Get all Permissions assign to this Role filtered from resource.
+     * @return List of Permission.
+     * @throws AuthorizationStoreException Authorization store exception.
+     */
+    public List<Permission> getPermissions(Resource resource) throws AuthorizationStoreException {
+        return authorizationStore.getPermissionsOfRole(roleId, authorizationStoreId, resource);
+    }
+
+    /**
+     * Get all Permissions assign to this Role filtered from action.
+     * @return List of Permission.
+     * @throws AuthorizationStoreException Authorization store exception.
+     */
+    public List<Permission> getPermissions(Action action) throws AuthorizationStoreException {
+        return authorizationStore.getPermissionsOfRole(roleId, authorizationStoreId, action);
+    }
+
+    /**
      * Get all Groups assigned to this Role.
      * @return List of Group.
      * @throws AuthorizationStoreException Authorization store exception.

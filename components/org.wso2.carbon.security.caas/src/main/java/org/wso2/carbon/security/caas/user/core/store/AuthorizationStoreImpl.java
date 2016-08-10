@@ -27,6 +27,7 @@ import org.wso2.carbon.security.caas.user.core.bean.Resource;
 import org.wso2.carbon.security.caas.user.core.bean.Role;
 import org.wso2.carbon.security.caas.user.core.bean.User;
 import org.wso2.carbon.security.caas.user.core.config.AuthorizationConnectorConfig;
+import org.wso2.carbon.security.caas.user.core.constant.UserCoreConstants;
 import org.wso2.carbon.security.caas.user.core.exception.AuthorizationStoreException;
 import org.wso2.carbon.security.caas.user.core.exception.IdentityStoreException;
 import org.wso2.carbon.security.caas.user.core.exception.PermissionNotFoundException;
@@ -54,6 +55,7 @@ public class AuthorizationStoreImpl implements AuthorizationStore {
     private static final Logger log = LoggerFactory.getLogger(AuthorizationStoreImpl.class);
 
     private RealmService realmService;
+    private Map<String, AuthorizationConnectorConfig> authorizationConnectorConfigs;
     private Map<String, AuthorizationStoreConnector> authorizationStoreConnectors = new HashMap<>();
 
     @Override
@@ -61,6 +63,7 @@ public class AuthorizationStoreImpl implements AuthorizationStore {
             throws AuthorizationStoreException {
 
         this.realmService = realmService;
+        this.authorizationConnectorConfigs = authorizationConnectorConfigs;
 
         if (authorizationConnectorConfigs.isEmpty()) {
             throw new StoreException("At least one authorization store configuration must present.");
@@ -367,6 +370,13 @@ public class AuthorizationStoreImpl implements AuthorizationStore {
     }
 
     @Override
+    public Role addRole(String roleName, List<Permission> permissions) throws AuthorizationStoreException {
+
+        String authorizationStoreId = getPrimaryAuthorizationStoreId();
+        return addRole(roleName, permissions, authorizationStoreId);
+    }
+
+    @Override
     public Role addRole(String roleName, List<Permission> permissions, String authorizationStoreId)
             throws AuthorizationStoreException {
 
@@ -402,6 +412,14 @@ public class AuthorizationStoreImpl implements AuthorizationStore {
     }
 
     @Override
+    public Resource addResource(String resourceNamespace, String resourceId, String userId, String identityStoreId)
+            throws AuthorizationStoreException {
+
+        String authorizationStoreId = getPrimaryAuthorizationStoreId();
+        return addResource(resourceNamespace, resourceId, authorizationStoreId, userId, identityStoreId);
+    }
+
+    @Override
     public Resource addResource(String resourceNamespace, String resourceId, String authorizationStoreId, String userId,
                                 String identityStoreId) throws AuthorizationStoreException {
 
@@ -417,6 +435,13 @@ public class AuthorizationStoreImpl implements AuthorizationStore {
     }
 
     @Override
+    public Action addAction(String actionNamespace, String actionName) throws AuthorizationStoreException {
+
+        String authorizationStoreId = getPrimaryAuthorizationStoreId();
+        return addAction(actionNamespace, actionName, authorizationStoreId);
+    }
+
+    @Override
     public Action addAction(String actionNamespace, String actionName, String authorizationStoreId)
             throws AuthorizationStoreException {
 
@@ -429,6 +454,13 @@ public class AuthorizationStoreImpl implements AuthorizationStore {
         }
 
         return authorizationStoreConnector.addAction(actionNamespace, actionName);
+    }
+
+    @Override
+    public Permission addPermission(Resource resource, Action action) throws AuthorizationStoreException {
+
+        String authorizationStoreId = getPrimaryAuthorizationStoreId();
+        return addPermission(resource, action, authorizationStoreId);
     }
 
     @Override
@@ -670,5 +702,36 @@ public class AuthorizationStoreImpl implements AuthorizationStore {
         }
 
         return roleMap;
+    }
+
+    /**
+     * Get the primary authorization store id.
+     * @return Id of the primary authorization store.
+     */
+    private String getPrimaryAuthorizationStoreId() {
+
+        // To get the primary authorization store, first check whether the primary property is set to true, if not sort
+        // the connectors by there priority. If non of above properties were set, then get the first connector id from
+        // the list.
+        return authorizationConnectorConfigs.entrySet()
+                .stream()
+                .filter(config -> Boolean.parseBoolean(config.getValue().getStoreProperties()
+                        .getProperty(UserCoreConstants.PRIMARY_USERSTORE)))
+                .findFirst()
+                .map(Map.Entry::getKey)
+                .orElse(authorizationConnectorConfigs.entrySet()
+                        .stream()
+                        .sorted((c1, c2) ->
+                                Integer.compare(Integer.parseInt(c1.getValue().getStoreProperties()
+                                        .getProperty(UserCoreConstants.USERSTORE_PRIORITY)),
+                                        Integer.parseInt(c2.getValue().getStoreProperties()
+                                                .getProperty(UserCoreConstants.USERSTORE_PRIORITY))))
+                        .findFirst()
+                        .map(Map.Entry::getKey)
+                        .orElse(authorizationConnectorConfigs.entrySet()
+                                .stream()
+                                .findFirst()
+                                .map(Map.Entry::getKey)
+                                .orElse(null)));
     }
 }
