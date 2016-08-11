@@ -448,6 +448,25 @@ public class CacheBackedAuthorizationStore implements AuthorizationStore {
     }
 
     @Override
+    public Role addRole(String roleName, List<Permission> permissions) throws AuthorizationStoreException {
+
+        if (CacheHelper.isCacheDisabled(cacheConfigs, CacheNames.ROLE_ROLENAME)) {
+            return authorizationStore.addRole(roleName, permissions);
+        }
+
+        Cache<String, Role> cache = cacheManager.getCache(CacheNames.ROLE_ROLENAME, String.class, Role.class);
+
+        Role role = authorizationStore.addRole(roleName, permissions);
+        cache.put(roleName, role);
+
+        if (log.isDebugEnabled()) {
+            log.debug("Role cached for role name: {}.", roleName);
+        }
+
+        return role;
+    }
+
+    @Override
     public Role addRole(String roleName, List<Permission> permissions, String authorizationStoreId)
             throws AuthorizationStoreException {
 
@@ -486,6 +505,13 @@ public class CacheBackedAuthorizationStore implements AuthorizationStore {
     }
 
     @Override
+    public Resource addResource(String resourceNamespace, String resourceId, String userId, String identityStoreId)
+            throws AuthorizationStoreException {
+        return authorizationStore.addResource(resourceNamespace, resourceId, userId,
+                identityStoreId);
+    }
+
+    @Override
     public Resource addResource(String resourceNamespace, String resourceId, String authorizationStoreId, String userId,
                                 String identityStoreId) throws AuthorizationStoreException {
         return authorizationStore.addResource(resourceNamespace, resourceId, authorizationStoreId, userId,
@@ -493,9 +519,35 @@ public class CacheBackedAuthorizationStore implements AuthorizationStore {
     }
 
     @Override
+    public Action addAction(String actionNamespace, String actionName) throws AuthorizationStoreException {
+        return authorizationStore.addAction(actionNamespace, actionName);
+    }
+
+    @Override
     public Action addAction(String actionNamespace, String actionName, String authorizationStoreId)
             throws AuthorizationStoreException {
         return authorizationStore.addAction(actionNamespace, actionName, authorizationStoreId);
+    }
+
+    @Override
+    public Permission addPermission(Resource resource, Action action) throws AuthorizationStoreException {
+
+
+        if (CacheHelper.isCacheDisabled(cacheConfigs, CacheNames.PERMISSION_REOURCEID_ACTION)) {
+            return authorizationStore.addPermission(resource, action);
+        }
+
+        Cache<String, Permission> cache = cacheManager.getCache(CacheNames.PERMISSION_REOURCEID_ACTION, String.class,
+                Permission.class);
+
+        Permission permission = authorizationStore.addPermission(resource, action);
+        cache.put(resource.getResourceString() + action.getActionString(), permission);
+
+        if (log.isDebugEnabled()) {
+            log.debug("permissions cached for resource id: {} and action: {}", resource, action);
+        }
+
+        return permission;
     }
 
     @Override

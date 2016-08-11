@@ -217,6 +217,15 @@ public interface AuthorizationStore {
             throws AuthorizationStoreException;
 
     /**
+     * Add a new Role to primary authorization store.
+     * @param roleName Name of the Role.
+     * @param permissions List of permissions to be assign.
+     * @return New Role.
+     * @throws AuthorizationStoreException Authorization store exception.
+     */
+    Role addRole(String roleName, List<Permission> permissions) throws AuthorizationStoreException;
+
+    /**
      * Add a new Role.
      * @param roleName Name of the Role.
      * @param permissions List of permissions to be assign.
@@ -235,6 +244,18 @@ public interface AuthorizationStore {
     void deleteRole(Role role) throws AuthorizationStoreException;
 
     /**
+     * Add new resource to primary authorization store.
+     * @param resourceNamespace Namespace of the resource.
+     * @param resourceId Id of the resource.
+     * @param userId Id of the owner.
+     * @param identityStoreId Identity store id if the owner.
+     * @return New Resource.
+     * @throws AuthorizationStoreException
+     */
+    Resource addResource(String resourceNamespace, String resourceId, String userId, String identityStoreId)
+            throws AuthorizationStoreException;
+
+    /**
      * Add new resource.
      * @param resourceNamespace Namespace of the resource.
      * @param resourceId Id of the resource.
@@ -248,6 +269,15 @@ public interface AuthorizationStore {
                          String identityStoreId) throws AuthorizationStoreException;
 
     /**
+     * Add new action to primary authorization store.
+     * @param actionNamespace Namespace of the action.
+     * @param actionName Name of the action.
+     * @return New action.
+     * @throws AuthorizationStoreException
+     */
+    Action addAction(String actionNamespace, String actionName) throws AuthorizationStoreException;
+
+    /**
      * Add new action.
      * @param actionNamespace Namespace of the action.
      * @param actionName Name of the action.
@@ -257,6 +287,15 @@ public interface AuthorizationStore {
      */
     Action addAction(String actionNamespace, String actionName, String authorizationStoreId)
             throws AuthorizationStoreException;
+
+    /**
+     * Add new permission to primary authorization store.
+     * @param resource Resource.
+     * @param action Action.
+     * @return Created Permission.
+     * @throws AuthorizationStoreException Authorization store exception.
+     */
+    Permission addPermission(Resource resource, Action action) throws AuthorizationStoreException;
 
     /**
      * Add new permission.

@@ -63,6 +63,9 @@
             org.osgi.framework.*;version="${osgi.framework.package.import.version.range}",
             org.slf4j.*;version="${slf4j.logging.package.import.version.range}",
             org.wso2.carbon.security.caas.user.core.*,
+            org.wso2.carbon.security.caas.api.*,
+            org.wso2.carbon.messaging.*,
+            org.wso2.carbon.kernel.context.*,
             org.wso2.msf4j.*,
             javax.ws.rs.*,
             javax.xml.bind.*

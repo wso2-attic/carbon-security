@@ -180,7 +180,7 @@ public class User {
     }
 
     /**
-     * Ger permissions filtered from the givrn action.
+     * Ger permissions filtered from the given action.
      * @param action Action to filter.
      * @return List of permissions.
      * @throws AuthorizationStoreException
