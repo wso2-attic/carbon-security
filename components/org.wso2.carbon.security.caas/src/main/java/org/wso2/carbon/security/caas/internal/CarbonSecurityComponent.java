@@ -305,6 +305,7 @@ public class CarbonSecurityComponent implements RequiredCapabilityListener {
 
         // Register the carbon realm service.
         try {
+            // TODO: Validate the configuration files for multiple primary attributes.
             StoreConfig storeConfig = StoreConfigBuilder.buildStoreConfigs();
             CarbonRealmServiceImpl carbonRealmService = new CarbonRealmServiceImpl(storeConfig);
             CarbonSecurityDataHolder.getInstance().registerCarbonRealmService(carbonRealmService);

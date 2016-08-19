@@ -52,6 +52,23 @@ public interface AuthorizationStoreConnector {
     Role.RoleBuilder getRole(String roleId) throws RoleNotFoundException, AuthorizationStoreException;
 
     /**
+     * Get the count of the roles available in the authorization store.
+     * @return Number of roles.
+     * @throws AuthorizationStoreException Authorization Store Exception
+     */
+    int getRoleCount() throws AuthorizationStoreException;
+
+    /**
+     * List the roles according to the filter pattern.
+     * @param filterPattern Filter pattern to be used.
+     * @param offset Offset to be used.
+     * @param length Number of roles from the offset.
+     * @return List of roles.
+     * @throws AuthorizationStoreException Authorization Store Exception
+     */
+    List<Role.RoleBuilder> listRoles(String filterPattern, int offset, int length) throws AuthorizationStoreException;
+
+    /**
      * Get permission from the resource id and action.
      * @param resource Resource of this permission.
      * @param action Action of the permission.
@@ -60,6 +77,40 @@ public interface AuthorizationStoreConnector {
      */
     Permission.PermissionBuilder getPermission(Resource resource, Action action) throws PermissionNotFoundException,
             AuthorizationStoreException;
+
+    /**
+     * Get the count of the permissions available in the authorization store.
+     * @return Number of permissions.
+     */
+    int getPermissionCount() throws AuthorizationStoreException;
+
+    /**
+     * List the permissions according to the filter pattern.
+     * @param resourcePattern Resource pattern to be used.
+     * @param actionPattern Action pattern to be used.
+     * @param offset Offset to be used.
+     * @param length Number of permissions from the offset.
+     * @return List of permissions.
+     * @throws AuthorizationStoreException Authorization Store Exception
+     */
+    List<Permission.PermissionBuilder> listPermissions(String resourcePattern, String actionPattern, int offset,
+                                                       int length) throws AuthorizationStoreException;
+
+    /**
+     * Get a list of resources matched for given resource id pattern.
+     * @param resourcePattern Resource id pattern.
+     * @return List of resources.
+     * @throws AuthorizationStoreException Authorization Store Exception
+     */
+    List<Resource.ResourceBuilder> getResources(String resourcePattern) throws AuthorizationStoreException;
+
+    /**
+     * Get a list of actions matched for give action name pattern.
+     * @param actionPattern Action name pattern.
+     * @return List of actions.
+     * @throws AuthorizationStoreException Authorization Store Exception
+     */
+    List<Action.ActionBuilder> getActions(String actionPattern) throws AuthorizationStoreException;
 
     /**
      * Get roles for the user id.
@@ -190,6 +241,15 @@ public interface AuthorizationStoreConnector {
     void deletePermission(String permissionId) throws AuthorizationStoreException;
 
     /**
+     * Deletes the given resource.
+     * @param resource Resource to be deleted.
+     * @throws AuthorizationStoreException
+     */
+    void deleteResource(Resource resource) throws AuthorizationStoreException;
+
+    void deleteAction(Action action) throws AuthorizationStoreException;
+
+    /**
      * Update the roles of the user by replacing existing roles. (PUT)
      * @param userId Id of the user.
      * @param identityStoreId Identity store id of the user.
@@ -198,13 +258,6 @@ public interface AuthorizationStoreConnector {
      */
     void updateRolesInUser(String userId, String identityStoreId, List<Role> newRoleList)
             throws AuthorizationStoreException;
-
-    /**
-     * Get the authorization store config.
-     * @return AuthorizationConnectorConfig.
-     * @throws AuthorizationStoreException Authorization Store Exception.
-     */
-    AuthorizationConnectorConfig getAuthorizationStoreConfig() throws AuthorizationStoreException;
 
     /**
      * Add a new User list by <b>replacing</b> the existing User list. (PUT)
@@ -291,6 +344,13 @@ public interface AuthorizationStoreConnector {
      */
     void updateRolesInGroup(String groupId, String identityStoreId, List<Role> rolesToBeAssign,
                             List<Role> rolesToBeUnassigned) throws AuthorizationStoreException;
+
+    /**
+     * Get the authorization store config.
+     * @return AuthorizationConnectorConfig.
+     * @throws AuthorizationStoreException Authorization Store Exception.
+     */
+    AuthorizationConnectorConfig getAuthorizationStoreConfig() throws AuthorizationStoreException;
 
     /**
      * Get the id of this authorization store.

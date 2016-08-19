@@ -234,6 +234,119 @@ public class AuthorizationStoreImpl implements AuthorizationStore {
     }
 
     @Override
+    public List<Role> listRoles(String filterPattern, int offset, int length) throws AuthorizationStoreException {
+
+        List<Role> roles = new ArrayList<>();
+
+        for (AuthorizationStoreConnector authorizationStoreConnector : authorizationStoreConnectors.values()) {
+
+            // Get the total count of roles in the authorization store.
+            int roleCount;
+            try {
+                roleCount = authorizationStoreConnector.getRoleCount();
+            } catch (UnsupportedOperationException e) {
+                log.warn("Count operation is not supported by this authorization store. Running the operation in " +
+                        "performance intensive mode.");
+                roleCount = authorizationStoreConnector.listRoles("*", 0, -1).size();
+            }
+
+            // If there are roles in this user store more than the offset, we can get roles from this offset.
+            // If this offset exceeds the available count of the current authorization store, move to the next
+            // user store.
+            if (roleCount > offset) {
+                roles.addAll(authorizationStoreConnector.listRoles(filterPattern, offset, length)
+                        .stream()
+                        .map(roleBuilder -> roleBuilder.setAuthorizationStore(
+                                realmService.getAuthorizationStore()).build())
+                        .collect(Collectors.toList()));
+                length -= roles.size();
+                offset = 0;
+            } else {
+                offset -= roleCount;
+            }
+
+            // If we retrieved all the required roles.
+            if (length == 0) {
+                break;
+            }
+        }
+
+        return roles;
+    }
+
+    @Override
+    public List<Permission> listPermissions(String resourcePattern, String actionPattern, int offset, int length)
+            throws AuthorizationStoreException {
+
+        List<Permission> permissions = new ArrayList<>();
+
+        for (AuthorizationStoreConnector authorizationStoreConnector : authorizationStoreConnectors.values()) {
+
+            // Get the total count of permissions in the authorization store.
+            int permissionCount;
+            try {
+                permissionCount = authorizationStoreConnector.getPermissionCount();
+            } catch (UnsupportedOperationException e) {
+                log.warn("Count operation is not supported by this authorization store. Running the operation in " +
+                        "performance intensive mode.");
+                permissionCount = authorizationStoreConnector.listRoles("*", 0, -1).size();
+            }
+
+            // If there are permissions in this user store more than the offset, we can get permissions from this
+            // offset. If this offset exceeds the available count of the current authorization store, move to the next
+            // authorization store.
+            if (permissionCount > offset) {
+                permissions.addAll(authorizationStoreConnector
+                        .listPermissions(resourcePattern, actionPattern, offset, length)
+                        .stream()
+                        .map(Permission.PermissionBuilder::build)
+                        .collect(Collectors.toList()));
+                length -= permissions.size();
+                offset = 0;
+            } else {
+                offset -= permissionCount;
+            }
+
+            // If we retrieved all the required permissions.
+            if (length == 0) {
+                break;
+            }
+        }
+
+        return permissions;
+    }
+
+    @Override
+    public List<Resource> listResources(String resourcePattern) throws AuthorizationStoreException {
+
+        List<Resource> resources = new ArrayList<>();
+
+        for (AuthorizationStoreConnector authorizationStoreConnector : authorizationStoreConnectors.values()) {
+            resources.addAll(authorizationStoreConnector.getResources(resourcePattern)
+                    .stream()
+                    .map(Resource.ResourceBuilder::build)
+                    .collect(Collectors.toList()));
+        }
+
+        return resources;
+    }
+
+    @Override
+    public List<Action> listActions(String actionPattern) throws AuthorizationStoreException {
+
+        List<Action> actions = new ArrayList<>();
+
+        for (AuthorizationStoreConnector authorizationStoreConnector : authorizationStoreConnectors.values()) {
+            actions.addAll(authorizationStoreConnector.getActions(actionPattern)
+                    .stream()
+                    .map(Action.ActionBuilder::build)
+                    .collect(Collectors.toList()));
+        }
+
+        return actions;
+    }
+
+    @Override
     public List<Role> getRolesOfUser(String userId, String identityStoreId) throws AuthorizationStoreException {
 
         List<Role> roles = new ArrayList<>();
@@ -435,6 +548,20 @@ public class AuthorizationStoreImpl implements AuthorizationStore {
     }
 
     @Override
+    public void deleteResource(Resource resource) throws AuthorizationStoreException {
+
+        AuthorizationStoreConnector authorizationStoreConnector = authorizationStoreConnectors
+                .get(resource.getAuthorizationStore());
+
+        if (authorizationStoreConnector == null) {
+            throw new StoreException(String.format("No authorization store found for the given id: %s.",
+                    resource.getAuthorizationStore()));
+        }
+
+        authorizationStoreConnector.deleteResource(resource);
+    }
+
+    @Override
     public Action addAction(String actionNamespace, String actionName) throws AuthorizationStoreException {
 
         String authorizationStoreId = getPrimaryAuthorizationStoreId();
@@ -454,6 +581,20 @@ public class AuthorizationStoreImpl implements AuthorizationStore {
         }
 
         return authorizationStoreConnector.addAction(actionNamespace, actionName);
+    }
+
+    @Override
+    public void deleteAction(Action action) throws AuthorizationStoreException {
+
+        AuthorizationStoreConnector authorizationStoreConnector = authorizationStoreConnectors
+                .get(action.getAuthorizationStore());
+
+        if (authorizationStoreConnector == null) {
+            throw new StoreException(String.format("No authorization store found for the given id: %s.",
+                    action.getAuthorizationStore()));
+        }
+
+        authorizationStoreConnector.deleteAction(action);
     }
 
     @Override

@@ -122,6 +122,15 @@ public interface AuthorizationStore {
     Permission getPermission(String resource, String action) throws PermissionNotFoundException,
             AuthorizationStoreException;
 
+    List<Role> listRoles(String filterPattern, int offset, int length) throws AuthorizationStoreException;
+
+    List<Permission> listPermissions(String resourcePattern, String actionPattern, int offset, int length)
+            throws AuthorizationStoreException;
+
+    List<Resource> listResources(String resourcePattern) throws AuthorizationStoreException;
+
+    List<Action> listActions(String actionPattern) throws AuthorizationStoreException;
+
     /**
      * Get roles assigned to the specific user.
      * @param userId User id.
@@ -268,6 +277,8 @@ public interface AuthorizationStore {
     Resource addResource(String resourceNamespace, String resourceId, String authorizationStoreId, String userId,
                          String identityStoreId) throws AuthorizationStoreException;
 
+    void deleteResource(Resource resource) throws AuthorizationStoreException;
+
     /**
      * Add new action to primary authorization store.
      * @param actionNamespace Namespace of the action.
@@ -287,6 +298,8 @@ public interface AuthorizationStore {
      */
     Action addAction(String actionNamespace, String actionName, String authorizationStoreId)
             throws AuthorizationStoreException;
+
+    void deleteAction(Action action) throws AuthorizationStoreException;
 
     /**
      * Add new permission to primary authorization store.

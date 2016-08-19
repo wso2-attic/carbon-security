@@ -147,4 +147,14 @@ public class InMemoryIdentityStoreConnector implements IdentityStoreConnector {
     public IdentityConnectorConfig getIdentityStoreConfig() {
         return null;
     }
+
+    @Override
+    public int getUserCount() {
+        return 0;
+    }
+
+    @Override
+    public int getGroupCount() {
+        return 0;
+    }
 }

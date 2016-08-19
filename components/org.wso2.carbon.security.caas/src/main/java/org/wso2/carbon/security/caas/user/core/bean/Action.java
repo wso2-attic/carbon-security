@@ -27,6 +27,7 @@ public class Action {
 
     private String actionNamespace;
     private String action;
+    private String authorizationStore;
 
     public Action(String actionString) {
 
@@ -43,6 +44,12 @@ public class Action {
         this.action = action;
     }
 
+    private Action(String actionNamespace, String action, String authorizationStore) {
+        this.actionNamespace = actionNamespace;
+        this.action = action;
+        this.authorizationStore = authorizationStore;
+    }
+
     public String getActionNamespace() {
         return actionNamespace;
     }
@@ -53,5 +60,43 @@ public class Action {
 
     public String getActionString() {
         return actionNamespace + DELIMITER + action;
+    }
+
+    public String getAuthorizationStore() {
+        return authorizationStore;
+    }
+
+    /**
+     * Builder for the action.
+     */
+    public static class ActionBuilder {
+
+        private String actionNamespace;
+        private String action;
+        private String authorizationStore;
+
+        public ActionBuilder setActionNamespace(String actionNamespace) {
+            this.actionNamespace = actionNamespace;
+            return this;
+        }
+
+        public ActionBuilder setAction(String action) {
+            this.action = action;
+            return this;
+        }
+
+        public ActionBuilder setAuthorizationStore(String authorizationStore) {
+            this.authorizationStore = authorizationStore;
+            return this;
+        }
+
+        public Action build() {
+
+            if (actionNamespace == null || action == null || authorizationStore == null) {
+                throw new StoreException("Required data is missing to build the action.");
+            }
+
+            return new Action(actionNamespace, action, authorizationStore);
+        }
     }
 }
