@@ -820,6 +820,12 @@ public class AuthorizationStoreImpl implements AuthorizationStore {
         authorizationStoreConnector.updatePermissionsInRole(roleId, permissionsToBeAssign, permissionsToBeUnassign);
     }
 
+    @Override
+    public List<String> getAllAuthorizationStoreNames() {
+
+        return authorizationStoreConnectors.keySet().stream().collect(Collectors.toList());
+    }
+
     /**
      * Get the roles with there respective authorization store id.
      * @param roles List of roles.

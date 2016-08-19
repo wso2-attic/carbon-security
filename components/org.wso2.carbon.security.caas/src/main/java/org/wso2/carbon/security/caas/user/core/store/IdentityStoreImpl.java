@@ -322,4 +322,9 @@ public class IdentityStoreImpl implements IdentityStore {
         IdentityStoreConnector identityStoreConnector = identityStoreConnectors.get(identityStoreId);
         return identityStoreConnector.isUserInGroup(userId, groupId);
     }
+
+    @Override
+    public List<String> getAllIdentityStoreNames() {
+        return identityStoreConnectors.keySet().stream().collect(Collectors.toList());
+    }
 }

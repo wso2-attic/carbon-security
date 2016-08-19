@@ -122,13 +122,42 @@ public interface AuthorizationStore {
     Permission getPermission(String resource, String action) throws PermissionNotFoundException,
             AuthorizationStoreException;
 
+    /**
+     * List roles according to the filter pattern.
+     * @param filterPattern Filter pattern.
+     * @param offset Offset to begin.
+     * @param length Length from the offset.
+     * @return List of roles.
+     * @throws AuthorizationStoreException
+     */
     List<Role> listRoles(String filterPattern, int offset, int length) throws AuthorizationStoreException;
 
+    /**
+     * List the permissions according to the filter pattern.
+     * @param resourcePattern Pattern for the resource of this permission.
+     * @param actionPattern Pattern for the action of this permission.
+     * @param offset Offset to begin.
+     * @param length Length from the offset.
+     * @return List of permissions.
+     * @throws AuthorizationStoreException
+     */
     List<Permission> listPermissions(String resourcePattern, String actionPattern, int offset, int length)
             throws AuthorizationStoreException;
 
+    /**
+     * List resources according to the filter pattern.
+     * @param resourcePattern Resource pattern.
+     * @return List of resources.
+     * @throws AuthorizationStoreException
+     */
     List<Resource> listResources(String resourcePattern) throws AuthorizationStoreException;
 
+    /**
+     * List actions according to the filter pattern.
+     * @param actionPattern Action pattern.
+     * @return List of actions.
+     * @throws AuthorizationStoreException
+     */
     List<Action> listActions(String actionPattern) throws AuthorizationStoreException;
 
     /**
@@ -443,4 +472,10 @@ public interface AuthorizationStore {
     void updatePermissionsInRole(String roleId, String authorizationStoreId,
                                  List<Permission> permissionsToBeAssign,
                                  List<Permission> permissionsToBeUnassign) throws AuthorizationStoreException;
+
+    /**
+     * Get all available authorization store connector names.
+     * @return List of string.
+     */
+    List<String> getAllAuthorizationStoreNames();
 }

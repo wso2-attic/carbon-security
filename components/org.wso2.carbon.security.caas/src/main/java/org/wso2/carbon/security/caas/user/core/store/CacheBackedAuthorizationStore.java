@@ -747,4 +747,9 @@ public class CacheBackedAuthorizationStore implements AuthorizationStore {
             }
         }
     }
+
+    @Override
+    public List<String> getAllAuthorizationStoreNames() {
+        return authorizationStore.getAllAuthorizationStoreNames();
+    }
 }
