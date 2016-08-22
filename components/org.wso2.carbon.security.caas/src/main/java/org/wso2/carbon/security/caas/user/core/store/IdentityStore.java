@@ -177,7 +177,7 @@ public interface IdentityStore {
 
     /**
      * Get all available identity store connector names.
-     * @return List of string.
+     * @return Map of display names against the connector id.
      */
-    List<String> getAllIdentityStoreNames();
+    Map<String, String> getAllIdentityStoreNames();
 }

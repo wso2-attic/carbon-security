@@ -22,6 +22,7 @@ import org.wso2.carbon.security.caas.internal.CarbonSecurityDataHolder;
 import org.wso2.carbon.security.caas.user.core.bean.Group;
 import org.wso2.carbon.security.caas.user.core.bean.User;
 import org.wso2.carbon.security.caas.user.core.config.IdentityConnectorConfig;
+import org.wso2.carbon.security.caas.user.core.constant.UserCoreConstants;
 import org.wso2.carbon.security.caas.user.core.exception.GroupNotFoundException;
 import org.wso2.carbon.security.caas.user.core.exception.IdentityStoreException;
 import org.wso2.carbon.security.caas.user.core.exception.StoreException;
@@ -46,6 +47,7 @@ public class IdentityStoreImpl implements IdentityStore {
     private static final Logger log = LoggerFactory.getLogger(IdentityStoreImpl.class);
 
     private RealmService realmService;
+    private Map<String, IdentityConnectorConfig> identityConnectorConfigs;
     private Map<String, IdentityStoreConnector> identityStoreConnectors = new HashMap<>();
 
     @Override
@@ -53,6 +55,7 @@ public class IdentityStoreImpl implements IdentityStore {
             throws IdentityStoreException {
 
         this.realmService = realmService;
+        this.identityConnectorConfigs = identityConnectorConfigs;
 
         if (identityConnectorConfigs.isEmpty()) {
             throw new StoreException("At least one identity store configuration must present.");
@@ -324,7 +327,11 @@ public class IdentityStoreImpl implements IdentityStore {
     }
 
     @Override
-    public List<String> getAllIdentityStoreNames() {
-        return identityStoreConnectors.keySet().stream().collect(Collectors.toList());
+    public Map<String, String> getAllIdentityStoreNames() {
+        return identityConnectorConfigs.entrySet()
+                .stream()
+                .collect(Collectors.toMap(Map.Entry::getKey,
+                        entry -> entry.getValue().getStoreProperties()
+                                .getProperty(UserCoreConstants.USERSTORE_DISPLAY_NAME, "")));
     }
 }

@@ -124,7 +124,7 @@ public interface AuthorizationStore {
 
     /**
      * List roles according to the filter pattern.
-     * @param filterPattern Filter pattern.
+     * @param filterPattern Filter pattern for the role name.
      * @param offset Offset to begin.
      * @param length Length from the offset.
      * @return List of roles.
@@ -475,7 +475,7 @@ public interface AuthorizationStore {
 
     /**
      * Get all available authorization store connector names.
-     * @return List of string.
+     * @return Map of display names against the connector id.
      */
-    List<String> getAllAuthorizationStoreNames();
+    Map<String, String> getAllAuthorizationStoreNames();
 }

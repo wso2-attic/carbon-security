@@ -22,7 +22,6 @@ import org.wso2.carbon.security.caas.user.core.exception.AuthenticationFailure;
 import org.wso2.carbon.security.caas.user.core.exception.CredentialStoreException;
 import org.wso2.carbon.security.caas.user.core.service.RealmService;
 
-import java.util.List;
 import java.util.Map;
 import javax.security.auth.callback.Callback;
 
@@ -51,7 +50,7 @@ public interface CredentialStore {
 
     /**
      * Get all available credential store connector names.
-     * @return List of string.
+     * @return Map of display names against the connector id.
      */
-    List<String> getAllCredentialStoreNames();
+    Map<String, String> getAllCredentialStoreNames();
 }
