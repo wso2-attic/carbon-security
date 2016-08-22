@@ -45,6 +45,37 @@ public class InMemoryAuthorizationConnector implements AuthorizationStoreConnect
     }
 
     @Override
+    public List<Resource.ResourceBuilder> getResources(String resourcePattern) {
+        return null;
+    }
+
+    @Override
+    public List<Action.ActionBuilder> getActions(String actionPattern) {
+        return null;
+    }
+
+    @Override
+    public int getRoleCount() {
+        return 0;
+    }
+
+    @Override
+    public List<Role.RoleBuilder> listRoles(String filterPattern, int offset, int length) {
+        return null;
+    }
+
+    @Override
+    public int getPermissionCount() {
+        return 0;
+    }
+
+    @Override
+    public List<Permission.PermissionBuilder> listPermissions(String resourcePattern, String actionPattern, int offset,
+                                                              int length) {
+        return null;
+    }
+
+    @Override
     public Role.RoleBuilder getRole(String roleId) throws AuthorizationStoreException {
         return null;
     }
@@ -183,6 +214,15 @@ public class InMemoryAuthorizationConnector implements AuthorizationStoreConnect
 
     @Override
     public void deletePermission(String permissionId) {
+    }
+
+    @Override
+    public void deleteResource(Resource resource) throws AuthorizationStoreException {
+    }
+
+    @Override
+    public void deleteAction(Action action) throws AuthorizationStoreException {
+
     }
 
     @Override

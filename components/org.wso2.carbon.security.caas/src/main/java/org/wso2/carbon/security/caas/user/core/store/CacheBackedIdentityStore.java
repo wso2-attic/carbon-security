@@ -262,4 +262,9 @@ public class CacheBackedIdentityStore implements IdentityStore {
         }
         return isUserInGroup;
     }
+
+    @Override
+    public List<String> getAllIdentityStoreNames() {
+        return identityStore.getAllIdentityStoreNames();
+    }
 }

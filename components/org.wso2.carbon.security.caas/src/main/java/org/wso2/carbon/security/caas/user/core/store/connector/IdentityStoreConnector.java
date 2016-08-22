@@ -73,6 +73,13 @@ public interface IdentityStoreConnector {
     User.UserBuilder getUser(Callback [] callbacks) throws UserNotFoundException, IdentityStoreException;
 
     /**
+     * Get the count of the users available in the identity store.
+     * @return Number of users.
+     * @throws IdentityStoreException Identity Store Exception.
+     */
+    int getUserCount() throws IdentityStoreException;
+
+    /**
      * List all users in User Store according to the filter pattern.
      * @param filterPattern Filter pattern to be used.
      * @param offset        Offset to get the Users.
@@ -117,6 +124,13 @@ public interface IdentityStoreConnector {
      * @throws IdentityStoreException Identity Store Exception.
      */
     Group.GroupBuilder getGroup(String groupName) throws GroupNotFoundException, IdentityStoreException;
+
+    /**
+     * Get the count of the groups available in the identity store.
+     * @return Number of groups.
+     * @throws IdentityStoreException Identity Store Exception.
+     */
+    int getGroupCount() throws IdentityStoreException;
 
     /**
      * List groups according to the filter pattern.

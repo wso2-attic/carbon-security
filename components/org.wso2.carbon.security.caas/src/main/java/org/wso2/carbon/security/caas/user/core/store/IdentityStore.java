@@ -174,4 +174,10 @@ public interface IdentityStore {
      * @throws IdentityStoreException Identity Store Exception.
      */
     boolean isUserInGroup(String userId, String groupId, String identityStoreId) throws IdentityStoreException;
+
+    /**
+     * Get all available identity store connector names.
+     * @return List of string.
+     */
+    List<String> getAllIdentityStoreNames();
 }

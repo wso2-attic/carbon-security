@@ -18,7 +18,6 @@ package org.wso2.carbon.security.caas.user.core.store;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.wso2.carbon.kernel.utils.LambdaExceptionUtils;
 import org.wso2.carbon.security.caas.internal.CarbonSecurityDataHolder;
 import org.wso2.carbon.security.caas.user.core.bean.Group;
 import org.wso2.carbon.security.caas.user.core.bean.User;
@@ -141,7 +140,22 @@ public class IdentityStoreImpl implements IdentityStore {
 
         List<User> users = new ArrayList<>();
 
-        identityStoreConnectors.values().forEach(LambdaExceptionUtils.rethrowConsumer(identityStoreConnector ->
+        for (IdentityStoreConnector identityStoreConnector : identityStoreConnectors.values()) {
+
+            // Get the total count of users in the identity store.
+            int userCount;
+            try {
+                userCount = identityStoreConnector.getUserCount();
+            } catch (UnsupportedOperationException e) {
+                log.warn("Count operation is not supported by this identity store. Running the operation in " +
+                        "performance intensive mode.");
+                userCount = identityStoreConnector.listUsers("*", 0, -1).size();
+            }
+
+            // If there are users in this identity store more than the offset, we can get users from this offset.
+            // If this offset exceeds the available count of the current identity store, move to the next
+            // identity store.
+            if (userCount > offset) {
                 users.addAll(identityStoreConnector.listUsers(filterPattern, offset, length)
                         .stream()
                         .map(userBuilder -> userBuilder
@@ -149,7 +163,19 @@ public class IdentityStoreImpl implements IdentityStore {
                                 .setAuthorizationStore(realmService.getAuthorizationStore())
                                 .setClaimManager(realmService.getClaimManager())
                                 .build())
-                        .collect(Collectors.toList()))));
+                        .collect(Collectors.toList()));
+                length -= users.size();
+                offset = 0;
+            } else {
+                offset -= userCount;
+            }
+
+            // If we retrieved all the required users.
+            if (length == 0) {
+                break;
+            }
+        }
+
         return users;
     }
 
@@ -208,14 +234,41 @@ public class IdentityStoreImpl implements IdentityStore {
 
         List<Group> groups = new ArrayList<>();
 
-        identityStoreConnectors.values().forEach(LambdaExceptionUtils.rethrowConsumer(identityStoreConnector ->
+        for (IdentityStoreConnector identityStoreConnector : identityStoreConnectors.values()) {
+
+            // Get the total count of groups in the identity store.
+            int groupCount;
+            try {
+                groupCount = identityStoreConnector.getGroupCount();
+            } catch (UnsupportedOperationException e) {
+                log.warn("Count operation is not supported by this identity store. Running the operation in " +
+                        "performance intensive mode.");
+                groupCount = identityStoreConnector.listUsers("*", 0, -1).size();
+            }
+
+            // If there are groups in this identity store more than the offset, we can get groups from this offset.
+            // If this offset exceeds the available count of the current identity store, move to the next
+            // identity store.
+            if (groupCount > offset) {
                 groups.addAll(identityStoreConnector.listGroups(filterPattern, offset, length)
                         .stream()
                         .map(groupBuilder -> groupBuilder
                                 .setIdentityStore(realmService.getIdentityStore())
                                 .setAuthorizationStore(realmService.getAuthorizationStore())
                                 .build())
-                        .collect(Collectors.toList()))));
+                        .collect(Collectors.toList()));
+                length -= groups.size();
+                offset = 0;
+            } else {
+                offset -= groupCount;
+            }
+
+            // If we retrieved all the required users.
+            if (length == 0) {
+                break;
+            }
+        }
+
         return groups;
     }
 
@@ -268,5 +321,10 @@ public class IdentityStoreImpl implements IdentityStore {
 
         IdentityStoreConnector identityStoreConnector = identityStoreConnectors.get(identityStoreId);
         return identityStoreConnector.isUserInGroup(userId, groupId);
+    }
+
+    @Override
+    public List<String> getAllIdentityStoreNames() {
+        return identityStoreConnectors.keySet().stream().collect(Collectors.toList());
     }
 }

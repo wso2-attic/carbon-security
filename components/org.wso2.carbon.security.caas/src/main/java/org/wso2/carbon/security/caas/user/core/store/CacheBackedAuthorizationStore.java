@@ -273,6 +273,27 @@ public class CacheBackedAuthorizationStore implements AuthorizationStore {
     }
 
     @Override
+    public List<Role> listRoles(String filterPattern, int offset, int length) throws AuthorizationStoreException {
+        return authorizationStore.listRoles(filterPattern, offset, length);
+    }
+
+    @Override
+    public List<Permission> listPermissions(String resourcePattern, String actionPattern, int offset, int length)
+            throws AuthorizationStoreException {
+        return authorizationStore.listPermissions(resourcePattern, actionPattern, offset, length);
+    }
+
+    @Override
+    public List<Resource> listResources(String resourcePattern) throws AuthorizationStoreException {
+        return authorizationStore.listResources(resourcePattern);
+    }
+
+    @Override
+    public List<Action> listActions(String actionPattern) throws AuthorizationStoreException {
+        return authorizationStore.listActions(actionPattern);
+    }
+
+    @Override
     public List<Role> getRolesOfUser(String userId, String identityStoreId) throws AuthorizationStoreException {
 
         if (CacheHelper.isCacheDisabled(cacheConfigs, CacheNames.ROLES_USERID_IDENTITYSTOREID)) {
@@ -519,6 +540,11 @@ public class CacheBackedAuthorizationStore implements AuthorizationStore {
     }
 
     @Override
+    public void deleteResource(Resource resource) throws AuthorizationStoreException {
+        authorizationStore.deleteResource(resource);
+    }
+
+    @Override
     public Action addAction(String actionNamespace, String actionName) throws AuthorizationStoreException {
         return authorizationStore.addAction(actionNamespace, actionName);
     }
@@ -527,6 +553,11 @@ public class CacheBackedAuthorizationStore implements AuthorizationStore {
     public Action addAction(String actionNamespace, String actionName, String authorizationStoreId)
             throws AuthorizationStoreException {
         return authorizationStore.addAction(actionNamespace, actionName, authorizationStoreId);
+    }
+
+    @Override
+    public void deleteAction(Action action) throws AuthorizationStoreException {
+        authorizationStore.deleteAction(action);
     }
 
     @Override
@@ -715,5 +746,10 @@ public class CacheBackedAuthorizationStore implements AuthorizationStore {
                         authorizationStoreId);
             }
         }
+    }
+
+    @Override
+    public List<String> getAllAuthorizationStoreNames() {
+        return authorizationStore.getAllAuthorizationStoreNames();
     }
 }

@@ -27,6 +27,9 @@ public class Resource {
 
     private String resourceNamespace;
     private String resourceId;
+
+    private String authorizationStore;
+
     private String userId;
     private String identityStoreId;
 
@@ -54,6 +57,16 @@ public class Resource {
         this.identityStoreId = identityStoreId;
     }
 
+    private Resource(String resourceNamespace, String resourceId, String userId, String identityStoreId,
+                     String authorizationStore) {
+
+        this.resourceNamespace = resourceNamespace;
+        this.resourceId = resourceId;
+        this.userId = userId;
+        this.identityStoreId = identityStoreId;
+        this.authorizationStore = authorizationStore;
+    }
+
     public static Resource getUniversalResource() {
         return new Resource("*", "*");
     }
@@ -70,9 +83,64 @@ public class Resource {
         return resourceNamespace + DELIMITER + resourceId;
     }
 
+    public void setAuthorizationStore(String authorizationStore) {
+        this.authorizationStore = authorizationStore;
+    }
+
+    public String getAuthorizationStore() {
+        return authorizationStore;
+    }
+
     public User.UserBuilder getOwner() {
         return new User.UserBuilder()
                 .setUserId(userId)
                 .setIdentityStoreId(identityStoreId);
+    }
+
+    /**
+     * Builder for the resource bean.
+     */
+    public static class ResourceBuilder {
+
+        private String resourceNamespace;
+        private String resourceId;
+        private String authorizationStore;
+        private String userId;
+        private String identityStoreId;
+
+        public ResourceBuilder setResourceNamespace(String resourceNamespace) {
+            this.resourceNamespace = resourceNamespace;
+            return this;
+        }
+
+        public ResourceBuilder setResourceId(String resourceId) {
+            this.resourceId = resourceId;
+            return this;
+        }
+
+        public ResourceBuilder setAuthorizationStore(String authorizationStore) {
+            this.authorizationStore = authorizationStore;
+            return this;
+        }
+
+        public ResourceBuilder setUserId(String userId) {
+            this.userId = userId;
+            return this;
+        }
+
+        public ResourceBuilder setIdentityStoreId(String identityStoreId) {
+            this.identityStoreId = identityStoreId;
+            return this;
+        }
+
+        public Resource build() {
+
+            if (resourceNamespace == null || resourceId == null || authorizationStore == null || userId == null ||
+                    identityStoreId == null) {
+                throw new StoreException("Required data is missing to build the resource.");
+            }
+
+            return new Resource(resourceNamespace, resourceId, userId, identityStoreId, authorizationStore);
+        }
     }
 }

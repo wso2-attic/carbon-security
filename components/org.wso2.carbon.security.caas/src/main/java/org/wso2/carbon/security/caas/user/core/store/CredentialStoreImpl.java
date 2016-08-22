@@ -34,7 +34,9 @@ import org.wso2.carbon.security.caas.user.core.store.connector.CredentialStoreCo
 import org.wso2.carbon.security.caas.user.core.store.connector.CredentialStoreConnectorFactory;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 import javax.security.auth.callback.Callback;
 
 /**
@@ -127,5 +129,10 @@ public class CredentialStoreImpl implements CredentialStore {
             }
         }
         throw authenticationFailure;
+    }
+
+    @Override
+    public List<String> getAllCredentialStoreNames() {
+        return credentialStoreConnectors.keySet().stream().collect(Collectors.toList());
     }
 }
