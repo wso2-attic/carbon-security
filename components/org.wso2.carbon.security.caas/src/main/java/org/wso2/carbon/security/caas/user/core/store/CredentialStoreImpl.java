@@ -34,7 +34,6 @@ import org.wso2.carbon.security.caas.user.core.store.connector.CredentialStoreCo
 import org.wso2.carbon.security.caas.user.core.store.connector.CredentialStoreConnectorFactory;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import javax.security.auth.callback.Callback;
@@ -48,6 +47,7 @@ public class CredentialStoreImpl implements CredentialStore {
     private static final Logger log = LoggerFactory.getLogger(CredentialStoreImpl.class);
 
     private RealmService realmService;
+    private Map<String, CredentialConnectorConfig> credentialConnectorConfigs;
     private Map<String, CredentialStoreConnector> credentialStoreConnectors = new HashMap<>();
 
     @Override
@@ -55,6 +55,7 @@ public class CredentialStoreImpl implements CredentialStore {
             throws CredentialStoreException {
 
         this.realmService = realmService;
+        this.credentialConnectorConfigs = credentialConnectorConfigs;
 
         if (credentialConnectorConfigs.isEmpty()) {
             throw new StoreException("At least one credential store configuration must present.");
@@ -132,7 +133,11 @@ public class CredentialStoreImpl implements CredentialStore {
     }
 
     @Override
-    public List<String> getAllCredentialStoreNames() {
-        return credentialStoreConnectors.keySet().stream().collect(Collectors.toList());
+    public Map<String, String> getAllCredentialStoreNames() {
+        return credentialConnectorConfigs.entrySet()
+                .stream()
+                .collect(Collectors.toMap(Map.Entry::getKey,
+                        entry -> entry.getValue().getStoreProperties()
+                                .getProperty(UserCoreConstants.USERSTORE_DISPLAY_NAME, "")));
     }
 }

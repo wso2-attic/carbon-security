@@ -34,7 +34,6 @@ public class Group {
     private String identityStoreId;
     private String groupName;
     private String tenantDomain;
-    private GroupBuilder builder;
     private IdentityStore identityStore;
     private AuthorizationStore authorizationStore;
 

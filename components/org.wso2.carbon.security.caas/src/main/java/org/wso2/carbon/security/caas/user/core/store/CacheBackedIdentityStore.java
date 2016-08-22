@@ -264,7 +264,7 @@ public class CacheBackedIdentityStore implements IdentityStore {
     }
 
     @Override
-    public List<String> getAllIdentityStoreNames() {
+    public Map<String, String> getAllIdentityStoreNames() {
         return identityStore.getAllIdentityStoreNames();
     }
 }

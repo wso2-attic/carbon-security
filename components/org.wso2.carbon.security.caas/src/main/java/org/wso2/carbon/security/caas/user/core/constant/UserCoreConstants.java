@@ -34,4 +34,5 @@ public class UserCoreConstants {
     public static final String IDENTITY_STORE_ID = "identityStoreId";
     public static final String PRIMARY_USERSTORE = "primary";
     public static final String USERSTORE_PRIORITY = "priority";
+    public static final String USERSTORE_DISPLAY_NAME = "display-name";
 }

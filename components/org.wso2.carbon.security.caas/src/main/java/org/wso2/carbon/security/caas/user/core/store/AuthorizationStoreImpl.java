@@ -821,9 +821,13 @@ public class AuthorizationStoreImpl implements AuthorizationStore {
     }
 
     @Override
-    public List<String> getAllAuthorizationStoreNames() {
+    public Map<String, String> getAllAuthorizationStoreNames() {
 
-        return authorizationStoreConnectors.keySet().stream().collect(Collectors.toList());
+        return authorizationConnectorConfigs.entrySet()
+                .stream()
+                .collect(Collectors.toMap(Map.Entry::getKey,
+                        entry -> entry.getValue().getStoreProperties()
+                                .getProperty(UserCoreConstants.USERSTORE_DISPLAY_NAME, "")));
     }
 
     /**

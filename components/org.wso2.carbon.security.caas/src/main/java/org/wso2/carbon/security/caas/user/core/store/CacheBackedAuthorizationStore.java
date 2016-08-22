@@ -749,7 +749,7 @@ public class CacheBackedAuthorizationStore implements AuthorizationStore {
     }
 
     @Override
-    public List<String> getAllAuthorizationStoreNames() {
+    public Map<String, String> getAllAuthorizationStoreNames() {
         return authorizationStore.getAllAuthorizationStoreNames();
     }
 }
