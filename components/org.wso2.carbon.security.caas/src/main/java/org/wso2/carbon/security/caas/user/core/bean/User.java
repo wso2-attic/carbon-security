@@ -221,42 +221,6 @@ public class User {
     }
 
     /**
-     * Rename this user.
-     * @param newUsername New user name.
-     */
-    public void rename(String newUsername) {
-        throw new UnsupportedOperationException("This operation is not supported in platform level.");
-    }
-
-    /**
-     * Set claims for this User.
-     * @param claims List of claims to be set.
-     * @throws IdentityStoreException Identity store exception.
-     */
-    public void setClaims(Map<String, String> claims) throws IdentityStoreException {
-        throw new UnsupportedOperationException("This operation is not supported in platform level.");
-    }
-
-    /**
-     * Add a new Group list by <b>replacing</b> the existing group list. (PUT)
-     * @param newGroupList New group list names that needs to replace the existing list.
-     * @throws IdentityStoreException Identity store exception.
-     */
-    public void updateGroups(List<String> newGroupList) throws IdentityStoreException {
-        throw new UnsupportedOperationException("This operation is not supported in platform level.");
-    }
-
-    /**
-     * Assign a new list of Groups to existing list and/or un-assign Groups from existing Groups. (PATCH)
-     * @param assignList List to be added to the new list.
-     * @param unAssignList List to be removed from the existing list.
-     * @throws IdentityStoreException Identity store exception.
-     */
-    public void updateGroups(List<String> assignList, List<String> unAssignList) throws IdentityStoreException {
-        throw new UnsupportedOperationException("This operation is not supported in platform level.");
-    }
-
-    /**
      * Add a new Role list by <b>replacing</b> the existing Role list. (PUT)
      * @param newRolesList List of Roles needs to be assigned to this User.
      * @throws AuthorizationStoreException Authorization store exception,
