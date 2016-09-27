@@ -19,10 +19,13 @@ package org.wso2.carbon.security.caas.user.core.store;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.wso2.carbon.security.caas.internal.CarbonSecurityDataHolder;
+import org.wso2.carbon.security.caas.user.core.bean.Attribute;
+import org.wso2.carbon.security.caas.user.core.bean.Domain;
 import org.wso2.carbon.security.caas.user.core.bean.Group;
 import org.wso2.carbon.security.caas.user.core.bean.User;
+import org.wso2.carbon.security.caas.user.core.claim.Claim;
 import org.wso2.carbon.security.caas.user.core.config.CacheConfig;
-import org.wso2.carbon.security.caas.user.core.config.IdentityConnectorConfig;
+import org.wso2.carbon.security.caas.user.core.config.IdentityStoreConnectorConfig;
 import org.wso2.carbon.security.caas.user.core.constant.CacheNames;
 import org.wso2.carbon.security.caas.user.core.exception.GroupNotFoundException;
 import org.wso2.carbon.security.caas.user.core.exception.IdentityStoreException;
@@ -54,7 +57,7 @@ public class CacheBackedIdentityStore implements IdentityStore {
     }
 
     @Override
-    public void init(RealmService realmService, Map<String, IdentityConnectorConfig> identityConnectorConfigs)
+    public void init(RealmService realmService, Map<String, IdentityStoreConnectorConfig> identityConnectorConfigs)
             throws IdentityStoreException {
 
         if (CarbonSecurityDataHolder.getInstance().getCarbonCachingService() == null) {
@@ -104,6 +107,12 @@ public class CacheBackedIdentityStore implements IdentityStore {
     }
 
     @Override
+    public User getUser(Claim claim) throws IdentityStoreException, UserNotFoundException {
+        // TODO: Implement this method.
+        return null;
+    }
+
+    @Override
     public User getUser(Callback[] callbacks) throws IdentityStoreException, UserNotFoundException {
 
         // We are using this method mostly internally and for to aid the authenticate() method. I see no use of
@@ -111,26 +120,26 @@ public class CacheBackedIdentityStore implements IdentityStore {
         return identityStore.getUser(callbacks);
     }
 
-    @Override
-    public User getUserFromId(String userId, String identityStoreId) throws IdentityStoreException {
-
-        if (CacheHelper.isCacheDisabled(cacheConfigs, CacheNames.USER_USERID)) {
-            return identityStore.getUserFromId(userId, identityStoreId);
-        }
-
-        Cache<String, User> cache = cacheManager.getCache(CacheNames.USER_USERID, String.class, User.class);
-        User user = cache.get(userId + identityStoreId);
-
-        if (user == null) {
-            user = identityStore.getUserFromId(userId, identityStoreId);
-            cache.put(userId + identityStoreId, user);
-            if (log.isDebugEnabled()) {
-                log.debug("User cached for user id: {} and identity store id: {}.", user, identityStoreId);
-            }
-        }
-
-        return user;
-    }
+//    @Override
+//    public User getUser(String userId, Domain domain) throws IdentityStoreException {
+//
+//        if (CacheHelper.isCacheDisabled(cacheConfigs, CacheNames.USER_USERID)) {
+//            return identityStore.getUser(userId, domain);
+//        }
+//
+//        Cache<String, User> cache = cacheManager.getCache(CacheNames.USER_USERID, String.class, User.class);
+//        User user = cache.get(userId + domain);
+//
+//        if (user == null) {
+//            user = identityStore.getUser(userId, domain);
+//            cache.put(userId + domain, user);
+//            if (log.isDebugEnabled()) {
+//                log.debug("User cached for user id: {} and identity store id: {}.", user, domain);
+//            }
+//        }
+//
+//        return user;
+//    }
 
     @Override
     public List<User> listUsers(String filterPattern, int offset, int length) throws IdentityStoreException {
@@ -138,14 +147,20 @@ public class CacheBackedIdentityStore implements IdentityStore {
     }
 
     @Override
-    public Map<String, String> getUserAttributeValues(String userID, String userStoreId) throws IdentityStoreException {
-        return identityStore.getUserAttributeValues(userID, userStoreId);
+    public List<User> listUsers(Claim claim, int offset, int length) throws IdentityStoreException {
+        // TODO: Implement this method.
+        return null;
     }
 
     @Override
-    public Map<String, String> getUserAttributeValues(String userID, List<String> attributeNames, String userStoreId)
+    public List<Attribute> getUserAttributeValues(String userID, Domain domain) throws IdentityStoreException {
+        return identityStore.getUserAttributeValues(userID, domain);
+    }
+
+    @Override
+    public List<Attribute> getUserAttributeValues(String userID, List<String> attributeNames, Domain domain)
             throws IdentityStoreException {
-        return identityStore.getUserAttributeValues(userID, attributeNames, userStoreId);
+        return identityStore.getUserAttributeValues(userID, attributeNames, domain);
     }
 
     @Override
@@ -170,25 +185,31 @@ public class CacheBackedIdentityStore implements IdentityStore {
     }
 
     @Override
-    public Group getGroupFromId(String groupId, String identityStoreId) throws IdentityStoreException {
-
-        if (CacheHelper.isCacheDisabled(cacheConfigs, CacheNames.GROUP_GROUPID)) {
-            return identityStore.getGroupFromId(groupId, identityStoreId);
-        }
-
-        Cache<String, Group> cache = cacheManager.getCache(CacheNames.GROUP_GROUPID, String.class, Group.class);
-        Group group = cache.get(groupId + identityStoreId);
-
-        if (group == null) {
-            group = identityStore.getGroupFromId(groupId, identityStoreId);
-            cache.put(groupId + identityStoreId, group);
-            if (log.isDebugEnabled()) {
-                log.debug("Group cached for group id: {} and for identity store id: {}.", groupId, identityStoreId);
-            }
-        }
-
-        return group;
+    public Group getGroup(Claim claim) throws IdentityStoreException, GroupNotFoundException {
+        // TODO: Implement this.
+        return null;
     }
+
+//    @Override
+//    public Group getGroupFromId(String groupId, String identityStoreId) throws IdentityStoreException {
+//
+//        if (CacheHelper.isCacheDisabled(cacheConfigs, CacheNames.GROUP_GROUPID)) {
+//            return identityStore.getGroupFromId(groupId, identityStoreId);
+//        }
+//
+//        Cache<String, Group> cache = cacheManager.getCache(CacheNames.GROUP_GROUPID, String.class, Group.class);
+//        Group group = cache.get(groupId + identityStoreId);
+//
+//        if (group == null) {
+//            group = identityStore.getGroupFromId(groupId, identityStoreId);
+//            cache.put(groupId + identityStoreId, group);
+//            if (log.isDebugEnabled()) {
+//                log.debug("Group cached for group id: {} and for identity store id: {}.", groupId, identityStoreId);
+//            }
+//        }
+//
+//        return group;
+//    }
 
     @Override
     public List<Group> listGroups(String filterPattern, int offset, int length) throws IdentityStoreException {
@@ -196,34 +217,34 @@ public class CacheBackedIdentityStore implements IdentityStore {
     }
 
     @Override
-    public Map<String, String> getGroupAttributeValues(String groupId, String identityStoreId)
+    public List<Attribute> getGroupAttributeValues(String groupId, Domain domain)
             throws IdentityStoreException {
-        return identityStore.getGroupAttributeValues(groupId, identityStoreId);
+        return identityStore.getGroupAttributeValues(groupId, domain);
     }
 
     @Override
-    public Map<String, String> getGroupAttributeValues(String groupId, String identityStoreId,
+    public List<Attribute> getGroupAttributeValues(String groupId, Domain domain,
                                                        List<String> attributeNames) throws IdentityStoreException {
-        return identityStore.getGroupAttributeValues(groupId, identityStoreId, attributeNames);
+        return identityStore.getGroupAttributeValues(groupId, domain, attributeNames);
     }
 
     @Override
-    public List<Group> getGroupsOfUser(String userId, String identityStoreId) throws IdentityStoreException {
+    public List<Group> getGroupsOfUser(String userId, Domain domain) throws IdentityStoreException {
 
         if (CacheHelper.isCacheDisabled(cacheConfigs, CacheNames.GROUPS_USERID_IDENTITYSTOREID)) {
-            return identityStore.getGroupsOfUser(userId, identityStoreId);
+            return identityStore.getGroupsOfUser(userId, domain);
         }
 
         Cache<String, List> cache = cacheManager.getCache(CacheNames.GROUPS_USERID_IDENTITYSTOREID, String.class,
                 List.class);
 
-        List<Group> groups = cache.get(userId + identityStoreId);
+        List<Group> groups = cache.get(userId + domain);
 
         if (groups == null) {
-            groups = identityStore.getGroupsOfUser(userId, identityStoreId);
-            cache.put(userId + identityStoreId, groups);
+            groups = identityStore.getGroupsOfUser(userId, domain);
+            cache.put(userId + domain, groups);
             if (log.isDebugEnabled()) {
-                log.debug("Groups cached for user id: {} and identity store id: {}.", userId, identityStoreId);
+                log.debug("Groups cached for user id: {} and identity store id: {}.", userId, domain);
             }
         }
 
@@ -231,25 +252,25 @@ public class CacheBackedIdentityStore implements IdentityStore {
     }
 
     @Override
-    public List<User> getUsersOfGroup(String groupID, String identityStoreId) throws IdentityStoreException {
-        return identityStore.getUsersOfGroup(groupID, identityStoreId);
+    public List<User> getUsersOfGroup(String groupID, Domain domain) throws IdentityStoreException {
+        return identityStore.getUsersOfGroup(groupID, domain);
     }
 
     @Override
-    public boolean isUserInGroup(String userId, String groupId, String identityStoreId) throws IdentityStoreException {
+    public boolean isUserInGroup(String userId, String groupId, Domain domain) throws IdentityStoreException {
 
         if (CacheHelper.isCacheDisabled(cacheConfigs, CacheNames.GROUPS_USERID_IDENTITYSTOREID)) {
-            return identityStore.isUserInGroup(userId, groupId, identityStoreId);
+            return identityStore.isUserInGroup(userId, groupId, domain);
         }
 
         Cache<String, List> cache = cacheManager.getCache(CacheNames.GROUPS_USERID_IDENTITYSTOREID, String.class,
                 List.class);
 
         boolean isUserInGroup = false;
-        List<Group> groups = cache.get(userId + identityStoreId);
+        List<Group> groups = cache.get(userId + domain);
 
         if (groups == null) {
-            isUserInGroup = identityStore.isUserInGroup(userId, groupId, identityStoreId);
+            isUserInGroup = identityStore.isUserInGroup(userId, groupId, domain);
         } else {
             // If there are groups for this user id and identity store id in the cache,
             // do the validation logic here.

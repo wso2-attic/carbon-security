@@ -17,7 +17,7 @@
 package org.wso2.carbon.security.caas.userstore.inmemory;
 
 import org.wso2.carbon.security.caas.user.core.bean.User;
-import org.wso2.carbon.security.caas.user.core.config.CredentialConnectorConfig;
+import org.wso2.carbon.security.caas.user.core.config.CredentialStoreConnectorConfig;
 import org.wso2.carbon.security.caas.user.core.exception.AuthenticationFailure;
 import org.wso2.carbon.security.caas.user.core.exception.CredentialStoreException;
 import org.wso2.carbon.security.caas.user.core.store.connector.CredentialStoreConnector;
@@ -37,7 +37,7 @@ import javax.security.auth.callback.PasswordCallback;
 public class InMemoryCredentialStoreConnector implements CredentialStoreConnector {
 
     @Override
-    public void init(String storeId, CredentialConnectorConfig credentialConnectorConfig)
+    public void init(String storeId, CredentialStoreConnectorConfig credentialStoreConnectorConfig)
             throws CredentialStoreException {
         
     }
@@ -83,7 +83,7 @@ public class InMemoryCredentialStoreConnector implements CredentialStoreConnecto
     }
 
     @Override
-    public CredentialConnectorConfig getCredentialStoreConfig() {
+    public CredentialStoreConnectorConfig getCredentialStoreConfig() {
         return null;
     }
 }

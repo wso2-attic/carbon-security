@@ -16,9 +16,12 @@
 
 package org.wso2.carbon.security.caas.user.core.store;
 
+import org.wso2.carbon.security.caas.user.core.bean.Attribute;
+import org.wso2.carbon.security.caas.user.core.bean.Domain;
 import org.wso2.carbon.security.caas.user.core.bean.Group;
 import org.wso2.carbon.security.caas.user.core.bean.User;
-import org.wso2.carbon.security.caas.user.core.config.IdentityConnectorConfig;
+import org.wso2.carbon.security.caas.user.core.claim.Claim;
+import org.wso2.carbon.security.caas.user.core.config.IdentityStoreConnectorConfig;
 import org.wso2.carbon.security.caas.user.core.exception.GroupNotFoundException;
 import org.wso2.carbon.security.caas.user.core.exception.IdentityStoreException;
 import org.wso2.carbon.security.caas.user.core.exception.UserNotFoundException;
@@ -39,7 +42,7 @@ public interface IdentityStore {
      * @param identityConnectorConfigs Connector configs related to the identity store.
      * @throws IdentityStoreException Identity Store Exception.
      */
-    void init(RealmService realmService, Map<String, IdentityConnectorConfig> identityConnectorConfigs)
+    void init(RealmService realmService, Map<String, IdentityStoreConnectorConfig> identityConnectorConfigs)
             throws IdentityStoreException;
 
     /**
@@ -52,6 +55,16 @@ public interface IdentityStore {
     User getUser(String username) throws IdentityStoreException, UserNotFoundException;
 
     /**
+     * Get the user from the given claim. This claim value should be unique to the user for a
+     * given identity store.
+     * @param claim User unique claim.
+     * @return User.
+     * @throws IdentityStoreException Identity Store Exception.
+     * @throws UserNotFoundException User Not Found Exception.
+     */
+    User getUser(Claim claim) throws IdentityStoreException, UserNotFoundException;
+
+    /**
      * Get the user from callbacks.
      * @param callbacks Callback array.
      * @return User related to the callbacks.
@@ -61,16 +74,7 @@ public interface IdentityStore {
     User getUser(Callback[] callbacks) throws IdentityStoreException, UserNotFoundException;
 
     /**
-     * Get the user from user Id.
-     * @param userId Id of the user.
-     * @param identityStoreId Identity store id of the user.
-     * @return User.
-     * @throws IdentityStoreException Identity Store Exception.
-     */
-    User getUserFromId(String userId, String identityStoreId) throws IdentityStoreException;
-
-    /**
-     * List all users in User Store according to the filter pattern.
+     * List all users in Identity Store according to the filter pattern.
      * @param filterPattern Filter patter to filter users.
      * @param offset Offset for list of users.
      * @param length Length from the offset.
@@ -80,23 +84,33 @@ public interface IdentityStore {
     List<User> listUsers(String filterPattern, int offset, int length) throws IdentityStoreException;
 
     /**
+     * List all users in the Identity Store according to the filter pattern given for the claim value.
+     * @param claim Claim with the filter pattern.
+     * @param offset Offset for list of users.
+     * @param length Length from the offset.
+     * @return List of users match the filter pattern.
+     * @throws IdentityStoreException Identity Store Exception.
+     */
+    List<User> listUsers(Claim claim, int offset, int length) throws IdentityStoreException;
+
+    /**
      * Get user attribute values.
      * @param userID Id of the user.
-     * @param userStoreId Id of the user store which this user belongs.
+     * @param domain Id of the user store which this user belongs.
      * @return Map of user attributes.
      * @throws IdentityStoreException Identity Store Exception.
      */
-    Map<String, String> getUserAttributeValues(String userID, String userStoreId) throws IdentityStoreException;
+    List<Attribute> getUserAttributeValues(String userID, Domain domain) throws IdentityStoreException;
 
     /**
      * Get user's claim values for the given URIs.
      * @param userID Id of the user.
      * @param attributeNames Attribute names.
-     * @param userStoreId Id of the user store which this user belongs.
+     * @param domain Domain this user originates from.
      * @return Map of user attributes.
      * @throws IdentityStoreException Identity Store Exception.
      */
-    Map<String, String> getUserAttributeValues(String userID, List<String> attributeNames, String userStoreId)
+    List<Attribute> getUserAttributeValues(String userID, List<String> attributeNames, Domain domain)
             throws IdentityStoreException;
 
     /**
@@ -108,14 +122,7 @@ public interface IdentityStore {
      */
     Group getGroup(String groupName) throws IdentityStoreException, GroupNotFoundException;
 
-    /**
-     * Get the group from group id.
-     * @param groupId Group id.
-     * @param identityStoreId Identity store id of the group.
-     * @return Group.
-     * @throws IdentityStoreException Identity Store Exception.
-     */
-    Group getGroupFromId(String groupId, String identityStoreId) throws IdentityStoreException;
+    Group getGroup(Claim claim) throws IdentityStoreException, GroupNotFoundException;
 
     /**
      * List groups according to the filter pattern.
@@ -130,50 +137,50 @@ public interface IdentityStore {
     /**
      * Get all of the attributes that belongs to this group.
      * @param groupId Id of the group.
-     * @param identityStoreId Id of the identity store.
+     * @param domain Domain this group originates from.
      * @return Map of attributes.
      * @throws IdentityStoreException
      */
-    Map<String, String> getGroupAttributeValues(String groupId, String identityStoreId) throws IdentityStoreException;
+    List<Attribute> getGroupAttributeValues(String groupId, Domain domain) throws IdentityStoreException;
 
     /**
      * Get attribute values for the given names in the group.
      * @param groupId Id of the group.
-     * @param identityStoreId Id of the identity store.
+     * @param domain Domain this group originates from.
      * @param attributeNames List of attribute names.
      * @return Map of attributes.
      * @throws IdentityStoreException
      */
-    Map<String, String> getGroupAttributeValues(String groupId, String identityStoreId, List<String> attributeNames)
+    List<Attribute> getGroupAttributeValues(String groupId, Domain domain, List<String> attributeNames)
             throws IdentityStoreException;
 
     /**
      * Get the groups assigned to the specified user.
      * @param userId Id of the user.
-     * @param identityStoreId Id of the user store which this user belongs.
+     * @param domain Domain this user originates from.
      * @return List of Group assigned to the user.
      * @throws IdentityStoreException Identity Store Exception.
      */
-    List<Group> getGroupsOfUser(String userId, String identityStoreId) throws IdentityStoreException;
+    List<Group> getGroupsOfUser(String userId, Domain domain) throws IdentityStoreException;
 
     /**
      * Get the users assigned to the specified group.
      * @param groupID Id of the group.
-     * @param identityStoreId User store id of this group.
+     * @param domain Domain this group originates from.
      * @return List of users assigned to the group.
      * @throws IdentityStoreException Identity Store Exception.
      */
-    List<User> getUsersOfGroup(String groupID, String identityStoreId) throws IdentityStoreException;
+    List<User> getUsersOfGroup(String groupID, Domain domain) throws IdentityStoreException;
 
     /**
      * Checks whether the user is in the group.
      * @param userId Id of the user.
      * @param groupId Id of the group.
-     * @param identityStoreId Id of the identity store which this user belongs.
+     * @param domain Domain this group originates from.
      * @return True if the user is in the group.
      * @throws IdentityStoreException Identity Store Exception.
      */
-    boolean isUserInGroup(String userId, String groupId, String identityStoreId) throws IdentityStoreException;
+    boolean isUserInGroup(String userId, String groupId, Domain domain) throws IdentityStoreException;
 
     /**
      * Get all available identity store connector names.

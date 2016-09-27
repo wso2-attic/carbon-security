@@ -18,6 +18,8 @@ package org.wso2.carbon.security.caas.user.core.common;
 
 import org.wso2.carbon.security.caas.user.core.claim.ClaimManager;
 import org.wso2.carbon.security.caas.user.core.config.StoreConfig;
+import org.wso2.carbon.security.caas.user.core.domain.DomainManager;
+import org.wso2.carbon.security.caas.user.core.domain.InMemoryDomainManager;
 import org.wso2.carbon.security.caas.user.core.exception.AuthorizationStoreException;
 import org.wso2.carbon.security.caas.user.core.exception.CredentialStoreException;
 import org.wso2.carbon.security.caas.user.core.exception.IdentityStoreException;
@@ -39,6 +41,7 @@ public class CarbonRealmServiceImpl implements RealmService {
     private CredentialStore credentialStore = new CredentialStoreImpl();
     private AuthorizationStore authorizationStore = new AuthorizationStoreImpl();
     private IdentityStore identityStore = new IdentityStoreImpl();
+    private DomainManager domainManager = new InMemoryDomainManager();
     private ClaimManager claimManager;
 
     public CarbonRealmServiceImpl(StoreConfig storeConfig) throws IdentityStoreException, AuthorizationStoreException,
@@ -55,37 +58,27 @@ public class CarbonRealmServiceImpl implements RealmService {
         identityStore.init(this, storeConfig.getIdentityConnectorConfigMap());
     }
 
-    /**
-     * Get the credential store.
-     * @return CredentialStore.
-     */
+
     @Override
     public CredentialStore getCredentialStore() {
         return credentialStore;
     }
 
-    /**
-     * Get the authorization store.
-     * @return AuthorizationStore.
-     */
     @Override
     public AuthorizationStore getAuthorizationStore() {
         return authorizationStore;
     }
 
-    /**
-     * Get the identity store.
-     * @return IdentityStore.
-     */
     @Override
     public IdentityStore getIdentityStore() {
         return identityStore;
     }
 
-    /**
-     * Get the Claim Manager.
-     * @return ClaimManager
-     */
+    @Override
+    public DomainManager getDomainManager() {
+        return domainManager;
+    }
+
     @Override
     public ClaimManager getClaimManager() {
         return claimManager;

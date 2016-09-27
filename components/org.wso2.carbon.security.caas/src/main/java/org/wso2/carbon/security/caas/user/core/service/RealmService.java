@@ -17,6 +17,7 @@
 package org.wso2.carbon.security.caas.user.core.service;
 
 import org.wso2.carbon.security.caas.user.core.claim.ClaimManager;
+import org.wso2.carbon.security.caas.user.core.domain.DomainManager;
 import org.wso2.carbon.security.caas.user.core.store.AuthorizationStore;
 import org.wso2.carbon.security.caas.user.core.store.CredentialStore;
 import org.wso2.carbon.security.caas.user.core.store.IdentityStore;
@@ -49,4 +50,10 @@ public interface RealmService {
      * @return ClaimManager
      */
     ClaimManager getClaimManager();
+
+    /**
+     * Get the domain manager.
+     * @return DomainManager
+     */
+    DomainManager getDomainManager();
 }

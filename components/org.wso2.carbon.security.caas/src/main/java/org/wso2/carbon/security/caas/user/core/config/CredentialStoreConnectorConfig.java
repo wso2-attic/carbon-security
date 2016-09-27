@@ -16,19 +16,18 @@
 
 package org.wso2.carbon.security.caas.user.core.config;
 
-import java.util.Map;
 import java.util.Properties;
 
 /**
- * Authorization store config.
+ * Credential store configurations.
  */
-public class AuthorizationConnectorConfig {
+public class CredentialStoreConnectorConfig {
 
-    private String connectorType;
+    String connectorType;
+
     private Properties storeProperties;
-    private Map<String, CacheConfig> cacheConfigs;
 
-    public AuthorizationConnectorConfig(String connectorType, Properties properties) {
+    public CredentialStoreConnectorConfig(String connectorType, Properties properties) {
         this.connectorType = connectorType;
         this.storeProperties = properties;
     }
@@ -39,14 +38,6 @@ public class AuthorizationConnectorConfig {
 
     public String getConnectorType() {
         return connectorType;
-    }
-
-    public Map<String, CacheConfig> getCacheConfigs() {
-        return cacheConfigs;
-    }
-
-    public void setCacheConfigs(Map<String, CacheConfig> cacheConfigs) {
-        this.cacheConfigs = cacheConfigs;
     }
 
     public void setConnectorType(String connectorType) {

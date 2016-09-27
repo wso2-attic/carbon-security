@@ -16,15 +16,15 @@
 
 package org.wso2.carbon.security.caas.user.core.store.connector;
 
+import org.wso2.carbon.security.caas.user.core.bean.Attribute;
 import org.wso2.carbon.security.caas.user.core.bean.Group;
 import org.wso2.carbon.security.caas.user.core.bean.User;
-import org.wso2.carbon.security.caas.user.core.config.IdentityConnectorConfig;
+import org.wso2.carbon.security.caas.user.core.config.IdentityStoreConnectorConfig;
 import org.wso2.carbon.security.caas.user.core.exception.GroupNotFoundException;
 import org.wso2.carbon.security.caas.user.core.exception.IdentityStoreException;
 import org.wso2.carbon.security.caas.user.core.exception.UserNotFoundException;
 
 import java.util.List;
-import java.util.Map;
 import javax.security.auth.callback.Callback;
 
 /**
@@ -34,11 +34,11 @@ public interface IdentityStoreConnector {
 
     /**
      * Initialize identity store by passing identity store configurations read from files.
-     * @param identityConnectorConfig IdentityConnectorConfig for this connector.
+     * @param identityStoreConnectorConfig IdentityStoreConnectorConfig for this connector.
      * @param storeId Id of this store.
      * @throws IdentityStoreException Identity Store Exception.
      */
-    void init(String storeId, IdentityConnectorConfig identityConnectorConfig) throws IdentityStoreException;
+    void init(String storeId, IdentityStoreConnectorConfig identityStoreConnectorConfig) throws IdentityStoreException;
 
     /**
      * Get user store ID which is unique for a user store.
@@ -47,21 +47,15 @@ public interface IdentityStoreConnector {
     String getIdentityStoreId();
 
     /**
-     * Search user from user id.
-     * @param userID User Id of the user
-     * @return User Object with
-     * @throws IdentityStoreException Identity Store Exception.
-     */
-    User.UserBuilder getUserFromId(String userID) throws IdentityStoreException;
-
-    /**
      * Get user from the user name.
-     * @param username Name of the user.
+     * @param attributeName Name of the attribute.
+     * @param attributeValue Value of the attribute.
      * @return User.UserBuilder.
      * @throws UserNotFoundException User not found exception.
      * @throws IdentityStoreException Identity Store Exception.
      */
-    User.UserBuilder getUser(String username) throws UserNotFoundException, IdentityStoreException;
+    User.UserBuilder getUser(String attributeName, String attributeValue) throws UserNotFoundException,
+            IdentityStoreException;
 
     /**
      * Get user from callbacks.
@@ -81,6 +75,7 @@ public interface IdentityStoreConnector {
 
     /**
      * List all users in User Store according to the filter pattern.
+     * @param attributeName Name of the attribute that should use for the filter pattern.
      * @param filterPattern Filter pattern to be used.
      * @param offset        Offset to get the Users.
      * @param length        Number of users from the offset.
@@ -88,7 +83,8 @@ public interface IdentityStoreConnector {
      *         no identities to match.
      * @throws IdentityStoreException Identity Store Exception.
      */
-    List<User.UserBuilder> listUsers(String filterPattern, int offset, int length) throws IdentityStoreException;
+    List<User.UserBuilder> listUsers(String attributeName, String filterPattern, int offset, int length)
+            throws IdentityStoreException;
 
     /**
      * Retrieve attributes of the user with the given ID.
@@ -97,7 +93,7 @@ public interface IdentityStoreConnector {
      * @return Attribute map of the user with given ID
      * @throws IdentityStoreException Identity Store Exception.
      */
-    Map<String, String> getUserAttributeValues(String userID) throws IdentityStoreException;
+    List<Attribute> getUserAttributeValues(String userID) throws IdentityStoreException;
 
     /**
      * Get user attributes for given attribute names.
@@ -106,24 +102,17 @@ public interface IdentityStoreConnector {
      * @return Map of user attributes.
      * @throws IdentityStoreException Identity Store Exception.
      */
-    Map<String, String> getUserAttributeValues(String userID, List<String> attributeNames)
-            throws IdentityStoreException;
+    List<Attribute> getUserAttributeValues(String userID, List<String> attributeNames) throws IdentityStoreException;
 
     /**
-     * Retrieve group with given group ID.
-     * @param groupID Unique ID of the group
-     * @return Group with the given GroupID
-     * @throws IdentityStoreException Identity Store Exception.
-     */
-    Group.GroupBuilder getGroupById(String groupID) throws IdentityStoreException;
-
-    /**
-     * Retrieve group from the group name.
-     * @param groupName Name of the group
+     * Retrieve group from the given attribute and the value.
+     * @param attributeName Name of the attribute.
+     * @param attributeValue Value of the attribute.
      * @return Group with the given group name.
      * @throws IdentityStoreException Identity Store Exception.
      */
-    Group.GroupBuilder getGroup(String groupName) throws GroupNotFoundException, IdentityStoreException;
+    Group.GroupBuilder getGroup(String attributeName, String attributeValue) throws GroupNotFoundException,
+            IdentityStoreException;
 
     /**
      * Get the count of the groups available in the identity store.
@@ -148,7 +137,7 @@ public interface IdentityStoreConnector {
      * @return Map of attributes.
      * @throws IdentityStoreException
      */
-    Map<String, String> getGroupAttributeValues(String groupId) throws IdentityStoreException;
+    List<Attribute> getGroupAttributeValues(String groupId) throws IdentityStoreException;
 
     /**
      * Get attribute values for the given names in the group.
@@ -157,8 +146,7 @@ public interface IdentityStoreConnector {
      * @return Map of attributes.
      * @throws IdentityStoreException
      */
-    Map<String, String> getGroupAttributeValues(String groupId, List<String> attributeNames)
-            throws IdentityStoreException;
+    List<Attribute> getGroupAttributeValues(String groupId, List<String> attributeNames) throws IdentityStoreException;
 
     /**
      * Retrieve groups of a given User with unique ID.
@@ -193,8 +181,8 @@ public interface IdentityStoreConnector {
     boolean isReadOnly() throws IdentityStoreException;
 
     /**
-     * Returns IdentityConnectorConfig which consists of user store configurations.
-     * @return IdentityConnectorConfig which consists of user store configurations
+     * Returns IdentityStoreConnectorConfig which consists of user store configurations.
+     * @return IdentityStoreConnectorConfig which consists of user store configurations
      */
-    IdentityConnectorConfig getIdentityStoreConfig();
+    IdentityStoreConnectorConfig getIdentityStoreConfig();
 }

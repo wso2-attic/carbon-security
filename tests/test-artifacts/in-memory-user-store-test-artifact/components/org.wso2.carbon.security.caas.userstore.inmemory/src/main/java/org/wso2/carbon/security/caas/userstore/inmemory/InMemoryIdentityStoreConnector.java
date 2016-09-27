@@ -18,7 +18,7 @@ package org.wso2.carbon.security.caas.userstore.inmemory;
 
 import org.wso2.carbon.security.caas.user.core.bean.Group;
 import org.wso2.carbon.security.caas.user.core.bean.User;
-import org.wso2.carbon.security.caas.user.core.config.IdentityConnectorConfig;
+import org.wso2.carbon.security.caas.user.core.config.IdentityStoreConnectorConfig;
 import org.wso2.carbon.security.caas.user.core.exception.IdentityStoreException;
 import org.wso2.carbon.security.caas.user.core.exception.UserNotFoundException;
 import org.wso2.carbon.security.caas.user.core.store.connector.IdentityStoreConnector;
@@ -38,8 +38,8 @@ import javax.security.auth.callback.NameCallback;
 public class InMemoryIdentityStoreConnector implements IdentityStoreConnector {
 
     @Override
-    public void init(String storeId, IdentityConnectorConfig identityConnectorConfig) throws IdentityStoreException {
-
+    public void init(String storeId, IdentityStoreConnectorConfig identityStoreConnectorConfig)
+            throws IdentityStoreException {
     }
 
     @Override
@@ -53,12 +53,15 @@ public class InMemoryIdentityStoreConnector implements IdentityStoreConnector {
     }
 
     @Override
-    public User.UserBuilder getUser(String username) throws UserNotFoundException, IdentityStoreException {
-        if (InMemoryStoreUtil.getPassword(username) != null) {
-            return new User.UserBuilder().setUserName(username).setUserId(UUID.randomUUID().toString())
+    public User.UserBuilder getUser(String attributeName, String attributeValue) throws UserNotFoundException,
+            IdentityStoreException {
+
+        if (InMemoryStoreUtil.getPassword(attributeValue) != null) {
+            return new User.UserBuilder().setUserName(attributeValue).setUserId(UUID.randomUUID().toString())
                     .setIdentityStoreId("PRIMARY").setCredentialStoreId("PRIMARY").setTenantDomain("carbon.super");
         }
-        throw new UserNotFoundException("No user found for username: " + username + " in In-Memory identity store.");
+        throw new UserNotFoundException("No user found for username: " + attributeValue +
+                " in In-Memory identity store.");
     }
 
     @Override
@@ -80,7 +83,7 @@ public class InMemoryIdentityStoreConnector implements IdentityStoreConnector {
     }
 
     @Override
-    public List<User.UserBuilder> listUsers(String filterPattern, int offset, int length)
+    public List<User.UserBuilder> listUsers(String attributeName, String filterPattern, int offset, int length)
             throws IdentityStoreException {
         return null;
     }
@@ -144,7 +147,7 @@ public class InMemoryIdentityStoreConnector implements IdentityStoreConnector {
     }
 
     @Override
-    public IdentityConnectorConfig getIdentityStoreConfig() {
+    public IdentityStoreConnectorConfig getIdentityStoreConfig() {
         return null;
     }
 
