@@ -31,7 +31,7 @@ public class Resource {
     private String authorizationStore;
 
     private String userId;
-    private String identityStoreId;
+    private Domain domain;
 
     public Resource(String resourceString) {
 
@@ -49,21 +49,21 @@ public class Resource {
         this.resourceId = resourceId;
     }
 
-    public Resource(String resourceNamespace, String resourceId, String userId, String identityStoreId) {
+    public Resource(String resourceNamespace, String resourceId, String userId, Domain domain) {
 
         this.resourceNamespace = resourceNamespace;
         this.resourceId = resourceId;
         this.userId = userId;
-        this.identityStoreId = identityStoreId;
+        this.domain = domain;
     }
 
-    private Resource(String resourceNamespace, String resourceId, String userId, String identityStoreId,
+    private Resource(String resourceNamespace, String resourceId, String userId, Domain domain,
                      String authorizationStore) {
 
         this.resourceNamespace = resourceNamespace;
         this.resourceId = resourceId;
         this.userId = userId;
-        this.identityStoreId = identityStoreId;
+        this.domain = domain;
         this.authorizationStore = authorizationStore;
     }
 
@@ -94,7 +94,7 @@ public class Resource {
     public User.UserBuilder getOwner() {
         return new User.UserBuilder()
                 .setUserId(userId)
-                .setIdentityStoreId(identityStoreId);
+                .setDomain(domain);
     }
 
     /**
@@ -106,7 +106,7 @@ public class Resource {
         private String resourceId;
         private String authorizationStore;
         private String userId;
-        private String identityStoreId;
+        private Domain domain;
 
         public ResourceBuilder setResourceNamespace(String resourceNamespace) {
             this.resourceNamespace = resourceNamespace;
@@ -128,19 +128,19 @@ public class Resource {
             return this;
         }
 
-        public ResourceBuilder setIdentityStoreId(String identityStoreId) {
-            this.identityStoreId = identityStoreId;
+        public ResourceBuilder setDomain(Domain domain) {
+            this.domain = domain;
             return this;
         }
 
         public Resource build() {
 
             if (resourceNamespace == null || resourceId == null || authorizationStore == null || userId == null ||
-                    identityStoreId == null) {
+                    domain == null) {
                 throw new StoreException("Required data is missing to build the resource.");
             }
 
-            return new Resource(resourceNamespace, resourceId, userId, identityStoreId, authorizationStore);
+            return new Resource(resourceNamespace, resourceId, userId, domain, authorizationStore);
         }
     }
 }

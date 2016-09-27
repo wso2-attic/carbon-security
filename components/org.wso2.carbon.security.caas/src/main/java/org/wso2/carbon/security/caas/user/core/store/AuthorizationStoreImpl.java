@@ -740,7 +740,7 @@ public class AuthorizationStoreImpl implements AuthorizationStore {
     }
 
     @Override
-    public void updateRolesInGroup(String groupId, String identityStoreId, List<Role> rolesToBeAssign,
+    public void updateRolesInGroup(String groupId, Domain domain, List<Role> rolesToBeAssign,
                                    List<Role> rolesToBeUnassigned) throws AuthorizationStoreException {
 
         Map<String, List<Role>> rolesToBeAssignWithStoreId = this.getRolesWithAuthorizationStore(rolesToBeAssign);
@@ -758,7 +758,7 @@ public class AuthorizationStoreImpl implements AuthorizationStore {
                 throw new StoreException(String.format("No authorization store found for the given id: %s.", key));
             }
 
-            authorizationStoreConnector.updateRolesInGroup(groupId, identityStoreId,
+            authorizationStoreConnector.updateRolesInGroup(groupId, domain.getDomainId(),
                     rolesToBeAssignWithStoreId.get(key), rolesToBeUnAssignWithStoreId.get(key));
         }
     }

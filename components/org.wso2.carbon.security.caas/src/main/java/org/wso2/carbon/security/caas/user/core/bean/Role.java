@@ -126,23 +126,23 @@ public class Role  {
     /**
      * Checks whether the User is in this Role.
      * @param userId Id of the User to be checked.
-     * @param identityStoreId Identity user store id.
+     * @param domain Domain this user belongs to.
      * @return True if User exists.
      * @throws AuthorizationStoreException Authorization store exception.
      */
-    public boolean hasUser(String userId, String identityStoreId) throws AuthorizationStoreException {
-        return authorizationStore.isUserInRole(userId, identityStoreId, roleName);
+    public boolean hasUser(String userId, Domain domain) throws AuthorizationStoreException {
+        return authorizationStore.isUserInRole(userId, domain, roleName);
     }
 
     /**
      * Checks whether the Group is in this Role.
      * @param groupId Id of the Group to be checked.
-     * @param identityStoreId Identity store id of the group.
+     * @param domain Domain this group belongs to.
      * @return True if the Group exists.
      * @throws AuthorizationStoreException Authorization store exception.
      */
-    public boolean hasGroup(String groupId, String identityStoreId) throws AuthorizationStoreException {
-        return authorizationStore.isGroupInRole(groupId, identityStoreId, roleName);
+    public boolean hasGroup(String groupId, Domain domain) throws AuthorizationStoreException {
+        return authorizationStore.isGroupInRole(groupId, domain, roleName);
     }
 
     /**

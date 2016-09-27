@@ -21,6 +21,7 @@ import org.slf4j.LoggerFactory;
 import org.wso2.carbon.kernel.utils.LambdaExceptionUtils;
 import org.wso2.carbon.security.caas.internal.CarbonSecurityDataHolder;
 import org.wso2.carbon.security.caas.user.core.bean.Action;
+import org.wso2.carbon.security.caas.user.core.bean.Domain;
 import org.wso2.carbon.security.caas.user.core.bean.Group;
 import org.wso2.carbon.security.caas.user.core.bean.Permission;
 import org.wso2.carbon.security.caas.user.core.bean.Resource;
@@ -87,24 +88,24 @@ public class CacheBackedAuthorizationStore implements AuthorizationStore {
     }
 
     @Override
-    public boolean isUserAuthorized(String userId, Permission permission, String identityStoreId)
+    public boolean isUserAuthorized(String userId, Permission permission, Domain domain)
             throws AuthorizationStoreException, IdentityStoreException {
 
         if (CacheHelper.isCacheDisabled(cacheConfigs, CacheNames.ROLES_USERID_IDENTITYSTOREID) ||
                 CacheHelper.isCacheDisabled(cacheConfigs, CacheNames.ROLES_GROUPID_IDENTITYSTOREID)) {
-            return authorizationStore.isUserAuthorized(userId, permission, identityStoreId);
+            return authorizationStore.isUserAuthorized(userId, permission, domain);
         }
 
         List<Role> roles = new ArrayList<>();
 
         // Get roles directly associated to the user.
-        roles.addAll(getRolesOfUser(userId, identityStoreId));
+        roles.addAll(getRolesOfUser(userId, domain));
 
         // Get roles associated through groups.
-        realmService.getIdentityStore().getGroupsOfUser(userId, identityStoreId)
+        realmService.getIdentityStore().getGroupsOfUser(userId, domain)
                 .stream()
                 .map(LambdaExceptionUtils.rethrowFunction(group -> roles.addAll(getRolesOfGroup(group.getGroupId(),
-                        group.getIdentityStoreId()))));
+                        group.getDomain()))));
 
         if (roles.isEmpty()) {
             throw new StoreException("No roles assigned for this user");
@@ -120,14 +121,14 @@ public class CacheBackedAuthorizationStore implements AuthorizationStore {
     }
 
     @Override
-    public boolean isGroupAuthorized(String groupId, String identityStoreId, Permission permission)
+    public boolean isGroupAuthorized(String groupId, Domain domain, Permission permission)
             throws AuthorizationStoreException {
 
         if (CacheHelper.isCacheDisabled(cacheConfigs, CacheNames.ROLES_GROUPID_IDENTITYSTOREID)) {
-            return authorizationStore.isGroupAuthorized(groupId, identityStoreId, permission);
+            return authorizationStore.isGroupAuthorized(groupId, domain, permission);
         }
 
-        List<Role> roles = getRolesOfGroup(groupId, identityStoreId);
+        List<Role> roles = getRolesOfGroup(groupId, domain);
 
         for (Role role : roles) {
             if (isRoleAuthorized(role.getRoleId(), role.getAuthorizationStoreId(), permission)) {
@@ -168,11 +169,11 @@ public class CacheBackedAuthorizationStore implements AuthorizationStore {
     }
 
     @Override
-    public boolean isUserInRole(String userId, String identityStoreId, String roleName)
+    public boolean isUserInRole(String userId, Domain domain, String roleName)
             throws AuthorizationStoreException {
 
         if (CacheHelper.isCacheDisabled(cacheConfigs, CacheNames.ROLES_USERID_IDENTITYSTOREID)) {
-            return authorizationStore.isUserInRole(userId, identityStoreId, roleName);
+            return authorizationStore.isUserInRole(userId, domain, roleName);
         }
 
         Cache<String, List> cache = cacheManager.getCache(CacheNames.ROLES_USERID_IDENTITYSTOREID, String.class,
@@ -180,9 +181,9 @@ public class CacheBackedAuthorizationStore implements AuthorizationStore {
 
         boolean isUserInRole = false;
 
-        List<Role> roles = cache.get(userId + identityStoreId);
+        List<Role> roles = cache.get(userId + domain);
         if (roles == null) {
-            isUserInRole = authorizationStore.isUserInRole(userId, identityStoreId, roleName);
+            isUserInRole = authorizationStore.isUserInRole(userId, domain, roleName);
         } else {
             // If there are roles for this user id and identity store id in the cache,
             // do the validation logic here.
@@ -198,11 +199,11 @@ public class CacheBackedAuthorizationStore implements AuthorizationStore {
     }
 
     @Override
-    public boolean isGroupInRole(String groupId, String identityStoreId, String roleName)
+    public boolean isGroupInRole(String groupId, Domain domain, String roleName)
             throws AuthorizationStoreException {
 
         if (CacheHelper.isCacheDisabled(cacheConfigs, CacheNames.ROLES_GROUPID_IDENTITYSTOREID)) {
-            return authorizationStore.isGroupInRole(groupId, identityStoreId, roleName);
+            return authorizationStore.isGroupInRole(groupId, domain, roleName);
         }
 
         Cache<String, List> cache = cacheManager.getCache(CacheNames.ROLES_GROUPID_IDENTITYSTOREID, String.class,
@@ -210,9 +211,9 @@ public class CacheBackedAuthorizationStore implements AuthorizationStore {
 
         boolean isGroupInRole = false;
 
-        List<Role> roles = cache.get(groupId + identityStoreId);
+        List<Role> roles = cache.get(groupId + domain);
         if (roles == null) {
-            isGroupInRole = authorizationStore.isGroupInRole(groupId, identityStoreId, roleName);
+            isGroupInRole = authorizationStore.isGroupInRole(groupId, domain, roleName);
         } else {
             // If there are roles for this group id and identity store id in the cache,
             // do the validation logic here.
@@ -294,22 +295,22 @@ public class CacheBackedAuthorizationStore implements AuthorizationStore {
     }
 
     @Override
-    public List<Role> getRolesOfUser(String userId, String identityStoreId) throws AuthorizationStoreException {
+    public List<Role> getRolesOfUser(String userId, Domain domain) throws AuthorizationStoreException {
 
         if (CacheHelper.isCacheDisabled(cacheConfigs, CacheNames.ROLES_USERID_IDENTITYSTOREID)) {
-            return authorizationStore.getRolesOfUser(userId, identityStoreId);
+            return authorizationStore.getRolesOfUser(userId, domain);
         }
 
         Cache<String, List> cache = cacheManager.getCache(CacheNames.ROLES_USERID_IDENTITYSTOREID, String.class,
                 List.class);
 
-        List<Role> roles = cache.get(userId + identityStoreId);
+        List<Role> roles = cache.get(userId + domain);
 
         if (roles == null) {
-            roles = authorizationStore.getRolesOfUser(userId, identityStoreId);
-            cache.put(userId + identityStoreId, roles);
+            roles = authorizationStore.getRolesOfUser(userId, domain);
+            cache.put(userId + domain, roles);
             if (log.isDebugEnabled()) {
-                log.debug("Roles cached for user id: {} and identity store id: {}.", userId, identityStoreId);
+                log.debug("Roles cached for user id: {} and identity store id: {}.", userId, domain);
             }
         }
 
@@ -329,23 +330,23 @@ public class CacheBackedAuthorizationStore implements AuthorizationStore {
     }
 
     @Override
-    public List<Role> getRolesOfGroup(String groupId, String identityStoreId) throws AuthorizationStoreException {
+    public List<Role> getRolesOfGroup(String groupId, Domain domain) throws AuthorizationStoreException {
 
         if (CacheHelper.isCacheDisabled(cacheConfigs, CacheNames.ROLES_GROUPID_IDENTITYSTOREID)) {
-            return authorizationStore.getRolesOfGroup(groupId, identityStoreId);
+            return authorizationStore.getRolesOfGroup(groupId, domain);
         }
 
         Cache<String, List> cache = cacheManager.getCache(CacheNames.ROLES_GROUPID_IDENTITYSTOREID, String.class,
                 List.class);
 
-        List<Role> roles = cache.get(groupId + identityStoreId);
+        List<Role> roles = cache.get(groupId + domain);
 
         if (roles == null) {
-            roles = authorizationStore.getRolesOfUser(groupId, identityStoreId);
+            roles = authorizationStore.getRolesOfUser(groupId, domain);
             if (roles != null && !roles.isEmpty()) {
-                cache.put(groupId + identityStoreId, roles);
+                cache.put(groupId + domain, roles);
                 if (log.isDebugEnabled()) {
-                    log.debug("Roles cached for group id: {} and for identity store id: {}.", groupId, identityStoreId);
+                    log.debug("Roles cached for group id: {} and for identity store id: {}.", groupId, domain);
                 }
             }
         }
@@ -415,25 +416,25 @@ public class CacheBackedAuthorizationStore implements AuthorizationStore {
     }
 
     @Override
-    public List<Permission> getPermissionsOfUser(String userId, String identityStoreId, Resource resource)
+    public List<Permission> getPermissionsOfUser(String userId, Domain domain, Resource resource)
             throws AuthorizationStoreException {
 
         if (CacheHelper.isCacheDisabled(cacheConfigs, CacheNames.PERMISSIONS_ROLEID_AUTHORIZATIONSTOREID_RESOURCE)) {
-            return authorizationStore.getPermissionsOfUser(userId, identityStoreId, resource);
+            return authorizationStore.getPermissionsOfUser(userId, domain, resource);
         }
 
         Cache<String, List> cache = cacheManager.getCache(CacheNames.PERMISSIONS_ROLEID_AUTHORIZATIONSTOREID_RESOURCE,
                 String.class, List.class);
 
-        List<Permission> permissions = cache.get(userId + identityStoreId + resource.getResourceId());
+        List<Permission> permissions = cache.get(userId + domain + resource.getResourceId());
 
         if (permissions == null) {
-            permissions = authorizationStore.getPermissionsOfUser(userId, identityStoreId, resource);
+            permissions = authorizationStore.getPermissionsOfUser(userId, domain, resource);
             if (permissions != null && !permissions.isEmpty()) {
-                cache.put(userId + identityStoreId + resource.getResourceId(), permissions);
+                cache.put(userId + domain + resource.getResourceId(), permissions);
                 if (log.isDebugEnabled()) {
                     log.debug("Permissions cached for role id: {} authorization store id: {} and resource {}.", userId,
-                            identityStoreId, resource.getResourceId());
+                            domain, resource.getResourceId());
                 }
             }
         }
@@ -442,25 +443,25 @@ public class CacheBackedAuthorizationStore implements AuthorizationStore {
     }
 
     @Override
-    public List<Permission> getPermissionsOfUser(String userId, String identityStoreId, Action action)
+    public List<Permission> getPermissionsOfUser(String userId, Domain domain, Action action)
             throws AuthorizationStoreException {
 
         if (CacheHelper.isCacheDisabled(cacheConfigs, CacheNames.PERMISSIONS_ROLEID_AUTHORIZATIONSTOREID_ACTION)) {
-            return authorizationStore.getPermissionsOfUser(userId, identityStoreId, action);
+            return authorizationStore.getPermissionsOfUser(userId, domain, action);
         }
 
         Cache<String, List> cache = cacheManager.getCache(CacheNames.PERMISSIONS_ROLEID_AUTHORIZATIONSTOREID_ACTION,
                 String.class, List.class);
 
-        List<Permission> permissions = cache.get(userId + identityStoreId + action.getActionString());
+        List<Permission> permissions = cache.get(userId + domain + action.getActionString());
 
         if (permissions == null) {
-            permissions = authorizationStore.getPermissionsOfUser(userId, identityStoreId, action);
+            permissions = authorizationStore.getPermissionsOfUser(userId, domain, action);
             if (permissions != null && !permissions.isEmpty()) {
-                cache.put(userId + identityStoreId + action.getActionString(), permissions);
+                cache.put(userId + domain + action.getActionString(), permissions);
                 if (log.isDebugEnabled()) {
                     log.debug("Permissions cached for role id: {} authorization store id: {} and action {}.", userId,
-                            identityStoreId, action.getActionString());
+                            domain, action.getActionString());
                 }
             }
         }
@@ -526,17 +527,17 @@ public class CacheBackedAuthorizationStore implements AuthorizationStore {
     }
 
     @Override
-    public Resource addResource(String resourceNamespace, String resourceId, String userId, String identityStoreId)
+    public Resource addResource(String resourceNamespace, String resourceId, String userId, Domain domain)
             throws AuthorizationStoreException {
         return authorizationStore.addResource(resourceNamespace, resourceId, userId,
-                identityStoreId);
+                domain);
     }
 
     @Override
     public Resource addResource(String resourceNamespace, String resourceId, String authorizationStoreId, String userId,
-                                String identityStoreId) throws AuthorizationStoreException {
+                                Domain domain) throws AuthorizationStoreException {
         return authorizationStore.addResource(resourceNamespace, resourceId, authorizationStoreId, userId,
-                identityStoreId);
+                domain);
     }
 
     @Override
@@ -623,35 +624,35 @@ public class CacheBackedAuthorizationStore implements AuthorizationStore {
     }
 
     @Override
-    public void updateRolesInUser(String userId, String identityStoreId, List<Role> newRoleList)
+    public void updateRolesInUser(String userId, Domain domain, List<Role> newRoleList)
             throws AuthorizationStoreException {
 
-        authorizationStore.updateRolesInUser(userId, identityStoreId, newRoleList);
+        authorizationStore.updateRolesInUser(userId, domain, newRoleList);
 
         if (!CacheHelper.isCacheDisabled(cacheConfigs, CacheNames.ROLES_USERID_IDENTITYSTOREID)) {
             Cache<String, List> cache = cacheManager.getCache(CacheNames.ROLES_USERID_IDENTITYSTOREID, String.class,
                     List.class);
-            cache.put(userId + identityStoreId, newRoleList);
+            cache.put(userId + domain, newRoleList);
             if (log.isDebugEnabled()) {
                 log.debug("Roles added to the cache for user id: {} and identity store id: {}.", userId,
-                        identityStoreId);
+                        domain);
             }
         }
     }
 
     @Override
-    public void updateRolesInUser(String userId, String identityStoreId, List<Role> rolesToBeAssign,
+    public void updateRolesInUser(String userId, Domain domain, List<Role> rolesToBeAssign,
                                   List<Role> rolesToBeUnassign) throws AuthorizationStoreException {
 
-        authorizationStore.updateRolesInUser(userId, identityStoreId, rolesToBeAssign, rolesToBeUnassign);
+        authorizationStore.updateRolesInUser(userId, domain, rolesToBeAssign, rolesToBeUnassign);
 
         if (!CacheHelper.isCacheDisabled(cacheConfigs, CacheNames.ROLES_USERID_IDENTITYSTOREID)) {
             Cache<String, List> cache = cacheManager.getCache(CacheNames.ROLES_USERID_IDENTITYSTOREID, String.class,
                     List.class);
-            cache.remove(userId + identityStoreId);
+            cache.remove(userId + domain);
             if (log.isDebugEnabled()) {
                 log.debug("Roles removed from cache with user id: {} and identity store id: {}", userId,
-                        identityStoreId);
+                        domain);
             }
         }
     }
@@ -669,33 +670,33 @@ public class CacheBackedAuthorizationStore implements AuthorizationStore {
     }
 
     @Override
-    public void updateRolesInGroup(String groupId, String identityStoreId, List<Role> newRoleList)
+    public void updateRolesInGroup(String groupId, Domain domain, List<Role> newRoleList)
             throws AuthorizationStoreException {
 
-        authorizationStore.updateRolesInGroup(groupId, identityStoreId, newRoleList);
+        authorizationStore.updateRolesInGroup(groupId, domain, newRoleList);
 
         if (!CacheHelper.isCacheDisabled(cacheConfigs, CacheNames.ROLES_GROUPID_IDENTITYSTOREID)) {
             Cache<String, List> cache = cacheManager.getCache(CacheNames.ROLES_GROUPID_IDENTITYSTOREID, String.class,
                     List.class);
-            cache.put(groupId + identityStoreId, newRoleList);
+            cache.put(groupId + domain, newRoleList);
             if (log.isDebugEnabled()) {
-                log.debug("Roles added to the cache for group id: {} identity store id: {}", groupId, identityStoreId);
+                log.debug("Roles added to the cache for group id: {} identity store id: {}", groupId, domain);
             }
         }
     }
 
     @Override
-    public void updateRolesInGroup(String groupId, String identityStoreId, List<Role> rolesToBeAssign,
+    public void updateRolesInGroup(String groupId, Domain domain, List<Role> rolesToBeAssign,
                                    List<Role> rolesToBeUnassigned) throws AuthorizationStoreException {
 
-        authorizationStore.updateRolesInGroup(groupId, identityStoreId, rolesToBeAssign, rolesToBeUnassigned);
+        authorizationStore.updateRolesInGroup(groupId, domain, rolesToBeAssign, rolesToBeUnassigned);
 
         if (!CacheHelper.isCacheDisabled(cacheConfigs, CacheNames.ROLES_GROUPID_IDENTITYSTOREID)) {
             Cache<String, List> cache = cacheManager.getCache(CacheNames.ROLES_GROUPID_IDENTITYSTOREID, String.class,
                     List.class);
-            cache.remove(groupId + identityStoreId);
+            cache.remove(groupId + domain);
             if (log.isDebugEnabled()) {
-                log.debug("Roles removed with group id: {} and identity store id: {}.", groupId, identityStoreId);
+                log.debug("Roles removed with group id: {} and identity store id: {}.", groupId, domain);
             }
         }
     }
