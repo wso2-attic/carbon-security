@@ -70,8 +70,8 @@ public class InMemoryCredentialStoreConnector implements CredentialStoreConnecto
 
         char[] storedPassword = InMemoryStoreUtil.getPassword(username);
         if (storedPassword != null && Arrays.equals(storedPassword, password)) {
-            return new User.UserBuilder().setUserName(username).setUserId(UUID.randomUUID().toString())
-                    .setIdentityStoreId("PRIMARY").setCredentialStoreId("PRIMARY").setTenantDomain("carbon.super");
+            return new User.UserBuilder().setUserId(UUID.randomUUID().toString())
+                    .setTenantDomain("carbon.super");
         } else {
             throw new AuthenticationFailure("Invalid credentials");
         }

@@ -16,16 +16,17 @@
 
 package org.wso2.carbon.security.caas.userstore.inmemory;
 
+import org.wso2.carbon.security.caas.user.core.bean.Attribute;
 import org.wso2.carbon.security.caas.user.core.bean.Group;
 import org.wso2.carbon.security.caas.user.core.bean.User;
 import org.wso2.carbon.security.caas.user.core.config.IdentityStoreConnectorConfig;
+import org.wso2.carbon.security.caas.user.core.exception.GroupNotFoundException;
 import org.wso2.carbon.security.caas.user.core.exception.IdentityStoreException;
 import org.wso2.carbon.security.caas.user.core.exception.UserNotFoundException;
 import org.wso2.carbon.security.caas.user.core.store.connector.IdentityStoreConnector;
 import org.wso2.carbon.security.caas.userstore.inmemory.util.InMemoryStoreUtil;
 
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 import javax.security.auth.callback.Callback;
 import javax.security.auth.callback.NameCallback;
@@ -48,17 +49,11 @@ public class InMemoryIdentityStoreConnector implements IdentityStoreConnector {
     }
 
     @Override
-    public User.UserBuilder getUserFromId(String userID) throws IdentityStoreException {
-        return null;
-    }
-
-    @Override
     public User.UserBuilder getUser(String attributeName, String attributeValue) throws UserNotFoundException,
             IdentityStoreException {
 
         if (InMemoryStoreUtil.getPassword(attributeValue) != null) {
-            return new User.UserBuilder().setUserName(attributeValue).setUserId(UUID.randomUUID().toString())
-                    .setIdentityStoreId("PRIMARY").setCredentialStoreId("PRIMARY").setTenantDomain("carbon.super");
+            return new User.UserBuilder().setUserId(UUID.randomUUID().toString()).setTenantDomain("carbon.super");
         }
         throw new UserNotFoundException("No user found for username: " + attributeValue +
                 " in In-Memory identity store.");
@@ -75,8 +70,7 @@ public class InMemoryIdentityStoreConnector implements IdentityStoreConnector {
         }
 
         if (InMemoryStoreUtil.getPassword(username) != null) {
-            return new User.UserBuilder().setUserName(username).setUserId(UUID.randomUUID().toString())
-                    .setIdentityStoreId("PRIMARY").setCredentialStoreId("PRIMARY").setTenantDomain("carbon.super");
+            return new User.UserBuilder().setUserId(UUID.randomUUID().toString()).setTenantDomain("carbon.super");
         }
         throw new UserNotFoundException("No user found for username: " + username + " in In-Memory identity store.");
 
@@ -89,23 +83,19 @@ public class InMemoryIdentityStoreConnector implements IdentityStoreConnector {
     }
 
     @Override
-    public Map<String, String> getUserAttributeValues(String userID) throws IdentityStoreException {
+    public List<Attribute> getUserAttributeValues(String userID) throws IdentityStoreException {
         return null;
     }
 
     @Override
-    public Map<String, String> getUserAttributeValues(String userID, List<String> attributeNames)
+    public List<Attribute> getUserAttributeValues(String userID, List<String> attributeNames)
             throws IdentityStoreException {
         return null;
     }
 
     @Override
-    public Group.GroupBuilder getGroupById(String groupID) throws IdentityStoreException {
-        return null;
-    }
-
-    @Override
-    public Group.GroupBuilder getGroup(String groupName) throws IdentityStoreException {
+    public Group.GroupBuilder getGroup(String attributeName, String attributeValue) throws GroupNotFoundException,
+            IdentityStoreException {
         return null;
     }
 
@@ -116,12 +106,12 @@ public class InMemoryIdentityStoreConnector implements IdentityStoreConnector {
     }
 
     @Override
-    public Map<String, String> getGroupAttributeValues(String groupId) throws IdentityStoreException {
+    public List<Attribute> getGroupAttributeValues(String groupId) throws IdentityStoreException {
         return null;
     }
 
     @Override
-    public Map<String, String> getGroupAttributeValues(String groupId, List<String> attributeNames)
+    public List<Attribute> getGroupAttributeValues(String groupId, List<String> attributeNames)
             throws IdentityStoreException {
         return null;
     }

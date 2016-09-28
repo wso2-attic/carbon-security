@@ -18,7 +18,6 @@ package org.wso2.carbon.security.caas.user.core.bean;
 
 import org.wso2.carbon.security.caas.user.core.claim.Claim;
 import org.wso2.carbon.security.caas.user.core.claim.ClaimManager;
-import org.wso2.carbon.security.caas.user.core.claim.IdnStoreMetaClaimMapping;
 import org.wso2.carbon.security.caas.user.core.exception.AuthorizationStoreException;
 import org.wso2.carbon.security.caas.user.core.exception.ClaimManagerException;
 import org.wso2.carbon.security.caas.user.core.exception.IdentityStoreException;
@@ -26,10 +25,7 @@ import org.wso2.carbon.security.caas.user.core.exception.StoreException;
 import org.wso2.carbon.security.caas.user.core.store.AuthorizationStore;
 import org.wso2.carbon.security.caas.user.core.store.IdentityStore;
 
-import java.util.Collections;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 /**
  * Represents a user in the user core. All of the user related identity operations can be
@@ -88,18 +84,21 @@ public class User {
      */
     public List<Claim> getClaims() throws IdentityStoreException, ClaimManagerException {
 
-        List<Attribute> userAttributes = identityStore.getUserAttributeValues(userId, domain);
-        if (userAttributes == null || userAttributes.isEmpty()) {
-            return Collections.emptyList();
-        }
+//        List<Attribute> userAttributes = identityStore.getUserAttributeValues(userId, domain);
+//        if (userAttributes == null || userAttributes.isEmpty()) {
+//            return Collections.emptyList();
+//        }
+//
+//        List<IdnStoreMetaClaimMapping> idnStoreMetaClaimMappings = claimManager
+//                .getMetaClaimMappingsByIdentityStoreId(identityStoreId);
+//        if (idnStoreMetaClaimMappings == null || idnStoreMetaClaimMappings.isEmpty()) {
+//            return Collections.emptyList();
+//        }
+//
+//        return buildClaims(idnStoreMetaClaimMappings, userAttributes);
 
-        List<IdnStoreMetaClaimMapping> idnStoreMetaClaimMappings = claimManager
-                .getMetaClaimMappingsByIdentityStoreId(identityStoreId);
-        if (idnStoreMetaClaimMappings == null || idnStoreMetaClaimMappings.isEmpty()) {
-            return Collections.emptyList();
-        }
-
-        return buildClaims(idnStoreMetaClaimMappings, userAttributes);
+        // TODO: Uncomment and fix.
+        return null;
     }
 
     /**
@@ -111,23 +110,26 @@ public class User {
      */
     public List<Claim> getClaims(List<String> claimURIs) throws IdentityStoreException, ClaimManagerException {
 
-        List<IdnStoreMetaClaimMapping> idnStoreMetaClaimMappings = claimManager
-                .getMetaClaimMappingsByIdentityStoreId(identityStoreId, claimURIs);
-        if (idnStoreMetaClaimMappings == null || idnStoreMetaClaimMappings.isEmpty()) {
-            return Collections.emptyList();
-        }
+//        List<IdnStoreMetaClaimMapping> idnStoreMetaClaimMappings = claimManager
+//                .getMetaClaimMappingsByIdentityStoreId(identityStoreId, claimURIs);
+//        if (idnStoreMetaClaimMappings == null || idnStoreMetaClaimMappings.isEmpty()) {
+//            return Collections.emptyList();
+//        }
+//
+//        List<String> attributeNames = idnStoreMetaClaimMappings.stream()
+//                .map(IdnStoreMetaClaimMapping::getAttributeName)
+//                .collect(Collectors.toList());
+//
+//        Map<String, String> attributeValues = identityStore
+//                .getUserAttributeValues(userId, attributeNames, identityStoreId);
+//        if (attributeValues == null || attributeValues.isEmpty()) {
+//            return Collections.emptyList();
+//        }
+//
+//        return buildClaims(idnStoreMetaClaimMappings, attributeValues);
 
-        List<String> attributeNames = idnStoreMetaClaimMappings.stream()
-                .map(IdnStoreMetaClaimMapping::getAttributeName)
-                .collect(Collectors.toList());
-
-        Map<String, String> attributeValues = identityStore
-                .getUserAttributeValues(userId, attributeNames, identityStoreId);
-        if (attributeValues == null || attributeValues.isEmpty()) {
-            return Collections.emptyList();
-        }
-
-        return buildClaims(idnStoreMetaClaimMappings, attributeValues);
+        // TODO: Uncomment and fix.
+        return null;
     }
 
     /**
@@ -219,17 +221,17 @@ public class User {
         authorizationStore.updateRolesInUser(userId, domain, assignList, unAssignList);
     }
 
-    private List<Claim> buildClaims(List<IdnStoreMetaClaimMapping> idnStoreMetaClaimMappings,
-                                    Map<String, String> userAttributeValues) {
-
-        return idnStoreMetaClaimMappings.stream()
-                .filter(idnStoreMetaClaimMapping -> userAttributeValues.containsKey(idnStoreMetaClaimMapping
-                        .getAttributeName()) && idnStoreMetaClaimMapping.getMetaClaim() != null)
-                .map(idnStoreMetaClaimMapping -> new Claim(idnStoreMetaClaimMapping.getMetaClaim().getDialectURI(),
-                        idnStoreMetaClaimMapping.getMetaClaim().getClaimURI(), userAttributeValues.get
-                        (idnStoreMetaClaimMapping.getAttributeName())))
-                .collect(Collectors.toList());
-    }
+//    private List<Claim> buildClaims(List<IdnStoreMetaClaimMapping> idnStoreMetaClaimMappings,
+//                                    Map<String, String> userAttributeValues) {
+//
+//        return idnStoreMetaClaimMappings.stream()
+//                .filter(idnStoreMetaClaimMapping -> userAttributeValues.containsKey(idnStoreMetaClaimMapping
+//                        .getAttributeName()) && idnStoreMetaClaimMapping.getMetaClaim() != null)
+//                .map(idnStoreMetaClaimMapping -> new Claim(idnStoreMetaClaimMapping.getMetaClaim().getDialectURI(),
+//                        idnStoreMetaClaimMapping.getMetaClaim().getClaimURI(), userAttributeValues.get
+//                        (idnStoreMetaClaimMapping.getAttributeName())))
+//                .collect(Collectors.toList());
+//    }
 
     /**
      * Builder for the user bean.

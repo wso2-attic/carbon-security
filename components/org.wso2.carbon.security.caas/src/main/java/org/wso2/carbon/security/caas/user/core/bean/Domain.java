@@ -16,6 +16,7 @@
 
 package org.wso2.carbon.security.caas.user.core.bean;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -26,12 +27,20 @@ public class Domain {
     private String domainId;
     private String domainName;
 
-    private List<String> identityStoreIdList;
-    private List<String> credentialStoreIdList;
+    private List<String> identityStoreIdList = new ArrayList<>();
+    private List<String> credentialStoreIdList = new ArrayList<>();
 
     public Domain(String domainId, String domainName) {
         this.domainId = domainId;
         this.domainName = domainName;
+    }
+
+    public void addIdentityStoreId(String identityStoreId) {
+        this.identityStoreIdList.add(identityStoreId);
+    }
+
+    public void addCredentialStoreId(String credentialStoreId) {
+        this.credentialStoreIdList.add(credentialStoreId);
     }
 
     public List<String> getIdentityStoreIdList() {
