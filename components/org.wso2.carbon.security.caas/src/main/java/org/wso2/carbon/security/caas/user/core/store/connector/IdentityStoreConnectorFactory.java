@@ -25,5 +25,5 @@ public interface IdentityStoreConnectorFactory {
      * Get @see IdentityStoreConnector instance.
      * @return IdentityStoreConnector.
      */
-    IdentityStoreConnector getInstance();
+    IdentityStoreConnector getConnector();
 }

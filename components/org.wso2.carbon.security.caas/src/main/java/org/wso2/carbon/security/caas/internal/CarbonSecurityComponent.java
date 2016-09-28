@@ -206,21 +206,21 @@ public class CarbonSecurityComponent implements RequiredCapabilityListener {
      */
     private void initAuthenticationConfigs(BundleContext bundleContext) {
 
-        // Initialize proxy login module
+        // Initialize proxy login module.
         ProxyLoginModule.init(bundleContext);
 
-        // Set CarbonJAASConfiguration as the implantation of Configuration
+        // Set CarbonJAASConfiguration as the implementation of Configuration.
         CarbonJAASConfiguration configuration = new CarbonJAASConfiguration();
         configuration.init();
 
-        // Registering login module provided by the bundle
+        // Registering login module provided by the bundle.
         Hashtable<String, String> usernamePasswordLoginModuleProps = new Hashtable<>();
         usernamePasswordLoginModuleProps.put(ProxyLoginModule.LOGIN_MODULE_SEARCH_KEY,
                 UsernamePasswordLoginModule.class.getName());
         bundleContext.registerService(LoginModule.class, new UserNamePasswordLoginModuleFactory(),
                 usernamePasswordLoginModuleProps);
 
-        // Registering callback handler factories
+        // Registering callback handler factories.
         Hashtable<String, String> usernamePasswordCallbackHandlerProps = new Hashtable<>();
         usernamePasswordCallbackHandlerProps.put(CarbonCallbackHandler.SUPPORTED_LOGIN_MODULE,
                 CarbonSecurityConstants.USERNAME_PASSWORD_LOGIN_MODULE);
@@ -235,7 +235,7 @@ public class CarbonSecurityComponent implements RequiredCapabilityListener {
      */
     private void initAuthorizationConfigs(BundleContext bundleContext) {
 
-        // Set default permissions for all bundles
+        // Set default permissions for all bundles.
         setDefaultPermissions(bundleContext);
 
         // Registering CarbonPolicy
