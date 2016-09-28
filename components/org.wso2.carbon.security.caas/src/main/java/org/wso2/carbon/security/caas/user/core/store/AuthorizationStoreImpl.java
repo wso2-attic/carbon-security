@@ -21,12 +21,13 @@ import org.slf4j.LoggerFactory;
 import org.wso2.carbon.kernel.utils.LambdaExceptionUtils;
 import org.wso2.carbon.security.caas.internal.CarbonSecurityDataHolder;
 import org.wso2.carbon.security.caas.user.core.bean.Action;
+import org.wso2.carbon.security.caas.user.core.bean.Domain;
 import org.wso2.carbon.security.caas.user.core.bean.Group;
 import org.wso2.carbon.security.caas.user.core.bean.Permission;
 import org.wso2.carbon.security.caas.user.core.bean.Resource;
 import org.wso2.carbon.security.caas.user.core.bean.Role;
 import org.wso2.carbon.security.caas.user.core.bean.User;
-import org.wso2.carbon.security.caas.user.core.config.AuthorizationConnectorConfig;
+import org.wso2.carbon.security.caas.user.core.config.AuthorizationStoreConnectorConfig;
 import org.wso2.carbon.security.caas.user.core.constant.UserCoreConstants;
 import org.wso2.carbon.security.caas.user.core.exception.AuthorizationStoreException;
 import org.wso2.carbon.security.caas.user.core.exception.IdentityStoreException;
@@ -55,21 +56,19 @@ public class AuthorizationStoreImpl implements AuthorizationStore {
     private static final Logger log = LoggerFactory.getLogger(AuthorizationStoreImpl.class);
 
     private RealmService realmService;
-    private Map<String, AuthorizationConnectorConfig> authorizationConnectorConfigs;
     private Map<String, AuthorizationStoreConnector> authorizationStoreConnectors = new HashMap<>();
 
     @Override
-    public void init(RealmService realmService, Map<String, AuthorizationConnectorConfig> authorizationConnectorConfigs)
-            throws AuthorizationStoreException {
+    public void init(RealmService realmService, Map<String, AuthorizationStoreConnectorConfig>
+            authorizationConnectorConfigs) throws AuthorizationStoreException {
 
         this.realmService = realmService;
-        this.authorizationConnectorConfigs = authorizationConnectorConfigs;
 
         if (authorizationConnectorConfigs.isEmpty()) {
             throw new StoreException("At least one authorization store configuration must present.");
         }
 
-        for (Map.Entry<String, AuthorizationConnectorConfig> authorizationStoreConfig :
+        for (Map.Entry<String, AuthorizationStoreConnectorConfig> authorizationStoreConfig :
                 authorizationConnectorConfigs.entrySet()) {
 
             String connectorType = authorizationStoreConfig.getValue().getConnectorType();
@@ -92,7 +91,7 @@ public class AuthorizationStoreImpl implements AuthorizationStore {
     }
 
     @Override
-    public boolean isUserAuthorized(String userId, Permission permission, String identityStoreId)
+    public boolean isUserAuthorized(String userId, Permission permission, Domain domain)
             throws AuthorizationStoreException, IdentityStoreException {
 
         // If this user owns this resource, we assume this user has all permissions.
@@ -103,7 +102,7 @@ public class AuthorizationStoreImpl implements AuthorizationStore {
         // Get the roles directly associated to the user.
         List<Role> roles = new ArrayList<>();
         for (AuthorizationStoreConnector authorizationStoreConnector : authorizationStoreConnectors.values()) {
-            roles.addAll(authorizationStoreConnector.getRolesForUser(userId, identityStoreId)
+            roles.addAll(authorizationStoreConnector.getRolesForUser(userId, domain.getDomainId())
                     .stream()
                     .map(roleBuilder -> roleBuilder
                             .setAuthorizationStore(realmService.getAuthorizationStore())
@@ -112,9 +111,9 @@ public class AuthorizationStoreImpl implements AuthorizationStore {
         }
 
         // Get the roles associated through groups.
-        List<Group> groups = realmService.getIdentityStore().getGroupsOfUser(userId, identityStoreId);
+        List<Group> groups = realmService.getIdentityStore().getGroupsOfUser(userId, domain);
         for (Group group : groups) {
-            roles.addAll(getRolesOfGroup(group.getGroupId(), identityStoreId));
+            roles.addAll(getRolesOfGroup(group.getGroupId(), domain));
         }
 
         if (roles.isEmpty()) {
@@ -131,10 +130,10 @@ public class AuthorizationStoreImpl implements AuthorizationStore {
     }
 
     @Override
-    public boolean isGroupAuthorized(String groupId, String identityStoreId, Permission permission)
+    public boolean isGroupAuthorized(String groupId, Domain domain, Permission permission)
             throws AuthorizationStoreException {
 
-        List<Role> roles = getRolesOfGroup(groupId, identityStoreId);
+        List<Role> roles = getRolesOfGroup(groupId, domain);
 
         for (Role role : roles) {
             if (isRoleAuthorized(role.getRoleId(), role.getAuthorizationStoreId(), permission)) {
@@ -174,11 +173,11 @@ public class AuthorizationStoreImpl implements AuthorizationStore {
     }
 
     @Override
-    public boolean isUserInRole(String userId, String identityStoreId, String roleName)
+    public boolean isUserInRole(String userId, Domain domain, String roleName)
             throws AuthorizationStoreException {
 
         for (AuthorizationStoreConnector authorizationStoreConnector : authorizationStoreConnectors.values()) {
-            if (authorizationStoreConnector.isUserInRole(userId, identityStoreId, roleName)) {
+            if (authorizationStoreConnector.isUserInRole(userId, domain.getDomainId(), roleName)) {
                 return true;
             }
         }
@@ -187,11 +186,11 @@ public class AuthorizationStoreImpl implements AuthorizationStore {
     }
 
     @Override
-    public boolean isGroupInRole(String groupId, String identityStoreId, String roleName)
+    public boolean isGroupInRole(String groupId, Domain domain, String roleName)
             throws AuthorizationStoreException {
 
         for (AuthorizationStoreConnector authorizationStoreConnector : authorizationStoreConnectors.values()) {
-            if (authorizationStoreConnector.isGroupInRole(groupId, identityStoreId, roleName)) {
+            if (authorizationStoreConnector.isGroupInRole(groupId, domain.getDomainId(), roleName)) {
                 return true;
             }
         }
@@ -347,11 +346,11 @@ public class AuthorizationStoreImpl implements AuthorizationStore {
     }
 
     @Override
-    public List<Role> getRolesOfUser(String userId, String identityStoreId) throws AuthorizationStoreException {
+    public List<Role> getRolesOfUser(String userId, Domain domain) throws AuthorizationStoreException {
 
         List<Role> roles = new ArrayList<>();
         for (AuthorizationStoreConnector authorizationStoreConnector : authorizationStoreConnectors.values()) {
-            roles.addAll(authorizationStoreConnector.getRolesForUser(userId, identityStoreId)
+            roles.addAll(authorizationStoreConnector.getRolesForUser(userId, domain.getDomainId())
                     .stream()
                     .map(roleBuilder -> roleBuilder.setAuthorizationStore(realmService.getAuthorizationStore()).build())
                     .collect(Collectors.toList()));
@@ -374,8 +373,11 @@ public class AuthorizationStoreImpl implements AuthorizationStore {
 
         return authorizationStoreConnector.getUsersOfRole(roleId)
                 .stream()
-                .map(LambdaExceptionUtils.rethrowFunction(userBuilder -> realmService.getIdentityStore()
-                        .getUserFromId(userBuilder.getUserId(), userBuilder.getIdentityStoreId())))
+                .map(LambdaExceptionUtils.rethrowFunction(userBuilder -> userBuilder
+                                .setIdentityStore(realmService.getIdentityStore())
+                                .setAuthorizationStore(realmService.getAuthorizationStore())
+                                .setClaimManager(realmService.getClaimManager())
+                                .build()))
                 .collect(Collectors.toList());
     }
 
@@ -393,18 +395,20 @@ public class AuthorizationStoreImpl implements AuthorizationStore {
 
         return authorizationStoreConnector.getGroupsOfRole(roleId)
                 .stream()
-                .map(LambdaExceptionUtils.rethrowFunction(groupBuilder -> realmService.getIdentityStore()
-                        .getGroupFromId(groupBuilder.getGroupId(), groupBuilder.getIdentityStoreId())))
+                .map(LambdaExceptionUtils.rethrowFunction(groupBuilder -> groupBuilder
+                        .setIdentityStore(realmService.getIdentityStore())
+                        .setAuthorizationStore(realmService.getAuthorizationStore())
+                        .build()))
                 .collect(Collectors.toList());
     }
 
     @Override
-    public List<Role> getRolesOfGroup(String groupId, String identityStoreId) throws AuthorizationStoreException {
+    public List<Role> getRolesOfGroup(String groupId, Domain domain) throws AuthorizationStoreException {
 
         List<Role> roles = new ArrayList<>();
 
         for (AuthorizationStoreConnector authorizationStoreConnector : authorizationStoreConnectors.values()) {
-            roles.addAll(authorizationStoreConnector.getRolesForGroup(groupId, identityStoreId)
+            roles.addAll(authorizationStoreConnector.getRolesForGroup(groupId, domain.getDomainId())
                     .stream()
                     .map(roleBuilder -> roleBuilder
                             .setAuthorizationStore(realmService.getAuthorizationStore())
@@ -459,10 +463,10 @@ public class AuthorizationStoreImpl implements AuthorizationStore {
     }
 
     @Override
-    public List<Permission> getPermissionsOfUser(String userId, String identityStoreId, Resource resource)
+    public List<Permission> getPermissionsOfUser(String userId, Domain domain, Resource resource)
             throws AuthorizationStoreException {
 
-        return getRolesOfUser(userId, identityStoreId)
+        return getRolesOfUser(userId, domain)
                 .stream()
                 .map(LambdaExceptionUtils.rethrowFunction(role ->
                         getPermissionsOfRole(role.getRoleId(), role.getAuthorizationStoreId(), resource)))
@@ -471,10 +475,10 @@ public class AuthorizationStoreImpl implements AuthorizationStore {
     }
 
     @Override
-    public List<Permission> getPermissionsOfUser(String userId, String identityStoreId, Action action)
+    public List<Permission> getPermissionsOfUser(String userId, Domain domain, Action action)
             throws AuthorizationStoreException {
 
-        return getRolesOfUser(userId, identityStoreId)
+        return getRolesOfUser(userId, domain)
                 .stream()
                 .map(LambdaExceptionUtils.rethrowFunction(role ->
                         getPermissionsOfRole(role.getRoleId(), role.getAuthorizationStoreId(), action)))
@@ -525,16 +529,16 @@ public class AuthorizationStoreImpl implements AuthorizationStore {
     }
 
     @Override
-    public Resource addResource(String resourceNamespace, String resourceId, String userId, String identityStoreId)
+    public Resource addResource(String resourceNamespace, String resourceId, String userId, Domain domain)
             throws AuthorizationStoreException {
 
         String authorizationStoreId = getPrimaryAuthorizationStoreId();
-        return addResource(resourceNamespace, resourceId, authorizationStoreId, userId, identityStoreId);
+        return addResource(resourceNamespace, resourceId, authorizationStoreId, userId, domain);
     }
 
     @Override
     public Resource addResource(String resourceNamespace, String resourceId, String authorizationStoreId, String userId,
-                                String identityStoreId) throws AuthorizationStoreException {
+                                Domain domain) throws AuthorizationStoreException {
 
         AuthorizationStoreConnector authorizationStoreConnector = authorizationStoreConnectors
                 .get(authorizationStoreId);
@@ -544,7 +548,7 @@ public class AuthorizationStoreImpl implements AuthorizationStore {
                     authorizationStoreId));
         }
 
-        return authorizationStoreConnector.addResource(resourceNamespace, resourceId, userId, identityStoreId);
+        return authorizationStoreConnector.addResource(resourceNamespace, resourceId, userId, domain.getDomainId());
     }
 
     @Override
@@ -634,12 +638,12 @@ public class AuthorizationStoreImpl implements AuthorizationStore {
     }
 
     @Override
-    public void updateRolesInUser(String userId, String identityStoreId, List<Role> newRoleList)
+    public void updateRolesInUser(String userId, Domain domain, List<Role> newRoleList)
             throws AuthorizationStoreException {
 
         if (newRoleList == null || newRoleList.isEmpty()) {
             for (AuthorizationStoreConnector authorizationStoreConnector : authorizationStoreConnectors.values()) {
-                authorizationStoreConnector.updateRolesInUser(userId, identityStoreId, newRoleList);
+                authorizationStoreConnector.updateRolesInUser(userId, domain.getDomainId(), newRoleList);
             }
             return;
         }
@@ -653,12 +657,12 @@ public class AuthorizationStoreImpl implements AuthorizationStore {
                 throw new StoreException(String.format("No authorization store found for the given id: %s.",
                         roleEntry.getKey()));
             }
-            authorizationStoreConnector.updateRolesInUser(userId, identityStoreId, roleEntry.getValue());
+            authorizationStoreConnector.updateRolesInUser(userId, domain.getDomainId(), roleEntry.getValue());
         }
     }
 
     @Override
-    public void updateRolesInUser(String userId, String identityStoreId, List<Role> rolesToBeAssign,
+    public void updateRolesInUser(String userId, Domain domain, List<Role> rolesToBeAssign,
                                   List<Role> rolesToBeUnassign) throws AuthorizationStoreException {
 
         Map<String, List<Role>> rolesToBeAssignWithStoreId = this.getRolesWithAuthorizationStore(rolesToBeAssign);
@@ -676,8 +680,8 @@ public class AuthorizationStoreImpl implements AuthorizationStore {
                 throw new StoreException(String.format("No authorization store found for the given id: %s.", key));
             }
 
-            authorizationStoreConnector.updateRolesInUser(userId, identityStoreId, rolesToBeAssignWithStoreId.get(key),
-                    rolesToBeUnAssignWithStoreId.get(key));
+            authorizationStoreConnector.updateRolesInUser(userId, domain.getDomainId(),
+                    rolesToBeAssignWithStoreId.get(key), rolesToBeUnAssignWithStoreId.get(key));
         }
     }
 
@@ -712,12 +716,12 @@ public class AuthorizationStoreImpl implements AuthorizationStore {
     }
 
     @Override
-    public void updateRolesInGroup(String groupId, String identityStoreId, List<Role> newRoleList)
+    public void updateRolesInGroup(String groupId, Domain domain, List<Role> newRoleList)
             throws AuthorizationStoreException {
 
         if (newRoleList == null || newRoleList.isEmpty()) {
             for (AuthorizationStoreConnector authorizationStoreConnector : authorizationStoreConnectors.values()) {
-                authorizationStoreConnector.updateRolesInGroup(groupId, identityStoreId, newRoleList);
+                authorizationStoreConnector.updateRolesInGroup(groupId, domain.getDomainId(), newRoleList);
             }
             return;
         }
@@ -731,12 +735,12 @@ public class AuthorizationStoreImpl implements AuthorizationStore {
                 throw new StoreException(String.format("No authorization store found for the given id: %s.",
                         roleEntry.getKey()));
             }
-            authorizationStoreConnector.updateRolesInGroup(groupId, identityStoreId, roleEntry.getValue());
+            authorizationStoreConnector.updateRolesInGroup(groupId, domain.getDomainId(), roleEntry.getValue());
         }
     }
 
     @Override
-    public void updateRolesInGroup(String groupId, String identityStoreId, List<Role> rolesToBeAssign,
+    public void updateRolesInGroup(String groupId, Domain domain, List<Role> rolesToBeAssign,
                                    List<Role> rolesToBeUnassigned) throws AuthorizationStoreException {
 
         Map<String, List<Role>> rolesToBeAssignWithStoreId = this.getRolesWithAuthorizationStore(rolesToBeAssign);
@@ -754,7 +758,7 @@ public class AuthorizationStoreImpl implements AuthorizationStore {
                 throw new StoreException(String.format("No authorization store found for the given id: %s.", key));
             }
 
-            authorizationStoreConnector.updateRolesInGroup(groupId, identityStoreId,
+            authorizationStoreConnector.updateRolesInGroup(groupId, domain.getDomainId(),
                     rolesToBeAssignWithStoreId.get(key), rolesToBeUnAssignWithStoreId.get(key));
         }
     }
@@ -823,10 +827,10 @@ public class AuthorizationStoreImpl implements AuthorizationStore {
     @Override
     public Map<String, String> getAllAuthorizationStoreNames() {
 
-        return authorizationConnectorConfigs.entrySet()
+        return authorizationStoreConnectors.entrySet()
                 .stream()
                 .collect(Collectors.toMap(Map.Entry::getKey,
-                        entry -> entry.getValue().getStoreProperties()
+                        entry -> entry.getValue().getAuthorizationStoreConfig().getStoreProperties()
                                 .getProperty(UserCoreConstants.USERSTORE_DISPLAY_NAME, "")));
     }
 
@@ -864,22 +868,25 @@ public class AuthorizationStoreImpl implements AuthorizationStore {
         // To get the primary authorization store, first check whether the primary property is set to true, if not sort
         // the connectors by there priority. If non of above properties were set, then get the first connector id from
         // the list.
-        return authorizationConnectorConfigs.entrySet()
+        return authorizationStoreConnectors.entrySet()
                 .stream()
-                .filter(config -> Boolean.parseBoolean(config.getValue().getStoreProperties()
+                .filter(connectorEntry -> Boolean.parseBoolean((connectorEntry.getValue().getAuthorizationStoreConfig()
+                        .getStoreProperties())
                         .getProperty(UserCoreConstants.PRIMARY_USERSTORE)))
                 .findFirst()
                 .map(Map.Entry::getKey)
-                .orElse(authorizationConnectorConfigs.entrySet()
+                .orElse(authorizationStoreConnectors.entrySet()
                         .stream()
                         .sorted((c1, c2) ->
-                                Integer.compare(Integer.parseInt(c1.getValue().getStoreProperties()
+                                Integer.compare(Integer.parseInt(c1.getValue().getAuthorizationStoreConfig()
+                                        .getStoreProperties()
                                         .getProperty(UserCoreConstants.USERSTORE_PRIORITY)),
-                                        Integer.parseInt(c2.getValue().getStoreProperties()
+                                        Integer.parseInt(c2.getValue().getAuthorizationStoreConfig()
+                                                .getStoreProperties()
                                                 .getProperty(UserCoreConstants.USERSTORE_PRIORITY))))
                         .findFirst()
                         .map(Map.Entry::getKey)
-                        .orElse(authorizationConnectorConfigs.entrySet()
+                        .orElse(authorizationStoreConnectors.entrySet()
                                 .stream()
                                 .findFirst()
                                 .map(Map.Entry::getKey)

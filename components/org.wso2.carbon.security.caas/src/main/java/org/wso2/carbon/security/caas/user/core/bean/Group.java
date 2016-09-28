@@ -23,7 +23,6 @@ import org.wso2.carbon.security.caas.user.core.store.AuthorizationStore;
 import org.wso2.carbon.security.caas.user.core.store.IdentityStore;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * Group represents a group of users.
@@ -31,29 +30,20 @@ import java.util.Map;
 public class Group {
 
     private String groupId;
-    private String identityStoreId;
-    private String groupName;
+    private Domain domain;
     private String tenantDomain;
+
     private IdentityStore identityStore;
     private AuthorizationStore authorizationStore;
 
-    private Group(String groupName, String groupId, String identityStoreId, String tenantDomain,
+    private Group(String groupId, Domain domain, String tenantDomain,
                   IdentityStore identityStore, AuthorizationStore authorizationStore) {
 
-        this.groupName = groupName;
         this.groupId = groupId;
-        this.identityStoreId = identityStoreId;
+        this.domain = domain;
         this.tenantDomain = tenantDomain;
         this.identityStore = identityStore;
         this.authorizationStore = authorizationStore;
-    }
-
-    /**
-     * Get the name of the Group.
-     * @return Name of the Group.
-     */
-    public String getName() {
-        return groupName;
     }
 
     /**
@@ -65,11 +55,11 @@ public class Group {
     }
 
     /**
-     * Get the identity store id.
-     * @return Identity store id.
+     * Get this group's domain.
+     * @return Domain of this group.
      */
-    public String getIdentityStoreId() {
-        return identityStoreId;
+    public Domain getDomain() {
+        return this.domain;
     }
 
     /**
@@ -85,8 +75,8 @@ public class Group {
      * @return Map of attributes.
      * @throws IdentityStoreException
      */
-    public Map<String, String> getAttributes() throws IdentityStoreException {
-        return identityStore.getGroupAttributeValues(groupId, identityStoreId);
+    public List<Attribute> getAttributes() throws IdentityStoreException {
+        return identityStore.getGroupAttributeValues(groupId, domain);
     }
 
     /**
@@ -95,8 +85,8 @@ public class Group {
      * @return Map of group attributes.
      * @throws IdentityStoreException
      */
-    public Map<String, String> getAttributes(List<String> attributeNames) throws IdentityStoreException {
-        return identityStore.getGroupAttributeValues(groupId, identityStoreId, attributeNames);
+    public List<Attribute> getAttributes(List<String> attributeNames) throws IdentityStoreException {
+        return identityStore.getGroupAttributeValues(groupId, domain, attributeNames);
     }
 
     /**
@@ -105,7 +95,7 @@ public class Group {
      * @throws IdentityStoreException Identity store exception.
      */
     public List<User> getUsers() throws IdentityStoreException {
-        return identityStore.getUsersOfGroup(groupId, identityStoreId);
+        return identityStore.getUsersOfGroup(groupId, domain);
     }
 
     /**
@@ -114,7 +104,7 @@ public class Group {
      * @throws AuthorizationStoreException Authorization store exception.
      */
     public List<Role> getRoles() throws AuthorizationStoreException {
-        return authorizationStore.getRolesOfGroup(groupId, identityStoreId);
+        return authorizationStore.getRolesOfGroup(groupId, domain);
     }
 
     /**
@@ -124,7 +114,7 @@ public class Group {
      * @throws AuthorizationStoreException Authorization store exception.
      */
     public boolean isAuthorized(Permission permission) throws AuthorizationStoreException {
-        return authorizationStore.isGroupAuthorized(groupId, identityStoreId, permission);
+        return authorizationStore.isGroupAuthorized(groupId, domain, permission);
     }
 
     /**
@@ -134,7 +124,7 @@ public class Group {
      * @throws IdentityStoreException Identity store exception.
      */
     public boolean hasUser(String userId) throws IdentityStoreException {
-        return identityStore.isUserInGroup(userId, groupId, identityStoreId);
+        return identityStore.isUserInGroup(userId, groupId, domain);
     }
 
     /**
@@ -144,7 +134,7 @@ public class Group {
      * @throws AuthorizationStoreException Authorization store exception.
      */
     public boolean hasRole(String roleName) throws AuthorizationStoreException {
-        return authorizationStore.isGroupInRole(groupId, identityStoreId, roleName);
+        return authorizationStore.isGroupInRole(groupId, domain, roleName);
     }
 
     /**
@@ -172,7 +162,7 @@ public class Group {
      * @throws AuthorizationStoreException Authorization store exception.
      */
     public void updateRoles(List<Role> newRoleList) throws AuthorizationStoreException {
-        authorizationStore.updateRolesInGroup(groupId, identityStoreId, newRoleList);
+        authorizationStore.updateRolesInGroup(groupId, domain, newRoleList);
     }
 
     /**
@@ -182,7 +172,7 @@ public class Group {
      * @throws AuthorizationStoreException Authorization store exception.
      */
     public void updateRoles(List<Role> assignList, List<Role> unAssignList) throws AuthorizationStoreException {
-        authorizationStore.updateRolesInGroup(groupId, identityStoreId, assignList, unAssignList);
+        authorizationStore.updateRolesInGroup(groupId, domain, assignList, unAssignList);
     }
 
     /**
@@ -190,11 +180,8 @@ public class Group {
      */
     public static class GroupBuilder {
 
-        private static final long serialVersionUID = 1020795884862200753L;
-
         private String groupId;
-        private String identityStoreId;
-        private String groupName;
+        private Domain domain;
         private String tenantDomain;
 
         private IdentityStore identityStore;
@@ -204,12 +191,8 @@ public class Group {
             return groupId;
         }
 
-        public String getIdentityStoreId() {
-            return identityStoreId;
-        }
-
-        public String getGroupName() {
-            return groupName;
+        public Domain getDomain() {
+            return domain;
         }
 
         public String getTenantDomain() {
@@ -224,18 +207,13 @@ public class Group {
             return authorizationStore;
         }
 
-        public GroupBuilder setGroupName(String groupName) {
-            this.groupName = groupName;
-            return this;
-        }
-
         public GroupBuilder setGroupId(String groupId) {
             this.groupId = groupId;
             return this;
         }
 
-        public GroupBuilder setIdentityStoreId(String identityStoreId) {
-            this.identityStoreId = identityStoreId;
+        public GroupBuilder setDomain(Domain domain) {
+            this.domain = domain;
             return this;
         }
 
@@ -256,13 +234,12 @@ public class Group {
 
         public Group build() {
 
-            if (groupName == null || groupId == null || identityStoreId == null || tenantDomain == null ||
-                    identityStore == null || authorizationStore == null) {
+            if (groupId == null || domain == null || tenantDomain == null || identityStore == null
+                    || authorizationStore == null) {
                 throw new StoreException("Required data missing for building group.");
             }
 
-            return new Group(groupName, groupId, identityStoreId, tenantDomain, identityStore,
-                    authorizationStore);
+            return new Group(groupId, domain, tenantDomain, identityStore, authorizationStore);
         }
     }
 }

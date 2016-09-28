@@ -21,7 +21,7 @@ import org.slf4j.LoggerFactory;
 import org.wso2.carbon.security.caas.api.CarbonCallback;
 import org.wso2.carbon.security.caas.internal.CarbonSecurityDataHolder;
 import org.wso2.carbon.security.caas.user.core.bean.User;
-import org.wso2.carbon.security.caas.user.core.config.CredentialConnectorConfig;
+import org.wso2.carbon.security.caas.user.core.config.CredentialStoreConnectorConfig;
 import org.wso2.carbon.security.caas.user.core.constant.UserCoreConstants;
 import org.wso2.carbon.security.caas.user.core.context.AuthenticationContext;
 import org.wso2.carbon.security.caas.user.core.exception.AuthenticationFailure;
@@ -47,21 +47,19 @@ public class CredentialStoreImpl implements CredentialStore {
     private static final Logger log = LoggerFactory.getLogger(CredentialStoreImpl.class);
 
     private RealmService realmService;
-    private Map<String, CredentialConnectorConfig> credentialConnectorConfigs;
     private Map<String, CredentialStoreConnector> credentialStoreConnectors = new HashMap<>();
 
     @Override
-    public void init(RealmService realmService, Map<String, CredentialConnectorConfig> credentialConnectorConfigs)
+    public void init(RealmService realmService, Map<String, CredentialStoreConnectorConfig> credentialConnectorConfigs)
             throws CredentialStoreException {
 
         this.realmService = realmService;
-        this.credentialConnectorConfigs = credentialConnectorConfigs;
 
         if (credentialConnectorConfigs.isEmpty()) {
             throw new StoreException("At least one credential store configuration must present.");
         }
 
-        for (Map.Entry<String, CredentialConnectorConfig> credentialStoreConfig :
+        for (Map.Entry<String, CredentialStoreConnectorConfig> credentialStoreConfig :
                 credentialConnectorConfigs.entrySet()) {
 
             String connectorType = credentialStoreConfig.getValue().getConnectorType();
@@ -86,6 +84,10 @@ public class CredentialStoreImpl implements CredentialStore {
     @Override
     public AuthenticationContext authenticate(Callback[] callbacks) throws AuthenticationFailure {
 
+        // As user related data is in the Identity store and the credential data is in the Credential store,
+        // we need to get the user unique id from Identity store to get the user related credential information
+        // from the Credential store.
+
         User user;
         try {
             // Get the user using given callbacks. We need to find the user unique id.
@@ -100,7 +102,7 @@ public class CredentialStoreImpl implements CredentialStore {
             CarbonCallback<Map> carbonCallback = new CarbonCallback<>(null);
             Map<String, String> userData = new HashMap<>();
             userData.put(UserCoreConstants.USER_ID, user.getUserId());
-            userData.put(UserCoreConstants.IDENTITY_STORE_ID, user.getIdentityStoreId());
+            userData.put(UserCoreConstants.DOMAIN_ID, user.getDomain().getDomainId());
             carbonCallback.setContent(userData);
 
             // New callback always will be the last element.
@@ -114,7 +116,14 @@ public class CredentialStoreImpl implements CredentialStore {
 
         AuthenticationFailure authenticationFailure = new AuthenticationFailure("Invalid user credentials.");
 
-        for (CredentialStoreConnector credentialStoreConnector : credentialStoreConnectors.values()) {
+        for (String credentialStoreId : user.getDomain().getCredentialStoreIdList()) {
+
+            CredentialStoreConnector credentialStoreConnector = credentialStoreConnectors.get(credentialStoreId);
+
+            // We need to check whether this credential store can handle this kind of callbacks.
+            if (!credentialStoreConnector.canHandle(callbacks)) {
+                continue;
+            }
 
             try {
                 User.UserBuilder userBuilder = credentialStoreConnector.authenticate(callbacks);
@@ -134,10 +143,10 @@ public class CredentialStoreImpl implements CredentialStore {
 
     @Override
     public Map<String, String> getAllCredentialStoreNames() {
-        return credentialConnectorConfigs.entrySet()
+        return credentialStoreConnectors.entrySet()
                 .stream()
                 .collect(Collectors.toMap(Map.Entry::getKey,
-                        entry -> entry.getValue().getStoreProperties()
+                        entry -> entry.getValue().getCredentialStoreConfig().getStoreProperties()
                                 .getProperty(UserCoreConstants.USERSTORE_DISPLAY_NAME, "")));
     }
 }

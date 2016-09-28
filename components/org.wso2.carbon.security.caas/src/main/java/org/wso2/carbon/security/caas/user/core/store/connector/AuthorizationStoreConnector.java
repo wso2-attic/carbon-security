@@ -22,7 +22,7 @@ import org.wso2.carbon.security.caas.user.core.bean.Permission;
 import org.wso2.carbon.security.caas.user.core.bean.Resource;
 import org.wso2.carbon.security.caas.user.core.bean.Role;
 import org.wso2.carbon.security.caas.user.core.bean.User;
-import org.wso2.carbon.security.caas.user.core.config.AuthorizationConnectorConfig;
+import org.wso2.carbon.security.caas.user.core.config.AuthorizationStoreConnectorConfig;
 import org.wso2.carbon.security.caas.user.core.exception.AuthorizationStoreException;
 import org.wso2.carbon.security.caas.user.core.exception.PermissionNotFoundException;
 import org.wso2.carbon.security.caas.user.core.exception.RoleNotFoundException;
@@ -37,10 +37,10 @@ public interface AuthorizationStoreConnector {
     /**
      * Initialize the authorization store.
      * @param storeId Id of this store.
-     * @param authorizationConnectorConfig Authorization store configurations for this connector.
+     * @param authorizationStoreConnectorConfig Authorization store configurations for this connector.
      * @throws AuthorizationStoreException Authorization store exception.
      */
-    void init(String storeId, AuthorizationConnectorConfig authorizationConnectorConfig)
+    void init(String storeId, AuthorizationStoreConnectorConfig authorizationStoreConnectorConfig)
             throws AuthorizationStoreException;
 
     /**
@@ -115,20 +115,20 @@ public interface AuthorizationStoreConnector {
     /**
      * Get roles for the user id.
      * @param userId User id of the user.
-     * @param identityStoreId Identity Store id of the user.
+     * @param userDomainId Id of the user's domain.
      * @return Roles associated to the user.
      * @throws AuthorizationStoreException Authorization Store Exception.
      */
-    List<Role.RoleBuilder> getRolesForUser(String userId, String identityStoreId) throws AuthorizationStoreException;
+    List<Role.RoleBuilder> getRolesForUser(String userId, String userDomainId) throws AuthorizationStoreException;
 
     /**
      * Get roles associated to the group.
-     * @param groupName Name of the group.
-     * @param identityStoreId Identity Store id of the user.
+     * @param groupId Unique id of the group.
+     * @param groupDomainId Id of the group domain.
      * @return Roles associated to the group.
      * @throws AuthorizationStoreException Authorization Store Exception.
      */
-    List<Role.RoleBuilder> getRolesForGroup(String groupName, String identityStoreId)
+    List<Role.RoleBuilder> getRolesForGroup(String groupId, String groupDomainId)
             throws AuthorizationStoreException;
 
     /**
@@ -156,11 +156,11 @@ public interface AuthorizationStoreConnector {
      * @param resourceNamespace Namespace of the resource.
      * @param resourceId Id of the resource.
      * @param userId User id of the owner.
-     * @param identityStoreId Identity store id of the owner.
+     * @param userDomainId Id of the user's domain.
      * @return New Resource.
      * @throws AuthorizationStoreException
      */
-    Resource addResource(String resourceNamespace, String resourceId, String userId, String identityStoreId)
+    Resource addResource(String resourceNamespace, String resourceId, String userId, String userDomainId)
             throws AuthorizationStoreException;
 
     /**
@@ -193,22 +193,22 @@ public interface AuthorizationStoreConnector {
     /**
      * Checks whether the users is in the role.
      * @param userId Id of the user.
-     * @param identityStoreId Identity store id of the user.
+     * @param userDomainId Id of the user's domain.
      * @param roleName Name of the role.
      * @return True if user is in the role.
      * @throws AuthorizationStoreException Authorization Store Exception.
      */
-    boolean isUserInRole(String userId, String identityStoreId, String roleName) throws AuthorizationStoreException;
+    boolean isUserInRole(String userId, String userDomainId, String roleName) throws AuthorizationStoreException;
 
     /**
      * Checks whether the group is in the role.
      * @param groupId Id of the group.
-     * @param identityStoreId Identity store id of the group.
+     * @param groupDomainId Id of the group domain.
      * @param roleName Name of the role.
      * @return True if the group is in the role.
      * @throws AuthorizationStoreException Authorization Store Exception.
      */
-    boolean isGroupInRole(String groupId, String identityStoreId, String roleName) throws AuthorizationStoreException;
+    boolean isGroupInRole(String groupId, String groupDomainId, String roleName) throws AuthorizationStoreException;
 
     /**
      * Get the users of the role.
@@ -247,16 +247,21 @@ public interface AuthorizationStoreConnector {
      */
     void deleteResource(Resource resource) throws AuthorizationStoreException;
 
+    /**
+     * Delete the given action.
+     * @param action Action to be deleted.
+     * @throws AuthorizationStoreException
+     */
     void deleteAction(Action action) throws AuthorizationStoreException;
 
     /**
      * Update the roles of the user by replacing existing roles. (PUT)
      * @param userId Id of the user.
-     * @param identityStoreId Identity store id of the user.
+     * @param userDomainId Id of the user's domain.
      * @param newRoleList Role list to replace the existing.
      * @throws AuthorizationStoreException Authorization Store Exception.
      */
-    void updateRolesInUser(String userId, String identityStoreId, List<Role> newRoleList)
+    void updateRolesInUser(String userId, String userDomainId, List<Role> newRoleList)
             throws AuthorizationStoreException;
 
     /**
@@ -270,11 +275,11 @@ public interface AuthorizationStoreConnector {
     /**
      * Add a new Role list by <b>replacing</b> the existing Role list. (PUT)
      * @param groupId Id of the group.
-     * @param identityStoreId Id of the identity store.
+     * @param groupDomainId Id of the group domain.
      * @param newRoleList List
      * @throws AuthorizationStoreException Authorization Store Exception.
      */
-    void updateRolesInGroup(String groupId, String identityStoreId, List<Role> newRoleList)
+    void updateRolesInGroup(String groupId, String groupDomainId, List<Role> newRoleList)
             throws AuthorizationStoreException;
 
     /**
@@ -306,12 +311,12 @@ public interface AuthorizationStoreConnector {
     /**
      * Assign a new list of Roles to existing list and/or un-assign Roles from existing list. (PATCH)
      * @param userId Id of the user.
-     * @param identityStoreId Id of the identity store.
+     * @param userDomainId Id of the user's domain.
      * @param rolesToBeAssign List of roles to be assign.
      * @param rolesToBeUnassign List of roles to be un assign.
      * @throws AuthorizationStoreException Authorization Store Exception.
      */
-    void updateRolesInUser(String userId, String identityStoreId, List<Role> rolesToBeAssign,
+    void updateRolesInUser(String userId, String userDomainId, List<Role> rolesToBeAssign,
                            List<Role> rolesToBeUnassign) throws AuthorizationStoreException;
 
     /**
@@ -337,20 +342,19 @@ public interface AuthorizationStoreConnector {
     /**
      * Assign a new list of Roles to existing list and/or un-assign Roles from existing list. (PATCH)
      * @param groupId Id of the group.
-     * @param identityStoreId Id of the identity store of the group.
+     * @param groupDomainId Id of the group domain.
      * @param rolesToBeAssign List of roles to be assign.
      * @param rolesToBeUnassigned List of roles to be un assign.
      * @throws AuthorizationStoreException Authorization Store Exception.
      */
-    void updateRolesInGroup(String groupId, String identityStoreId, List<Role> rolesToBeAssign,
+    void updateRolesInGroup(String groupId, String groupDomainId, List<Role> rolesToBeAssign,
                             List<Role> rolesToBeUnassigned) throws AuthorizationStoreException;
 
     /**
      * Get the authorization store config.
-     * @return AuthorizationConnectorConfig.
-     * @throws AuthorizationStoreException Authorization Store Exception.
+     * @return AuthorizationStoreConnectorConfig.
      */
-    AuthorizationConnectorConfig getAuthorizationStoreConfig() throws AuthorizationStoreException;
+    AuthorizationStoreConnectorConfig getAuthorizationStoreConfig();
 
     /**
      * Get the id of this authorization store.

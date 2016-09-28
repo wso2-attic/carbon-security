@@ -18,7 +18,6 @@ package org.wso2.carbon.security.caas.user.core.bean;
 
 import org.wso2.carbon.security.caas.user.core.claim.Claim;
 import org.wso2.carbon.security.caas.user.core.claim.ClaimManager;
-import org.wso2.carbon.security.caas.user.core.claim.IdnStoreMetaClaimMapping;
 import org.wso2.carbon.security.caas.user.core.exception.AuthorizationStoreException;
 import org.wso2.carbon.security.caas.user.core.exception.ClaimManagerException;
 import org.wso2.carbon.security.caas.user.core.exception.IdentityStoreException;
@@ -26,10 +25,7 @@ import org.wso2.carbon.security.caas.user.core.exception.StoreException;
 import org.wso2.carbon.security.caas.user.core.store.AuthorizationStore;
 import org.wso2.carbon.security.caas.user.core.store.IdentityStore;
 
-import java.util.Collections;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 /**
  * Represents a user in the user core. All of the user related identity operations can be
@@ -38,35 +34,22 @@ import java.util.stream.Collectors;
 public class User {
 
     private String userId;
-    private String identityStoreId;
-    private String credentialStoreId;
+    private Domain domain;
     private String tenantDomain;
-    private String userName;
 
     private IdentityStore identityStore;
     private AuthorizationStore authorizationStore;
     private ClaimManager claimManager;
 
-    private User(String userName, String userId, String identityStoreId, String credentialStoreId,
-                 String tenantDomain, IdentityStore identityStore,
+    private User(String userId, Domain domain, String tenantDomain, IdentityStore identityStore,
                  AuthorizationStore authorizationStore, ClaimManager claimManager) {
 
-        this.userName = userName;
         this.userId = userId;
-        this.identityStoreId = identityStoreId;
-        this.credentialStoreId = credentialStoreId;
+        this.domain = domain;
         this.tenantDomain = tenantDomain;
         this.identityStore = identityStore;
         this.authorizationStore = authorizationStore;
         this.claimManager = claimManager;
-    }
-
-    /**
-     * Get the fully qualified name of this user.
-     * @return Fully qualified name as a String.
-     */
-    public String getUserName() {
-        return userName;
     }
 
     /**
@@ -78,19 +61,11 @@ public class User {
     }
 
     /**
-     * Get the identity store id.
-     * @return Identity store id.
+     * Get the user's domain.
+     * @return Domain of the user.
      */
-    public String getIdentityStoreId() {
-        return identityStoreId;
-    }
-
-    /**
-     * Get the credential store id.
-     * @return Credential store id.
-     */
-    public String getCredentialStoreId() {
-        return credentialStoreId;
+    public Domain getDomain() {
+        return this.domain;
     }
 
     /**
@@ -109,18 +84,21 @@ public class User {
      */
     public List<Claim> getClaims() throws IdentityStoreException, ClaimManagerException {
 
-        Map<String, String> userAttributeValues = identityStore.getUserAttributeValues(userId, identityStoreId);
-        if (userAttributeValues == null || userAttributeValues.isEmpty()) {
-            return Collections.emptyList();
-        }
+//        List<Attribute> userAttributes = identityStore.getUserAttributeValues(userId, domain);
+//        if (userAttributes == null || userAttributes.isEmpty()) {
+//            return Collections.emptyList();
+//        }
+//
+//        List<IdnStoreMetaClaimMapping> idnStoreMetaClaimMappings = claimManager
+//                .getMetaClaimMappingsByIdentityStoreId(identityStoreId);
+//        if (idnStoreMetaClaimMappings == null || idnStoreMetaClaimMappings.isEmpty()) {
+//            return Collections.emptyList();
+//        }
+//
+//        return buildClaims(idnStoreMetaClaimMappings, userAttributes);
 
-        List<IdnStoreMetaClaimMapping> idnStoreMetaClaimMappings = claimManager
-                .getMetaClaimMappingsByIdentityStoreId(identityStoreId);
-        if (idnStoreMetaClaimMappings == null || idnStoreMetaClaimMappings.isEmpty()) {
-            return Collections.emptyList();
-        }
-
-        return buildClaims(idnStoreMetaClaimMappings, userAttributeValues);
+        // TODO: Uncomment and fix.
+        return null;
     }
 
     /**
@@ -132,23 +110,26 @@ public class User {
      */
     public List<Claim> getClaims(List<String> claimURIs) throws IdentityStoreException, ClaimManagerException {
 
-        List<IdnStoreMetaClaimMapping> idnStoreMetaClaimMappings = claimManager
-                .getMetaClaimMappingsByIdentityStoreId(identityStoreId, claimURIs);
-        if (idnStoreMetaClaimMappings == null || idnStoreMetaClaimMappings.isEmpty()) {
-            return Collections.emptyList();
-        }
+//        List<IdnStoreMetaClaimMapping> idnStoreMetaClaimMappings = claimManager
+//                .getMetaClaimMappingsByIdentityStoreId(identityStoreId, claimURIs);
+//        if (idnStoreMetaClaimMappings == null || idnStoreMetaClaimMappings.isEmpty()) {
+//            return Collections.emptyList();
+//        }
+//
+//        List<String> attributeNames = idnStoreMetaClaimMappings.stream()
+//                .map(IdnStoreMetaClaimMapping::getAttributeName)
+//                .collect(Collectors.toList());
+//
+//        Map<String, String> attributeValues = identityStore
+//                .getUserAttributeValues(userId, attributeNames, identityStoreId);
+//        if (attributeValues == null || attributeValues.isEmpty()) {
+//            return Collections.emptyList();
+//        }
+//
+//        return buildClaims(idnStoreMetaClaimMappings, attributeValues);
 
-        List<String> attributeNames = idnStoreMetaClaimMappings.stream()
-                .map(IdnStoreMetaClaimMapping::getAttributeName)
-                .collect(Collectors.toList());
-
-        Map<String, String> attributeValues = identityStore
-                .getUserAttributeValues(userId, attributeNames, identityStoreId);
-        if (attributeValues == null || attributeValues.isEmpty()) {
-            return Collections.emptyList();
-        }
-
-        return buildClaims(idnStoreMetaClaimMappings, attributeValues);
+        // TODO: Uncomment and fix.
+        return null;
     }
 
     /**
@@ -157,7 +138,7 @@ public class User {
      * @throws IdentityStoreException Identity store exception.
      */
     public List<Group> getGroups() throws IdentityStoreException {
-        return identityStore.getGroupsOfUser(userId, identityStoreId);
+        return identityStore.getGroupsOfUser(userId, domain);
     }
 
     /**
@@ -166,7 +147,7 @@ public class User {
      * @throws AuthorizationStoreException Authorization store exception,
      */
     public List<Role> getRoles() throws AuthorizationStoreException {
-        return authorizationStore.getRolesOfUser(userId, identityStoreId);
+        return authorizationStore.getRolesOfUser(userId, domain);
     }
 
     /**
@@ -176,7 +157,7 @@ public class User {
      * @throws AuthorizationStoreException
      */
     public List<Permission> getPermissions(Resource resource) throws AuthorizationStoreException {
-        return authorizationStore.getPermissionsOfUser(userId, identityStoreId, resource);
+        return authorizationStore.getPermissionsOfUser(userId, domain, resource);
     }
 
     /**
@@ -186,7 +167,7 @@ public class User {
      * @throws AuthorizationStoreException
      */
     public List<Permission> getPermissions(Action action) throws AuthorizationStoreException {
-        return authorizationStore.getPermissionsOfUser(userId, identityStoreId, action);
+        return authorizationStore.getPermissionsOfUser(userId, domain, action);
     }
 
     /**
@@ -197,7 +178,7 @@ public class User {
      * @throws IdentityStoreException Identity store exception.
      */
     public boolean isAuthorized(Permission permission) throws AuthorizationStoreException, IdentityStoreException {
-        return authorizationStore.isUserAuthorized(userId, permission, identityStoreId);
+        return authorizationStore.isUserAuthorized(userId, permission, domain);
     }
 
     /**
@@ -207,7 +188,7 @@ public class User {
      * @throws AuthorizationStoreException Authorization store exception.
      */
     public boolean isInRole(String roleName) throws AuthorizationStoreException {
-        return authorizationStore.isUserInRole(userId, identityStoreId, roleName);
+        return authorizationStore.isUserInRole(userId, domain, roleName);
     }
 
     /**
@@ -217,43 +198,7 @@ public class User {
      * @throws IdentityStoreException Identity store exception.
      */
     public boolean isInGroup(String groupName) throws IdentityStoreException {
-        return identityStore.isUserInGroup(userId, groupName, identityStoreId);
-    }
-
-    /**
-     * Rename this user.
-     * @param newUsername New user name.
-     */
-    public void rename(String newUsername) {
-        throw new UnsupportedOperationException("This operation is not supported in platform level.");
-    }
-
-    /**
-     * Set claims for this User.
-     * @param claims List of claims to be set.
-     * @throws IdentityStoreException Identity store exception.
-     */
-    public void setClaims(Map<String, String> claims) throws IdentityStoreException {
-        throw new UnsupportedOperationException("This operation is not supported in platform level.");
-    }
-
-    /**
-     * Add a new Group list by <b>replacing</b> the existing group list. (PUT)
-     * @param newGroupList New group list names that needs to replace the existing list.
-     * @throws IdentityStoreException Identity store exception.
-     */
-    public void updateGroups(List<String> newGroupList) throws IdentityStoreException {
-        throw new UnsupportedOperationException("This operation is not supported in platform level.");
-    }
-
-    /**
-     * Assign a new list of Groups to existing list and/or un-assign Groups from existing Groups. (PATCH)
-     * @param assignList List to be added to the new list.
-     * @param unAssignList List to be removed from the existing list.
-     * @throws IdentityStoreException Identity store exception.
-     */
-    public void updateGroups(List<String> assignList, List<String> unAssignList) throws IdentityStoreException {
-        throw new UnsupportedOperationException("This operation is not supported in platform level.");
+        return identityStore.isUserInGroup(userId, groupName, domain);
     }
 
     /**
@@ -263,7 +208,7 @@ public class User {
      * @throws IdentityStoreException Identity store exception.
      */
     public void updateRoles(List<Role> newRolesList) throws AuthorizationStoreException, IdentityStoreException {
-        authorizationStore.updateRolesInUser(userId, identityStoreId, newRolesList);
+        authorizationStore.updateRolesInUser(userId, domain, newRolesList);
     }
 
     /**
@@ -273,50 +218,41 @@ public class User {
      * @throws AuthorizationStoreException Authorization Store Exception.
      */
     public void updateRoles(List<Role> assignList, List<Role> unAssignList) throws AuthorizationStoreException {
-        authorizationStore.updateRolesInUser(userId, identityStoreId, assignList, unAssignList);
+        authorizationStore.updateRolesInUser(userId, domain, assignList, unAssignList);
     }
 
-    private List<Claim> buildClaims(List<IdnStoreMetaClaimMapping> idnStoreMetaClaimMappings,
-                                    Map<String, String> userAttributeValues) {
-
-        return idnStoreMetaClaimMappings.stream()
-                .filter(idnStoreMetaClaimMapping -> userAttributeValues.containsKey(idnStoreMetaClaimMapping
-                        .getAttributeName()) && idnStoreMetaClaimMapping.getMetaClaim() != null)
-                .map(idnStoreMetaClaimMapping -> new Claim(idnStoreMetaClaimMapping.getMetaClaim().getDialectURI(),
-                        idnStoreMetaClaimMapping.getMetaClaim().getClaimURI(), userAttributeValues.get
-                        (idnStoreMetaClaimMapping.getAttributeName())))
-                .collect(Collectors.toList());
-    }
+//    private List<Claim> buildClaims(List<IdnStoreMetaClaimMapping> idnStoreMetaClaimMappings,
+//                                    Map<String, String> userAttributeValues) {
+//
+//        return idnStoreMetaClaimMappings.stream()
+//                .filter(idnStoreMetaClaimMapping -> userAttributeValues.containsKey(idnStoreMetaClaimMapping
+//                        .getAttributeName()) && idnStoreMetaClaimMapping.getMetaClaim() != null)
+//                .map(idnStoreMetaClaimMapping -> new Claim(idnStoreMetaClaimMapping.getMetaClaim().getDialectURI(),
+//                        idnStoreMetaClaimMapping.getMetaClaim().getClaimURI(), userAttributeValues.get
+//                        (idnStoreMetaClaimMapping.getAttributeName())))
+//                .collect(Collectors.toList());
+//    }
 
     /**
      * Builder for the user bean.
      */
     public static class UserBuilder {
 
-        private String userName;
         private String userId;
-        private String identityStoreId;
-        private String credentialStoreId;
+        private String domainName;
+        private Domain domain;
         private String tenantDomain;
 
         private IdentityStore identityStore;
         private AuthorizationStore authorizationStore;
         private ClaimManager claimManager;
 
-        public String getUserName() {
-            return userName;
-        }
-
         public String getUserId() {
             return userId;
         }
 
-        public String getIdentityStoreId() {
-            return identityStoreId;
-        }
-
-        public String getCredentialStoreId() {
-            return credentialStoreId;
+        public String getDomainName() {
+            return domainName;
         }
 
         public String getTenantDomain() {
@@ -335,23 +271,18 @@ public class User {
             return claimManager;
         }
 
-        public UserBuilder setUserName(String userName) {
-            this.userName = userName;
-            return this;
-        }
-
         public UserBuilder setUserId(String userId) {
             this.userId = userId;
             return this;
         }
 
-        public UserBuilder setIdentityStoreId(String identityStoreId) {
-            this.identityStoreId = identityStoreId;
+        public UserBuilder setDomainName(String domainName) {
+            this.domainName = domainName;
             return this;
         }
 
-        public UserBuilder setCredentialStoreId(String credentialStoreId) {
-            this.credentialStoreId = credentialStoreId;
+        public UserBuilder setDomain(Domain domain) {
+            this.domain = domain;
             return this;
         }
 
@@ -377,14 +308,12 @@ public class User {
 
         public User build() {
 
-            if (userName == null || userId == null || identityStoreId == null || credentialStoreId == null ||
-                    identityStore == null || tenantDomain == null || authorizationStore == null ||
-                    claimManager == null) {
+            if (userId == null || domain == null || tenantDomain == null || identityStore == null ||
+                    authorizationStore == null || claimManager == null) {
                 throw new StoreException("Required data missing for building user.");
             }
 
-            return new User(userName, userId, identityStoreId, credentialStoreId, tenantDomain, identityStore,
-                    authorizationStore, claimManager);
+            return new User(userId, domain, tenantDomain, identityStore, authorizationStore, claimManager);
         }
     }
 }

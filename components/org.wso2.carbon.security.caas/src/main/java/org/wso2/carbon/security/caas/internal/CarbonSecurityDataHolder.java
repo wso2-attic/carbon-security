@@ -53,7 +53,7 @@ public class CarbonSecurityDataHolder {
         return instance;
     }
 
-    public void registerCarbonRealmService(CarbonRealmServiceImpl carbonRealmService) {
+    void registerCarbonRealmService(CarbonRealmServiceImpl carbonRealmService) {
         this.carbonRealmService = carbonRealmService;
     }
 
@@ -70,7 +70,7 @@ public class CarbonSecurityDataHolder {
      * @param key Id of the factory.
      * @param authorizationStoreConnectorFactory AuthorizationStoreConnectorFactory.
      */
-    public void registerAuthorizationStoreConnectorFactory(String key, AuthorizationStoreConnectorFactory
+    void registerAuthorizationStoreConnectorFactory(String key, AuthorizationStoreConnectorFactory
             authorizationStoreConnectorFactory) {
         authorizationStoreConnectorFactoryMap.put(key, authorizationStoreConnectorFactory);
     }
@@ -80,7 +80,7 @@ public class CarbonSecurityDataHolder {
      * @param key Id of the factory.
      * @param credentialStoreConnectorFactory CredentialStoreConnectorFactory.
      */
-    public void registerCredentialStoreConnectorFactory(String key,
+    void registerCredentialStoreConnectorFactory(String key,
                                                  CredentialStoreConnectorFactory credentialStoreConnectorFactory) {
         credentialStoreConnectorFactoryMap.put(key, credentialStoreConnectorFactory);
     }
@@ -90,7 +90,7 @@ public class CarbonSecurityDataHolder {
      * @param key Id of the factory.
      * @param identityStoreConnectorFactory IdentityStoreConnectorFactory.
      */
-    public void registerIdentityStoreConnectorFactory(String key,
+    void registerIdentityStoreConnectorFactory(String key,
                                                IdentityStoreConnectorFactory identityStoreConnectorFactory) {
         identityStoreConnectorFactoryMap.put(key, identityStoreConnectorFactory);
     }
@@ -107,7 +107,7 @@ public class CarbonSecurityDataHolder {
         return identityStoreConnectorFactoryMap;
     }
 
-    public void registerCacheService(CarbonCachingService carbonCachingService)  {
+    void registerCacheService(CarbonCachingService carbonCachingService)  {
         this.carbonCachingService = carbonCachingService;
     }
 
@@ -115,7 +115,7 @@ public class CarbonSecurityDataHolder {
         return carbonCachingService;
     }
 
-    public void setBundleContext(BundleContext bundleContext) {
+    void setBundleContext(BundleContext bundleContext) {
         this.bundleContext = bundleContext;
     }
 
@@ -131,7 +131,7 @@ public class CarbonSecurityDataHolder {
         return claimConfig;
     }
 
-    public void setClaimConfig(ClaimConfig claimConfig) {
+    void setClaimConfig(ClaimConfig claimConfig) {
         this.claimConfig = claimConfig;
     }
 }

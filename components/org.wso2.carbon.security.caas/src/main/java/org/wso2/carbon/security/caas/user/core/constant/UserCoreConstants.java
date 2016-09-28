@@ -31,7 +31,7 @@ public class UserCoreConstants {
     public static final String CONNECTOR_TYPE = "connectorType";
     public static final String PASSWORD_HANDLER_NAME = "passwordHandlerName";
     public static final String USER_ID = "userId";
-    public static final String IDENTITY_STORE_ID = "identityStoreId";
+    public static final String DOMAIN_ID = "domainId";
     public static final String PRIMARY_USERSTORE = "primary";
     public static final String USERSTORE_PRIORITY = "priority";
     public static final String USERSTORE_DISPLAY_NAME = "display-name";

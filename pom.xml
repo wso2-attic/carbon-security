@@ -185,6 +185,27 @@
                 <version>${org.wso2.carbon.caching.version}</version>
             </dependency>
 
+            <!-- Unit Tests -->
+
+            <dependency>
+                <groupId>org.mockito</groupId>
+                <artifactId>mockito-all</artifactId>
+                <version>${org.mockito.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.powermock</groupId>
+                <artifactId>powermock-api-mockito</artifactId>
+                <version>${org.powermock.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.powermock</groupId>
+                <artifactId>powermock-module-testng</artifactId>
+                <version>${org.powermock.version}</version>
+                <scope>test</scope>
+            </dependency>
+
             <!-- OSGI Tests-->
             <dependency>
                 <groupId>org.wso2.carbon.security.caas</groupId>
@@ -326,6 +347,11 @@
         <rs-api.version>2.0</rs-api.version>
         <gson.version>2.2.4</gson.version>
         <net.minidev.asm.version>1.0.2</net.minidev.asm.version>
+
+        <!-- Unit Test -->
+
+        <org.mockito.version>1.9.5</org.mockito.version>
+        <org.powermock.version>1.5.6</org.powermock.version>
 
         <!-- OSGI Test related -->
         <testng.version>6.9.4</testng.version>
