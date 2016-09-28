@@ -71,7 +71,7 @@ public class IdentityStoreImpl implements IdentityStore {
                 throw new StoreException("No identity store connector factory found for given type.");
             }
 
-            IdentityStoreConnector identityStoreConnector = identityStoreConnectorFactory.getInstance();
+            IdentityStoreConnector identityStoreConnector = identityStoreConnectorFactory.getConnector();
             identityStoreConnector.init(identityStoreConfig.getKey(), identityStoreConfig.getValue());
 
             identityStoreConnectors.put(identityStoreConfig.getKey(), identityStoreConnector);

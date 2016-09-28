@@ -25,7 +25,7 @@ import org.wso2.carbon.security.caas.user.core.store.connector.IdentityStoreConn
 public class InMemoryIdentityStoreConnectorFactory implements IdentityStoreConnectorFactory {
 
     @Override
-    public IdentityStoreConnector getInstance() {
+    public IdentityStoreConnector getConnector() {
         return new InMemoryIdentityStoreConnector();
     }
 }
