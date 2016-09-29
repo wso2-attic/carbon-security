@@ -17,6 +17,9 @@
 package org.wso2.carbon.security.caas.user.core.domain;
 
 import org.wso2.carbon.security.caas.user.core.bean.Domain;
+import org.wso2.carbon.security.caas.user.core.bean.User;
+
+import java.util.List;
 
 /**
  * Domain manager.
@@ -29,6 +32,14 @@ public interface DomainManager {
      * @return Domain.
      */
     Domain getDomainFromName(String domainName);
+
+    /**
+     * Get users for a specific domain.
+     *
+     * @param domainName Name of the domain
+     * @return List of users in a specific domain
+     */
+    List<User> getUsersForDomainName(String domainName);
 
     /**
      * Register new Identity Store Connector.

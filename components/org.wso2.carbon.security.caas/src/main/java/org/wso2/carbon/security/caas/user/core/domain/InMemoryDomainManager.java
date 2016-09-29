@@ -17,9 +17,11 @@
 package org.wso2.carbon.security.caas.user.core.domain;
 
 import org.wso2.carbon.security.caas.user.core.bean.Domain;
+import org.wso2.carbon.security.caas.user.core.bean.User;
 import org.wso2.carbon.security.caas.user.core.exception.StoreException;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -27,7 +29,14 @@ import java.util.Map;
  */
 public class InMemoryDomainManager implements DomainManager {
 
+    /**
+     * Domain id to domain instance mapping.
+     */
     private Map<String, Domain> domainFromId = new HashMap<>();
+
+    /**
+     * Domain name to domain id mapping.
+     */
     private Map<String, String> domainNameToId = new HashMap<>();
 
     @Override
@@ -35,6 +44,19 @@ public class InMemoryDomainManager implements DomainManager {
 
         String domainId = domainNameToId.get(domainName);
         return domainFromId.get(domainId);
+    }
+
+    /**
+     * Get the list of users for specific domain.
+     *
+     * @param domainName Name of the domain
+     * @return list of users in the specific domain
+     */
+    @Override
+    public List<User> getUsersForDomainName(String domainName) {
+
+        Domain domain = this.getDomainFromName(domainName);
+        return domain.getUserList();
     }
 
     @Override
