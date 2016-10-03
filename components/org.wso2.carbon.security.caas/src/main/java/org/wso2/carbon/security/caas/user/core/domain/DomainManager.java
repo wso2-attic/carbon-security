@@ -28,6 +28,7 @@ public interface DomainManager {
 
     /**
      * Get the domain from the name.
+     *
      * @param domainName Name of the domain.
      * @return Domain.
      */
@@ -43,15 +44,25 @@ public interface DomainManager {
 
     /**
      * Register new Identity Store Connector.
-     * @param domainName Name of the domain.
+     *
+     * @param domainName      Name of the domain.
      * @param identityStoreId Identity Store Id.
      */
     void registerNewIdentityStore(String domainName, String identityStoreId);
 
     /**
      * Register new Identity Store Connector.
-     * @param domainName Name of the domain.
+     *
+     * @param domainName        Name of the domain.
      * @param credentialStoreId Credential Store Id.
      */
     void registerNewCredentialStore(String domainName, String credentialStoreId);
+
+    /**
+     * Add user to a domain.
+     *
+     * @param domainName Name of the domain.
+     * @param user       user.
+     */
+    void addUserToDomain(String domainName, User user);
 }

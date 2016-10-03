@@ -20,6 +20,7 @@ import org.wso2.carbon.security.caas.user.core.bean.Domain;
 import org.wso2.carbon.security.caas.user.core.bean.User;
 import org.wso2.carbon.security.caas.user.core.exception.StoreException;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -39,6 +40,14 @@ public class InMemoryDomainManager implements DomainManager {
      */
     private Map<String, String> domainNameToId = new HashMap<>();
 
+    /**
+     * Domain name to user mapping.
+     *
+     * @param domainName Name of the domain.
+     * @return List<User> returns a list of users
+     */
+    private Map<String, List<User>> domainNameToUser = new HashMap<>();
+
     @Override
     public Domain getDomainFromName(String domainName) {
 
@@ -55,8 +64,7 @@ public class InMemoryDomainManager implements DomainManager {
     @Override
     public List<User> getUsersForDomainName(String domainName) {
 
-        Domain domain = this.getDomainFromName(domainName);
-        return domain.getUserList();
+        return this.domainNameToUser.get(domainName);
     }
 
     @Override
@@ -82,4 +90,27 @@ public class InMemoryDomainManager implements DomainManager {
 
         domain.getIdentityStoreIdList().add(credentialStoreId);
     }
+
+    @Override
+    public void addUserToDomain(String domainName, User user) {
+
+        if (!this.domainNameToUser.containsKey(domainName)) {
+            throw new StoreException(
+                    String.format(
+                            "No domain presents for the given domain name %s",
+                            domainName
+                    )
+            );
+        }
+
+        List<User> userList = this.domainNameToUser.get(domainName) != null
+                ? this.domainNameToUser.get(domainName)
+                : new ArrayList<>();
+
+        userList.add(user);
+
+        this.domainNameToUser.put(domainName, userList);
+    }
+
+
 }

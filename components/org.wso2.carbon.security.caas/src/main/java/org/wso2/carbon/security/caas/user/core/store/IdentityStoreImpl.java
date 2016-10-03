@@ -119,6 +119,7 @@ public class IdentityStoreImpl implements IdentityStore {
         throw userNotFoundException;
     }
 
+    // TODO: <VIDURA> Consider domain model implementation
     @Override
     public User getUser(Callback [] callbacks) throws IdentityStoreException, UserNotFoundException {
 

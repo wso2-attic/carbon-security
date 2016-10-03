@@ -91,6 +91,7 @@ public class CredentialStoreImpl implements CredentialStore {
         User user;
         try {
             // Get the user using given callbacks. We need to find the user unique id.
+            // TODO <VIDURA> NULL POINTER EXCEPTION ON TESTS
             user = realmService.getIdentityStore().getUser(callbacks);
 
             // Crete a new call back array from existing one and add new user data (user id and identity store id)

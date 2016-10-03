@@ -29,7 +29,6 @@ public class Domain {
 
     private List<String> identityStoreIdList = new ArrayList<>();
     private List<String> credentialStoreIdList = new ArrayList<>();
-    private List<User> userList = new ArrayList<>();
 
     public Domain(String domainId, String domainName) {
         this.domainId = domainId;
@@ -44,15 +43,6 @@ public class Domain {
         this.credentialStoreIdList.add(credentialStoreId);
     }
 
-    /**
-     * Add a user instance to the domain.
-     *
-     * @param user User instance
-     */
-    public void addUserToDomin(User user) {
-        this.userList.add(user);
-    }
-
     public List<String> getIdentityStoreIdList() {
         return identityStoreIdList;
     }
@@ -61,28 +51,11 @@ public class Domain {
         return credentialStoreIdList;
     }
 
-    /**
-     * Get the list of users in the domain.
-     *
-     * @return User list in the domain
-     */
-    public List<User> getUserList() {
-        return userList;
-    }
-
     public String getDomainId() {
         return domainId;
     }
 
-    public void setDomainId(String domainId) {
-        this.domainId = domainId;
-    }
-
     public String getDomainName() {
         return domainName;
-    }
-
-    public void setDomainName(String domainName) {
-        this.domainName = domainName;
     }
 }
