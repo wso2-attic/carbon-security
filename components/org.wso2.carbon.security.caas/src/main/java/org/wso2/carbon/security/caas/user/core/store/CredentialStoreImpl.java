@@ -40,6 +40,7 @@ import javax.security.auth.callback.Callback;
 
 /**
  * Represents a virtual credential store to abstract the underlying stores.
+ *
  * @since 1.0.0
  */
 public class CredentialStoreImpl implements CredentialStore {
@@ -50,10 +51,12 @@ public class CredentialStoreImpl implements CredentialStore {
     private Map<String, CredentialStoreConnector> credentialStoreConnectors = new HashMap<>();
 
     @Override
-    public void init(RealmService realmService, Map<String, CredentialStoreConnectorConfig> credentialConnectorConfigs)
+    public void init(
+            RealmService realmServiceParam,
+            Map<String, CredentialStoreConnectorConfig> credentialConnectorConfigs)
             throws CredentialStoreException {
 
-        this.realmService = realmService;
+        this.realmService = realmServiceParam;
 
         if (credentialConnectorConfigs.isEmpty()) {
             throw new StoreException("At least one credential store configuration must present.");
@@ -96,7 +99,7 @@ public class CredentialStoreImpl implements CredentialStore {
 
             // Crete a new call back array from existing one and add new user data (user id and identity store id)
             // as a carbon callback to the new array.
-            Callback [] newCallbacks = new Callback[callbacks.length + 1];
+            Callback[] newCallbacks = new Callback[callbacks.length + 1];
             System.arraycopy(callbacks, 0, newCallbacks, 0, callbacks.length);
 
             // User data will be a map.
