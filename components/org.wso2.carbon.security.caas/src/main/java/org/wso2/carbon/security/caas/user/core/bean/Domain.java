@@ -17,6 +17,7 @@
 package org.wso2.carbon.security.caas.user.core.bean;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -43,12 +44,24 @@ public class Domain {
         this.credentialStoreIdList.add(credentialStoreId);
     }
 
+    /**
+     * Get an unmodifiable identity store id list.
+     *
+     * @return List<String> identity store id list unmodifiable
+     */
     public List<String> getIdentityStoreIdList() {
-        return identityStoreIdList;
+
+        return Collections.unmodifiableList(this.identityStoreIdList);
     }
 
+    /**
+     * Get an unmodifiable credential store id list.
+     *
+     * @return List<String> credential store id list unmodifiable
+     */
     public List<String> getCredentialStoreIdList() {
-        return credentialStoreIdList;
+
+        return Collections.unmodifiableList(this.credentialStoreIdList);
     }
 
     public String getDomainId() {

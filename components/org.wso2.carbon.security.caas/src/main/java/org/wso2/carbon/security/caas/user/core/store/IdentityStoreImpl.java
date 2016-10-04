@@ -50,6 +50,7 @@ public class IdentityStoreImpl implements IdentityStore {
     private static final Logger log = LoggerFactory.getLogger(IdentityStoreImpl.class);
 
     private RealmService realmService;
+    private Domain domain;
     private Map<String, IdentityStoreConnector> identityStoreConnectors = new HashMap<>();
 
     @Override
@@ -119,7 +120,7 @@ public class IdentityStoreImpl implements IdentityStore {
         throw userNotFoundException;
     }
 
-    // TODO: <VIDURA> Consider domain model implementation
+    // TODO: <VIDURA> Is it correct to throw an exception here?
     @Override
     public User getUser(Callback [] callbacks) throws IdentityStoreException, UserNotFoundException {
 

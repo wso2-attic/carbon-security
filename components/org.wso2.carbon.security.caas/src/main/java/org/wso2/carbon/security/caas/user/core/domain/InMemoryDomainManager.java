@@ -42,9 +42,6 @@ public class InMemoryDomainManager implements DomainManager {
 
     /**
      * Domain name to user mapping.
-     *
-     * @param domainName Name of the domain.
-     * @return List<User> returns a list of users
      */
     private Map<String, List<User>> domainNameToUser = new HashMap<>();
 
@@ -76,7 +73,7 @@ public class InMemoryDomainManager implements DomainManager {
             throw new StoreException("No domain presents for the given domain name.");
         }
 
-        domain.getIdentityStoreIdList().add(identityStoreId);
+        domain.addIdentityStoreId(identityStoreId);
     }
 
     @Override
@@ -88,7 +85,7 @@ public class InMemoryDomainManager implements DomainManager {
             throw new StoreException("No domain presents for the given domain name.");
         }
 
-        domain.getIdentityStoreIdList().add(credentialStoreId);
+        domain.addCredentialStoreId(credentialStoreId);
     }
 
     @Override

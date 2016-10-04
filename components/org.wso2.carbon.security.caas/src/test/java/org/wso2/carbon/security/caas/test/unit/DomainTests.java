@@ -24,18 +24,19 @@ import org.mockito.MockitoAnnotations;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.testng.PowerMockTestCase;
-import org.testng.Assert;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
+import org.wso2.carbon.security.caas.api.util.CarbonSecurityConstants;
 import org.wso2.carbon.security.caas.internal.CarbonSecurityDataHolder;
+import org.wso2.carbon.security.caas.internal.config.StoreConfigBuilder;
 import org.wso2.carbon.security.caas.user.core.bean.Domain;
 import org.wso2.carbon.security.caas.user.core.bean.User;
 import org.wso2.carbon.security.caas.user.core.claim.ClaimManager;
 import org.wso2.carbon.security.caas.user.core.config.CredentialStoreConnectorConfig;
 import org.wso2.carbon.security.caas.user.core.config.IdentityStoreConnectorConfig;
-import org.wso2.carbon.security.caas.user.core.context.AuthenticationContext;
+import org.wso2.carbon.security.caas.user.core.config.StoreConfig;
 import org.wso2.carbon.security.caas.user.core.exception.AuthenticationFailure;
 import org.wso2.carbon.security.caas.user.core.exception.CredentialStoreException;
 import org.wso2.carbon.security.caas.user.core.exception.IdentityStoreException;
@@ -51,6 +52,7 @@ import org.wso2.carbon.security.caas.user.core.store.connector.CredentialStoreCo
 import org.wso2.carbon.security.caas.user.core.store.connector.IdentityStoreConnector;
 import org.wso2.carbon.security.caas.user.core.store.connector.IdentityStoreConnectorFactory;
 
+import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
@@ -85,6 +87,11 @@ public class DomainTests extends PowerMockTestCase {
     private CredentialStore credentialStore = new CredentialStoreImpl();
 
     private IdentityStore identityStore = new IdentityStoreImpl();
+
+    /**
+     * Carbon home directory name.
+     */
+    public static final String CARBON_HOME_DIRECTORY = "carbon_home";
 
     /**
      * Initialise mocks at test start.
@@ -157,9 +164,32 @@ public class DomainTests extends PowerMockTestCase {
         callbacks[0] = passwordCallback;
         callbacks[1] = nameCallback;
 
-        AuthenticationContext authenticationContext = credentialStore.authenticate(callbacks);
+//        AuthenticationContext authenticationContext = credentialStore.authenticate(callbacks);
+//
+//        Assert.assertNotNull(authenticationContext);
+    }
 
-        Assert.assertNotNull(authenticationContext);
+    @Test
+    public void domainConfigReadTest() {
+
+        setCarbonHomeDirectory();
+
+        StoreConfig storeConfig = StoreConfigBuilder.buildStoreConfigs();
+
+        storeConfig.getCredentialStoreCacheConfigMap();
+    }
+
+    /**
+     * Set carbon home directory.
+     */
+    private void setCarbonHomeDirectory() {
+
+        URL carbonHomeURL = getClass().getClassLoader().getResource(CARBON_HOME_DIRECTORY);
+        String carbonHome = carbonHomeURL != null
+                ? carbonHomeURL.getPath()
+                : "";
+
+        System.setProperty(CarbonSecurityConstants.CARBON_HOME, carbonHome);
     }
 
     /**
