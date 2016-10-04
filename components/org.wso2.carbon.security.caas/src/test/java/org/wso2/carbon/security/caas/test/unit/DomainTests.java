@@ -21,28 +21,35 @@ package org.wso2.carbon.security.caas.test.unit;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.powermock.api.mockito.PowerMockito;
+import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.powermock.modules.testng.PowerMockTestCase;
 import org.testng.Assert;
-import org.testng.annotations.AfterClass;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 import org.wso2.carbon.security.caas.internal.CarbonSecurityDataHolder;
+import org.wso2.carbon.security.caas.user.core.bean.Domain;
 import org.wso2.carbon.security.caas.user.core.bean.User;
+import org.wso2.carbon.security.caas.user.core.claim.ClaimManager;
 import org.wso2.carbon.security.caas.user.core.config.CredentialStoreConnectorConfig;
+import org.wso2.carbon.security.caas.user.core.config.IdentityStoreConnectorConfig;
 import org.wso2.carbon.security.caas.user.core.context.AuthenticationContext;
 import org.wso2.carbon.security.caas.user.core.exception.AuthenticationFailure;
 import org.wso2.carbon.security.caas.user.core.exception.CredentialStoreException;
 import org.wso2.carbon.security.caas.user.core.exception.IdentityStoreException;
 import org.wso2.carbon.security.caas.user.core.exception.UserNotFoundException;
 import org.wso2.carbon.security.caas.user.core.service.RealmService;
+import org.wso2.carbon.security.caas.user.core.store.AuthorizationStore;
 import org.wso2.carbon.security.caas.user.core.store.CredentialStore;
 import org.wso2.carbon.security.caas.user.core.store.CredentialStoreImpl;
 import org.wso2.carbon.security.caas.user.core.store.IdentityStore;
+import org.wso2.carbon.security.caas.user.core.store.IdentityStoreImpl;
 import org.wso2.carbon.security.caas.user.core.store.connector.CredentialStoreConnector;
 import org.wso2.carbon.security.caas.user.core.store.connector.CredentialStoreConnectorFactory;
+import org.wso2.carbon.security.caas.user.core.store.connector.IdentityStoreConnector;
+import org.wso2.carbon.security.caas.user.core.store.connector.IdentityStoreConnectorFactory;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -54,13 +61,11 @@ import javax.security.auth.callback.PasswordCallback;
 /**
  * Tests specific for the domain model implementation.
  */
-public class DomainTests {
+@PrepareForTest(CarbonSecurityDataHolder.class)
+public class DomainTests extends PowerMockTestCase {
 
     @Mock
     private RealmService realmService;
-
-    @Mock
-    private IdentityStore identityStore;
 
     @Mock
     private CarbonSecurityDataHolder carbonSecurityDataHolder;
@@ -71,85 +76,76 @@ public class DomainTests {
     @Mock
     private CredentialStoreConnectorFactory credentialStoreConnectorFactory;
 
+    @Mock
+    private IdentityStoreConnector identityStoreConnector;
+
+    @Mock
+    private IdentityStoreConnectorFactory identityStoreConnectorFactory;
+
     private CredentialStore credentialStore = new CredentialStoreImpl();
 
-    /**
-     * Logger instance for DomainTests class.
-     */
-    private static final Logger logger = LoggerFactory.getLogger(DomainTests.class);
+    private IdentityStore identityStore = new IdentityStoreImpl();
 
+    /**
+     * Initialise mocks at test start.
+     */
     @BeforeClass
     public void setup() {
 
-        logger.info("-------------------------------------------------");
-        logger.info("-------------------------------------------------");
-        logger.info("Starting Domain Tests");
         MockitoAnnotations.initMocks(this);
     }
 
+    /**
+     * Initialise instances which are required by the tests.
+     *
+     * @throws CredentialStoreException Exception when an error occurs in credential store config
+     * @throws IdentityStoreException   Exception when an error occurs in identity store config
+     */
     @BeforeMethod
-    public void init() throws CredentialStoreException {
+    public void init() throws CredentialStoreException, IdentityStoreException {
 
-        Mockito.doReturn(identityStore).when(realmService).getIdentityStore();
-        Mockito.doReturn(credentialStoreConnector).when(credentialStoreConnectorFactory).getInstance();
-
-        Map<String, CredentialStoreConnectorFactory> credentialStoreConnectorFactoryMap = new HashMap<>();
-        credentialStoreConnectorFactoryMap.put("CredentialStoreConnector", credentialStoreConnectorFactory);
-
-        Mockito.doReturn(credentialStoreConnectorFactoryMap).when(carbonSecurityDataHolder)
-                .getCredentialStoreConnectorFactoryMap();
-
-        Map<String, CredentialStoreConnectorConfig> credentialConnectorConfigMap = new HashMap<>();
-        Properties properties = new Properties();
-
-        CredentialStoreConnectorConfig credentialStoreConnectorConfig =
-                new CredentialStoreConnectorConfig("CredentialStoreConnector", properties);
-        credentialConnectorConfigMap.put("CSC1", credentialStoreConnectorConfig);
-
-        credentialStore.init(realmService, credentialConnectorConfigMap);
+        initCarbonSecurityDataHolder();
+        initCredentialStore();
+        initIdentityStore();
     }
 
     /**
-     * Test to check weather the domains are properly created from config.
+     * Reset mock instances.
      */
-    @Test
-    public void loadDomainFromConnectorConfig() throws AuthenticationFailure, CredentialStoreException,
-            IdentityStoreException, UserNotFoundException {
-
-        authenticateUser();
-    }
-
-    @AfterClass
-    public void teardown() {
-
-        logger.info("Finishing Domain Tests");
-        logger.info("-------------------------------------------------");
-        logger.info("-------------------------------------------------");
-    }
-
     @AfterMethod
     public void resetMocks() {
 
         Mockito.reset(realmService);
-        Mockito.reset(identityStore);
-        Mockito.reset(credentialStoreConnector);
         Mockito.reset(carbonSecurityDataHolder);
+        Mockito.reset(credentialStoreConnector);
         Mockito.reset(credentialStoreConnectorFactory);
+        Mockito.reset(identityStoreConnector);
+        Mockito.reset(identityStoreConnectorFactory);
     }
+
 
     /**
      * Authenticate a user.
      *
-     * @throws AuthenticationFailure    Exception upon failing to authenticate
      * @throws CredentialStoreException Exception in the credential store
-     * @throws IdentityStoreException   Exception in the identity store
-     * @throws UserNotFoundException    Exception if the user is not found
+     * @throws AuthenticationFailure    Exception upon failing to authenticate
+     * @throws UserNotFoundException    Exception when the appropriate user instance is not found
+     * @throws IdentityStoreException   Exception when an error occurs in identity store config
      */
-    private void authenticateUser() throws AuthenticationFailure, CredentialStoreException,
-            IdentityStoreException, UserNotFoundException {
+    @Test
+    public void authenticateUser()
+            throws CredentialStoreException, AuthenticationFailure,
+            UserNotFoundException, IdentityStoreException {
+
+        // User builder initialisation
+        Domain domain = new Domain("D1", "TestDomain");
+        User.UserBuilder userBuilder = initUserBuilder("admin", domain);
 
         Mockito.when(credentialStoreConnector.authenticate(Mockito.any(Callback[].class)))
-                .thenReturn(new User.UserBuilder());
+                .thenReturn(userBuilder);
+
+        Mockito.when(identityStoreConnector.getUser(Mockito.any(Callback[].class)))
+                .thenReturn(userBuilder);
 
         Callback[] callbacks = new Callback[2];
         PasswordCallback passwordCallback = new PasswordCallback("password", false);
@@ -161,14 +157,90 @@ public class DomainTests {
         callbacks[0] = passwordCallback;
         callbacks[1] = nameCallback;
 
-        User user = Mockito.mock(User.class);
-        Mockito.when(user.getUserId()).thenReturn("admin");
-        // Mockito.when(user.getIdentityStoreId()).thenReturn("CSC1");
-
-        Mockito.doReturn(user).when(identityStore).getUser(callbacks);
-
         AuthenticationContext authenticationContext = credentialStore.authenticate(callbacks);
 
         Assert.assertNotNull(authenticationContext);
+    }
+
+    /**
+     * Initialise carbon security data holder.
+     */
+    private void initCarbonSecurityDataHolder() {
+
+        PowerMockito.mockStatic(CarbonSecurityDataHolder.class);
+        Mockito.when(CarbonSecurityDataHolder.getInstance()).thenReturn(carbonSecurityDataHolder);
+    }
+
+    /**
+     * Initialise credential store.
+     *
+     * @throws CredentialStoreException Exception when an error occurs in credential store config
+     */
+    private void initCredentialStore() throws CredentialStoreException {
+
+        Mockito.doReturn(credentialStoreConnector).when(credentialStoreConnectorFactory).getInstance();
+        Map<String, CredentialStoreConnectorFactory> credentialStoreConnectorFactoryMap = new HashMap<>();
+        credentialStoreConnectorFactoryMap.put("CredentialStoreConnector", credentialStoreConnectorFactory);
+        Mockito.doReturn(credentialStoreConnectorFactoryMap).when(carbonSecurityDataHolder)
+                .getCredentialStoreConnectorFactoryMap();
+
+        Map<String, CredentialStoreConnectorConfig> credentialConnectorConfigMap = new HashMap<>();
+        Properties credentialStoreProperties = new Properties();
+
+        CredentialStoreConnectorConfig credentialStoreConnectorConfig =
+                new CredentialStoreConnectorConfig("CredentialStoreConnector", credentialStoreProperties);
+        credentialConnectorConfigMap.put("CSC1", credentialStoreConnectorConfig);
+
+        credentialStore.init(realmService, credentialConnectorConfigMap);
+    }
+
+    /**
+     * Initialise identity store.
+     *
+     * @throws IdentityStoreException Exception when an error occurs in identity store config
+     */
+    private void initIdentityStore() throws IdentityStoreException {
+
+        Mockito.doReturn(identityStoreConnector).when(identityStoreConnectorFactory).getConnector();
+        Map<String, IdentityStoreConnectorFactory> identityStoreConnectorFactoryHashMap = new HashMap<>();
+        identityStoreConnectorFactoryHashMap.put("IdentityStoreConnector", identityStoreConnectorFactory);
+        Mockito.doReturn(identityStoreConnectorFactoryHashMap).when(carbonSecurityDataHolder)
+                .getIdentityStoreConnectorFactoryMap();
+
+        Mockito.doReturn(identityStore).when(realmService).getIdentityStore();
+
+        Map<String, IdentityStoreConnectorConfig> identityStoreConnectorConfigMap = new HashMap<>();
+        Properties identityStoreProperties = new Properties();
+
+        IdentityStoreConnectorConfig identityStoreConnectorConfig =
+                new IdentityStoreConnectorConfig("IdentityStoreConnector", identityStoreProperties);
+        identityStoreConnectorConfigMap.put("ISC1", identityStoreConnectorConfig);
+
+        identityStore.init(realmService, identityStoreConnectorConfigMap);
+    }
+
+    /**
+     * Initialises a user builder instance.
+     *
+     * @param userId id of the user
+     * @param domain domain of the domain in which the user belongs
+     * @return User.UserBuilder instance
+     */
+    private User.UserBuilder initUserBuilder(String userId, Domain domain) {
+
+        User.UserBuilder userBuilder = Mockito.mock(User.UserBuilder.class);
+        Mockito.when(userBuilder.setIdentityStore(Mockito.any(IdentityStore.class)))
+                .thenReturn(userBuilder);
+        Mockito.when(userBuilder.setAuthorizationStore(Mockito.any(AuthorizationStore.class)))
+                .thenReturn(userBuilder);
+        Mockito.when(userBuilder.setClaimManager(Mockito.any(ClaimManager.class)))
+                .thenReturn(userBuilder);
+
+        User user = Mockito.mock(User.class);
+        Mockito.when(user.getUserId()).thenReturn(userId);
+        Mockito.doReturn(user).when(userBuilder).build();
+        Mockito.doReturn(domain).when(user).getDomain();
+
+        return userBuilder;
     }
 }
