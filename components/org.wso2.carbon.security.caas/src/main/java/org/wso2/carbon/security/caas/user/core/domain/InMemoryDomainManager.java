@@ -17,7 +17,9 @@
 package org.wso2.carbon.security.caas.user.core.domain;
 
 import org.wso2.carbon.security.caas.user.core.bean.Domain;
-import org.wso2.carbon.security.caas.user.core.exception.StoreException;
+import org.wso2.carbon.security.caas.user.core.config.StoreConfig;
+import org.wso2.carbon.security.caas.user.core.exception.CredentialStoreException;
+import org.wso2.carbon.security.caas.user.core.exception.IdentityStoreException;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -27,37 +29,30 @@ import java.util.Map;
  */
 public class InMemoryDomainManager implements DomainManager {
 
-    private Map<String, Domain> domainFromId = new HashMap<>();
-    private Map<String, String> domainNameToId = new HashMap<>();
+    /**
+     * Domain name to domain mapping.
+     */
+    private Map<String, Domain> domainNameToDomain = new HashMap<>();
 
     @Override
     public Domain getDomainFromName(String domainName) {
 
-        String domainId = domainNameToId.get(domainName);
-        return domainFromId.get(domainId);
+        return this.domainNameToDomain.get(domainName);
     }
 
     @Override
-    public void registerNewIdentityStore(String domainName, String identityStoreId) {
+    public void addDomain(String domainName, StoreConfig storeConfig)
+            throws CredentialStoreException, IdentityStoreException {
 
-        Domain domain = domainFromId.get(domainNameToId.get(domainName));
+        Domain domain = new Domain(domainName, storeConfig);
 
-        if (domain == null) {
-            throw new StoreException("No domain presents for the given domain name.");
-        }
-
-        domain.getIdentityStoreIdList().add(identityStoreId);
+        this.domainNameToDomain.put(domainName, domain);
     }
 
+    // TODO <VIDURA> Add implementation
     @Override
-    public void registerNewCredentialStore(String domainName, String credentialStoreId) {
-
-        Domain domain = domainFromId.get(domainNameToId.get(domainName));
-
-        if (domain == null) {
-            throw new StoreException("No domain presents for the given domain name.");
-        }
-
-        domain.getIdentityStoreIdList().add(credentialStoreId);
+    public Domain getDomainFromUserName(String username) {
+        return null;
     }
+
 }

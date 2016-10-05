@@ -27,11 +27,7 @@ import org.wso2.carbon.kernel.context.PrivilegedCarbonContext;
 import org.wso2.carbon.messaging.CarbonMessage;
 import org.wso2.carbon.messaging.DefaultCarbonMessage;
 import org.wso2.carbon.security.caas.api.ProxyCallbackHandler;
-import org.wso2.carbon.security.caas.user.core.bean.User;
-import org.wso2.carbon.security.caas.user.core.exception.IdentityStoreException;
-import org.wso2.carbon.security.caas.user.core.exception.UserNotFoundException;
 import org.wso2.carbon.security.caas.user.core.service.RealmService;
-import org.wso2.carbon.security.caas.user.core.store.IdentityStore;
 import org.wso2.msf4j.Microservice;
 
 import java.io.UnsupportedEncodingException;
@@ -42,9 +38,7 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-
 /**
  * Sample application to use identity management APIs in user core.
  */
@@ -109,14 +103,16 @@ public class SampleIdentityGateway implements Microservice {
     @Produces({"application/json", "text/xml"})
     public Response getUser(@PathParam("symbol") String symbol) {
 
-        IdentityStore identityStore = IdentityDataHolder.getInstance().getCarbonRealmService().getIdentityStore();
-        try {
-            User user = identityStore.getUser(symbol);
-            return Response.ok(user.getUserId(), MediaType.APPLICATION_JSON_TYPE).build();
-        } catch (IdentityStoreException e) {
-            return Response.serverError().build();
-        } catch (UserNotFoundException e) {
-            return Response.serverError().build();
-        }
+//        IdentityStore identityStore = IdentityDataHolder.getInstance().getCarbonRealmService().getIdentityStore();
+//        try {
+//            User user = identityStore.getUser(symbol);
+//            return Response.ok(user.getUserId(), MediaType.APPLICATION_JSON_TYPE).build();
+//        } catch (IdentityStoreException e) {
+//            return Response.serverError().build();
+//        } catch (UserNotFoundException e) {
+//            return Response.serverError().build();
+//        }
+
+        return null;
     }
 }

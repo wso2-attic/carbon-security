@@ -28,7 +28,6 @@ import org.wso2.carbon.security.caas.user.core.exception.AuthorizationStoreExcep
 import org.wso2.carbon.security.caas.user.core.exception.IdentityStoreException;
 import org.wso2.carbon.security.caas.user.core.exception.PermissionNotFoundException;
 import org.wso2.carbon.security.caas.user.core.exception.RoleNotFoundException;
-import org.wso2.carbon.security.caas.user.core.service.RealmService;
 
 import java.util.List;
 import java.util.Map;
@@ -40,11 +39,10 @@ import java.util.Map;
 public interface AuthorizationStore {
     /**
      * Initialize the authorization store.
-     * @param realmService Parent realm service.
      * @param authorizationConnectorConfigs Connector configs related to the authorization store.
      * @throws AuthorizationStoreException Authorization store exception.
      */
-    void init(RealmService realmService, Map<String, AuthorizationStoreConnectorConfig> authorizationConnectorConfigs)
+    void init(Map<String, AuthorizationStoreConnectorConfig> authorizationConnectorConfigs)
             throws AuthorizationStoreException;
 
     /**
@@ -173,24 +171,22 @@ public interface AuthorizationStore {
     /**
      * Get users assigned to the specific role.
      * @param roleId Role id.
-     * @param authorizationStoreId Authorization store id of the role.
      * @return List of users.
      * @throws AuthorizationStoreException Authorization store exception.
      * @throws IdentityStoreException Identity Store Exception.
      */
-    List<User> getUsersOfRole(String roleId, String authorizationStoreId) throws AuthorizationStoreException,
-            IdentityStoreException;
+    List<User> getUsersOfRole(String roleId)
+            throws AuthorizationStoreException, IdentityStoreException;
 
     /**
      * Get the assigned groups of the specific role.
      * @param roleId Role id.
-     * @param authorizationStoreId Authorization store id of the role.
      * @return List of Groups.
      * @throws AuthorizationStoreException Authorization store exception.
      * @throws IdentityStoreException Identity Store Exception.
      */
-    List<Group> getGroupsOfRole(String roleId, String authorizationStoreId) throws AuthorizationStoreException,
-            IdentityStoreException;
+    List<Group> getGroupsOfRole(String roleId)
+            throws AuthorizationStoreException, IdentityStoreException;
 
     /**
      * Get roles for specific group.

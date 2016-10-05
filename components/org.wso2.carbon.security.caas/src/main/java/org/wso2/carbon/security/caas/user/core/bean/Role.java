@@ -26,7 +26,7 @@ import java.util.List;
 /**
  * Represents a Role.
  */
-public class Role  {
+public class Role {
 
     private String roleName;
     private String roleId;
@@ -44,6 +44,7 @@ public class Role  {
 
     /**
      * Get the name of this Role.
+     *
      * @return Role name.
      */
     public String getName() {
@@ -52,6 +53,7 @@ public class Role  {
 
     /**
      * Get the ID of the role.
+     *
      * @return Id of the role.
      */
     public String getRoleId() {
@@ -60,6 +62,7 @@ public class Role  {
 
     /**
      * Get the authorization store id.
+     *
      * @return Id of the authorization store.
      */
     public String getAuthorizationStoreId() {
@@ -68,16 +71,18 @@ public class Role  {
 
     /**
      * Get the users assigned to this role.
+     *
      * @return List of users assigned to this role.
      * @throws AuthorizationStoreException Authorization store exception.
-     * @throws IdentityStoreException Identity store exception.
+     * @throws IdentityStoreException      Identity store exception.
      */
     public List<User> getUsers() throws AuthorizationStoreException, IdentityStoreException {
-        return authorizationStore.getUsersOfRole(roleId, authorizationStoreId);
+        return authorizationStore.getUsersOfRole(roleId);
     }
 
     /**
      * Get all Permissions assign to this Role.
+     *
      * @return List of Permission.
      * @throws AuthorizationStoreException Authorization store exception.
      */
@@ -87,6 +92,7 @@ public class Role  {
 
     /**
      * Get all Permissions assign to this Role filtered from resource.
+     *
      * @return List of Permission.
      * @throws AuthorizationStoreException Authorization store exception.
      */
@@ -96,6 +102,7 @@ public class Role  {
 
     /**
      * Get all Permissions assign to this Role filtered from action.
+     *
      * @return List of Permission.
      * @throws AuthorizationStoreException Authorization store exception.
      */
@@ -105,16 +112,18 @@ public class Role  {
 
     /**
      * Get all Groups assigned to this Role.
+     *
      * @return List of Group.
      * @throws AuthorizationStoreException Authorization store exception.
-     * @throws IdentityStoreException Identity store exception.
+     * @throws IdentityStoreException      Identity store exception.
      */
     public List<Group> getGroups() throws AuthorizationStoreException, IdentityStoreException {
-        return authorizationStore.getGroupsOfRole(roleId, authorizationStoreId);
+        return authorizationStore.getGroupsOfRole(roleId);
     }
 
     /**
      * Checks whether this Role is authorized for given Permission.
+     *
      * @param permission Permission to be checked.
      * @return True if authorized.
      * @throws AuthorizationStoreException Authorization store exception.
@@ -125,6 +134,7 @@ public class Role  {
 
     /**
      * Checks whether the User is in this Role.
+     *
      * @param userId Id of the User to be checked.
      * @param domain Domain this user belongs to.
      * @return True if User exists.
@@ -136,8 +146,9 @@ public class Role  {
 
     /**
      * Checks whether the Group is in this Role.
+     *
      * @param groupId Id of the Group to be checked.
-     * @param domain Domain this group belongs to.
+     * @param domain  Domain this group belongs to.
      * @return True if the Group exists.
      * @throws AuthorizationStoreException Authorization store exception.
      */
@@ -147,6 +158,7 @@ public class Role  {
 
     /**
      * Add a new Permission list by <b>replacing</b> the existing Permission list. (PUT)
+     *
      * @param newPermissionList New Permission list that needs to replace the existing list.
      * @throws AuthorizationStoreException Authorization store exception.
      */
@@ -156,7 +168,8 @@ public class Role  {
 
     /**
      * Assign a new list of Permissions to existing list and/or un-assign Permission from existing Permission. (PATCH)
-     * @param assignList List to be added to the new list.
+     *
+     * @param assignList   List to be added to the new list.
      * @param unAssignList List to be removed from the existing list.
      * @throws AuthorizationStoreException Authorization store exception.
      */
@@ -167,6 +180,7 @@ public class Role  {
 
     /**
      * Add a new User list by <b>replacing</b> the existing User list. (PUT)
+     *
      * @param newUserList New User list that needs to replace the existing list.
      * @throws AuthorizationStoreException Authorization store exception.
      */
@@ -176,7 +190,8 @@ public class Role  {
 
     /**
      * Assign a new list of User to existing list and/or un-assign Permission from existing User. (PATCH)
-     * @param assignList List to be added to the new list.
+     *
+     * @param assignList   List to be added to the new list.
      * @param unAssignList List to be removed from the existing list.
      * @throws AuthorizationStoreException Authorization store exception.
      */
@@ -186,6 +201,7 @@ public class Role  {
 
     /**
      * Add a new Group list by <b>replacing</b> the existing Group list. (PUT)
+     *
      * @param newGroupList New Group list that needs to replace the existing list.
      * @throws AuthorizationStoreException Authorization store exception.
      */
@@ -195,7 +211,8 @@ public class Role  {
 
     /**
      * Assign a new list of Group to existing list and/or un-assign Group from existing Group. (PATCH)
-     * @param assignList List to be added to the new list.
+     *
+     * @param assignList   List to be added to the new list.
      * @param unAssignList List to be removed from the existing list.
      * @throws AuthorizationStoreException Authorization store exception.
      */
