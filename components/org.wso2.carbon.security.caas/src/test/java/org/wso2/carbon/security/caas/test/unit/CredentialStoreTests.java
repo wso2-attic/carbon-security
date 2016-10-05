@@ -34,20 +34,20 @@
 
 
         // Assert.assertNotNull(authenticationContext);
-    }
-
-    @Test
-    public void testAuthenticateInvalidUser() throws CredentialStoreException, AuthenticationFailure,
-            IdentityStoreException, UserNotFoundException {
-
-        Mockito.doThrow(UserNotFoundException.class).when(identityStore).getUser(Mockito.any(Callback[].class));
-
-        try {
-            credentialStore.authenticate(new Callback[2]);
-        } catch (AuthenticationFailure authenticationFailure) {
-            return;
-        }
-
-        Assert.fail("Expecting an authentication failure.");
-    }
-}
+//    }
+//
+//    @Test
+//    public void testAuthenticateInvalidUser() throws CredentialStoreException, AuthenticationFailure,
+//            IdentityStoreException, UserNotFoundException {
+//
+//        Mockito.doThrow(UserNotFoundException.class).when(identityStore).getUser(Mockito.any(Callback[].class));
+//
+//        try {
+//            credentialStore.authenticate(new Callback[2]);
+//        } catch (AuthenticationFailure authenticationFailure) {
+//            return;
+//        }
+//
+//        Assert.fail("Expecting an authentication failure.");
+//    }
+//}
