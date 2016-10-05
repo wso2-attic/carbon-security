@@ -24,16 +24,16 @@ storeConnectors:
  -
   name: "JDBCCS1"
   connectorType: "InMemoryCredentialStore"
+  domain: "D1"
   properties:
-   domain: "D1"
    dataSource: "WSO2_CARBON_DB"
    hashAlgorithm: "SHA-256"
    databaseType: "MySQL"
  -
   name: "JDBCIS1"
   connectorType: "InMemoryIdentityStore"
+  domain: "D1"
   properties:
-   domain: "D1"
    dataSource: "WSO2_CARBON_DB"
    databaseType: "MySQL"
  -

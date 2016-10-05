@@ -49,7 +49,7 @@ public class InMemoryIdentityStoreConnector implements IdentityStoreConnector {
     }
 
     @Override
-    public User.UserBuilder getUser(String attributeName, String attributeValue) throws UserNotFoundException,
+    public User.UserBuilder getUserBuilder(String attributeName, String attributeValue) throws UserNotFoundException,
             IdentityStoreException {
 
         if (InMemoryStoreUtil.getPassword(attributeValue) != null) {
@@ -60,7 +60,7 @@ public class InMemoryIdentityStoreConnector implements IdentityStoreConnector {
     }
 
     @Override
-    public User.UserBuilder getUser(Callback[] callbacks) throws UserNotFoundException, IdentityStoreException {
+    public User.UserBuilder getUserBuilder(Callback[] callbacks) throws UserNotFoundException, IdentityStoreException {
 
         String username = null;
         for (Callback callback : callbacks) {
@@ -77,7 +77,7 @@ public class InMemoryIdentityStoreConnector implements IdentityStoreConnector {
     }
 
     @Override
-    public List<User.UserBuilder> listUsers(String attributeName, String filterPattern, int offset, int length)
+    public List<User.UserBuilder> listUserBuilders(String attributeName, String filterPattern, int offset, int length)
             throws IdentityStoreException {
         return null;
     }
@@ -94,13 +94,13 @@ public class InMemoryIdentityStoreConnector implements IdentityStoreConnector {
     }
 
     @Override
-    public Group.GroupBuilder getGroup(String attributeName, String attributeValue) throws GroupNotFoundException,
-            IdentityStoreException {
+    public Group.GroupBuilder getGroupBuilder(String attributeName, String attributeValue)
+            throws GroupNotFoundException, IdentityStoreException {
         return null;
     }
 
     @Override
-    public List<Group.GroupBuilder> listGroups(String filterPattern, int offset, int length)
+    public List<Group.GroupBuilder> listGroupBuilders(String filterPattern, int offset, int length)
             throws IdentityStoreException {
         return null;
     }
@@ -117,12 +117,12 @@ public class InMemoryIdentityStoreConnector implements IdentityStoreConnector {
     }
 
     @Override
-    public List<Group.GroupBuilder> getGroupsOfUser(String userID) throws IdentityStoreException {
+    public List<Group.GroupBuilder> getGroupBuildersOfUser(String userID) throws IdentityStoreException {
         return null;
     }
 
     @Override
-    public List<User.UserBuilder> getUsersOfGroup(String groupID) throws IdentityStoreException {
+    public List<User.UserBuilder> getUserBuildersOfGroup(String groupID) throws IdentityStoreException {
         return null;
     }
 

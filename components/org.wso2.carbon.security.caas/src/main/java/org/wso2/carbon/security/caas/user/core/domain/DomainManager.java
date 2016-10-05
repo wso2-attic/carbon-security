@@ -17,9 +17,9 @@
 package org.wso2.carbon.security.caas.user.core.domain;
 
 import org.wso2.carbon.security.caas.user.core.bean.Domain;
-import org.wso2.carbon.security.caas.user.core.bean.User;
-
-import java.util.List;
+import org.wso2.carbon.security.caas.user.core.config.StoreConfig;
+import org.wso2.carbon.security.caas.user.core.exception.CredentialStoreException;
+import org.wso2.carbon.security.caas.user.core.exception.IdentityStoreException;
 
 /**
  * Domain manager.
@@ -35,34 +35,19 @@ public interface DomainManager {
     Domain getDomainFromName(String domainName);
 
     /**
-     * Get users for a specific domain.
+     * Add a domain to the mapping
      *
-     * @param domainName Name of the domain
-     * @return List of users in a specific domain
+     * @param domainName  Name of the domain
+     * @param storeConfig Store configuration for the domain
      */
-    List<User> getUsersForDomainName(String domainName);
+    void addDomain(String domainName, StoreConfig storeConfig)
+            throws CredentialStoreException, IdentityStoreException;
 
     /**
-     * Register new Identity Store Connector.
+     * Get the domain instance when a user name is given.
      *
-     * @param domainName      Name of the domain.
-     * @param identityStoreId Identity Store Id.
+     * @param username String username
+     * @return Domain instance for which the user belongs
      */
-    void registerNewIdentityStore(String domainName, String identityStoreId);
-
-    /**
-     * Register new Identity Store Connector.
-     *
-     * @param domainName        Name of the domain.
-     * @param credentialStoreId Credential Store Id.
-     */
-    void registerNewCredentialStore(String domainName, String credentialStoreId);
-
-    /**
-     * Add user to a domain.
-     *
-     * @param domainName Name of the domain.
-     * @param user       user.
-     */
-    void addUserToDomain(String domainName, User user);
+    Domain getDomainFromUserName(String username);
 }

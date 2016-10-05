@@ -16,32 +16,35 @@
 
 package org.wso2.carbon.security.caas.user.core.store;
 
+import org.wso2.carbon.security.caas.user.core.bean.Domain;
 import org.wso2.carbon.security.caas.user.core.config.CredentialStoreConnectorConfig;
 import org.wso2.carbon.security.caas.user.core.context.AuthenticationContext;
 import org.wso2.carbon.security.caas.user.core.exception.AuthenticationFailure;
 import org.wso2.carbon.security.caas.user.core.exception.CredentialStoreException;
-import org.wso2.carbon.security.caas.user.core.service.RealmService;
 
 import java.util.Map;
 import javax.security.auth.callback.Callback;
 
 /**
  * Represents a virtual credential store to abstract the underlying stores.
+ *
  * @since 1.0.0
  */
 public interface CredentialStore {
 
     /**
      * Initialize credential store.
-     * @param realmService Parent RealmService instance.
+     *
+     * @param domain                     domain for which the identity store belongs.
      * @param credentialConnectorConfigs Connector configs related to the credential store.
      * @throws CredentialStoreException Credential Store Exception.
      */
-    void init(RealmService realmService, Map<String, CredentialStoreConnectorConfig> credentialConnectorConfigs)
+    void init(Domain domain, Map<String, CredentialStoreConnectorConfig> credentialConnectorConfigs)
             throws CredentialStoreException;
 
     /**
      * Authenticate the user.
+     *
      * @param callbacks Callbacks to get the user details.
      * @return If the authentication is success. AuthenticationFailure otherwise.
      * @throws AuthenticationFailure Authentication Failure.
@@ -50,6 +53,7 @@ public interface CredentialStore {
 
     /**
      * Get all available credential store connector names.
+     *
      * @return Map of display names against the connector id.
      */
     Map<String, String> getAllCredentialStoreNames();
