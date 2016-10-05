@@ -105,7 +105,7 @@ public class IdentityStoreImpl implements IdentityStore {
 
         for (IdentityStoreConnector identityStoreConnector : identityStoreConnectors.values()) {
             try {
-                User.UserBuilder userBuilder = identityStoreConnector.getUser(attributeName, attributeValue);
+                User.UserBuilder userBuilder = identityStoreConnector.getUserBuilder(attributeName, attributeValue);
                 Domain domain = realmService.getDomainManager().getDomainFromName(userBuilder.getDomainName());
                 return userBuilder.setDomain(domain)
                         .setIdentityStore(realmService.getIdentityStore())
@@ -127,7 +127,7 @@ public class IdentityStoreImpl implements IdentityStore {
 
         for (IdentityStoreConnector identityStoreConnector : identityStoreConnectors.values()) {
             try {
-                return identityStoreConnector.getUser(callbacks)
+                return identityStoreConnector.getUserBuilder(callbacks)
                         .setIdentityStore(realmService.getIdentityStore())
                         .setAuthorizationStore(realmService.getAuthorizationStore())
                         .setClaimManager(realmService.getClaimManager())
@@ -158,23 +158,24 @@ public class IdentityStoreImpl implements IdentityStore {
         String attributeName = claim.getClaimURI(); // TODO: Get the attribute name from the claim manager.
         String attributeValue = claim.getValue();
 
+        int userCount = 0;
+
         for (IdentityStoreConnector identityStoreConnector : identityStoreConnectors.values()) {
 
             // Get the total count of users in the identity store.
-            int userCount;
             try {
-                userCount = identityStoreConnector.getUserCount();
+                userCount += identityStoreConnector.getUserCount();
             } catch (UnsupportedOperationException e) {
                 log.warn("Count operation is not supported by this identity store. Running the operation in " +
                         "performance intensive mode.");
-                userCount = identityStoreConnector.listUsers(attributeName, "*", 0, -1).size();
+                userCount += identityStoreConnector.getUserBuilderList(attributeName, "*", 0, -1).size();
             }
 
             // If there are users in this identity store more than the offset, we can get users from this offset.
             // If this offset exceeds the available count of the current identity store, move to the next
             // identity store.
             if (userCount > offset) {
-                users.addAll(identityStoreConnector.listUsers(attributeName, attributeValue, offset, length)
+                users.addAll(identityStoreConnector.getUserBuilderList(attributeName, attributeValue, offset, length)
                         .stream()
                         .map(userBuilder -> userBuilder
                                 .setIdentityStore(realmService.getIdentityStore())
@@ -246,7 +247,7 @@ public class IdentityStoreImpl implements IdentityStore {
 
         for (IdentityStoreConnector identityStoreConnector : identityStoreConnectors.values()) {
             try {
-                return identityStoreConnector.getGroup(attributeName, attributeValue)
+                return identityStoreConnector.getGroupBuilder(attributeName, attributeValue)
                         .setIdentityStore(realmService.getIdentityStore())
                         .setAuthorizationStore(realmService.getAuthorizationStore())
                         .build();
@@ -264,23 +265,24 @@ public class IdentityStoreImpl implements IdentityStore {
 
         List<Group> groups = new ArrayList<>();
 
+        int groupCount = 0;
+
         for (IdentityStoreConnector identityStoreConnector : identityStoreConnectors.values()) {
 
-            // Get the total count of groups in the identity store.
-            int groupCount;
+            // Get the total count of groups in the identity store
             try {
-                groupCount = identityStoreConnector.getGroupCount();
+                groupCount += identityStoreConnector.getGroupCount();
             } catch (UnsupportedOperationException e) {
                 log.warn("Count operation is not supported by this identity store. Running the operation in " +
                         "performance intensive mode.");
-                groupCount = identityStoreConnector.listGroups("*", 0, -1).size();
+                groupCount += identityStoreConnector.getGroupBuilderList("*", 0, -1).size();
             }
 
             // If there are groups in this identity store more than the offset, we can get groups from this offset.
             // If this offset exceeds the available count of the current identity store, move to the next
             // identity store.
             if (groupCount > offset) {
-                groups.addAll(identityStoreConnector.listGroups(filterPattern, offset, length)
+                groups.addAll(identityStoreConnector.getGroupBuilderList(filterPattern, offset, length)
                         .stream()
                         .map(groupBuilder -> groupBuilder
                                 .setIdentityStore(realmService.getIdentityStore())
@@ -337,7 +339,7 @@ public class IdentityStoreImpl implements IdentityStore {
 
         for (String identityStoreId : userDomain.getIdentityStoreIdList()) {
             IdentityStoreConnector identityStoreConnector = identityStoreConnectors.get(identityStoreId);
-            groupList.addAll(identityStoreConnector.getGroupsOfUser(userId)
+            groupList.addAll(identityStoreConnector.getGroupBuildersOfUser(userId)
                     .stream()
                     .map(groupBuilder -> groupBuilder
                             .setAuthorizationStore(realmService.getAuthorizationStore())
@@ -356,7 +358,7 @@ public class IdentityStoreImpl implements IdentityStore {
 
         for (String identityStoreId : groupDomain.getIdentityStoreIdList()) {
             IdentityStoreConnector identityStoreConnector = identityStoreConnectors.get(identityStoreId);
-            userList.addAll(identityStoreConnector.getUsersOfGroup(groupID)
+            userList.addAll(identityStoreConnector.getUserBuildersOfGroup(groupID)
                     .stream()
                     .map(userBuilder -> userBuilder
                             .setIdentityStore(realmService.getIdentityStore())

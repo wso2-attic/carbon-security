@@ -114,7 +114,7 @@ public class CredentialStoreImpl implements CredentialStore {
             throw new AuthenticationFailure("Error occurred while retrieving user.", e);
         }
 
-        AuthenticationFailure authenticationFailure = new AuthenticationFailure("Invalid user credentials.");
+        AuthenticationFailure authenticationFailure = null;
 
         for (String credentialStoreId : user.getDomain().getCredentialStoreIdList()) {
 
@@ -126,15 +126,12 @@ public class CredentialStoreImpl implements CredentialStore {
             }
 
             try {
-                User.UserBuilder userBuilder = credentialStoreConnector.authenticate(callbacks);
+                credentialStoreConnector.authenticate(callbacks);
+                // If the authentication failed, there will be an authentication failure exception.
 
-                // If the authentication failed, there should be a authentication failure exception. But we are double
-                // checking for the null as well.
-                if (userBuilder == null) {
-                    throw new AuthenticationFailure("Authentication failed for user. User builder is null.");
-                }
                 return new AuthenticationContext(user);
             } catch (AuthenticationFailure | CredentialStoreException failure) {
+                authenticationFailure = new AuthenticationFailure("Invalid user credentials.");
                 authenticationFailure.addSuppressed(failure);
             }
         }

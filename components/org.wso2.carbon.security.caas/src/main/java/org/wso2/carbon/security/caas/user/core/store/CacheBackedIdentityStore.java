@@ -121,17 +121,17 @@ public class CacheBackedIdentityStore implements IdentityStore {
     }
 
 //    @Override
-//    public User getUser(String userId, Domain domain) throws IdentityStoreException {
+//    public User getUserBuilder(String userId, Domain domain) throws IdentityStoreException {
 //
 //        if (CacheHelper.isCacheDisabled(cacheConfigs, CacheNames.USER_USERID)) {
-//            return identityStore.getUser(userId, domain);
+//            return identityStore.getUserBuilder(userId, domain);
 //        }
 //
 //        Cache<String, User> cache = cacheManager.getCache(CacheNames.USER_USERID, String.class, User.class);
 //        User user = cache.get(userId + domain);
 //
 //        if (user == null) {
-//            user = identityStore.getUser(userId, domain);
+//            user = identityStore.getUserBuilder(userId, domain);
 //            cache.put(userId + domain, user);
 //            if (log.isDebugEnabled()) {
 //                log.debug("User cached for user id: {} and identity store id: {}.", user, domain);

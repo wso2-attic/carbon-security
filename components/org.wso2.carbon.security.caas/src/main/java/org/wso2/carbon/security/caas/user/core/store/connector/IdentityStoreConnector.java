@@ -47,24 +47,24 @@ public interface IdentityStoreConnector {
     String getIdentityStoreId();
 
     /**
-     * Get user from the user name.
+     * Get user builder from the user name.
      * @param attributeName Name of the attribute.
      * @param attributeValue Value of the attribute.
      * @return User.UserBuilder.
      * @throws UserNotFoundException User not found exception.
      * @throws IdentityStoreException Identity Store Exception.
      */
-    User.UserBuilder getUser(String attributeName, String attributeValue) throws UserNotFoundException,
+    User.UserBuilder getUserBuilder(String attributeName, String attributeValue) throws UserNotFoundException,
             IdentityStoreException;
 
     /**
-     * Get user from callbacks.
+     * Get user builder from callbacks.
      * @param callbacks Array of callbacks.
      * @return User.UserBuilder.
      * @throws UserNotFoundException User not found exception.
      * @throws IdentityStoreException Identity Store Exception.
      */
-    User.UserBuilder getUser(Callback [] callbacks) throws UserNotFoundException, IdentityStoreException;
+    User.UserBuilder getUserBuilder(Callback[] callbacks) throws UserNotFoundException, IdentityStoreException;
 
     /**
      * Get the count of the users available in the identity store.
@@ -74,7 +74,7 @@ public interface IdentityStoreConnector {
     int getUserCount() throws IdentityStoreException;
 
     /**
-     * List all users in User Store according to the filter pattern.
+     * Get user builders list in User Store for the given filter pattern.
      * @param attributeName Name of the attribute that should use for the filter pattern.
      * @param filterPattern Filter pattern to be used.
      * @param offset        Offset to get the Users.
@@ -83,7 +83,7 @@ public interface IdentityStoreConnector {
      *         no identities to match.
      * @throws IdentityStoreException Identity Store Exception.
      */
-    List<User.UserBuilder> listUsers(String attributeName, String filterPattern, int offset, int length)
+    List<User.UserBuilder> getUserBuilderList(String attributeName, String filterPattern, int offset, int length)
             throws IdentityStoreException;
 
     /**
@@ -105,13 +105,13 @@ public interface IdentityStoreConnector {
     List<Attribute> getUserAttributeValues(String userID, List<String> attributeNames) throws IdentityStoreException;
 
     /**
-     * Retrieve group from the given attribute and the value.
+     * Retrieve group builder from the given attribute and the value.
      * @param attributeName Name of the attribute.
      * @param attributeValue Value of the attribute.
      * @return Group with the given group name.
      * @throws IdentityStoreException Identity Store Exception.
      */
-    Group.GroupBuilder getGroup(String attributeName, String attributeValue) throws GroupNotFoundException,
+    Group.GroupBuilder getGroupBuilder(String attributeName, String attributeValue) throws GroupNotFoundException,
             IdentityStoreException;
 
     /**
@@ -122,14 +122,15 @@ public interface IdentityStoreConnector {
     int getGroupCount() throws IdentityStoreException;
 
     /**
-     * List groups according to the filter pattern.
+     * Get all group builders list according to the given filter pattern.
      * @param filterPattern Filter pattern for to list groups.
      * @param offset Offset for the group list.
      * @param length Length from the offset.
      * @return List of groups that matches the filter pattern.
      * @throws IdentityStoreException Identity Store Exception.
      */
-    List<Group.GroupBuilder> listGroups(String filterPattern, int offset, int length) throws IdentityStoreException;
+    List<Group.GroupBuilder> getGroupBuilderList(String filterPattern, int offset, int length)
+            throws IdentityStoreException;
 
     /**
      * Get all of the attributes that belongs to this group.
@@ -149,20 +150,20 @@ public interface IdentityStoreConnector {
     List<Attribute> getGroupAttributeValues(String groupId, List<String> attributeNames) throws IdentityStoreException;
 
     /**
-     * Retrieve groups of a given User with unique ID.
+     * Retrieve group builders of a given User with unique ID.
      * @param userID Id of the User.
      * @return List of Groups which this user is assigned to
      * @throws IdentityStoreException Identity Store Exception.
      */
-    List<Group.GroupBuilder> getGroupsOfUser(String userID) throws IdentityStoreException;
+    List<Group.GroupBuilder> getGroupBuildersOfUser(String userID) throws IdentityStoreException;
 
     /**
-     * Retrieve set of users belongs to a group.
+     * Retrieve list of user builders that belongs to a group.
      * @param groupID Unique ID of the group
      * @return Set of IdentityObjects resides in Group
      * @throws IdentityStoreException Identity Store Exception.
      */
-    List<User.UserBuilder> getUsersOfGroup(String groupID) throws IdentityStoreException;
+    List<User.UserBuilder> getUserBuildersOfGroup(String groupID) throws IdentityStoreException;
 
     /**
      * Checks whether the user is in the group.

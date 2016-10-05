@@ -150,7 +150,7 @@ public class CredentialStoreTests extends PowerMockTestCase {
 //        Mockito.when(user.getUserId()).thenReturn("admin");
 //        // Mockito.when(user.getIdentityStoreId()).thenReturn("CSC1");
 //
-//        Mockito.doReturn(user).when(identityStore).getUser(callbacks);
+//        Mockito.doReturn(user).when(identityStore).getUserBuilder(callbacks);
 //
 //        AuthenticationContext authenticationContext = credentialStore.authenticate(callbacks);
 
