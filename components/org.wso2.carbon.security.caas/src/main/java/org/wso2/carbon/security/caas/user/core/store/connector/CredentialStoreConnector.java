@@ -16,7 +16,6 @@
 
 package org.wso2.carbon.security.caas.user.core.store.connector;
 
-import org.wso2.carbon.security.caas.user.core.bean.User;
 import org.wso2.carbon.security.caas.user.core.config.CredentialStoreConnectorConfig;
 import org.wso2.carbon.security.caas.user.core.exception.AuthenticationFailure;
 import org.wso2.carbon.security.caas.user.core.exception.CredentialStoreException;
@@ -44,13 +43,13 @@ public interface CredentialStoreConnector {
     String getCredentialStoreId();
 
     /**
-     * Authenticate user using callbacks.
+     * Authenticate user using callbacks. Throws {@link AuthenticationFailure} if authentication is not successful.
+     *
      * @param callbacks Callbacks to get the user attributes.
-     * @return Authentication result, User if success, null otherwise.
      * @throws CredentialStoreException Credential Store Exception.
      * @throws AuthenticationFailure Authentication failure.
      */
-    User.UserBuilder authenticate(Callback[] callbacks) throws CredentialStoreException, AuthenticationFailure;
+    void authenticate(Callback[] callbacks) throws CredentialStoreException, AuthenticationFailure;
 
     /**
      * Checks whether this connector can handle the given callbacks.

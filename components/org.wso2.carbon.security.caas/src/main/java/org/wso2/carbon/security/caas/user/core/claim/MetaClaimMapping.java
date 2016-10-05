@@ -16,44 +16,41 @@
 
 package org.wso2.carbon.security.caas.user.core.claim;
 
-import java.util.Map;
-
 /**
  * Claim Mapping.
  */
 public class MetaClaimMapping {
 
     /**
-     * Meta claim instance.
+     * Meta metaClaim instance.
      */
-    private MetaClaim claim;
+    private MetaClaim metaClaim;
 
-    /**
-     * The mapped attributes in multiple user stores.
-     */
-    private Map<String, String> attributeNamesMap;
+    private String identityStoreConnectorId;
+
+    private String attributeName;
 
     public MetaClaim getMetaClaim() {
-        return claim;
+        return metaClaim;
     }
 
     public void setMetaClaim(MetaClaim claim) {
-        this.claim = claim;
+        this.metaClaim = claim;
     }
 
-    public String getAttributeName(String identityStoreId) {
-
-        if (attributeNamesMap == null) {
-            return null;
-        }
-        return attributeNamesMap.get(identityStoreId);
+    public String getIdentityStoreConnectorId() {
+        return identityStoreConnectorId;
     }
 
-    public Map<String, String> getAttributeNamesMap() {
-        return attributeNamesMap;
+    public void setIdentityStoreConnectorId(String identityStoreConnectorId) {
+        this.identityStoreConnectorId = identityStoreConnectorId;
     }
 
-    public void setAttributeNamesMap(Map<String, String> attributeNamesMap) {
-        this.attributeNamesMap = attributeNamesMap;
+    public String getAttributeName() {
+        return attributeName;
+    }
+
+    public void setAttributeName(String attributeName) {
+        this.attributeName = attributeName;
     }
 }
