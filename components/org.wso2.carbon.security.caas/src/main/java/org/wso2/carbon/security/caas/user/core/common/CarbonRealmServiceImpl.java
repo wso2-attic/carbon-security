@@ -36,8 +36,12 @@ import org.wso2.carbon.security.caas.user.core.store.IdentityStoreImpl;
 
 /**
  * Basic user realm service.
+ *
+ * @param <T1>
+ * @param <T2>
  */
-public class CarbonRealmServiceImpl implements RealmService {
+public class CarbonRealmServiceImpl<T1 extends IdentityStore, T2 extends CredentialStore>
+        implements RealmService<T1, T2> {
 
     private ClaimManager claimManager;
 
@@ -49,12 +53,12 @@ public class CarbonRealmServiceImpl implements RealmService {
     /**
      * Credential store instance in the realm service.
      */
-    private CredentialStore credentialStore;
+    private T2 credentialStore;
 
     /**
      * Credential store instance in the realm service.
      */
-    private IdentityStore identityStore;
+    private T1 identityStore;
 
     public CarbonRealmServiceImpl(StoreConfig storeConfig) throws IdentityStoreException, AuthorizationStoreException,
             CredentialStoreException, DomainManagerException {
@@ -62,14 +66,14 @@ public class CarbonRealmServiceImpl implements RealmService {
         if (storeConfig.isCacheEnabled()) {
             this.authorizationStore = new CacheBackedAuthorizationStore(storeConfig
                     .getAuthorizationStoreCacheConfigMap());
-            this.identityStore = new CacheBackedIdentityStore(storeConfig
+            this.identityStore = (T1) new CacheBackedIdentityStore(storeConfig
                     .getIdentityStoreCacheConfigMap());
         } else {
-            this.identityStore = new IdentityStoreImpl();
+            this.identityStore = (T1) new IdentityStoreImpl();
             this.authorizationStore = new AuthorizationStoreImpl();
         }
 
-        this.credentialStore = new CredentialStoreImpl();
+        this.credentialStore = (T2) new CredentialStoreImpl();
 
         DomainManager domainManager = new InMemoryDomainManager();
 
@@ -89,12 +93,12 @@ public class CarbonRealmServiceImpl implements RealmService {
     }
 
     @Override
-    public IdentityStore getIdentityStore() {
+    public T1 getIdentityStore() {
         return this.identityStore;
     }
 
     @Override
-    public CredentialStore getCredentialStore() {
+    public T2 getCredentialStore() {
         return this.credentialStore;
     }
 

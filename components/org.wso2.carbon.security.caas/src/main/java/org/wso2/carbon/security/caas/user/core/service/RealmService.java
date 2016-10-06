@@ -23,8 +23,11 @@ import org.wso2.carbon.security.caas.user.core.store.IdentityStore;
 
 /**
  * User realm service.
+ *
+ * @param <T1>
+ * @param <T2>
  */
-public interface RealmService {
+public interface RealmService<T1 extends IdentityStore, T2 extends CredentialStore> {
 
     /**
      * Get the Virtual authorization store.
@@ -45,12 +48,12 @@ public interface RealmService {
      *
      * @return Identity Store
      */
-    IdentityStore getIdentityStore();
+    T1 getIdentityStore();
 
     /**
      * Get the credential store instance.
      *
      * @return Credential Store
      */
-    CredentialStore getCredentialStore();
+    T2 getCredentialStore();
 }
