@@ -185,7 +185,7 @@ public class AuthorizationStoreImpl implements AuthorizationStore {
     }
 
     @Override
-    public boolean isGroupInRole(String groupId, String roleName)
+    public boolean isGroupInRole(String groupId, Domain domain, String roleName)
             throws AuthorizationStoreException {
 
         for (AuthorizationStoreConnector authorizationStoreConnector : authorizationStoreConnectors.values()) {
@@ -375,6 +375,7 @@ public class AuthorizationStoreImpl implements AuthorizationStore {
 //                    authorizationStoreId));
 //        }
 //
+
 //        RealmService realmService = CarbonSecurityDataHolder.getInstance().getCarbonRealmService();
 //
 //        return authorizationStoreConnector.getUsersOfRole(roleId)
