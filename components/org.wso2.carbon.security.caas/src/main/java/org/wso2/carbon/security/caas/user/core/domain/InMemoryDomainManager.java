@@ -16,10 +16,10 @@
 
 package org.wso2.carbon.security.caas.user.core.domain;
 
+import org.wso2.carbon.security.caas.api.util.CarbonSecurityConstants;
 import org.wso2.carbon.security.caas.user.core.bean.Domain;
-import org.wso2.carbon.security.caas.user.core.config.StoreConfig;
-import org.wso2.carbon.security.caas.user.core.exception.CredentialStoreException;
-import org.wso2.carbon.security.caas.user.core.exception.IdentityStoreException;
+import org.wso2.carbon.security.caas.user.core.exception.DomainManagerException;
+import org.wso2.carbon.security.caas.user.core.store.connector.IdentityStoreConnector;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -28,6 +28,11 @@ import java.util.Map;
  * Domain manager.
  */
 public class InMemoryDomainManager implements DomainManager {
+
+    public InMemoryDomainManager() throws DomainManagerException {
+
+        this.createDefaultDomain();
+    }
 
     /**
      * Domain name to domain mapping.
@@ -41,18 +46,63 @@ public class InMemoryDomainManager implements DomainManager {
     }
 
     @Override
-    public void addDomain(String domainName, StoreConfig storeConfig)
-            throws CredentialStoreException, IdentityStoreException {
+    public Domain addDomain(String domainName) throws DomainManagerException {
 
-        Domain domain = new Domain(domainName, storeConfig);
+        if (this.domainNameToDomain.containsKey(domainName)) {
+            throw new DomainManagerException(String
+                    .format("Domain %s already exists in the domain map", domainName));
+        }
 
+        Domain domain = new Domain(domainName);
         this.domainNameToDomain.put(domainName, domain);
+
+        return domain;
+    }
+
+    @Override
+    public Domain createDefaultDomain() throws DomainManagerException {
+
+        return this.addDomain(CarbonSecurityConstants.DEFAULT_DOMAIN_NAME);
+    }
+
+    @Override
+    public Domain getDefaultDomain() {
+
+        return this.getDomainFromName(CarbonSecurityConstants.DEFAULT_DOMAIN_NAME);
     }
 
     // TODO <VIDURA> Add implementation
     @Override
     public Domain getDomainFromUserName(String username) {
         return null;
+    }
+
+    @Override
+    public void addIdentityStoreConnectorToDomain(
+            String identityStoreConnectorId,
+            IdentityStoreConnector identityStoreConnector,
+            String domainName) throws DomainManagerException {
+
+        this.getDomainFromName(domainName)
+                .addIdentityStoreConnector(identityStoreConnectorId, identityStoreConnector);
+    }
+
+    @Override
+    public IdentityStoreConnector getIdentityStoreConnector(
+            String identityStoreConnectorId, String domainName) {
+
+        return this.getDomainFromName(domainName)
+                .getIdentityStoreConnectorFromId(identityStoreConnectorId);
+
+    }
+
+    @Override
+    public Map<String, IdentityStoreConnector> getIdentityStoreConnectorMapForDomain(
+            String domainName) {
+
+        return this.getDomainFromName(domainName)
+                .getIdentityStoreConnectorMap();
+
     }
 
 }

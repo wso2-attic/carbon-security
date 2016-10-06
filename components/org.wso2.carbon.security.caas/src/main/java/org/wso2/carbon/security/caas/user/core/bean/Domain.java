@@ -16,14 +16,12 @@
 
 package org.wso2.carbon.security.caas.user.core.bean;
 
-import org.wso2.carbon.security.caas.user.core.config.StoreConfig;
-import org.wso2.carbon.security.caas.user.core.exception.CredentialStoreException;
-import org.wso2.carbon.security.caas.user.core.exception.IdentityStoreException;
-import org.wso2.carbon.security.caas.user.core.store.CacheBackedIdentityStore;
-import org.wso2.carbon.security.caas.user.core.store.CredentialStore;
-import org.wso2.carbon.security.caas.user.core.store.CredentialStoreImpl;
-import org.wso2.carbon.security.caas.user.core.store.IdentityStore;
-import org.wso2.carbon.security.caas.user.core.store.IdentityStoreImpl;
+import org.wso2.carbon.security.caas.user.core.exception.DomainManagerException;
+import org.wso2.carbon.security.caas.user.core.store.connector.IdentityStoreConnector;
+
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Represents a domain.
@@ -31,35 +29,18 @@ import org.wso2.carbon.security.caas.user.core.store.IdentityStoreImpl;
 public class Domain {
 
     /**
+     * Mapping between IdentityStoreConnector ID and IdentityStoreConnector
+     */
+    private Map<String, IdentityStoreConnector> identityStoreConnectorsMap = new HashMap<>();
+
+    /**
      * Name of the domain.
      */
     private String domainName;
 
-    /**
-     * Credential store instance for the domain.
-     */
-    private CredentialStore credentialStore;
-
-    /**
-     * Identity store instance for the domain.
-     */
-    private IdentityStore identityStore;
-
-    public Domain(String domainName, StoreConfig storeConfig)
-            throws CredentialStoreException, IdentityStoreException {
+    public Domain(String domainName) {
 
         this.domainName = domainName;
-
-        if (storeConfig.isCacheEnabled()) {
-            this.identityStore = new CacheBackedIdentityStore(storeConfig.getIdentityStoreCacheConfigMap());
-        } else {
-            this.identityStore = new IdentityStoreImpl();
-        }
-
-        this.credentialStore = new CredentialStoreImpl();
-
-        credentialStore.init(this, storeConfig.getCredentialConnectorConfigMap());
-        identityStore.init(this, storeConfig.getIdentityConnectorConfigMap());
     }
 
     /**
@@ -72,20 +53,43 @@ public class Domain {
     }
 
     /**
-     * Get the identity store.
+     * Add an identity store connector to the map.
      *
-     * @return IdentityStore identity store.
+     * @param identityStoreConnectorId String - IdentityStoreConnector Id.
+     * @param identityStoreConnector   Identity Store connector
      */
-    public IdentityStore getIdentityStore() {
-        return identityStore;
+    public void addIdentityStoreConnector(
+            String identityStoreConnectorId, IdentityStoreConnector identityStoreConnector)
+            throws DomainManagerException {
+
+        if (this.identityStoreConnectorsMap.containsKey(identityStoreConnectorId)) {
+
+            throw new DomainManagerException(String
+                    .format("IdentityStoreConnector %s already exists in the identity store connector map",
+                            identityStoreConnectorId));
+        }
+
+        this.identityStoreConnectorsMap.put(identityStoreConnectorId, identityStoreConnector);
     }
 
     /**
-     * Get the credential store.
+     * Get IdentityStoreConnector from identity store connector id.
      *
-     * @return CredentialStore credential store.
+     * @param identityStoreConnectorId String - IdentityStoreConnectorId
+     * @return IdentityStoreConnector
      */
-    public CredentialStore getCredentialStore() {
-        return credentialStore;
+    public IdentityStoreConnector getIdentityStoreConnectorFromId(String identityStoreConnectorId) {
+
+        return this.identityStoreConnectorsMap.get(identityStoreConnectorId);
+    }
+
+    /**
+     * Get identity store connector map.
+     *
+     * @return Map<String, IdentityStoreConnector> identityStoreConnectorsMap
+     */
+    public Map<String, IdentityStoreConnector> getIdentityStoreConnectorMap() {
+
+        return Collections.unmodifiableMap(this.identityStoreConnectorsMap);
     }
 }

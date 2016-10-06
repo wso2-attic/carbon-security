@@ -17,11 +17,11 @@
 package org.wso2.carbon.security.caas.user.core.store;
 
 import org.wso2.carbon.security.caas.user.core.bean.Attribute;
-import org.wso2.carbon.security.caas.user.core.bean.Domain;
 import org.wso2.carbon.security.caas.user.core.bean.Group;
 import org.wso2.carbon.security.caas.user.core.bean.User;
 import org.wso2.carbon.security.caas.user.core.claim.Claim;
 import org.wso2.carbon.security.caas.user.core.config.IdentityStoreConnectorConfig;
+import org.wso2.carbon.security.caas.user.core.domain.DomainManager;
 import org.wso2.carbon.security.caas.user.core.exception.GroupNotFoundException;
 import org.wso2.carbon.security.caas.user.core.exception.IdentityStoreException;
 import org.wso2.carbon.security.caas.user.core.exception.UserNotFoundException;
@@ -39,11 +39,12 @@ public interface IdentityStore {
     /**
      * Initialize the identity store instance.
      *
-     * @param domain                   Domain instance for which identity store belongs.
+     * @param domainManager            DomainManager instance for which is shared by the identity store
+     *                                 and the credentials store.
      * @param identityConnectorConfigs Connector configs related to the identity store.
      * @throws IdentityStoreException Identity Store Exception.
      */
-    void init(Domain domain, Map<String, IdentityStoreConnectorConfig> identityConnectorConfigs)
+    void init(DomainManager domainManager, Map<String, IdentityStoreConnectorConfig> identityConnectorConfigs)
             throws IdentityStoreException;
 
     /**
@@ -103,22 +104,20 @@ public interface IdentityStore {
      * Get user attribute values.
      *
      * @param userID Id of the user.
-     * @param domain Id of the user store which this user belongs.
      * @return Map of user attributes.
      * @throws IdentityStoreException Identity Store Exception.
      */
-    List<Attribute> getUserAttributeValues(String userID, Domain domain) throws IdentityStoreException;
+    List<Attribute> getUserAttributeValues(String userID) throws IdentityStoreException;
 
     /**
      * Get user's claim values for the given URIs.
      *
      * @param userID         Id of the user.
      * @param attributeNames Attribute names.
-     * @param domain         Domain this user originates from.
      * @return Map of user attributes.
      * @throws IdentityStoreException Identity Store Exception.
      */
-    List<Attribute> getUserAttributeValues(String userID, List<String> attributeNames, Domain domain)
+    List<Attribute> getUserAttributeValues(String userID, List<String> attributeNames)
             throws IdentityStoreException;
 
     /**
@@ -148,43 +147,39 @@ public interface IdentityStore {
      * Get all of the attributes that belongs to this group.
      *
      * @param groupId Id of the group.
-     * @param domain  Domain this group originates from.
      * @return Map of attributes.
      * @throws IdentityStoreException
      */
-    List<Attribute> getGroupAttributeValues(String groupId, Domain domain) throws IdentityStoreException;
+    List<Attribute> getGroupAttributeValues(String groupId) throws IdentityStoreException;
 
     /**
      * Get attribute values for the given names in the group.
      *
      * @param groupId        Id of the group.
-     * @param domain         Domain this group originates from.
      * @param attributeNames List of attribute names.
      * @return Map of attributes.
      * @throws IdentityStoreException
      */
-    List<Attribute> getGroupAttributeValues(String groupId, Domain domain, List<String> attributeNames)
+    List<Attribute> getGroupAttributeValues(String groupId, List<String> attributeNames)
             throws IdentityStoreException;
 
     /**
      * Get the groups assigned to the specified user.
      *
      * @param userId Id of the user.
-     * @param domain Domain this user originates from.
      * @return List of Group assigned to the user.
      * @throws IdentityStoreException Identity Store Exception.
      */
-    List<Group> getGroupsOfUser(String userId, Domain domain) throws IdentityStoreException;
+    List<Group> getGroupsOfUser(String userId) throws IdentityStoreException;
 
     /**
      * Get the users assigned to the specified group.
      *
      * @param groupID Id of the group.
-     * @param domain  Domain this group originates from.
      * @return List of users assigned to the group.
      * @throws IdentityStoreException Identity Store Exception.
      */
-    List<User> getUsersOfGroup(String groupID, Domain domain) throws IdentityStoreException;
+    List<User> getUsersOfGroup(String groupID) throws IdentityStoreException;
 
     /**
      * Checks whether the user is in the group.

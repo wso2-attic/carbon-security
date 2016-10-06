@@ -20,11 +20,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.wso2.carbon.security.caas.api.CarbonCallback;
 import org.wso2.carbon.security.caas.internal.CarbonSecurityDataHolder;
-import org.wso2.carbon.security.caas.user.core.bean.Domain;
 import org.wso2.carbon.security.caas.user.core.bean.User;
 import org.wso2.carbon.security.caas.user.core.config.CredentialStoreConnectorConfig;
 import org.wso2.carbon.security.caas.user.core.constant.UserCoreConstants;
 import org.wso2.carbon.security.caas.user.core.context.AuthenticationContext;
+import org.wso2.carbon.security.caas.user.core.domain.DomainManager;
 import org.wso2.carbon.security.caas.user.core.exception.AuthenticationFailure;
 import org.wso2.carbon.security.caas.user.core.exception.CredentialStoreException;
 import org.wso2.carbon.security.caas.user.core.exception.IdentityStoreException;
@@ -47,8 +47,7 @@ public class CredentialStoreImpl implements CredentialStore {
 
     private static final Logger log = LoggerFactory.getLogger(CredentialStoreImpl.class);
 
-    // Domain is passed because the user instance is accessed via identity store
-    private Domain domain;
+    private DomainManager domainManager;
 
     /**
      * Map of credential connectors.
@@ -57,11 +56,11 @@ public class CredentialStoreImpl implements CredentialStore {
 
     @Override
     public void init(
-            Domain domain,
+            DomainManager domainManager,
             Map<String, CredentialStoreConnectorConfig> credentialConnectorConfigs)
             throws CredentialStoreException {
 
-        this.domain = domain;
+        this.domainManager = domainManager;
 
         if (credentialConnectorConfigs.isEmpty()) {
             throw new StoreException("At least one credential store configuration must present.");
@@ -99,7 +98,8 @@ public class CredentialStoreImpl implements CredentialStore {
         User user;
         try {
             // Get the user using given callbacks. We need to find the user unique id.
-            user = domain.getIdentityStore().getUser(callbacks);
+            user = CarbonSecurityDataHolder.getInstance()
+                    .getCarbonRealmService().getIdentityStore().getUser(callbacks);
 
             // Crete a new call back array from existing one and add new user data (user id and identity store id)
             // as a carbon callback to the new array.

@@ -29,7 +29,7 @@ public class ClaimManagerException extends Exception {
         super(message);
     }
 
-    public ClaimManagerException(String messgae, Throwable cause) {
-        super(messgae, cause);
+    public ClaimManagerException(String message, Throwable cause) {
+        super(message, cause);
     }
 }

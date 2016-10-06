@@ -22,29 +22,59 @@ import org.wso2.carbon.security.caas.user.core.domain.DomainManager;
 import org.wso2.carbon.security.caas.user.core.domain.InMemoryDomainManager;
 import org.wso2.carbon.security.caas.user.core.exception.AuthorizationStoreException;
 import org.wso2.carbon.security.caas.user.core.exception.CredentialStoreException;
+import org.wso2.carbon.security.caas.user.core.exception.DomainManagerException;
 import org.wso2.carbon.security.caas.user.core.exception.IdentityStoreException;
 import org.wso2.carbon.security.caas.user.core.service.RealmService;
 import org.wso2.carbon.security.caas.user.core.store.AuthorizationStore;
 import org.wso2.carbon.security.caas.user.core.store.AuthorizationStoreImpl;
 import org.wso2.carbon.security.caas.user.core.store.CacheBackedAuthorizationStore;
+import org.wso2.carbon.security.caas.user.core.store.CacheBackedIdentityStore;
+import org.wso2.carbon.security.caas.user.core.store.CredentialStore;
+import org.wso2.carbon.security.caas.user.core.store.CredentialStoreImpl;
+import org.wso2.carbon.security.caas.user.core.store.IdentityStore;
+import org.wso2.carbon.security.caas.user.core.store.IdentityStoreImpl;
 
 /**
  * Basic user realm service.
  */
 public class CarbonRealmServiceImpl implements RealmService {
 
-    private AuthorizationStore authorizationStore = new AuthorizationStoreImpl();
-    private DomainManager domainManager = new InMemoryDomainManager();
     private ClaimManager claimManager;
 
+    /**
+     * Authorization store in the realm service.
+     */
+    private AuthorizationStore authorizationStore;
+
+    /**
+     * Credential store instance in the realm service.
+     */
+    private CredentialStore credentialStore;
+
+    /**
+     * Credential store instance in the realm service.
+     */
+    private IdentityStore identityStore;
+
     public CarbonRealmServiceImpl(StoreConfig storeConfig) throws IdentityStoreException, AuthorizationStoreException,
-            CredentialStoreException {
+            CredentialStoreException, DomainManagerException {
 
         if (storeConfig.isCacheEnabled()) {
             this.authorizationStore = new CacheBackedAuthorizationStore(storeConfig
                     .getAuthorizationStoreCacheConfigMap());
+            this.identityStore = new CacheBackedIdentityStore(storeConfig
+                    .getIdentityStoreCacheConfigMap());
+        } else {
+            this.identityStore = new IdentityStoreImpl();
+            this.authorizationStore = new AuthorizationStoreImpl();
         }
 
+        this.credentialStore = new CredentialStoreImpl();
+
+        DomainManager domainManager = new InMemoryDomainManager();
+
+        credentialStore.init(domainManager, storeConfig.getCredentialConnectorConfigMap());
+        identityStore.init(domainManager, storeConfig.getIdentityConnectorConfigMap());
         authorizationStore.init(storeConfig.getAuthorizationConnectorConfigMap());
     }
 
@@ -54,13 +84,18 @@ public class CarbonRealmServiceImpl implements RealmService {
     }
 
     @Override
-    public DomainManager getDomainManager() {
-        return domainManager;
+    public ClaimManager getClaimManager() {
+        return claimManager;
     }
 
     @Override
-    public ClaimManager getClaimManager() {
-        return claimManager;
+    public IdentityStore getIdentityStore() {
+        return this.identityStore;
+    }
+
+    @Override
+    public CredentialStore getCredentialStore() {
+        return this.credentialStore;
     }
 
     /**

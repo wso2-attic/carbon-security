@@ -110,7 +110,8 @@ public class AuthorizationStoreImpl implements AuthorizationStore {
         }
 
         // Get the roles associated through groups.
-        List<Group> groups = domain.getIdentityStore().getGroupsOfUser(userId, domain);
+        List<Group> groups = CarbonSecurityDataHolder.getInstance()
+                .getCarbonRealmService().getIdentityStore().getGroupsOfUser(userId);
         for (Group group : groups) {
             roles.addAll(getRolesOfGroup(group.getGroupId(), domain));
         }

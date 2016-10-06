@@ -17,9 +17,10 @@
 package org.wso2.carbon.security.caas.user.core.domain;
 
 import org.wso2.carbon.security.caas.user.core.bean.Domain;
-import org.wso2.carbon.security.caas.user.core.config.StoreConfig;
-import org.wso2.carbon.security.caas.user.core.exception.CredentialStoreException;
-import org.wso2.carbon.security.caas.user.core.exception.IdentityStoreException;
+import org.wso2.carbon.security.caas.user.core.exception.DomainManagerException;
+import org.wso2.carbon.security.caas.user.core.store.connector.IdentityStoreConnector;
+
+import java.util.Map;
 
 /**
  * Domain manager.
@@ -37,11 +38,10 @@ public interface DomainManager {
     /**
      * Add a domain to the mapping
      *
-     * @param domainName  Name of the domain
-     * @param storeConfig Store configuration for the domain
+     * @param domainName Name of the domain
+     * @return Domain.
      */
-    void addDomain(String domainName, StoreConfig storeConfig)
-            throws CredentialStoreException, IdentityStoreException;
+    Domain addDomain(String domainName) throws DomainManagerException;
 
     /**
      * Get the domain instance when a user name is given.
@@ -50,4 +50,49 @@ public interface DomainManager {
      * @return Domain instance for which the user belongs
      */
     Domain getDomainFromUserName(String username);
+
+    /**
+     * Create the default domain instance.
+     *
+     * @return Domain instance created
+     */
+    Domain createDefaultDomain() throws DomainManagerException;
+
+    /**
+     * Get the default domain instance.
+     *
+     * @return Default domain instance
+     */
+    Domain getDefaultDomain();
+
+    /**
+     * Add an identity store connector to the map of a domain.
+     *
+     * @param identityStoreConnectorId String - IdentityStoreConnector Id.
+     * @param identityStoreConnector   Identity Store connector
+     * @param domainName               Name of the domain to add the connector
+     */
+    void addIdentityStoreConnectorToDomain(
+            String identityStoreConnectorId,
+            IdentityStoreConnector identityStoreConnector,
+            String domainName) throws DomainManagerException;
+
+    /**
+     * Get IdentityStoreConnector from identity store connector id.
+     *
+     * @param identityStoreConnectorId String - IdentityStoreConnectorId
+     * @param domainName               Name of the domain which the connector instance belongs
+     * @return IdentityStoreConnector
+     */
+    IdentityStoreConnector getIdentityStoreConnector(
+            String identityStoreConnectorId, String domainName);
+
+    /**
+     * Get identity store connector map.
+     *
+     * @param domainName Name of the domain which the connector instances belong
+     * @return Map<String, IdentityStoreConnector> identityStoreConnectorsMap
+     */
+    Map<String, IdentityStoreConnector> getIdentityStoreConnectorMapForDomain(
+            String domainName);
 }

@@ -138,7 +138,7 @@ public class User {
      * @throws IdentityStoreException Identity store exception.
      */
     public List<Group> getGroups() throws IdentityStoreException {
-        return identityStore.getGroupsOfUser(userId, domain);
+        return identityStore.getGroupsOfUser(userId);
     }
 
     /**
@@ -308,7 +308,7 @@ public class User {
 
         public User build() {
 
-            if (userId == null || domain == null || tenantDomain == null || identityStore == null ||
+            if (userId == null || tenantDomain == null || identityStore == null ||
                     authorizationStore == null || claimManager == null) {
                 throw new StoreException("Required data missing for building user.");
             }
