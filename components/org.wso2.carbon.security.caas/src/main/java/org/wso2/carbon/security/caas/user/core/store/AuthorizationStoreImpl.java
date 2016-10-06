@@ -172,11 +172,11 @@ public class AuthorizationStoreImpl implements AuthorizationStore {
     }
 
     @Override
-    public boolean isUserInRole(String userId, Domain domain, String roleName)
+    public boolean isUserInRole(String userId, String roleName)
             throws AuthorizationStoreException {
 
         for (AuthorizationStoreConnector authorizationStoreConnector : authorizationStoreConnectors.values()) {
-            if (authorizationStoreConnector.isUserInRole(userId, domain.getDomainName(), roleName)) {
+            if (authorizationStoreConnector.isUserInRole(userId, roleName)) {
                 return true;
             }
         }
@@ -189,7 +189,7 @@ public class AuthorizationStoreImpl implements AuthorizationStore {
             throws AuthorizationStoreException {
 
         for (AuthorizationStoreConnector authorizationStoreConnector : authorizationStoreConnectors.values()) {
-            if (authorizationStoreConnector.isGroupInRole(groupId, domain.getDomainName(), roleName)) {
+            if (authorizationStoreConnector.isGroupInRole(groupId, roleName)) {
                 return true;
             }
         }
@@ -375,6 +375,7 @@ public class AuthorizationStoreImpl implements AuthorizationStore {
 //                    authorizationStoreId));
 //        }
 //
+
 //        RealmService realmService = CarbonSecurityDataHolder.getInstance().getCarbonRealmService();
 //
 //        return authorizationStoreConnector.getUsersOfRole(roleId)

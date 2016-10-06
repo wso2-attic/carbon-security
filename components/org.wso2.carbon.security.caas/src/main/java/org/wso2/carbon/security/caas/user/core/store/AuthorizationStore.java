@@ -82,12 +82,11 @@ public interface AuthorizationStore {
     /**
      * Checks whether the user is in the role.
      * @param userId User id.
-     * @param domain Domain this user originates from.
      * @param roleName Role name
      * @return True if user is in the role.
      * @throws AuthorizationStoreException Authorization store exception.
      */
-    boolean isUserInRole(String userId, Domain domain, String roleName)
+    boolean isUserInRole(String userId, String roleName)
             throws AuthorizationStoreException;
 
     /**

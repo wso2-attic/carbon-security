@@ -31,7 +31,6 @@ public class Role {
     private String roleName;
     private String roleId;
     private String authorizationStoreId;
-    private RoleBuilder builder;
     private AuthorizationStore authorizationStore;
 
     private Role(String roleName, String roleId, String authorizationStoreId, AuthorizationStore authorizationStore) {
@@ -136,19 +135,17 @@ public class Role {
      * Checks whether the User is in this Role.
      *
      * @param userId Id of the User to be checked.
-     * @param domain Domain this user belongs to.
      * @return True if User exists.
      * @throws AuthorizationStoreException Authorization store exception.
      */
-    public boolean hasUser(String userId, Domain domain) throws AuthorizationStoreException {
-        return authorizationStore.isUserInRole(userId, domain, roleName);
+    public boolean hasUser(String userId) throws AuthorizationStoreException {
+        return authorizationStore.isUserInRole(userId, roleName);
     }
 
     /**
      * Checks whether the Group is in this Role.
      *
      * @param groupId Id of the Group to be checked.
-     * @param domain  Domain this group belongs to.
      * @return True if the Group exists.
      * @throws AuthorizationStoreException Authorization store exception.
      */
@@ -224,8 +221,6 @@ public class Role {
      * Builder for role bean.
      */
     public static class RoleBuilder {
-
-        private static final long serialVersionUID = -7097267952117338236L;
 
         private String roleName;
         private String roleId;

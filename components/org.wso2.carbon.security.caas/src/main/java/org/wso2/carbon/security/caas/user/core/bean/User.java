@@ -188,7 +188,7 @@ public class User {
      * @throws AuthorizationStoreException Authorization store exception.
      */
     public boolean isInRole(String roleName) throws AuthorizationStoreException {
-        return authorizationStore.isUserInRole(userId, domain, roleName);
+        return authorizationStore.isUserInRole(userId, roleName);
     }
 
     /**
