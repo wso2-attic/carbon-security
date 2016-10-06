@@ -100,7 +100,7 @@ public class CacheBackedAuthorizationStore implements AuthorizationStore {
         roles.addAll(getRolesOfUser(userId, domain));
 
         // Get roles associated through groups.
-        domain.getIdentityStore().getGroupsOfUser(userId, domain)
+        domain.getIdentityStore().getGroupsOfUser(userId)
                 .stream()
                 .map(LambdaExceptionUtils.rethrowFunction(group -> roles.addAll(getRolesOfGroup(group.getGroupId(),
                         group.getDomain()))));

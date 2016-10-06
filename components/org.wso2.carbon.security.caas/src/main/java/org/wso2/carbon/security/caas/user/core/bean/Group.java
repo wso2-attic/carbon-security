@@ -76,7 +76,7 @@ public class Group {
      * @throws IdentityStoreException
      */
     public List<Attribute> getAttributes() throws IdentityStoreException {
-        return identityStore.getGroupAttributeValues(groupId, domain);
+        return identityStore.getGroupAttributeValues(groupId);
     }
 
     /**
@@ -86,7 +86,7 @@ public class Group {
      * @throws IdentityStoreException
      */
     public List<Attribute> getAttributes(List<String> attributeNames) throws IdentityStoreException {
-        return identityStore.getGroupAttributeValues(groupId, domain, attributeNames);
+        return identityStore.getGroupAttributeValues(groupId, attributeNames);
     }
 
     /**
@@ -95,7 +95,7 @@ public class Group {
      * @throws IdentityStoreException Identity store exception.
      */
     public List<User> getUsers() throws IdentityStoreException {
-        return identityStore.getUsersOfGroup(groupId, domain);
+        return identityStore.getUsersOfGroup(groupId);
     }
 
     /**

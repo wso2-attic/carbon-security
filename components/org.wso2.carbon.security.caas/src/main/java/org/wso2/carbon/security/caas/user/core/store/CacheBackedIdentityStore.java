@@ -153,14 +153,14 @@ public class CacheBackedIdentityStore implements IdentityStore {
     }
 
     @Override
-    public List<Attribute> getUserAttributeValues(String userID, Domain domain) throws IdentityStoreException {
-        return identityStore.getUserAttributeValues(userID, domain);
+    public List<Attribute> getUserAttributeValues(String userID) throws IdentityStoreException {
+        return identityStore.getUserAttributeValues(userID);
     }
 
     @Override
-    public List<Attribute> getUserAttributeValues(String userID, List<String> attributeNames, Domain domain)
+    public List<Attribute> getUserAttributeValues(String userID, List<String> attributeNames)
             throws IdentityStoreException {
-        return identityStore.getUserAttributeValues(userID, attributeNames, domain);
+        return identityStore.getUserAttributeValues(userID, attributeNames);
     }
 
     @Override
@@ -217,34 +217,34 @@ public class CacheBackedIdentityStore implements IdentityStore {
     }
 
     @Override
-    public List<Attribute> getGroupAttributeValues(String groupId, Domain domain)
+    public List<Attribute> getGroupAttributeValues(String groupId)
             throws IdentityStoreException {
-        return identityStore.getGroupAttributeValues(groupId, domain);
+        return identityStore.getGroupAttributeValues(groupId);
     }
 
     @Override
-    public List<Attribute> getGroupAttributeValues(String groupId, Domain domain,
+    public List<Attribute> getGroupAttributeValues(String groupId,
                                                    List<String> attributeNames) throws IdentityStoreException {
-        return identityStore.getGroupAttributeValues(groupId, domain, attributeNames);
+        return identityStore.getGroupAttributeValues(groupId, attributeNames);
     }
 
     @Override
-    public List<Group> getGroupsOfUser(String userId, Domain domain) throws IdentityStoreException {
+    public List<Group> getGroupsOfUser(String userId) throws IdentityStoreException {
 
         if (CacheHelper.isCacheDisabled(cacheConfigs, CacheNames.GROUPS_USERID_IDENTITYSTOREID)) {
-            return identityStore.getGroupsOfUser(userId, domain);
+            return identityStore.getGroupsOfUser(userId);
         }
 
         Cache<String, List> cache = cacheManager.getCache(CacheNames.GROUPS_USERID_IDENTITYSTOREID, String.class,
                 List.class);
 
-        List<Group> groups = cache.get(userId + domain);
+        List<Group> groups = cache.get(userId);
 
         if (groups == null) {
-            groups = identityStore.getGroupsOfUser(userId, domain);
-            cache.put(userId + domain, groups);
+            groups = identityStore.getGroupsOfUser(userId);
+            cache.put(userId, groups);
             if (log.isDebugEnabled()) {
-                log.debug("Groups cached for user id: {} and identity store id: {}.", userId, domain);
+                log.debug("Groups cached for user id: {} and identity store id: {}.", userId);
             }
         }
 
@@ -252,8 +252,8 @@ public class CacheBackedIdentityStore implements IdentityStore {
     }
 
     @Override
-    public List<User> getUsersOfGroup(String groupID, Domain domain) throws IdentityStoreException {
-        return identityStore.getUsersOfGroup(groupID, domain);
+    public List<User> getUsersOfGroup(String groupID) throws IdentityStoreException {
+        return identityStore.getUsersOfGroup(groupID);
     }
 
     @Override

@@ -206,7 +206,7 @@ public class IdentityStoreImpl implements IdentityStore {
     }
 
     @Override
-    public List<Attribute> getUserAttributeValues(String userID, Domain domain) throws IdentityStoreException {
+    public List<Attribute> getUserAttributeValues(String userID) throws IdentityStoreException {
 
         List<Attribute> userAttributes = new ArrayList<>();
 
@@ -218,7 +218,7 @@ public class IdentityStoreImpl implements IdentityStore {
     }
 
     @Override
-    public List<Attribute> getUserAttributeValues(String userID, List<String> attributeNames, Domain domain)
+    public List<Attribute> getUserAttributeValues(String userID, List<String> attributeNames)
             throws IdentityStoreException {
 
         List<Attribute> userAttributes = new ArrayList<>();
@@ -312,7 +312,7 @@ public class IdentityStoreImpl implements IdentityStore {
     }
 
     @Override
-    public List<Attribute> getGroupAttributeValues(String groupId, Domain domain)
+    public List<Attribute> getGroupAttributeValues(String groupId)
             throws IdentityStoreException {
 
         List<Attribute> groupAttributes = new ArrayList<>();
@@ -325,7 +325,7 @@ public class IdentityStoreImpl implements IdentityStore {
     }
 
     @Override
-    public List<Attribute> getGroupAttributeValues(String groupId, Domain domain, List<String> attributeNames)
+    public List<Attribute> getGroupAttributeValues(String groupId, List<String> attributeNames)
             throws IdentityStoreException {
 
         List<Attribute> groupAttributes = new ArrayList<>();
@@ -338,7 +338,7 @@ public class IdentityStoreImpl implements IdentityStore {
     }
 
     @Override
-    public List<Group> getGroupsOfUser(String userId, Domain userDomain) throws IdentityStoreException {
+    public List<Group> getGroupsOfUser(String userId) throws IdentityStoreException {
 
         List<Group> groupList = new ArrayList<>();
 
@@ -357,7 +357,7 @@ public class IdentityStoreImpl implements IdentityStore {
     }
 
     @Override
-    public List<User> getUsersOfGroup(String groupID, Domain groupDomain) throws IdentityStoreException {
+    public List<User> getUsersOfGroup(String groupID) throws IdentityStoreException {
 
         List<User> userList = new ArrayList<>();
 

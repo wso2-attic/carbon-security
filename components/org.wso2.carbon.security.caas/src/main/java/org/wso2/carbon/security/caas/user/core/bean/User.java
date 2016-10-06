@@ -138,7 +138,7 @@ public class User {
      * @throws IdentityStoreException Identity store exception.
      */
     public List<Group> getGroups() throws IdentityStoreException {
-        return identityStore.getGroupsOfUser(userId, domain);
+        return identityStore.getGroupsOfUser(userId);
     }
 
     /**
