@@ -100,7 +100,8 @@ public class CacheBackedAuthorizationStore implements AuthorizationStore {
         roles.addAll(getRolesOfUser(userId, domain));
 
         // Get roles associated through groups.
-        domain.getIdentityStore().getGroupsOfUser(userId)
+        CarbonSecurityDataHolder.getInstance()
+                .getCarbonRealmService().getIdentityStore().getGroupsOfUser(userId)
                 .stream()
                 .map(LambdaExceptionUtils.rethrowFunction(group -> roles.addAll(getRolesOfGroup(group.getGroupId(),
                         group.getDomain()))));
@@ -341,7 +342,7 @@ public class CacheBackedAuthorizationStore implements AuthorizationStore {
 
         if (roles == null) {
             roles = authorizationStore.getRolesOfUser(groupId, domain);
-            if (roles != null && !roles.isEmpty()) {
+            if (!roles.isEmpty()) {
                 cache.put(groupId + domain, roles);
                 if (log.isDebugEnabled()) {
                     log.debug("Roles cached for group id: {} and for identity store id: {}.", groupId, domain);

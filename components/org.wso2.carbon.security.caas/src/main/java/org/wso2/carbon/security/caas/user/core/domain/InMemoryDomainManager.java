@@ -17,9 +17,6 @@
 package org.wso2.carbon.security.caas.user.core.domain;
 
 import org.wso2.carbon.security.caas.user.core.bean.Domain;
-import org.wso2.carbon.security.caas.user.core.config.StoreConfig;
-import org.wso2.carbon.security.caas.user.core.exception.CredentialStoreException;
-import org.wso2.carbon.security.caas.user.core.exception.IdentityStoreException;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -41,10 +38,9 @@ public class InMemoryDomainManager implements DomainManager {
     }
 
     @Override
-    public void addDomain(String domainName, StoreConfig storeConfig)
-            throws CredentialStoreException, IdentityStoreException {
+    public void addDomain(String domainName) {
 
-        Domain domain = new Domain(domainName, storeConfig);
+        Domain domain = new Domain(domainName);
 
         this.domainNameToDomain.put(domainName, domain);
     }

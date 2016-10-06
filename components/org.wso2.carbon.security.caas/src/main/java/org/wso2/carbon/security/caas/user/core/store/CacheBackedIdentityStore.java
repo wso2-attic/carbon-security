@@ -20,13 +20,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.wso2.carbon.security.caas.internal.CarbonSecurityDataHolder;
 import org.wso2.carbon.security.caas.user.core.bean.Attribute;
-import org.wso2.carbon.security.caas.user.core.bean.Domain;
 import org.wso2.carbon.security.caas.user.core.bean.Group;
 import org.wso2.carbon.security.caas.user.core.bean.User;
 import org.wso2.carbon.security.caas.user.core.claim.Claim;
 import org.wso2.carbon.security.caas.user.core.config.CacheConfig;
 import org.wso2.carbon.security.caas.user.core.config.IdentityStoreConnectorConfig;
 import org.wso2.carbon.security.caas.user.core.constant.CacheNames;
+import org.wso2.carbon.security.caas.user.core.domain.DomainManager;
 import org.wso2.carbon.security.caas.user.core.exception.GroupNotFoundException;
 import org.wso2.carbon.security.caas.user.core.exception.IdentityStoreException;
 import org.wso2.carbon.security.caas.user.core.exception.StoreException;
@@ -57,7 +57,7 @@ public class CacheBackedIdentityStore implements IdentityStore {
     }
 
     @Override
-    public void init(Domain domain, Map<String, IdentityStoreConnectorConfig> identityConnectorConfigs)
+    public void init(DomainManager domainManager, Map<String, IdentityStoreConnectorConfig> identityConnectorConfigs)
             throws IdentityStoreException {
 
         if (CarbonSecurityDataHolder.getInstance().getCarbonCachingService() == null) {
@@ -66,7 +66,7 @@ public class CacheBackedIdentityStore implements IdentityStore {
 
         cacheManager = CarbonSecurityDataHolder.getInstance().getCarbonCachingService().getCachingProvider()
                 .getCacheManager();
-        identityStore.init(domain, identityConnectorConfigs);
+        identityStore.init(domainManager, identityConnectorConfigs);
 
         // Initialize all caches.
         CacheHelper.createCache(CacheNames.USER_USERNAME, String.class, User.class, CacheHelper.MEDIUM_EXPIRE_TIME,

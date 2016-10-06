@@ -17,9 +17,6 @@
 package org.wso2.carbon.security.caas.user.core.domain;
 
 import org.wso2.carbon.security.caas.user.core.bean.Domain;
-import org.wso2.carbon.security.caas.user.core.config.StoreConfig;
-import org.wso2.carbon.security.caas.user.core.exception.CredentialStoreException;
-import org.wso2.carbon.security.caas.user.core.exception.IdentityStoreException;
 
 /**
  * Domain manager.
@@ -37,11 +34,9 @@ public interface DomainManager {
     /**
      * Add a domain to the mapping
      *
-     * @param domainName  Name of the domain
-     * @param storeConfig Store configuration for the domain
+     * @param domainName Name of the domain
      */
-    void addDomain(String domainName, StoreConfig storeConfig)
-            throws CredentialStoreException, IdentityStoreException;
+    void addDomain(String domainName);
 
     /**
      * Get the domain instance when a user name is given.

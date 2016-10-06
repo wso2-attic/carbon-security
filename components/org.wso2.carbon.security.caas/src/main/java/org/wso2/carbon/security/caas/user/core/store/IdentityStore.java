@@ -17,11 +17,11 @@
 package org.wso2.carbon.security.caas.user.core.store;
 
 import org.wso2.carbon.security.caas.user.core.bean.Attribute;
-import org.wso2.carbon.security.caas.user.core.bean.Domain;
 import org.wso2.carbon.security.caas.user.core.bean.Group;
 import org.wso2.carbon.security.caas.user.core.bean.User;
 import org.wso2.carbon.security.caas.user.core.claim.Claim;
 import org.wso2.carbon.security.caas.user.core.config.IdentityStoreConnectorConfig;
+import org.wso2.carbon.security.caas.user.core.domain.DomainManager;
 import org.wso2.carbon.security.caas.user.core.exception.GroupNotFoundException;
 import org.wso2.carbon.security.caas.user.core.exception.IdentityStoreException;
 import org.wso2.carbon.security.caas.user.core.exception.UserNotFoundException;
@@ -39,11 +39,12 @@ public interface IdentityStore {
     /**
      * Initialize the identity store instance.
      *
-     * @param domain                   Domain instance for which identity store belongs.
+     * @param domainManager            DomainManager instance for which is shared by the identity store
+     *                                 and the credentials store.
      * @param identityConnectorConfigs Connector configs related to the identity store.
      * @throws IdentityStoreException Identity Store Exception.
      */
-    void init(Domain domain, Map<String, IdentityStoreConnectorConfig> identityConnectorConfigs)
+    void init(DomainManager domainManager, Map<String, IdentityStoreConnectorConfig> identityConnectorConfigs)
             throws IdentityStoreException;
 
     /**

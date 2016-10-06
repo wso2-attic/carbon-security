@@ -25,7 +25,6 @@ import org.wso2.carbon.security.caas.api.exception.CarbonSecurityLoginException.
 import org.wso2.carbon.security.caas.api.exception.CarbonSecurityServerException;
 import org.wso2.carbon.security.caas.api.util.CarbonSecurityExceptionUtil;
 import org.wso2.carbon.security.caas.internal.CarbonSecurityDataHolder;
-import org.wso2.carbon.security.caas.user.core.bean.Domain;
 import org.wso2.carbon.security.caas.user.core.bean.User;
 import org.wso2.carbon.security.caas.user.core.context.AuthenticationContext;
 import org.wso2.carbon.security.caas.user.core.exception.AuthenticationFailure;
@@ -116,9 +115,8 @@ public class UsernamePasswordLoginModule implements LoginModule {
         password = passwordCallback.getPassword();
 
         try {
-            Domain domain = CarbonSecurityDataHolder.getInstance()
-                    .getCarbonRealmService().getDomainManager().getDomainFromUserName(username);
-            AuthenticationContext authenticationContext = domain.getCredentialStore().authenticate(callbacks);
+            AuthenticationContext authenticationContext = CarbonSecurityDataHolder.getInstance()
+                    .getCarbonRealmService().getCredentialStore().authenticate(callbacks);
             user = authenticationContext.getUser();
         } catch (AuthenticationFailure authenticationFailure) {
             throw CarbonSecurityExceptionUtil.buildLoginException(authenticationFailure);
