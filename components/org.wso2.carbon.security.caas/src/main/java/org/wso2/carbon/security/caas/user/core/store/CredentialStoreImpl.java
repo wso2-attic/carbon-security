@@ -27,6 +27,7 @@ import org.wso2.carbon.security.caas.user.core.context.AuthenticationContext;
 import org.wso2.carbon.security.caas.user.core.domain.DomainManager;
 import org.wso2.carbon.security.caas.user.core.exception.AuthenticationFailure;
 import org.wso2.carbon.security.caas.user.core.exception.CredentialStoreException;
+import org.wso2.carbon.security.caas.user.core.exception.DomainManagerException;
 import org.wso2.carbon.security.caas.user.core.exception.IdentityStoreException;
 import org.wso2.carbon.security.caas.user.core.exception.StoreException;
 import org.wso2.carbon.security.caas.user.core.exception.UserNotFoundException;
@@ -49,10 +50,6 @@ public class CredentialStoreImpl implements CredentialStore {
 
     private DomainManager domainManager;
 
-    /**
-     * Map of credential connectors.
-     */
-    private Map<String, CredentialStoreConnector> credentialStoreConnectorsMap = new HashMap<>();
 
     @Override
     public void init(
@@ -80,7 +77,15 @@ public class CredentialStoreImpl implements CredentialStore {
             CredentialStoreConnector credentialStoreConnector = credentialStoreConnectorFactory.getInstance();
             credentialStoreConnector.init(credentialStoreConfig.getKey(), credentialStoreConfig.getValue());
 
-            credentialStoreConnectorsMap.put(credentialStoreConfig.getKey(), credentialStoreConnector);
+            try {
+                this.domainManager.getDefaultDomain().addCredentialStoreConnector(
+                        credentialStoreConfig.getKey(), credentialStoreConnector);
+            } catch (DomainManagerException e) {
+                CredentialStoreException credentialStoreException =
+                        new CredentialStoreException("Error in adding credential store connector to default domain");
+                credentialStoreException.addSuppressed(e);
+                throw credentialStoreException;
+            }
         }
 
         if (log.isDebugEnabled()) {
@@ -123,6 +128,9 @@ public class CredentialStoreImpl implements CredentialStore {
 
         AuthenticationFailure authenticationFailure = null;
 
+        Map<String, CredentialStoreConnector> credentialStoreConnectorsMap =
+                this.domainManager.getDefaultDomain().getCredentialStoreConnectorMap();
+
         for (CredentialStoreConnector credentialStoreConnector : credentialStoreConnectorsMap.values()) {
 
             // We need to check whether this credential store can handle this kind of callbacks.
@@ -145,6 +153,10 @@ public class CredentialStoreImpl implements CredentialStore {
 
     @Override
     public Map<String, String> getAllCredentialStoreNames() {
+
+        Map<String, CredentialStoreConnector> credentialStoreConnectorsMap =
+                this.domainManager.getDefaultDomain().getCredentialStoreConnectorMap();
+
         return credentialStoreConnectorsMap.entrySet()
                 .stream()
                 .collect(Collectors.toMap(Map.Entry::getKey,
