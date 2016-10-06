@@ -17,6 +17,7 @@
 package org.wso2.carbon.security.caas.user.core.bean;
 
 import org.wso2.carbon.security.caas.user.core.exception.DomainManagerException;
+import org.wso2.carbon.security.caas.user.core.store.connector.CredentialStoreConnector;
 import org.wso2.carbon.security.caas.user.core.store.connector.IdentityStoreConnector;
 
 import java.util.Collections;
@@ -32,6 +33,11 @@ public class Domain {
      * Mapping between IdentityStoreConnector ID and IdentityStoreConnector
      */
     private Map<String, IdentityStoreConnector> identityStoreConnectorsMap = new HashMap<>();
+
+    /**
+     * Mapping between CredentialStoreConnector ID and CredentialStoreConnector
+     */
+    private Map<String, CredentialStoreConnector> credentialStoreConnectorsMap = new HashMap<>();
 
     /**
      * Name of the domain.
@@ -91,5 +97,47 @@ public class Domain {
     public Map<String, IdentityStoreConnector> getIdentityStoreConnectorMap() {
 
         return Collections.unmodifiableMap(this.identityStoreConnectorsMap);
+    }
+
+
+    /**
+     * Add an credential store connector to the map.
+     *
+     * @param credentialStoreConnectorId String - CredentialStoreConnector Id.
+     * @param credentialStoreConnector   Credential Store connector
+     */
+    public void addCredentialStoreConnector(
+            String credentialStoreConnectorId, CredentialStoreConnector credentialStoreConnector)
+            throws DomainManagerException {
+
+        if (this.credentialStoreConnectorsMap.containsKey(credentialStoreConnectorId)) {
+
+            throw new DomainManagerException(String
+                    .format("CredentialStoreConnector %s already exists in the credential store connector map",
+                            credentialStoreConnectorId));
+        }
+
+        this.credentialStoreConnectorsMap.put(credentialStoreConnectorId, credentialStoreConnector);
+    }
+
+    /**
+     * Get CredentialStoreConnector from credential store connector id.
+     *
+     * @param credentialStoreConnectorId String - CredentialStoreConnector ID
+     * @return credentialStoreConnector
+     */
+    public CredentialStoreConnector getCredentialStoreConnectorFromId(String credentialStoreConnectorId) {
+
+        return this.credentialStoreConnectorsMap.get(credentialStoreConnectorId);
+    }
+
+    /**
+     * Get credential store connector map.
+     *
+     * @return Map<String, CredentialStoreConnector> credentialStoreConnectorsMap
+     */
+    public Map<String, CredentialStoreConnector> getCredentialStoreConnectorMap() {
+
+        return Collections.unmodifiableMap(this.credentialStoreConnectorsMap);
     }
 }
