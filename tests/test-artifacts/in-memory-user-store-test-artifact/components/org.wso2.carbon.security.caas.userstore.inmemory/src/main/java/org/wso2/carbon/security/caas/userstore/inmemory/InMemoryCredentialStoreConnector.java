@@ -16,7 +16,6 @@
 
 package org.wso2.carbon.security.caas.userstore.inmemory;
 
-import org.wso2.carbon.security.caas.user.core.bean.User;
 import org.wso2.carbon.security.caas.user.core.config.CredentialStoreConnectorConfig;
 import org.wso2.carbon.security.caas.user.core.exception.AuthenticationFailure;
 import org.wso2.carbon.security.caas.user.core.exception.CredentialStoreException;
@@ -24,7 +23,6 @@ import org.wso2.carbon.security.caas.user.core.store.connector.CredentialStoreCo
 import org.wso2.carbon.security.caas.userstore.inmemory.util.InMemoryStoreUtil;
 
 import java.util.Arrays;
-import java.util.UUID;
 import javax.security.auth.callback.Callback;
 import javax.security.auth.callback.NameCallback;
 import javax.security.auth.callback.PasswordCallback;
@@ -48,7 +46,7 @@ public class InMemoryCredentialStoreConnector implements CredentialStoreConnecto
     }
 
     @Override
-    public User.UserBuilder authenticate(Callback[] callbacks) throws CredentialStoreException, AuthenticationFailure {
+    public void authenticate(Callback[] callbacks) throws CredentialStoreException, AuthenticationFailure {
 
         if (callbacks == null || callbacks.length < 2) {
             throw new AuthenticationFailure("Invalid credentials");
@@ -69,10 +67,7 @@ public class InMemoryCredentialStoreConnector implements CredentialStoreConnecto
         }
 
         char[] storedPassword = InMemoryStoreUtil.getPassword(username);
-        if (storedPassword != null && Arrays.equals(storedPassword, password)) {
-            return new User.UserBuilder().setUserId(UUID.randomUUID().toString())
-                    .setTenantDomain("carbon.super");
-        } else {
+        if (storedPassword == null || !Arrays.equals(storedPassword, password)) {
             throw new AuthenticationFailure("Invalid credentials");
         }
     }

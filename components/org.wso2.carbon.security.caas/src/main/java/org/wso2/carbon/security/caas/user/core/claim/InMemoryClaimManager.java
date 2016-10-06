@@ -16,13 +16,13 @@
 
 package org.wso2.carbon.security.caas.user.core.claim;
 
+import org.wso2.carbon.security.caas.user.core.bean.User;
 import org.wso2.carbon.security.caas.user.core.exception.ClaimManagerException;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 /**
  * InMemory Claim Manager.
@@ -47,34 +47,12 @@ public class InMemoryClaimManager implements ClaimManager {
     }
 
     @Override
-    public List<IdnStoreMetaClaimMapping> getMetaClaimMappingsByIdentityStoreId(String identityStoreId)
-            throws ClaimManagerException {
-
-        if (metaClaimMappingMap == null || metaClaimMappingMap.isEmpty()) {
-            return Collections.emptyList();
-        }
-
-        return metaClaimMappingMap.values().stream()
-                .filter(claimMapping -> claimMapping.getAttributeNamesMap().containsKey(identityStoreId))
-                .map(claimMapping -> new IdnStoreMetaClaimMapping(claimMapping.getMetaClaim(), claimMapping
-                        .getAttributeName(identityStoreId)))
-                .collect(Collectors.toList());
+    public List<Claim> getClaims(User user) throws ClaimManagerException {
+        return null;
     }
 
     @Override
-    public List<IdnStoreMetaClaimMapping> getMetaClaimMappingsByIdentityStoreId(String identityStoreId, List<String>
-            claimURIs) throws ClaimManagerException {
-
-        if (metaClaimMappingMap == null || metaClaimMappingMap.isEmpty() || claimURIs == null || claimURIs.isEmpty()) {
-            return Collections.emptyList();
-        }
-
-        return claimURIs.stream()
-                .filter(claimURI -> metaClaimMappingMap.containsKey(claimURI))
-                .map(claimURI -> metaClaimMappingMap.get(claimURI))
-                .filter(metaClaimMapping -> metaClaimMapping.getAttributeNamesMap().containsKey(identityStoreId))
-                .map(claimMapping -> new IdnStoreMetaClaimMapping(claimMapping.getMetaClaim(), claimMapping
-                        .getAttributeName(identityStoreId)))
-                .collect(Collectors.toList());
+    public List<Claim> getClaims(User user, List<String> claimURIs) throws ClaimManagerException {
+        return null;
     }
 }

@@ -25,6 +25,7 @@ import org.wso2.carbon.security.caas.api.exception.CarbonSecurityLoginException.
 import org.wso2.carbon.security.caas.api.exception.CarbonSecurityServerException;
 import org.wso2.carbon.security.caas.api.util.CarbonSecurityExceptionUtil;
 import org.wso2.carbon.security.caas.internal.CarbonSecurityDataHolder;
+import org.wso2.carbon.security.caas.user.core.bean.Domain;
 import org.wso2.carbon.security.caas.user.core.bean.User;
 import org.wso2.carbon.security.caas.user.core.context.AuthenticationContext;
 import org.wso2.carbon.security.caas.user.core.exception.AuthenticationFailure;
@@ -66,10 +67,10 @@ public class UsernamePasswordLoginModule implements LoginModule {
     /**
      * This method initializes the login module.
      *
-     * @param subject subject.
+     * @param subject         subject.
      * @param callbackHandler callback handler.
-     * @param sharedState shared state.
-     * @param options options.
+     * @param sharedState     shared state.
+     * @param options         options.
      */
     @Override
     public void initialize(Subject subject, CallbackHandler callbackHandler, Map<String, ?> sharedState,
@@ -107,16 +108,17 @@ public class UsernamePasswordLoginModule implements LoginModule {
                     CarbonSecurityErrorMessages.UNSUPPORTED_CALLBACK_EXCEPTION.getDescription(), e);
         } catch (IOException e) {
             throw new CarbonSecurityServerException(CarbonSecurityErrorMessages.CALLBACK_HANDLE_EXCEPTION.getCode(),
-                                                    CarbonSecurityErrorMessages.CALLBACK_HANDLE_EXCEPTION
-                                                            .getDescription(), e);
+                    CarbonSecurityErrorMessages.CALLBACK_HANDLE_EXCEPTION
+                            .getDescription(), e);
         }
 
         username = usernameCallback.getName();
         password = passwordCallback.getPassword();
 
         try {
-            AuthenticationContext authenticationContext = CarbonSecurityDataHolder.getInstance().getCarbonRealmService()
-                    .getCredentialStore().authenticate(callbacks);
+            Domain domain = CarbonSecurityDataHolder.getInstance()
+                    .getCarbonRealmService().getDomainManager().getDomainFromUserName(username);
+            AuthenticationContext authenticationContext = domain.getCredentialStore().authenticate(callbacks);
             user = authenticationContext.getUser();
         } catch (AuthenticationFailure authenticationFailure) {
             throw CarbonSecurityExceptionUtil.buildLoginException(authenticationFailure);

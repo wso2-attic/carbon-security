@@ -16,54 +16,76 @@
 
 package org.wso2.carbon.security.caas.user.core.bean;
 
-import java.util.ArrayList;
-import java.util.List;
+import org.wso2.carbon.security.caas.user.core.config.StoreConfig;
+import org.wso2.carbon.security.caas.user.core.exception.CredentialStoreException;
+import org.wso2.carbon.security.caas.user.core.exception.IdentityStoreException;
+import org.wso2.carbon.security.caas.user.core.store.CacheBackedIdentityStore;
+import org.wso2.carbon.security.caas.user.core.store.CredentialStore;
+import org.wso2.carbon.security.caas.user.core.store.CredentialStoreImpl;
+import org.wso2.carbon.security.caas.user.core.store.IdentityStore;
+import org.wso2.carbon.security.caas.user.core.store.IdentityStoreImpl;
 
 /**
  * Represents a domain.
  */
 public class Domain {
 
-    private String domainId;
+    /**
+     * Name of the domain.
+     */
     private String domainName;
 
-    private List<String> identityStoreIdList = new ArrayList<>();
-    private List<String> credentialStoreIdList = new ArrayList<>();
+    /**
+     * Credential store instance for the domain.
+     */
+    private CredentialStore credentialStore;
 
-    public Domain(String domainId, String domainName) {
-        this.domainId = domainId;
+    /**
+     * Identity store instance for the domain.
+     */
+    private IdentityStore identityStore;
+
+    public Domain(String domainName, StoreConfig storeConfig)
+            throws CredentialStoreException, IdentityStoreException {
+
         this.domainName = domainName;
+
+        if (storeConfig.isCacheEnabled()) {
+            this.identityStore = new CacheBackedIdentityStore(storeConfig.getIdentityStoreCacheConfigMap());
+        } else {
+            this.identityStore = new IdentityStoreImpl();
+        }
+
+        this.credentialStore = new CredentialStoreImpl();
+
+        credentialStore.init(this, storeConfig.getCredentialConnectorConfigMap());
+        identityStore.init(this, storeConfig.getIdentityConnectorConfigMap());
     }
 
-    public void addIdentityStoreId(String identityStoreId) {
-        this.identityStoreIdList.add(identityStoreId);
-    }
-
-    public void addCredentialStoreId(String credentialStoreId) {
-        this.credentialStoreIdList.add(credentialStoreId);
-    }
-
-    public List<String> getIdentityStoreIdList() {
-        return identityStoreIdList;
-    }
-
-    public List<String> getCredentialStoreIdList() {
-        return credentialStoreIdList;
-    }
-
-    public String getDomainId() {
-        return domainId;
-    }
-
-    public void setDomainId(String domainId) {
-        this.domainId = domainId;
-    }
-
+    /**
+     * Get the domain name.
+     *
+     * @return String - domain name
+     */
     public String getDomainName() {
         return domainName;
     }
 
-    public void setDomainName(String domainName) {
-        this.domainName = domainName;
+    /**
+     * Get the identity store.
+     *
+     * @return IdentityStore identity store.
+     */
+    public IdentityStore getIdentityStore() {
+        return identityStore;
+    }
+
+    /**
+     * Get the credential store.
+     *
+     * @return CredentialStore credential store.
+     */
+    public CredentialStore getCredentialStore() {
+        return credentialStore;
     }
 }

@@ -198,7 +198,7 @@ public class User {
      * @throws IdentityStoreException Identity store exception.
      */
     public boolean isInGroup(String groupName) throws IdentityStoreException {
-        return identityStore.isUserInGroup(userId, groupName, domain);
+        return identityStore.isUserInGroup(userId, groupName);
     }
 
     /**

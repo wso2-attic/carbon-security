@@ -52,6 +52,7 @@ public class ClaimConfigBuilder {
 
         if (claimConfigFile.getClaims() != null) {
 
+            // TODO: Ugly use of streams, very hard to read
             claimConfig.setClaimMappings(claimConfigFile.getClaims().stream()
                     // Claim URI must be present
                     .filter(claimEntry -> claimEntry.getClaimURI() != null &&
@@ -72,19 +73,8 @@ public class ClaimConfigBuilder {
 
                         MetaClaimMapping metaClaimMapping = new MetaClaimMapping();
                         metaClaimMapping.setMetaClaim(metaClaim);
-                        if (claimEntry.getMappedAttributes() != null) {
-                            metaClaimMapping.setAttributeNamesMap(claimEntry.getMappedAttributes().entrySet()
-                                    .stream()
-                                    .collect(Collectors.toMap(
-                                            prop -> (String) prop.getKey(),
-                                            prop -> (String) prop.getValue()
-                                    )));
-                        }
-
                         return metaClaimMapping;
                     })
-                    // At least one mapped attribute must be present
-                    .filter(claimMapping -> claimMapping.getAttributeNamesMap().size() > 0)
                     .collect(Collectors.toMap(claimMapping -> claimMapping.getMetaClaim().getClaimURI(),
                             claimMapping -> claimMapping)));
         }

@@ -25,8 +25,6 @@ public class ClaimEntry {
 
     private String claimURI;
 
-    private Properties mappedAttributes;
-
     private Properties properties;
 
     public String getClaimURI() {
@@ -35,14 +33,6 @@ public class ClaimEntry {
 
     public void setClaimURI(String claimURI) {
         this.claimURI = claimURI;
-    }
-
-    public Properties getMappedAttributes() {
-        return mappedAttributes;
-    }
-
-    public void setMappedAttributes(Properties mappedAttributes) {
-        this.mappedAttributes = mappedAttributes;
     }
 
     public Properties getProperties() {

@@ -35,7 +35,6 @@ import org.wso2.carbon.security.caas.user.core.exception.IdentityStoreException;
 import org.wso2.carbon.security.caas.user.core.exception.PermissionNotFoundException;
 import org.wso2.carbon.security.caas.user.core.exception.RoleNotFoundException;
 import org.wso2.carbon.security.caas.user.core.exception.StoreException;
-import org.wso2.carbon.security.caas.user.core.service.RealmService;
 import org.wso2.carbon.security.caas.user.core.util.CacheHelper;
 
 import java.util.ArrayList;
@@ -46,6 +45,7 @@ import javax.cache.CacheManager;
 
 /**
  * Virtual authorization store with caching.
+ *
  * @since 1.0.0
  */
 public class CacheBackedAuthorizationStore implements AuthorizationStore {
@@ -53,7 +53,6 @@ public class CacheBackedAuthorizationStore implements AuthorizationStore {
     private static final Logger log = LoggerFactory.getLogger(CacheBackedIdentityStore.class);
 
     private Map<String, CacheConfig> cacheConfigs;
-    private RealmService realmService;
     private AuthorizationStore authorizationStore = new AuthorizationStoreImpl();
     private CacheManager cacheManager;
 
@@ -62,13 +61,12 @@ public class CacheBackedAuthorizationStore implements AuthorizationStore {
     }
 
     @Override
-    public void init(RealmService realmService, Map<String, AuthorizationStoreConnectorConfig>
-            authorizationConnectorConfigs) throws AuthorizationStoreException {
+    public void init(Map<String, AuthorizationStoreConnectorConfig>
+                             authorizationConnectorConfigs) throws AuthorizationStoreException {
 
         this.cacheManager = CarbonSecurityDataHolder.getInstance().getCarbonCachingService().getCachingProvider()
                 .getCacheManager();
-        this.realmService = realmService;
-        authorizationStore.init(realmService, authorizationConnectorConfigs);
+        authorizationStore.init(authorizationConnectorConfigs);
 
         // Initialize all caches.
         CacheHelper.createCache(CacheNames.ROLE_ROLENAME, String.class, Role.class, CacheHelper.MEDIUM_EXPIRE_TIME,
@@ -102,7 +100,7 @@ public class CacheBackedAuthorizationStore implements AuthorizationStore {
         roles.addAll(getRolesOfUser(userId, domain));
 
         // Get roles associated through groups.
-        realmService.getIdentityStore().getGroupsOfUser(userId, domain)
+        domain.getIdentityStore().getGroupsOfUser(userId, domain)
                 .stream()
                 .map(LambdaExceptionUtils.rethrowFunction(group -> roles.addAll(getRolesOfGroup(group.getGroupId(),
                         group.getDomain()))));
@@ -318,15 +316,15 @@ public class CacheBackedAuthorizationStore implements AuthorizationStore {
     }
 
     @Override
-    public List<User> getUsersOfRole(String roleId, String authorizationStoreId) throws AuthorizationStoreException,
+    public List<User> getUsersOfRole(String roleId) throws AuthorizationStoreException,
             IdentityStoreException {
-        return authorizationStore.getUsersOfRole(roleId, authorizationStoreId);
+        return authorizationStore.getUsersOfRole(roleId);
     }
 
     @Override
-    public List<Group> getGroupsOfRole(String roleId, String authorizationStoreId) throws AuthorizationStoreException,
+    public List<Group> getGroupsOfRole(String roleId) throws AuthorizationStoreException,
             IdentityStoreException {
-        return authorizationStore.getGroupsOfRole(roleId, authorizationStoreId);
+        return authorizationStore.getGroupsOfRole(roleId);
     }
 
     @Override

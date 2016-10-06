@@ -16,6 +16,7 @@
 
 package org.wso2.carbon.security.caas.user.core.claim;
 
+import org.wso2.carbon.security.caas.user.core.bean.User;
 import org.wso2.carbon.security.caas.user.core.exception.ClaimManagerException;
 
 import java.util.List;
@@ -43,23 +44,21 @@ public interface ClaimManager {
     List<MetaClaimMapping> getAllMetaClaimMappings() throws ClaimManagerException;
 
     /**
-     * Get meta claim mappings for an identity store.
+     * Get all claims of a user.
      *
-     * @param identityStoreId Identity store id.
-     * @return Identity store specific meta claim list.
-     * @throws ClaimManagerException Claim Manager failure.
+     * @param user The user to retrieve claims for
+     * @return List of claims
+     * @throws ClaimManagerException
      */
-    List<IdnStoreMetaClaimMapping> getMetaClaimMappingsByIdentityStoreId(String identityStoreId)
-            throws ClaimManagerException;
+    List<Claim> getClaims(User user) throws ClaimManagerException;
 
     /**
-     * Get requested meta claim mappings for an identity store.
+     * Get all claims of a user for given URIs.
      *
-     * @param identityStoreId Identity store id.
-     * @param claimURIs Requested claim URIs.
-     * @return Requested identity store specific meta claim list.
-     * @throws ClaimManagerException Claim Manager failure.
+     * @param user The user to retrieve claims for
+     * @param claimURIs List of claimURIs to retrieve claims for
+     * @return List of claims
+     * @throws ClaimManagerException
      */
-    List<IdnStoreMetaClaimMapping> getMetaClaimMappingsByIdentityStoreId(String identityStoreId,
-            List<String> claimURIs) throws ClaimManagerException;
+    List<Claim> getClaims(User user, List<String> claimURIs) throws ClaimManagerException;
 }
