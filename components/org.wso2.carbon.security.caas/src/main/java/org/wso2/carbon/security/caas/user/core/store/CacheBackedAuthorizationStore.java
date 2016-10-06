@@ -167,11 +167,11 @@ public class CacheBackedAuthorizationStore implements AuthorizationStore {
     }
 
     @Override
-    public boolean isUserInRole(String userId, Domain domain, String roleName)
+    public boolean isUserInRole(String userId, String roleName)
             throws AuthorizationStoreException {
 
         if (CacheHelper.isCacheDisabled(cacheConfigs, CacheNames.ROLES_USERID_IDENTITYSTOREID)) {
-            return authorizationStore.isUserInRole(userId, domain, roleName);
+            return authorizationStore.isUserInRole(userId, roleName);
         }
 
         Cache<String, List> cache = cacheManager.getCache(CacheNames.ROLES_USERID_IDENTITYSTOREID, String.class,
@@ -179,9 +179,9 @@ public class CacheBackedAuthorizationStore implements AuthorizationStore {
 
         boolean isUserInRole = false;
 
-        List<Role> roles = cache.get(userId + domain);
+        List<Role> roles = cache.get(userId);
         if (roles == null) {
-            isUserInRole = authorizationStore.isUserInRole(userId, domain, roleName);
+            isUserInRole = authorizationStore.isUserInRole(userId, roleName);
         } else {
             // If there are roles for this user id and identity store id in the cache,
             // do the validation logic here.

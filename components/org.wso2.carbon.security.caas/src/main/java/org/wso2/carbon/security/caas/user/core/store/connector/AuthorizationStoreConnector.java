@@ -211,23 +211,21 @@ public interface AuthorizationStoreConnector {
      * Checks whether the users is in the role.
      *
      * @param userId         Id of the user.
-     * @param userDomainName Name of the user's domain.
      * @param roleName       Name of the role.
      * @return True if user is in the role.
      * @throws AuthorizationStoreException Authorization Store Exception.
      */
-    boolean isUserInRole(String userId, String userDomainName, String roleName) throws AuthorizationStoreException;
+    boolean isUserInRole(String userId, String roleName) throws AuthorizationStoreException;
 
     /**
      * Checks whether the group is in the role.
      *
      * @param groupId         Id of the group.
-     * @param groupDomainName Name of the group domain.
      * @param roleName        Name of the role.
      * @return True if the group is in the role.
      * @throws AuthorizationStoreException Authorization Store Exception.
      */
-    boolean isGroupInRole(String groupId, String groupDomainName, String roleName) throws AuthorizationStoreException;
+    boolean isGroupInRole(String groupId, String roleName) throws AuthorizationStoreException;
 
     /**
      * Get the users of the role.

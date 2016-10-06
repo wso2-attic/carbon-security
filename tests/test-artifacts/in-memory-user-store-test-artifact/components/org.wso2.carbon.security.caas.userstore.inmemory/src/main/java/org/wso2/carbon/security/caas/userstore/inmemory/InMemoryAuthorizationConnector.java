@@ -189,12 +189,12 @@ public class InMemoryAuthorizationConnector implements AuthorizationStoreConnect
     }
 
     @Override
-    public boolean isUserInRole(String userId, String identityStoreId, String roleName) {
+    public boolean isUserInRole(String userId, String roleName) {
         return false;
     }
 
     @Override
-    public boolean isGroupInRole(String groupId, String identityStoreId, String roleName) {
+    public boolean isGroupInRole(String groupId, String roleName) {
         return false;
     }
 
