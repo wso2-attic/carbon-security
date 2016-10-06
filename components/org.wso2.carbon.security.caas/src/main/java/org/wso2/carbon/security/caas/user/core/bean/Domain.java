@@ -16,10 +16,22 @@
 
 package org.wso2.carbon.security.caas.user.core.bean;
 
+import org.wso2.carbon.security.caas.user.core.exception.DomainManagerException;
+import org.wso2.carbon.security.caas.user.core.store.connector.IdentityStoreConnector;
+
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * Represents a domain.
  */
 public class Domain {
+
+    /**
+     * Mapping between IdentityStoreConnector ID and IdentityStoreConnector
+     */
+    private Map<String, IdentityStoreConnector> identityStoreConnectorsMap = new HashMap<>();
 
     /**
      * Name of the domain.
@@ -38,5 +50,46 @@ public class Domain {
      */
     public String getDomainName() {
         return domainName;
+    }
+
+    /**
+     * Add an identity store connector to the map.
+     *
+     * @param identityStoreConnectorId String - IdentityStoreConnector Id.
+     * @param identityStoreConnector   Identity Store connector
+     */
+    public void addIdentityStoreConnector(
+            String identityStoreConnectorId, IdentityStoreConnector identityStoreConnector)
+            throws DomainManagerException {
+
+        if (this.identityStoreConnectorsMap.containsKey(identityStoreConnectorId)) {
+
+            throw new DomainManagerException(String
+                    .format("IdentityStoreConnector %s already exists in the identity store connector map",
+                            identityStoreConnectorId));
+        }
+
+        this.identityStoreConnectorsMap.put(identityStoreConnectorId, identityStoreConnector);
+    }
+
+    /**
+     * Get IdentityStoreConnector from identity store connector id.
+     *
+     * @param identityStoreConnectorId String - IdentityStoreConnectorId
+     * @return IdentityStoreConnector
+     */
+    public IdentityStoreConnector getIdentityStoreConnectorFromId(String identityStoreConnectorId) {
+
+        return this.identityStoreConnectorsMap.get(identityStoreConnectorId);
+    }
+
+    /**
+     * Get identity store connector map.
+     *
+     * @return Map<String, IdentityStoreConnector> identityStoreConnectorsMap
+     */
+    public Map<String, IdentityStoreConnector> getIdentityStoreConnectorMap() {
+
+        return Collections.unmodifiableMap(this.identityStoreConnectorsMap);
     }
 }

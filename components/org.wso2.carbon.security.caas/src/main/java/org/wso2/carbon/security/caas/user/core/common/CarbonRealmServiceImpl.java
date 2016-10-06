@@ -22,6 +22,7 @@ import org.wso2.carbon.security.caas.user.core.domain.DomainManager;
 import org.wso2.carbon.security.caas.user.core.domain.InMemoryDomainManager;
 import org.wso2.carbon.security.caas.user.core.exception.AuthorizationStoreException;
 import org.wso2.carbon.security.caas.user.core.exception.CredentialStoreException;
+import org.wso2.carbon.security.caas.user.core.exception.DomainManagerException;
 import org.wso2.carbon.security.caas.user.core.exception.IdentityStoreException;
 import org.wso2.carbon.security.caas.user.core.service.RealmService;
 import org.wso2.carbon.security.caas.user.core.store.AuthorizationStore;
@@ -56,7 +57,7 @@ public class CarbonRealmServiceImpl implements RealmService {
     private IdentityStore identityStore;
 
     public CarbonRealmServiceImpl(StoreConfig storeConfig) throws IdentityStoreException, AuthorizationStoreException,
-            CredentialStoreException {
+            CredentialStoreException, DomainManagerException {
 
         if (storeConfig.isCacheEnabled()) {
             this.authorizationStore = new CacheBackedAuthorizationStore(storeConfig
@@ -71,7 +72,7 @@ public class CarbonRealmServiceImpl implements RealmService {
         this.credentialStore = new CredentialStoreImpl();
 
         DomainManager domainManager = new InMemoryDomainManager();
-        
+
         credentialStore.init(domainManager, storeConfig.getCredentialConnectorConfigMap());
         identityStore.init(domainManager, storeConfig.getIdentityConnectorConfigMap());
         authorizationStore.init(storeConfig.getAuthorizationConnectorConfigMap());

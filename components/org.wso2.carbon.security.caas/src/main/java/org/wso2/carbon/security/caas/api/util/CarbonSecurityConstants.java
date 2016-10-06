@@ -47,6 +47,9 @@ public final class CarbonSecurityConstants {
     public static final String PERMISSION_CONFIG_FILE = "permissions.yml";
     public static final String CLAIM_CONFIG_FILE = "claim-config.yml";
 
+    // Default domain name
+    public static final String DEFAULT_DOMAIN_NAME = "defaultDomain";
+
     public static Path getCarbonHomeDirectory() {
         return Paths.get(System.getProperty(CARBON_HOME));
     }

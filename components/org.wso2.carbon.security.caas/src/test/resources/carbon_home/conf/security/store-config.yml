@@ -13,33 +13,32 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 ################################################################################
-credentialStore:
- connector: "#JDBCCS1"
-identityStore:
- connector: "#JDBCIS1"
 authorizationStore:
- connector: "#JDBCAS1"
-
+  connector: "#JDBCAS1"
+credentialStore:
+  connector: "#JDBCCS1"
+enableCache: true
+identityStore:
+  connector: "#JDBCIS1"
 storeConnectors:
- -
-  name: "JDBCCS1"
-  connectorType: "InMemoryCredentialStore"
-  domain: "D1"
-  properties:
-   dataSource: "WSO2_CARBON_DB"
-   hashAlgorithm: "SHA-256"
-   databaseType: "MySQL"
- -
-  name: "JDBCIS1"
-  connectorType: "InMemoryIdentityStore"
-  domain: "D1"
-  properties:
-   dataSource: "WSO2_CARBON_DB"
-   databaseType: "MySQL"
- -
-  name: "JDBCAS1"
-  connectorType: "InMemoryAuthorizationStore"
-  properties:
-   dataSource: "WSO2_CARBON_DB"
-   databaseType: "MySQL"
+  -
+    connectorType: JDBCCredentialStore
+    name: JDBCCS1
+    properties:
+      dataSource: WSO2_CARBON_DB
+      databaseType: MySQL
+      hashAlgorithm: SHA256
+  -
+    connectorType: JDBCIdentityStore
+    name: JDBCIS1
+    properties:
+      dataSource: WSO2_CARBON_DB
+      databaseType: MySQL
+  -
+    connectorType: JDBCAuthorizationStore
+    name: JDBCAS1
+    properties:
+      dataSource: WSO2_CARBON_DB
+      databaseType: MySQL
+
 
