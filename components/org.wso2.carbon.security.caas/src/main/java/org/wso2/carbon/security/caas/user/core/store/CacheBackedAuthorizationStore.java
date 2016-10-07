@@ -533,10 +533,9 @@ public class CacheBackedAuthorizationStore implements AuthorizationStore {
     }
 
     @Override
-    public Resource addResource(String resourceNamespace, String resourceId, String authorizationStoreId, String userId,
-                                Domain domain) throws AuthorizationStoreException {
-        return authorizationStore.addResource(resourceNamespace, resourceId, authorizationStoreId, userId,
-                domain);
+    public Resource addResource(String resourceNamespace, String resourceId, String authorizationStoreId,
+                                String userId) throws AuthorizationStoreException {
+        return authorizationStore.addResource(resourceNamespace, resourceId, authorizationStoreId, userId);
     }
 
     @Override

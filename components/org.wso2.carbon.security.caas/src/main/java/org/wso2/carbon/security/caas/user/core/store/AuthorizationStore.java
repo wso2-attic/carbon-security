@@ -295,12 +295,11 @@ public interface AuthorizationStore {
      * @param resourceId Id of the resource.
      * @param authorizationStoreId Id of the authorization store.
      * @param userId Id of the owner.
-     * @param domain Domain this user originates from.
      * @return New Resource.
      * @throws AuthorizationStoreException
      */
-    Resource addResource(String resourceNamespace, String resourceId, String authorizationStoreId, String userId,
-                         Domain domain) throws AuthorizationStoreException;
+    Resource addResource(String resourceNamespace, String resourceId, String authorizationStoreId, String userId)
+            throws AuthorizationStoreException;
 
     void deleteResource(Resource resource) throws AuthorizationStoreException;
 

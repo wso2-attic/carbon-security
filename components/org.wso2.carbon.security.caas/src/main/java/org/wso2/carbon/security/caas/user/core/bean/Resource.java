@@ -30,8 +30,7 @@ public class Resource {
 
     private String authorizationStore;
 
-    private String userId;
-    private Domain domain;
+    private String ownerId;
 
     public Resource(String resourceString) {
 
@@ -49,21 +48,18 @@ public class Resource {
         this.resourceId = resourceId;
     }
 
-    public Resource(String resourceNamespace, String resourceId, String userId, Domain domain) {
+    public Resource(String resourceNamespace, String resourceId, String ownerId) {
 
         this.resourceNamespace = resourceNamespace;
         this.resourceId = resourceId;
-        this.userId = userId;
-        this.domain = domain;
+        this.ownerId = ownerId;
     }
 
-    private Resource(String resourceNamespace, String resourceId, String userId, Domain domain,
-                     String authorizationStore) {
+    private Resource(String resourceNamespace, String resourceId, String ownerId, String authorizationStore) {
 
         this.resourceNamespace = resourceNamespace;
         this.resourceId = resourceId;
-        this.userId = userId;
-        this.domain = domain;
+        this.ownerId = ownerId;
         this.authorizationStore = authorizationStore;
     }
 
@@ -93,8 +89,7 @@ public class Resource {
 
     public User.UserBuilder getOwner() {
         return new User.UserBuilder()
-                .setUserId(userId)
-                .setDomain(domain);
+                .setUserId(ownerId);
     }
 
     /**
@@ -105,8 +100,7 @@ public class Resource {
         private String resourceNamespace;
         private String resourceId;
         private String authorizationStore;
-        private String userId;
-        private Domain domain;
+        private String ownerId;
 
         public ResourceBuilder setResourceNamespace(String resourceNamespace) {
             this.resourceNamespace = resourceNamespace;
@@ -123,24 +117,18 @@ public class Resource {
             return this;
         }
 
-        public ResourceBuilder setUserId(String userId) {
-            this.userId = userId;
-            return this;
-        }
-
-        public ResourceBuilder setDomain(Domain domain) {
-            this.domain = domain;
+        public ResourceBuilder setOwnerId(String ownerId) {
+            this.ownerId = ownerId;
             return this;
         }
 
         public Resource build() {
 
-            if (resourceNamespace == null || resourceId == null || authorizationStore == null || userId == null ||
-                    domain == null) {
+            if (resourceNamespace == null || resourceId == null || authorizationStore == null || ownerId == null) {
                 throw new StoreException("Required data is missing to build the resource.");
             }
 
-            return new Resource(resourceNamespace, resourceId, userId, domain, authorizationStore);
+            return new Resource(resourceNamespace, resourceId, ownerId, authorizationStore);
         }
     }
 }

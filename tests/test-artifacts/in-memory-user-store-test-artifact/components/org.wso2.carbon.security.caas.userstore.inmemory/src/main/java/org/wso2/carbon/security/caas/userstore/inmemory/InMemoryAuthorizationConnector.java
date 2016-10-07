@@ -111,7 +111,7 @@ public class InMemoryAuthorizationConnector implements AuthorizationStoreConnect
     }
 
     @Override
-    public Resource addResource(String resourceNamespace, String resourceId, String userId, String identityStoreId)
+    public Resource.ResourceBuilder addResource(String resourceNamespace, String resourceId, String userId)
             throws AuthorizationStoreException {
         return null;
     }
