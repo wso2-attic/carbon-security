@@ -1,6 +1,8 @@
 package org.wso2.carbon.security.caas.internal.config;
 
 import org.wso2.carbon.security.caas.api.util.CarbonSecurityConstants;
+import org.wso2.carbon.security.caas.user.core.claim.MetaClaim;
+import org.wso2.carbon.security.caas.user.core.claim.MetaClaimMapping;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.introspector.BeanAccess;
 
@@ -11,6 +13,11 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * Builder for retrieving Domain configurations.
@@ -19,9 +26,8 @@ public class DomainConfigBuilder {
 
     private static DomainConfigFile buildDomainConfig() {
 
-//        Path file = Paths.get(CarbonSecurityConstants.getCarbonHomeDirectory().toString(), "conf", "security",
-//                CarbonSecurityConstants.DOMAIN_CONFIG_FILE);
-        Path file = Paths.get("/Users/Akalanka/git/carbon-security/feature/resources/conf/domain-config.yml");
+        Path file = Paths.get(CarbonSecurityConstants.getCarbonHomeDirectory().toString(), "conf", "security",
+                CarbonSecurityConstants.DOMAIN_CONFIG_FILE);
 
         DomainConfigFile domainConfigFile;
         if (Files.exists(file)) {
@@ -40,11 +46,53 @@ public class DomainConfigBuilder {
         return domainConfigFile;
     }
 
-    public static void main(String []args) {
-        DomainConfigFile d = buildDomainConfig();
+    public static DomainConfig getDomainConfig(Map<String, MetaClaim> metaClaims) {
+        DomainConfigFile domainConfigFile = buildDomainConfig();
 
-        System.out.println(d.getDomains().get(0).domainName);
+        List<String> domains = new ArrayList<>();
+        Map<String, List<String>> domainIdentityStoreConnectors = new HashMap<>();
+        Map<String, List<String>> domainCredentialStoreConnectors = new HashMap<>();
 
-        System.out.println("done");
+        Map<String, List<MetaClaimMapping>> identityStoreConnectorMapping = new HashMap<>();
+
+        for (DomainConfigEntry domainConfigEntry : domainConfigFile.getDomains()) {
+            // Set domain name
+            String domainName = domainConfigEntry.getDomainName();
+            domains.add(domainName);
+
+            List<String> identityStoreConnectors = new ArrayList<>();
+            List<String> credentialStoreConnectors = new ArrayList<>();
+
+            for (DomainStoreConfigEntry identityStoreConfigEntry : domainConfigEntry.getIdentityStoreConnectors()) {
+                // Add domain to connector mapping
+                String identityStoreConnectorId = identityStoreConfigEntry.getStoreConnectorId();
+                identityStoreConnectors.add(identityStoreConnectorId);
+
+                List<MetaClaimMapping> metaClaimMappings = new ArrayList<>();
+
+                for (DomainAttributeConfigEntry domainAttributeConfigEntry : identityStoreConfigEntry
+                        .getAttributeMappings()) {
+                    MetaClaim metaClaim = metaClaims.get(domainAttributeConfigEntry.getClaimURI());
+                    MetaClaimMapping metaClaimMapping = new MetaClaimMapping(metaClaim, identityStoreConnectorId,
+                            domainAttributeConfigEntry.getAttribute());
+
+                    metaClaimMappings.add(metaClaimMapping);
+                }
+
+                identityStoreConnectorMapping.put(identityStoreConnectorId, metaClaimMappings);
+            }
+
+            domainIdentityStoreConnectors.put(domainName, identityStoreConnectors);
+
+            // Add domain to connector mapping
+            credentialStoreConnectors.addAll(domainConfigEntry.getIdentityStoreConnectors().stream().map
+                    (DomainStoreConfigEntry::getStoreConnectorId).collect(Collectors.toList()));
+
+            domainCredentialStoreConnectors.put(domainName, credentialStoreConnectors);
+        }
+
+
+        return new DomainConfig(domains, domainIdentityStoreConnectors, domainCredentialStoreConnectors,
+                identityStoreConnectorMapping);
     }
 }

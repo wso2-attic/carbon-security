@@ -16,7 +16,7 @@
 
 package org.wso2.carbon.security.caas.internal.config;
 
-import org.wso2.carbon.security.caas.user.core.claim.MetaClaimMapping;
+import org.wso2.carbon.security.caas.user.core.claim.MetaClaim;
 
 import java.util.Map;
 
@@ -27,15 +27,15 @@ public class ClaimConfig {
 
     private String claimManager;
 
-    private Map<String, MetaClaimMapping> claimMappings;
+    private Map<String, MetaClaim> metaClaims;
 
     public ClaimConfig() {
 
     }
 
-    public ClaimConfig(String claimManager, Map<String, MetaClaimMapping> claimMappings) {
+    public ClaimConfig(String claimManager, Map<String, MetaClaim> metaClaims) {
         this.claimManager = claimManager;
-        this.claimMappings = claimMappings;
+        this.metaClaims = metaClaims;
     }
 
     public String getClaimManager() {
@@ -46,11 +46,11 @@ public class ClaimConfig {
         this.claimManager = claimManager;
     }
 
-    public Map<String, MetaClaimMapping> getClaimMappings() {
-        return claimMappings;
+    public Map<String, MetaClaim> getMetaClaims() {
+        return metaClaims;
     }
 
-    public void setClaimMappings(Map<String, MetaClaimMapping> claimMappings) {
-        this.claimMappings = claimMappings;
+    public void setMetaClaims(Map<String, MetaClaim> metaClaims) {
+        this.metaClaims = metaClaims;
     }
 }

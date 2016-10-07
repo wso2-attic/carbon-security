@@ -30,6 +30,12 @@ public class MetaClaimMapping {
 
     private String attributeName;
 
+    public MetaClaimMapping(MetaClaim metaClaim, String identityStoreConnectorId, String attributeName) {
+        this.metaClaim = metaClaim;
+        this.identityStoreConnectorId = identityStoreConnectorId;
+        this.attributeName = attributeName;
+    }
+
     public MetaClaim getMetaClaim() {
         return metaClaim;
     }

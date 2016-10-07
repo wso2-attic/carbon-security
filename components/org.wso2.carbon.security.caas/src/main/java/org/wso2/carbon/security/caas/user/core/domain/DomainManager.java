@@ -38,10 +38,9 @@ public interface DomainManager {
     /**
      * Add a domain to the mapping
      *
-     * @param domainName Name of the domain
-     * @return Domain.
+     * @param domain Domain object
      */
-    Domain addDomain(String domainName) throws DomainManagerException;
+    void addDomain(Domain domain) throws DomainManagerException;
 
     /**
      * Get the domain instance when a user name is given.
@@ -53,10 +52,8 @@ public interface DomainManager {
 
     /**
      * Create the default domain instance.
-     *
-     * @return Domain instance created
      */
-    Domain createDefaultDomain() throws DomainManagerException;
+    void createDefaultDomain() throws DomainManagerException;
 
     /**
      * Get the default domain instance.
@@ -64,18 +61,6 @@ public interface DomainManager {
      * @return Default domain instance
      */
     Domain getDefaultDomain();
-
-    /**
-     * Add an identity store connector to the map of a domain.
-     *
-     * @param identityStoreConnectorId String - IdentityStoreConnector Id.
-     * @param identityStoreConnector   Identity Store connector
-     * @param domainName               Name of the domain to add the connector
-     */
-    void addIdentityStoreConnectorToDomain(
-            String identityStoreConnectorId,
-            IdentityStoreConnector identityStoreConnector,
-            String domainName) throws DomainManagerException;
 
     /**
      * Get IdentityStoreConnector from identity store connector id.

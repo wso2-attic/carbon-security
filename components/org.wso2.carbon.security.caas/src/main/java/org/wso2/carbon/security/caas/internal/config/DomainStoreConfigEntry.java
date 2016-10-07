@@ -7,9 +7,9 @@ import java.util.List;
  */
 public class DomainStoreConfigEntry {
 
-    String storeConnectorId;
+    private String storeConnectorId;
 
-    List<DomainAttributeConfigEntry> attributeMappings;
+    private List<DomainAttributeConfigEntry> attributeMappings;
 
     public String getStoreConnectorId() {
         return storeConnectorId;

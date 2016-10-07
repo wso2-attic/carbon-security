@@ -33,15 +33,7 @@ public interface ClaimManager {
      * @param metaClaimMapping Meta claim mappings.
      * @throws ClaimManagerException Claim Manager initialization failure.
      */
-    void init(Map<String, MetaClaimMapping> metaClaimMapping) throws ClaimManagerException;
-
-    /**
-     * Get all meta claim mappings.
-     *
-     * @return MetaClaimMapping list.
-     * @throws ClaimManagerException Claim Manager failure.
-     */
-    List<MetaClaimMapping> getAllMetaClaimMappings() throws ClaimManagerException;
+    void init(Map<String, List<MetaClaimMapping>> metaClaimMapping) throws ClaimManagerException;
 
     /**
      * Get all claims of a user.

@@ -5,9 +5,9 @@ package org.wso2.carbon.security.caas.internal.config;
  */
 public class DomainAttributeConfigEntry {
 
-    String attribute;
+    private String attribute;
 
-    String claimURI;
+    private String claimURI;
 
     public String getAttribute() {
         return attribute;

@@ -19,6 +19,7 @@ package org.wso2.carbon.security.caas.internal;
 import org.osgi.framework.BundleContext;
 import org.wso2.carbon.caching.CarbonCachingService;
 import org.wso2.carbon.security.caas.internal.config.ClaimConfig;
+import org.wso2.carbon.security.caas.internal.config.DomainConfig;
 import org.wso2.carbon.security.caas.user.core.common.CarbonRealmServiceImpl;
 import org.wso2.carbon.security.caas.user.core.store.connector.AuthorizationStoreConnectorFactory;
 import org.wso2.carbon.security.caas.user.core.store.connector.CredentialStoreConnectorFactory;
@@ -40,6 +41,7 @@ public class CarbonSecurityDataHolder {
     private Map<String, IdentityStoreConnectorFactory> identityStoreConnectorFactoryMap = new HashMap<>();
     private CarbonCachingService carbonCachingService;
     private ClaimConfig claimConfig;
+    private DomainConfig domainConfig;
     private BundleContext bundleContext = null;
 
     private CarbonSecurityDataHolder() {
@@ -133,5 +135,13 @@ public class CarbonSecurityDataHolder {
 
     void setClaimConfig(ClaimConfig claimConfig) {
         this.claimConfig = claimConfig;
+    }
+
+    public DomainConfig getDomainConfig() {
+        return domainConfig;
+    }
+
+    public void setDomainConfig(DomainConfig domainConfig) {
+        this.domainConfig = domainConfig;
     }
 }

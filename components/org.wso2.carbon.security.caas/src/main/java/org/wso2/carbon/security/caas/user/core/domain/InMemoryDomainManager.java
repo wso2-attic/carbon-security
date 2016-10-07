@@ -46,23 +46,22 @@ public class InMemoryDomainManager implements DomainManager {
     }
 
     @Override
-    public Domain addDomain(String domainName) throws DomainManagerException {
+    public void addDomain(Domain domain) throws DomainManagerException {
+
+        String domainName = domain.getDomainName();
 
         if (this.domainNameToDomain.containsKey(domainName)) {
             throw new DomainManagerException(String
                     .format("Domain %s already exists in the domain map", domainName));
         }
 
-        Domain domain = new Domain(domainName);
         this.domainNameToDomain.put(domainName, domain);
-
-        return domain;
     }
 
     @Override
-    public Domain createDefaultDomain() throws DomainManagerException {
+    public void createDefaultDomain() throws DomainManagerException {
 
-        return this.addDomain(CarbonSecurityConstants.DEFAULT_DOMAIN_NAME);
+//        return this.addDomain(CarbonSecurityConstants.DEFAULT_DOMAIN_NAME);
     }
 
     @Override
@@ -75,16 +74,6 @@ public class InMemoryDomainManager implements DomainManager {
     @Override
     public Domain getDomainFromUserName(String username) {
         return null;
-    }
-
-    @Override
-    public void addIdentityStoreConnectorToDomain(
-            String identityStoreConnectorId,
-            IdentityStoreConnector identityStoreConnector,
-            String domainName) throws DomainManagerException {
-
-        this.getDomainFromName(domainName)
-                .addIdentityStoreConnector(identityStoreConnectorId, identityStoreConnector);
     }
 
     @Override

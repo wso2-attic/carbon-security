@@ -78,8 +78,7 @@ public class CredentialStoreImpl implements CredentialStore {
             credentialStoreConnector.init(credentialStoreConfig.getKey(), credentialStoreConfig.getValue());
 
             try {
-                this.domainManager.getDefaultDomain().addCredentialStoreConnector(
-                        credentialStoreConfig.getKey(), credentialStoreConnector);
+                this.domainManager.getDefaultDomain().addCredentialStoreConnector(credentialStoreConnector);
             } catch (DomainManagerException e) {
                 CredentialStoreException credentialStoreException =
                         new CredentialStoreException("Error in adding credential store connector to default domain");

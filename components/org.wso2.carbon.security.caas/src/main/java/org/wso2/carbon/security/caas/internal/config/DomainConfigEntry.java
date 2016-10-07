@@ -7,11 +7,11 @@ import java.util.List;
  */
 public class DomainConfigEntry {
 
-    String domainName;
+    private String domainName;
 
-    List<DomainStoreConfigEntry> identityStoreConnectors;
+    private List<DomainStoreConfigEntry> identityStoreConnectors;
 
-    List<DomainStoreConfigEntry> credentialStoreConnectors;
+    private List<DomainStoreConfigEntry> credentialStoreConnectors;
 
     public String getDomainName() {
         return domainName;
