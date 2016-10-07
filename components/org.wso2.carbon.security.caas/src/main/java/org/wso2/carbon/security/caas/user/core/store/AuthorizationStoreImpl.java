@@ -551,12 +551,12 @@ public class AuthorizationStoreImpl implements AuthorizationStore {
             throws AuthorizationStoreException {
 
         String authorizationStoreId = getPrimaryAuthorizationStoreId();
-        return addResource(resourceNamespace, resourceId, authorizationStoreId, userId, domain);
+        return addResource(resourceNamespace, resourceId, authorizationStoreId, userId);
     }
 
     @Override
-    public Resource addResource(String resourceNamespace, String resourceId, String authorizationStoreId, String userId,
-                                Domain domain) throws AuthorizationStoreException {
+    public Resource addResource(String resourceNamespace, String resourceId, String authorizationStoreId,
+                                String userId) throws AuthorizationStoreException {
 
         AuthorizationStoreConnector authorizationStoreConnector = authorizationStoreConnectors
                 .get(authorizationStoreId);
@@ -566,7 +566,8 @@ public class AuthorizationStoreImpl implements AuthorizationStore {
                     authorizationStoreId));
         }
 
-        return authorizationStoreConnector.addResource(resourceNamespace, resourceId, userId, domain.getDomainName());
+        return authorizationStoreConnector.addResource(resourceNamespace, resourceId, userId)
+                .setAuthorizationStore(authorizationStoreId).build();
     }
 
     @Override

@@ -170,11 +170,10 @@ public interface AuthorizationStoreConnector {
      * @param resourceNamespace Namespace of the resource.
      * @param resourceId        Id of the resource.
      * @param userId            User id of the owner.
-     * @param userDomainName    Name of the user's domain.
      * @return New Resource.
      * @throws AuthorizationStoreException
      */
-    Resource addResource(String resourceNamespace, String resourceId, String userId, String userDomainName)
+    Resource.ResourceBuilder addResource(String resourceNamespace, String resourceId, String userId)
             throws AuthorizationStoreException;
 
     /**
