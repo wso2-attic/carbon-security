@@ -53,8 +53,9 @@ public class User {
     }
 
     /**
-     * Get user id.
-     * @return User id.
+     * Get user name.
+     *
+     * @return User name.
      */
     public String getUserId() {
         return userId;
@@ -62,6 +63,7 @@ public class User {
 
     /**
      * Get the user's domain.
+     *
      * @return Domain of the user.
      */
     public Domain getDomain() {
@@ -70,6 +72,7 @@ public class User {
 
     /**
      * Get tenant domain.
+     *
      * @return Tenant domain.
      */
     public String getTenantDomain() {
@@ -134,6 +137,7 @@ public class User {
 
     /**
      * Get the groups assigned to this user.
+     *
      * @return List of Groups assigned to this user.
      * @throws IdentityStoreException Identity store exception.
      */
@@ -143,6 +147,7 @@ public class User {
 
     /**
      * Get the roles assigned to this user.
+     *
      * @return List of Roles assigned to this user.
      * @throws AuthorizationStoreException Authorization store exception,
      */
@@ -152,6 +157,7 @@ public class User {
 
     /**
      * Get permissions filtered from the given resource.
+     *
      * @param resource Resource to filter.
      * @return List of permissions.
      * @throws AuthorizationStoreException
@@ -162,6 +168,7 @@ public class User {
 
     /**
      * Get permissions filtered from the given action.
+     *
      * @param action Action to filter.
      * @return List of permissions.
      * @throws AuthorizationStoreException
@@ -172,10 +179,11 @@ public class User {
 
     /**
      * Checks whether this user is authorized for given Permission.
+     *
      * @param permission Permission that should check on this user.
      * @return True if authorized.
      * @throws AuthorizationStoreException Authorization store exception.
-     * @throws IdentityStoreException Identity store exception.
+     * @throws IdentityStoreException      Identity store exception.
      */
     public boolean isAuthorized(Permission permission) throws AuthorizationStoreException, IdentityStoreException {
         return authorizationStore.isUserAuthorized(userId, permission, domain);
@@ -183,6 +191,7 @@ public class User {
 
     /**
      * Checks whether this User is in the given Role.
+     *
      * @param roleName Name of the Role.
      * @return True if this user is in the Role.
      * @throws AuthorizationStoreException Authorization store exception.
@@ -193,6 +202,7 @@ public class User {
 
     /**
      * Checks whether this user is in the given Group.
+     *
      * @param groupName Name of the Group.
      * @return True if this User is in the group.
      * @throws IdentityStoreException Identity store exception.
@@ -203,9 +213,10 @@ public class User {
 
     /**
      * Add a new Role list by <b>replacing</b> the existing Role list. (PUT)
+     *
      * @param newRolesList List of Roles needs to be assigned to this User.
      * @throws AuthorizationStoreException Authorization store exception,
-     * @throws IdentityStoreException Identity store exception.
+     * @throws IdentityStoreException      Identity store exception.
      */
     public void updateRoles(List<Role> newRolesList) throws AuthorizationStoreException, IdentityStoreException {
         authorizationStore.updateRolesInUser(userId, domain, newRolesList);
@@ -213,7 +224,8 @@ public class User {
 
     /**
      * Assign a new list of Roles to existing list and/or un-assign Roles from existing list. (PATCH)
-     * @param assignList List to be added to the new list.
+     *
+     * @param assignList   List to be added to the new list.
      * @param unAssignList List to be removed from the existing list.
      * @throws AuthorizationStoreException Authorization Store Exception.
      */
@@ -239,7 +251,6 @@ public class User {
     public static class UserBuilder {
 
         private String userId;
-        private String domainName;
         private Domain domain;
         private String tenantDomain;
 
@@ -249,10 +260,6 @@ public class User {
 
         public String getUserId() {
             return userId;
-        }
-
-        public String getDomainName() {
-            return domainName;
         }
 
         public String getTenantDomain() {
@@ -271,13 +278,8 @@ public class User {
             return claimManager;
         }
 
-        public UserBuilder setUserId(String userId) {
-            this.userId = userId;
-            return this;
-        }
-
-        public UserBuilder setDomainName(String domainName) {
-            this.domainName = domainName;
+        public UserBuilder setUserId(String userName) {
+            this.userId = userName;
             return this;
         }
 
@@ -308,7 +310,7 @@ public class User {
 
         public User build() {
 
-            if (userId == null || tenantDomain == null || identityStore == null ||
+            if (userId == null || domain == null || tenantDomain == null || identityStore == null ||
                     authorizationStore == null || claimManager == null) {
                 throw new StoreException("Required data missing for building user.");
             }

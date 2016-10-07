@@ -51,11 +51,4 @@ public interface CredentialStore {
      * @throws AuthenticationFailure Authentication Failure.
      */
     AuthenticationContext authenticate(Callback[] callbacks) throws AuthenticationFailure;
-
-    /**
-     * Get all available credential store connector names.
-     *
-     * @return Map of display names against the connector id.
-     */
-    Map<String, String> getAllCredentialStoreNames();
 }

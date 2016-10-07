@@ -16,8 +16,9 @@
 
 package org.wso2.carbon.security.caas.user.core.bean;
 
+import org.wso2.carbon.security.caas.user.core.claim.Claim;
 import org.wso2.carbon.security.caas.user.core.claim.MetaClaimMapping;
-import org.wso2.carbon.security.caas.user.core.exception.DomainManagerException;
+import org.wso2.carbon.security.caas.user.core.exception.DomainException;
 import org.wso2.carbon.security.caas.user.core.store.connector.CredentialStoreConnector;
 import org.wso2.carbon.security.caas.user.core.store.connector.IdentityStoreConnector;
 
@@ -46,16 +47,26 @@ public class Domain {
      */
     private Map<String, List<MetaClaimMapping>> claimMappings = new HashMap<>();
 
-
-
     /**
      * Name of the domain.
      */
     private String domainName;
 
-    public Domain(String domainName) {
+    /**
+     * Priority of the domain.
+     * Highest priority for domain is 1
+     * Domain priority value should be greater than 0
+     */
+    private int domainPriority;
+
+    public Domain(String domainName, int domainPriority) throws DomainException {
+
+        if (domainPriority < 1) {
+            throw new DomainException("Domain priority value should be greater than 0");
+        }
 
         this.domainName = domainName;
+        this.domainPriority = domainPriority;
     }
 
     /**
@@ -68,22 +79,33 @@ public class Domain {
     }
 
     /**
+     * Get the priority of the domain.
+     *
+     * @return integer - domain priority
+     */
+    public int getDomainPriority() {
+
+        return domainPriority;
+    }
+
+    /**
      * Add an identity store connector to the map.
      *
-     * @param identityStoreConnector   Identity Store connector
+     * @param identityStoreConnector Identity Store connector
      */
-    public void addIdentityStoreConnector(IdentityStoreConnector identityStoreConnector) throws DomainManagerException {
+    public void addIdentityStoreConnector(IdentityStoreConnector identityStoreConnector)
+            throws DomainException {
 
         String identityStoreConnectorId = identityStoreConnector.getIdentityStoreId();
 
-        if (this.identityStoreConnectorsMap.containsKey(identityStoreConnectorId)) {
+        if (identityStoreConnectorsMap.containsKey(identityStoreConnectorId)) {
 
-            throw new DomainManagerException(String
+            throw new DomainException(String
                     .format("IdentityStoreConnector %s already exists in the identity store connector map",
                             identityStoreConnectorId));
         }
 
-        this.identityStoreConnectorsMap.put(identityStoreConnectorId, identityStoreConnector);
+        identityStoreConnectorsMap.put(identityStoreConnectorId, identityStoreConnector);
     }
 
     /**
@@ -94,7 +116,7 @@ public class Domain {
      */
     public IdentityStoreConnector getIdentityStoreConnectorFromId(String identityStoreConnectorId) {
 
-        return this.identityStoreConnectorsMap.get(identityStoreConnectorId);
+        return identityStoreConnectorsMap.get(identityStoreConnectorId);
     }
 
     /**
@@ -104,28 +126,28 @@ public class Domain {
      */
     public Map<String, IdentityStoreConnector> getIdentityStoreConnectorMap() {
 
-        return Collections.unmodifiableMap(this.identityStoreConnectorsMap);
+        return Collections.unmodifiableMap(identityStoreConnectorsMap);
     }
-
 
     /**
      * Add an credential store connector to the map.
      *
-     * @param credentialStoreConnector   Credential Store connector
+     * @param credentialStoreConnector Credential Store connector
+     * @throws DomainException domain exception
      */
     public void addCredentialStoreConnector(CredentialStoreConnector credentialStoreConnector)
-            throws DomainManagerException {
+            throws DomainException {
 
         String credentialStoreConnectorId = credentialStoreConnector.getCredentialStoreId();
 
-        if (this.credentialStoreConnectorsMap.containsKey(credentialStoreConnectorId)) {
+        if (credentialStoreConnectorsMap.containsKey(credentialStoreConnectorId)) {
 
-            throw new DomainManagerException(String
+            throw new DomainException(String
                     .format("CredentialStoreConnector %s already exists in the credential store connector map",
                             credentialStoreConnectorId));
         }
 
-        this.credentialStoreConnectorsMap.put(credentialStoreConnectorId, credentialStoreConnector);
+        credentialStoreConnectorsMap.put(credentialStoreConnectorId, credentialStoreConnector);
     }
 
     /**
@@ -136,7 +158,7 @@ public class Domain {
      */
     public CredentialStoreConnector getCredentialStoreConnectorFromId(String credentialStoreConnectorId) {
 
-        return this.credentialStoreConnectorsMap.get(credentialStoreConnectorId);
+        return credentialStoreConnectorsMap.get(credentialStoreConnectorId);
     }
 
     /**
@@ -146,14 +168,42 @@ public class Domain {
      */
     public Map<String, CredentialStoreConnector> getCredentialStoreConnectorMap() {
 
-        return Collections.unmodifiableMap(this.credentialStoreConnectorsMap);
+        return Collections.unmodifiableMap(credentialStoreConnectorsMap);
     }
 
+    /**
+     * Checks weather a certain claim exists in the domain claim mappings.
+     *
+     * @param claim Claim
+     * @return is claim belong to domain
+     */
+    public boolean isClaimBelongToDomain(Claim claim) {
+
+        String claimURI = claim.getClaimURI();
+
+        return claimMappings.values().stream()
+                .anyMatch(list -> list.stream().filter(metaClaimMapping ->
+                        claimURI.equals(metaClaimMapping.getMetaClaim().getClaimURI()))
+                        .findFirst().isPresent());
+    }
+
+    /**
+     * Get claim mappings for an identity store id.
+     *
+     * @return Map<String, List<MetaClaimMapping>>
+     */
     public Map<String, List<MetaClaimMapping>> getClaimMappings() {
+
         return claimMappings;
     }
 
+    /**
+     * Set claim mappings for an identity store id.
+     *
+     * @param claimMappings Map<String, List<MetaClaimMapping>> claim mappings
+     */
     public void setClaimMappings(Map<String, List<MetaClaimMapping>> claimMappings) {
+
         this.claimMappings = claimMappings;
     }
 }

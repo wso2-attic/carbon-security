@@ -2,7 +2,6 @@ package org.wso2.carbon.security.caas.internal.config;
 
 import org.wso2.carbon.security.caas.user.core.claim.MetaClaimMapping;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -13,9 +12,9 @@ import java.util.Map;
 public class DomainConfig {
 
     /**
-     * List of domains.
+     * Map between domain priority and domain names.
      */
-    List<String> domains = new ArrayList<>();
+    Map<Integer, List<String>> domainPriorityToDomainNameMap = new HashMap<>();
 
     /**
      * Domains to IdentityStoreConnector map.
@@ -32,18 +31,19 @@ public class DomainConfig {
      */
     Map<String, List<MetaClaimMapping>> identityStoreConnectorMapping = new HashMap<>();
 
-    public DomainConfig(List<String> domains,
+    public DomainConfig(Map<Integer, List<String>> domainPriorityToDomainNameMap,
                         Map<String, List<String>> domainIdentityStoreConnectors,
                         Map<String, List<String>> domainCredentialStoreConnectors,
                         Map<String, List<MetaClaimMapping>> identityStoreConnectorMapping) {
-        this.domains = domains;
+
+        this.domainPriorityToDomainNameMap = domainPriorityToDomainNameMap;
         this.domainIdentityStoreConnectors = domainIdentityStoreConnectors;
         this.domainCredentialStoreConnectors = domainCredentialStoreConnectors;
         this.identityStoreConnectorMapping = identityStoreConnectorMapping;
     }
 
-    public List<String> getDomains() {
-        return domains;
+    public Map<Integer, List<String>> getDomainPriorityToDomainNameMap() {
+        return this.domainPriorityToDomainNameMap;
     }
 
     public Map<String, List<String>> getDomainIdentityStoreConnectors() {

@@ -21,6 +21,7 @@ domains:
       -
         credentialStoreConnectorId: JDBCCS2
     domainName: A
+    priority: 1
     identityStoreConnectors:
       -
         attributeMappings:
@@ -36,6 +37,7 @@ domains:
       -
         credentialStoreConnectorId: JDBCS3
     domainName: B
+    priority: 2
     identityStoreConnectors:
       -
         attributeMappings:

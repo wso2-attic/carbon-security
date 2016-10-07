@@ -31,6 +31,7 @@ import org.wso2.carbon.security.caas.user.core.config.AuthorizationStoreConnecto
 import org.wso2.carbon.security.caas.user.core.config.CacheConfig;
 import org.wso2.carbon.security.caas.user.core.constant.CacheNames;
 import org.wso2.carbon.security.caas.user.core.exception.AuthorizationStoreException;
+import org.wso2.carbon.security.caas.user.core.exception.CarbonSecurityDataHolderException;
 import org.wso2.carbon.security.caas.user.core.exception.IdentityStoreException;
 import org.wso2.carbon.security.caas.user.core.exception.PermissionNotFoundException;
 import org.wso2.carbon.security.caas.user.core.exception.RoleNotFoundException;
@@ -53,7 +54,7 @@ public class CacheBackedAuthorizationStore implements AuthorizationStore {
     private static final Logger log = LoggerFactory.getLogger(CacheBackedIdentityStore.class);
 
     private Map<String, CacheConfig> cacheConfigs;
-    private AuthorizationStore authorizationStore = new AuthorizationStoreImpl();
+    private AuthorizationStore authorizationStore;
     private CacheManager cacheManager;
 
     public CacheBackedAuthorizationStore(Map<String, CacheConfig> cacheConfigs) {
@@ -64,8 +65,14 @@ public class CacheBackedAuthorizationStore implements AuthorizationStore {
     public void init(Map<String, AuthorizationStoreConnectorConfig>
                              authorizationConnectorConfigs) throws AuthorizationStoreException {
 
-        this.cacheManager = CarbonSecurityDataHolder.getInstance().getCarbonCachingService().getCachingProvider()
-                .getCacheManager();
+        try {
+            cacheManager = CarbonSecurityDataHolder.getInstance().getCarbonCachingService().getCachingProvider()
+                    .getCacheManager();
+        } catch (CarbonSecurityDataHolderException e) {
+            throw new AuthorizationStoreException("Unable to obtain Carbon Caching Service", e);
+        }
+
+        authorizationStore = new AuthorizationStoreImpl();
         authorizationStore.init(authorizationConnectorConfigs);
 
         // Initialize all caches.
@@ -338,9 +345,9 @@ public class CacheBackedAuthorizationStore implements AuthorizationStore {
         Cache<String, List> cache = cacheManager.getCache(CacheNames.ROLES_GROUPID_IDENTITYSTOREID, String.class,
                 List.class);
 
-        List<Role> roles = cache.get(groupId + domain);
+        List<Role> roles = new ArrayList<>(cache.get(groupId + domain));
 
-        if (roles == null) {
+        if (roles.isEmpty()) {
             roles = authorizationStore.getRolesOfUser(groupId, domain);
             if (!roles.isEmpty()) {
                 cache.put(groupId + domain, roles);

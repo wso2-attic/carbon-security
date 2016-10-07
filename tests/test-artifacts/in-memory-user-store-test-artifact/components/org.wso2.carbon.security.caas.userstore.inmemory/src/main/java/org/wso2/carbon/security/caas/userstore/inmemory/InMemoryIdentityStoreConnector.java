@@ -83,6 +83,12 @@ public class InMemoryIdentityStoreConnector implements IdentityStoreConnector {
     }
 
     @Override
+    public List<User.UserBuilder> getAllUserBuilderList(String attributeName, String filterPattern)
+            throws IdentityStoreException {
+        return null;
+    }
+
+    @Override
     public List<Attribute> getUserAttributeValues(String userID) throws IdentityStoreException {
         return null;
     }
