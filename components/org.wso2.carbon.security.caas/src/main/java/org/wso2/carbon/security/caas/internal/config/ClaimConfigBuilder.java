@@ -20,7 +20,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.wso2.carbon.security.caas.api.util.CarbonSecurityConstants;
 import org.wso2.carbon.security.caas.user.core.claim.MetaClaim;
-import org.wso2.carbon.security.caas.user.core.claim.MetaClaimMapping;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.introspector.BeanAccess;
 
@@ -53,11 +52,11 @@ public class ClaimConfigBuilder {
         if (claimConfigFile.getClaims() != null) {
 
             // TODO: Ugly use of streams, very hard to read
-            claimConfig.setClaimMappings(claimConfigFile.getClaims().stream()
+            claimConfig.setMetaClaims(claimConfigFile.getClaims().stream()
                     // Claim URI must be present
                     .filter(claimEntry -> claimEntry.getClaimURI() != null &&
                             !claimEntry.getClaimURI().trim().isEmpty())
-                    // Get MetaClaimMapping from a ClaimEntry
+                            // Get MetaClaimMapping from a ClaimEntry
                     .map(claimEntry -> {
                         MetaClaim metaClaim = new MetaClaim();
                         metaClaim.setDialectURI(claimConfigFile.getDialectURI().trim());
@@ -71,12 +70,10 @@ public class ClaimConfigBuilder {
                                     )));
                         }
 
-                        MetaClaimMapping metaClaimMapping = new MetaClaimMapping();
-                        metaClaimMapping.setMetaClaim(metaClaim);
-                        return metaClaimMapping;
+                        return metaClaim;
                     })
-                    .collect(Collectors.toMap(claimMapping -> claimMapping.getMetaClaim().getClaimURI(),
-                            claimMapping -> claimMapping)));
+                    .collect(Collectors.toMap(metaClaim -> metaClaim.getClaimURI(),
+                            metaClaim -> metaClaim)));
         }
         return claimConfig;
     }

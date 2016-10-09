@@ -76,8 +76,7 @@ public class IdentityStoreImpl implements IdentityStore {
             identityStoreConnector.init(identityStoreConfig.getKey(), identityStoreConfig.getValue());
 
             try {
-                this.domainManager.getDefaultDomain().addIdentityStoreConnector(
-                        identityStoreConfig.getKey(), identityStoreConnector);
+                this.domainManager.getDefaultDomain().addIdentityStoreConnector(identityStoreConnector);
             } catch (DomainManagerException e) {
                 IdentityStoreException identityStoreException = new IdentityStoreException();
                 identityStoreException.addSuppressed(e);

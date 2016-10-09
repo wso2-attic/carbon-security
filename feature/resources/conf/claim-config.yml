@@ -30,3 +30,10 @@ claims:
    description: "Last Name"
    required: "true"
    supportedByDefault: "true"
+ -
+  claimURI: "http://wso2.org/claims/email"
+  properties:
+   displayName: "Email Address"
+   description: "Email Address"
+   required: "false"
+   supportedByDefault: "true"

@@ -16,12 +16,14 @@
 
 package org.wso2.carbon.security.caas.user.core.bean;
 
+import org.wso2.carbon.security.caas.user.core.claim.MetaClaimMapping;
 import org.wso2.carbon.security.caas.user.core.exception.DomainManagerException;
 import org.wso2.carbon.security.caas.user.core.store.connector.CredentialStoreConnector;
 import org.wso2.carbon.security.caas.user.core.store.connector.IdentityStoreConnector;
 
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -38,6 +40,13 @@ public class Domain {
      * Mapping between CredentialStoreConnector ID and CredentialStoreConnector
      */
     private Map<String, CredentialStoreConnector> credentialStoreConnectorsMap = new HashMap<>();
+
+    /**
+     * Mapping between IdentityStoreConnector ID and MetaClaimMapping
+     */
+    private Map<String, List<MetaClaimMapping>> claimMappings = new HashMap<>();
+
+
 
     /**
      * Name of the domain.
@@ -61,12 +70,11 @@ public class Domain {
     /**
      * Add an identity store connector to the map.
      *
-     * @param identityStoreConnectorId String - IdentityStoreConnector Id.
      * @param identityStoreConnector   Identity Store connector
      */
-    public void addIdentityStoreConnector(
-            String identityStoreConnectorId, IdentityStoreConnector identityStoreConnector)
-            throws DomainManagerException {
+    public void addIdentityStoreConnector(IdentityStoreConnector identityStoreConnector) throws DomainManagerException {
+
+        String identityStoreConnectorId = identityStoreConnector.getIdentityStoreId();
 
         if (this.identityStoreConnectorsMap.containsKey(identityStoreConnectorId)) {
 
@@ -103,12 +111,12 @@ public class Domain {
     /**
      * Add an credential store connector to the map.
      *
-     * @param credentialStoreConnectorId String - CredentialStoreConnector Id.
      * @param credentialStoreConnector   Credential Store connector
      */
-    public void addCredentialStoreConnector(
-            String credentialStoreConnectorId, CredentialStoreConnector credentialStoreConnector)
+    public void addCredentialStoreConnector(CredentialStoreConnector credentialStoreConnector)
             throws DomainManagerException {
+
+        String credentialStoreConnectorId = credentialStoreConnector.getCredentialStoreId();
 
         if (this.credentialStoreConnectorsMap.containsKey(credentialStoreConnectorId)) {
 
@@ -139,5 +147,13 @@ public class Domain {
     public Map<String, CredentialStoreConnector> getCredentialStoreConnectorMap() {
 
         return Collections.unmodifiableMap(this.credentialStoreConnectorsMap);
+    }
+
+    public Map<String, List<MetaClaimMapping>> getClaimMappings() {
+        return claimMappings;
+    }
+
+    public void setClaimMappings(Map<String, List<MetaClaimMapping>> claimMappings) {
+        this.claimMappings = claimMappings;
     }
 }

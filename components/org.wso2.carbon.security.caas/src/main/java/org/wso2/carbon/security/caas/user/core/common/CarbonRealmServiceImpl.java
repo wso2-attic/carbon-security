@@ -17,22 +17,10 @@
 package org.wso2.carbon.security.caas.user.core.common;
 
 import org.wso2.carbon.security.caas.user.core.claim.ClaimManager;
-import org.wso2.carbon.security.caas.user.core.config.StoreConfig;
-import org.wso2.carbon.security.caas.user.core.domain.DomainManager;
-import org.wso2.carbon.security.caas.user.core.domain.InMemoryDomainManager;
-import org.wso2.carbon.security.caas.user.core.exception.AuthorizationStoreException;
-import org.wso2.carbon.security.caas.user.core.exception.CredentialStoreException;
-import org.wso2.carbon.security.caas.user.core.exception.DomainManagerException;
-import org.wso2.carbon.security.caas.user.core.exception.IdentityStoreException;
 import org.wso2.carbon.security.caas.user.core.service.RealmService;
 import org.wso2.carbon.security.caas.user.core.store.AuthorizationStore;
-import org.wso2.carbon.security.caas.user.core.store.AuthorizationStoreImpl;
-import org.wso2.carbon.security.caas.user.core.store.CacheBackedAuthorizationStore;
-import org.wso2.carbon.security.caas.user.core.store.CacheBackedIdentityStore;
 import org.wso2.carbon.security.caas.user.core.store.CredentialStore;
-import org.wso2.carbon.security.caas.user.core.store.CredentialStoreImpl;
 import org.wso2.carbon.security.caas.user.core.store.IdentityStore;
-import org.wso2.carbon.security.caas.user.core.store.IdentityStoreImpl;
 
 /**
  * Basic user realm service.
@@ -60,26 +48,11 @@ public class CarbonRealmServiceImpl<T1 extends IdentityStore, T2 extends Credent
      */
     private T1 identityStore;
 
-    public CarbonRealmServiceImpl(StoreConfig storeConfig) throws IdentityStoreException, AuthorizationStoreException,
-            CredentialStoreException, DomainManagerException {
+    public CarbonRealmServiceImpl(T1 identityStore, T2 credentialStore, AuthorizationStore authorizationStore) {
 
-        if (storeConfig.isCacheEnabled()) {
-            this.authorizationStore = new CacheBackedAuthorizationStore(storeConfig
-                    .getAuthorizationStoreCacheConfigMap());
-            this.identityStore = (T1) new CacheBackedIdentityStore(storeConfig
-                    .getIdentityStoreCacheConfigMap());
-        } else {
-            this.identityStore = (T1) new IdentityStoreImpl();
-            this.authorizationStore = new AuthorizationStoreImpl();
-        }
-
-        this.credentialStore = (T2) new CredentialStoreImpl();
-
-        DomainManager domainManager = new InMemoryDomainManager();
-
-        credentialStore.init(domainManager, storeConfig.getCredentialConnectorConfigMap());
-        identityStore.init(domainManager, storeConfig.getIdentityConnectorConfigMap());
-        authorizationStore.init(storeConfig.getAuthorizationConnectorConfigMap());
+        this.identityStore = identityStore;
+        this.credentialStore = credentialStore;
+        this.authorizationStore = authorizationStore;
     }
 
     @Override
