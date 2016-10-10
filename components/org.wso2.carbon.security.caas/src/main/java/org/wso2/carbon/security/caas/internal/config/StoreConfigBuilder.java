@@ -56,7 +56,6 @@ public class StoreConfigBuilder {
      * Builder a config object based on the store-config.yml properties.
      * @return StoreConfig
      */
-    // TODO: Domain configuration needs to be taken into configuration
     public static StoreConfig buildStoreConfigs() {
 
         StoreConfig storeConfig = new StoreConfig();

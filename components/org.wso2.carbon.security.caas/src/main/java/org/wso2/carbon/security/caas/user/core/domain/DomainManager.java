@@ -32,8 +32,9 @@ public interface DomainManager {
      *
      * @param domainName Name of the domain.
      * @return Domain.
+     * @throws DomainManagerException
      */
-    Domain getDomainFromName(String domainName);
+    Domain getDomainFromName(String domainName) throws DomainManagerException;
 
     /**
      * Add a domain to the mapping
@@ -59,8 +60,9 @@ public interface DomainManager {
      * Get the default domain instance.
      *
      * @return Default domain instance
+     * @throws DomainManagerException
      */
-    Domain getDefaultDomain();
+    Domain getDefaultDomain() throws DomainManagerException;
 
     /**
      * Get IdentityStoreConnector from identity store connector id.
@@ -68,16 +70,18 @@ public interface DomainManager {
      * @param identityStoreConnectorId String - IdentityStoreConnectorId
      * @param domainName               Name of the domain which the connector instance belongs
      * @return IdentityStoreConnector
+     * @throws DomainManagerException
      */
     IdentityStoreConnector getIdentityStoreConnector(
-            String identityStoreConnectorId, String domainName);
+            String identityStoreConnectorId, String domainName) throws DomainManagerException;
 
     /**
      * Get identity store connector map.
      *
      * @param domainName Name of the domain which the connector instances belong
      * @return Map<String, IdentityStoreConnector> identityStoreConnectorsMap
+     * @throws DomainManagerException
      */
     Map<String, IdentityStoreConnector> getIdentityStoreConnectorMapForDomain(
-            String domainName);
+            String domainName) throws DomainManagerException;
 }

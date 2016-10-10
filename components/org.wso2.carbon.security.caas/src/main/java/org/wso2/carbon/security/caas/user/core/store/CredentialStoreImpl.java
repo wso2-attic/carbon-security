@@ -34,6 +34,7 @@ import org.wso2.carbon.security.caas.user.core.exception.UserNotFoundException;
 import org.wso2.carbon.security.caas.user.core.store.connector.CredentialStoreConnector;
 import org.wso2.carbon.security.caas.user.core.store.connector.CredentialStoreConnectorFactory;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -125,10 +126,14 @@ public class CredentialStoreImpl implements CredentialStore {
             throw new AuthenticationFailure("Error occurred while retrieving user.", e);
         }
 
-        AuthenticationFailure authenticationFailure = null;
-
+        // TODO: Resolve domain
         Map<String, CredentialStoreConnector> credentialStoreConnectorsMap =
-                this.domainManager.getDefaultDomain().getCredentialStoreConnectorMap();
+                null;
+        try {
+            credentialStoreConnectorsMap = this.domainManager.getDefaultDomain().getCredentialStoreConnectorMap();
+        } catch (DomainManagerException e) {
+            credentialStoreConnectorsMap = Collections.emptyMap();
+        }
 
         for (CredentialStoreConnector credentialStoreConnector : credentialStoreConnectorsMap.values()) {
 
@@ -143,18 +148,23 @@ public class CredentialStoreImpl implements CredentialStore {
 
                 return new AuthenticationContext(user);
             } catch (AuthenticationFailure | CredentialStoreException failure) {
-                authenticationFailure = new AuthenticationFailure("Invalid user credentials.");
-                authenticationFailure.addSuppressed(failure);
+                throw new AuthenticationFailure("Invalid user credentials.");
             }
         }
-        throw authenticationFailure;
+
+        throw new AuthenticationFailure("Invalid user credentials.");
     }
 
     @Override
     public Map<String, String> getAllCredentialStoreNames() {
 
         Map<String, CredentialStoreConnector> credentialStoreConnectorsMap =
-                this.domainManager.getDefaultDomain().getCredentialStoreConnectorMap();
+                null;
+        try {
+            credentialStoreConnectorsMap = this.domainManager.getDefaultDomain().getCredentialStoreConnectorMap();
+        } catch (DomainManagerException e) {
+            credentialStoreConnectorsMap = Collections.emptyMap();
+        }
 
         return credentialStoreConnectorsMap.entrySet()
                 .stream()

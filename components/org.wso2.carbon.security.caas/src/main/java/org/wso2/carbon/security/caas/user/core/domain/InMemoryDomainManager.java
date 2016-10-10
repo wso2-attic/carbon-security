@@ -40,9 +40,15 @@ public class InMemoryDomainManager implements DomainManager {
     private Map<String, Domain> domainNameToDomain = new HashMap<>();
 
     @Override
-    public Domain getDomainFromName(String domainName) {
+    public Domain getDomainFromName(String domainName) throws DomainManagerException {
 
-        return this.domainNameToDomain.get(domainName);
+        Domain domain = domainNameToDomain.get(domainName);
+
+        if (null != domain) {
+            return domain;
+        } else {
+            throw new DomainManagerException("Domain " + domainName + " was not found");
+        }
     }
 
     @Override
@@ -50,12 +56,12 @@ public class InMemoryDomainManager implements DomainManager {
 
         String domainName = domain.getDomainName();
 
-        if (this.domainNameToDomain.containsKey(domainName)) {
+        if (domainNameToDomain.containsKey(domainName)) {
             throw new DomainManagerException(String
                     .format("Domain %s already exists in the domain map", domainName));
         }
 
-        this.domainNameToDomain.put(domainName, domain);
+        domainNameToDomain.put(domainName, domain);
     }
 
     @Override
@@ -65,9 +71,9 @@ public class InMemoryDomainManager implements DomainManager {
     }
 
     @Override
-    public Domain getDefaultDomain() {
+    public Domain getDefaultDomain() throws DomainManagerException {
 
-        return this.getDomainFromName(CarbonSecurityConstants.DEFAULT_DOMAIN_NAME);
+        return getDomainFromName(CarbonSecurityConstants.DEFAULT_DOMAIN_NAME);
     }
 
     // TODO <VIDURA> Add implementation
@@ -78,18 +84,27 @@ public class InMemoryDomainManager implements DomainManager {
 
     @Override
     public IdentityStoreConnector getIdentityStoreConnector(
-            String identityStoreConnectorId, String domainName) {
+            String identityStoreConnectorId, String domainName) throws DomainManagerException {
 
-        return this.getDomainFromName(domainName)
-                .getIdentityStoreConnectorFromId(identityStoreConnectorId);
+        Domain domain = getDomainFromName(domainName);
+
+        IdentityStoreConnector identityStoreConnector = domain.getIdentityStoreConnectorFromId
+                (identityStoreConnectorId);
+
+        if (null != identityStoreConnector) {
+            return identityStoreConnector;
+        } else {
+            throw new DomainManagerException("IdentityStoreConnector " + identityStoreConnectorId +
+                    " was not found ");
+        }
 
     }
 
     @Override
     public Map<String, IdentityStoreConnector> getIdentityStoreConnectorMapForDomain(
-            String domainName) {
+            String domainName) throws DomainManagerException {
 
-        return this.getDomainFromName(domainName)
+        return getDomainFromName(domainName)
                 .getIdentityStoreConnectorMap();
 
     }

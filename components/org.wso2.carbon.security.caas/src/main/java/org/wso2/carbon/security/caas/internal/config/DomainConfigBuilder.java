@@ -24,6 +24,11 @@ import java.util.stream.Collectors;
  */
 public class DomainConfigBuilder {
 
+    /**
+     * Create configuration from the config file.
+     *
+     * @return DomainConfiguration YAML java representation.
+     */
     private static DomainConfigFile buildDomainConfig() {
 
         Path file = Paths.get(CarbonSecurityConstants.getCarbonHomeDirectory().toString(), "conf", "security",
@@ -46,6 +51,12 @@ public class DomainConfigBuilder {
         return domainConfigFile;
     }
 
+    /**
+     * Retrieve domain configurations.
+     *
+     * @param metaClaims MetaClaims that are referenced from domain configuration, <ClaimURI, MetaClaim>.
+     * @return Domain Configuration
+     */
     public static DomainConfig getDomainConfig(Map<String, MetaClaim> metaClaims) {
         DomainConfigFile domainConfigFile = buildDomainConfig();
 

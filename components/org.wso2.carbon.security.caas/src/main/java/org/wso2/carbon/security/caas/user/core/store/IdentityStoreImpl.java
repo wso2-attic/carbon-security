@@ -20,6 +20,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.wso2.carbon.security.caas.internal.CarbonSecurityDataHolder;
 import org.wso2.carbon.security.caas.user.core.bean.Attribute;
+import org.wso2.carbon.security.caas.user.core.bean.Domain;
 import org.wso2.carbon.security.caas.user.core.bean.Group;
 import org.wso2.carbon.security.caas.user.core.bean.User;
 import org.wso2.carbon.security.caas.user.core.claim.Claim;
@@ -31,10 +32,12 @@ import org.wso2.carbon.security.caas.user.core.exception.GroupNotFoundException;
 import org.wso2.carbon.security.caas.user.core.exception.IdentityStoreException;
 import org.wso2.carbon.security.caas.user.core.exception.StoreException;
 import org.wso2.carbon.security.caas.user.core.exception.UserNotFoundException;
+import org.wso2.carbon.security.caas.user.core.service.RealmService;
 import org.wso2.carbon.security.caas.user.core.store.connector.IdentityStoreConnector;
 import org.wso2.carbon.security.caas.user.core.store.connector.IdentityStoreConnectorFactory;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -51,11 +54,15 @@ public class IdentityStoreImpl implements IdentityStore {
 
     private DomainManager domainManager;
 
+    private RealmService carbonRealmService;
+
     @Override
     public void init(DomainManager domainManager, Map<String, IdentityStoreConnectorConfig> identityConnectorConfigs)
             throws IdentityStoreException {
 
         this.domainManager = domainManager;
+
+        carbonRealmService = CarbonSecurityDataHolder.getInstance().getCarbonRealmService();
 
         if (identityConnectorConfigs.isEmpty()) {
             throw new StoreException("At least one identity store configuration must present.");
@@ -108,18 +115,14 @@ public class IdentityStoreImpl implements IdentityStore {
         String attributeName = claim.getClaimURI(); // TODO: Get the attribute name from the claim manager.
         String attributeValue = claim.getValue();
 
-        Map<String, IdentityStoreConnector> identityStoreConnectorsMap =
-                this.domainManager.getDefaultDomain().getIdentityStoreConnectorMap();
+        Map<String, IdentityStoreConnector> identityStoreConnectorsMap = resolveDomain().getIdentityStoreConnectorMap();
 
         for (IdentityStoreConnector identityStoreConnector : identityStoreConnectorsMap.values()) {
             try {
                 User.UserBuilder userBuilder = identityStoreConnector.getUserBuilder(attributeName, attributeValue);
-                return userBuilder.setIdentityStore(CarbonSecurityDataHolder
-                        .getInstance().getCarbonRealmService().getIdentityStore())
-                        .setAuthorizationStore(CarbonSecurityDataHolder
-                                .getInstance().getCarbonRealmService().getAuthorizationStore())
-                        .setClaimManager(CarbonSecurityDataHolder
-                                .getInstance().getCarbonRealmService().getClaimManager())
+                return userBuilder.setIdentityStore(carbonRealmService.getIdentityStore())
+                        .setAuthorizationStore(carbonRealmService.getAuthorizationStore())
+                        .setClaimManager(carbonRealmService.getClaimManager())
                         .build();
             } catch (UserNotFoundException e) {
                 userNotFoundException.addSuppressed(e);
@@ -135,18 +138,15 @@ public class IdentityStoreImpl implements IdentityStore {
         UserNotFoundException userNotFoundException = new
                 UserNotFoundException("User not found for the given callbacks.");
 
-        Map<String, IdentityStoreConnector> identityStoreConnectorsMap =
-                this.domainManager.getDefaultDomain().getIdentityStoreConnectorMap();
+        // TODO: Callback can be used to check domain information and retrieve domain
+        Map<String, IdentityStoreConnector> identityStoreConnectorsMap = resolveDomain().getIdentityStoreConnectorMap();
 
         for (IdentityStoreConnector identityStoreConnector : identityStoreConnectorsMap.values()) {
             try {
                 return identityStoreConnector.getUserBuilder(callbacks)
-                        .setIdentityStore(CarbonSecurityDataHolder
-                                .getInstance().getCarbonRealmService().getIdentityStore())
-                        .setAuthorizationStore(CarbonSecurityDataHolder
-                                .getInstance().getCarbonRealmService().getAuthorizationStore())
-                        .setClaimManager(CarbonSecurityDataHolder
-                                .getInstance().getCarbonRealmService().getClaimManager())
+                        .setIdentityStore(carbonRealmService.getIdentityStore())
+                        .setAuthorizationStore(carbonRealmService.getAuthorizationStore())
+                        .setClaimManager(carbonRealmService.getClaimManager())
                         .build();
             } catch (UserNotFoundException e) {
                 userNotFoundException.addSuppressed(e);
@@ -174,8 +174,7 @@ public class IdentityStoreImpl implements IdentityStore {
         String attributeName = claim.getClaimURI(); // TODO: Get the attribute name from the claim manager.
         String attributeValue = claim.getValue();
 
-        Map<String, IdentityStoreConnector> identityStoreConnectorsMap =
-                this.domainManager.getDefaultDomain().getIdentityStoreConnectorMap();
+        Map<String, IdentityStoreConnector> identityStoreConnectorsMap = resolveDomain().getIdentityStoreConnectorMap();
 
         int userCount = 0;
 
@@ -197,12 +196,9 @@ public class IdentityStoreImpl implements IdentityStore {
                 users.addAll(identityStoreConnector.getUserBuilderList(attributeName, attributeValue, offset, length)
                         .stream()
                         .map(userBuilder -> userBuilder
-                                .setIdentityStore(CarbonSecurityDataHolder
-                                        .getInstance().getCarbonRealmService().getIdentityStore())
-                                .setAuthorizationStore(CarbonSecurityDataHolder
-                                        .getInstance().getCarbonRealmService().getAuthorizationStore())
-                                .setClaimManager(CarbonSecurityDataHolder
-                                        .getInstance().getCarbonRealmService().getClaimManager())
+                                .setIdentityStore(carbonRealmService.getIdentityStore())
+                                .setAuthorizationStore(carbonRealmService.getAuthorizationStore())
+                                .setClaimManager(carbonRealmService.getClaimManager())
                                 .build())
                         .collect(Collectors.toList()));
                 length -= users.size();
@@ -225,8 +221,8 @@ public class IdentityStoreImpl implements IdentityStore {
 
         List<Attribute> userAttributes = new ArrayList<>();
 
-        Map<String, IdentityStoreConnector> identityStoreConnectorsMap =
-                this.domainManager.getDefaultDomain().getIdentityStoreConnectorMap();
+        // TODO: Check for domain information in userId
+        Map<String, IdentityStoreConnector> identityStoreConnectorsMap = resolveDomain().getIdentityStoreConnectorMap();
 
         for (IdentityStoreConnector identityStoreConnector : identityStoreConnectorsMap.values()) {
             userAttributes.addAll(identityStoreConnector.getUserAttributeValues(userID));
@@ -241,8 +237,8 @@ public class IdentityStoreImpl implements IdentityStore {
 
         List<Attribute> userAttributes = new ArrayList<>();
 
-        Map<String, IdentityStoreConnector> identityStoreConnectorsMap =
-                this.domainManager.getDefaultDomain().getIdentityStoreConnectorMap();
+        // TODO: Check user information
+        Map<String, IdentityStoreConnector> identityStoreConnectorsMap = resolveDomain().getIdentityStoreConnectorMap();
 
         for (IdentityStoreConnector identityStoreConnector : identityStoreConnectorsMap.values()) {
             userAttributes.addAll(identityStoreConnector.getUserAttributeValues(userID, attributeNames));
@@ -268,8 +264,7 @@ public class IdentityStoreImpl implements IdentityStore {
         String attributeName = claim.getClaimURI(); // TODO: Get the attribute name from the claim uri.
         String attributeValue = claim.getValue();
 
-        Map<String, IdentityStoreConnector> identityStoreConnectorsMap =
-                this.domainManager.getDefaultDomain().getIdentityStoreConnectorMap();
+        Map<String, IdentityStoreConnector> identityStoreConnectorsMap = resolveDomain().getIdentityStoreConnectorMap();
 
         GroupNotFoundException groupNotFoundException =
                 new GroupNotFoundException("Group not found for the given name");
@@ -277,10 +272,8 @@ public class IdentityStoreImpl implements IdentityStore {
         for (IdentityStoreConnector identityStoreConnector : identityStoreConnectorsMap.values()) {
             try {
                 return identityStoreConnector.getGroupBuilder(attributeName, attributeValue)
-                        .setIdentityStore(CarbonSecurityDataHolder
-                                .getInstance().getCarbonRealmService().getIdentityStore())
-                        .setAuthorizationStore(CarbonSecurityDataHolder
-                                .getInstance().getCarbonRealmService().getAuthorizationStore())
+                        .setIdentityStore(carbonRealmService.getIdentityStore())
+                        .setAuthorizationStore(carbonRealmService.getAuthorizationStore())
                         .build();
             } catch (GroupNotFoundException e) {
                 groupNotFoundException.addSuppressed(e);
@@ -296,8 +289,7 @@ public class IdentityStoreImpl implements IdentityStore {
 
         List<Group> groups = new ArrayList<>();
 
-        Map<String, IdentityStoreConnector> identityStoreConnectorsMap =
-                this.domainManager.getDefaultDomain().getIdentityStoreConnectorMap();
+        Map<String, IdentityStoreConnector> identityStoreConnectorsMap = resolveDomain().getIdentityStoreConnectorMap();
 
         int groupCount = 0;
 
@@ -319,10 +311,8 @@ public class IdentityStoreImpl implements IdentityStore {
                 groups.addAll(identityStoreConnector.getGroupBuilderList(filterPattern, offset, length)
                         .stream()
                         .map(groupBuilder -> groupBuilder
-                                .setIdentityStore(CarbonSecurityDataHolder
-                                        .getInstance().getCarbonRealmService().getIdentityStore())
-                                .setAuthorizationStore(CarbonSecurityDataHolder
-                                        .getInstance().getCarbonRealmService().getAuthorizationStore())
+                                .setIdentityStore(carbonRealmService.getIdentityStore())
+                                .setAuthorizationStore(carbonRealmService.getAuthorizationStore())
                                 .build())
                         .collect(Collectors.toList()));
                 length -= groups.size();
@@ -346,8 +336,7 @@ public class IdentityStoreImpl implements IdentityStore {
 
         List<Attribute> groupAttributes = new ArrayList<>();
 
-        Map<String, IdentityStoreConnector> identityStoreConnectorsMap =
-                this.domainManager.getDefaultDomain().getIdentityStoreConnectorMap();
+        Map<String, IdentityStoreConnector> identityStoreConnectorsMap = resolveDomain().getIdentityStoreConnectorMap();
 
         for (IdentityStoreConnector identityStoreConnector : identityStoreConnectorsMap.values()) {
             groupAttributes.addAll(identityStoreConnector.getGroupAttributeValues(groupId));
@@ -362,8 +351,7 @@ public class IdentityStoreImpl implements IdentityStore {
 
         List<Attribute> groupAttributes = new ArrayList<>();
 
-        Map<String, IdentityStoreConnector> identityStoreConnectorsMap =
-                this.domainManager.getDefaultDomain().getIdentityStoreConnectorMap();
+        Map<String, IdentityStoreConnector> identityStoreConnectorsMap = resolveDomain().getIdentityStoreConnectorMap();
 
         for (IdentityStoreConnector identityStoreConnector : identityStoreConnectorsMap.values()) {
             groupAttributes.addAll(identityStoreConnector.getGroupAttributeValues(groupId, attributeNames));
@@ -377,17 +365,14 @@ public class IdentityStoreImpl implements IdentityStore {
 
         List<Group> groupList = new ArrayList<>();
 
-        Map<String, IdentityStoreConnector> identityStoreConnectorsMap =
-                this.domainManager.getDefaultDomain().getIdentityStoreConnectorMap();
+        Map<String, IdentityStoreConnector> identityStoreConnectorsMap = resolveDomain().getIdentityStoreConnectorMap();
 
         for (IdentityStoreConnector identityStoreConnector : identityStoreConnectorsMap.values()) {
             groupList.addAll(identityStoreConnector.getGroupBuildersOfUser(userId)
                     .stream()
                     .map(groupBuilder -> groupBuilder
-                            .setAuthorizationStore(CarbonSecurityDataHolder
-                                    .getInstance().getCarbonRealmService().getAuthorizationStore())
-                            .setIdentityStore(CarbonSecurityDataHolder
-                                    .getInstance().getCarbonRealmService().getIdentityStore())
+                            .setAuthorizationStore(carbonRealmService.getAuthorizationStore())
+                            .setIdentityStore(carbonRealmService.getIdentityStore())
                             .build())
                     .collect(Collectors.toList()));
         }
@@ -400,19 +385,15 @@ public class IdentityStoreImpl implements IdentityStore {
 
         List<User> userList = new ArrayList<>();
 
-        Map<String, IdentityStoreConnector> identityStoreConnectorsMap =
-                this.domainManager.getDefaultDomain().getIdentityStoreConnectorMap();
+        Map<String, IdentityStoreConnector> identityStoreConnectorsMap = resolveDomain().getIdentityStoreConnectorMap();
 
         for (IdentityStoreConnector identityStoreConnector : identityStoreConnectorsMap.values()) {
             userList.addAll(identityStoreConnector.getUserBuildersOfGroup(groupID)
                     .stream()
                     .map(userBuilder -> userBuilder
-                            .setIdentityStore(CarbonSecurityDataHolder
-                                    .getInstance().getCarbonRealmService().getIdentityStore())
-                            .setAuthorizationStore(CarbonSecurityDataHolder
-                                    .getInstance().getCarbonRealmService().getAuthorizationStore())
-                            .setClaimManager(CarbonSecurityDataHolder
-                                    .getInstance().getCarbonRealmService().getClaimManager())
+                            .setIdentityStore(carbonRealmService.getIdentityStore())
+                            .setAuthorizationStore(carbonRealmService.getAuthorizationStore())
+                            .setClaimManager(carbonRealmService.getClaimManager())
                             .build())
                     .collect(Collectors.toList()));
         }
@@ -423,8 +404,7 @@ public class IdentityStoreImpl implements IdentityStore {
     @Override
     public boolean isUserInGroup(String userId, String groupId) throws IdentityStoreException {
 
-        Map<String, IdentityStoreConnector> identityStoreConnectorsMap =
-                this.domainManager.getDefaultDomain().getIdentityStoreConnectorMap();
+        Map<String, IdentityStoreConnector> identityStoreConnectorsMap = resolveDomain().getIdentityStoreConnectorMap();
 
         for (IdentityStoreConnector identityStoreConnector : identityStoreConnectorsMap.values()) {
 
@@ -438,13 +418,32 @@ public class IdentityStoreImpl implements IdentityStore {
 
     @Override
     public Map<String, String> getAllIdentityStoreNames() {
-        Map<String, IdentityStoreConnector> identityStoreConnectorsMap =
-                this.domainManager.getDefaultDomain().getIdentityStoreConnectorMap();
+        Map<String, IdentityStoreConnector> identityStoreConnectorsMap = null;
+        try {
+            identityStoreConnectorsMap = resolveDomain().getIdentityStoreConnectorMap();
+        } catch (IdentityStoreException e) {
+            identityStoreConnectorsMap = Collections.emptyMap();
+        }
 
         return identityStoreConnectorsMap.entrySet()
                 .stream()
                 .collect(Collectors.toMap(Map.Entry::getKey,
                         entry -> entry.getValue().getIdentityStoreConfig().getStoreProperties()
                                 .getProperty(UserCoreConstants.USERSTORE_DISPLAY_NAME, "")));
+    }
+
+    /**
+     * Resolve the domain for a given attribute.
+     *
+     * @return The domain for the user.
+     * @throws IdentityStoreException
+     */
+    //TODO: This is only for the initial impl. This method should be overloaded to retrieve domain for different types.
+    private Domain resolveDomain() throws IdentityStoreException {
+        try {
+            return domainManager.getDefaultDomain();
+        } catch (DomainManagerException e) {
+            throw new IdentityStoreException("Domain not found", e);
+        }
     }
 }
