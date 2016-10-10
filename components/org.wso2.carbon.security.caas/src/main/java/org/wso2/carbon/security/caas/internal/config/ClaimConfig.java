@@ -27,6 +27,9 @@ public class ClaimConfig {
 
     private String claimManager;
 
+    /**
+     * IdentityStoreConnectorId to MetaClaim mapping.
+     */
     private Map<String, MetaClaim> metaClaims;
 
     public ClaimConfig() {

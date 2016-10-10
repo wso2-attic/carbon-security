@@ -7,6 +7,9 @@ import java.util.List;
  */
 public class DomainConfigFile {
 
+    /**
+     * List of domain configuration entries.
+     */
     List<DomainConfigEntry> domains;
 
     public List<DomainConfigEntry> getDomains() {

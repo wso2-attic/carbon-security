@@ -9,8 +9,14 @@ public class DomainConfigEntry {
 
     private String domainName;
 
+    /**
+     * IdentityStoreConnector domain configuration list.
+     */
     private List<DomainStoreConfigEntry> identityStoreConnectors;
 
+    /**
+     * CredentialStoreConnector domain configuration list.
+     */
     private List<DomainStoreConfigEntry> credentialStoreConnectors;
 
     public String getDomainName() {

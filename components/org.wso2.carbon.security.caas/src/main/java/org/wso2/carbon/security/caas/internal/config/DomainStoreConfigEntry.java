@@ -9,6 +9,9 @@ public class DomainStoreConfigEntry {
 
     private String storeConnectorId;
 
+    /**
+     * Domain IdentityStoreConnector attribute mapping configuration list.
+     */
     private List<DomainAttributeConfigEntry> attributeMappings;
 
     public String getStoreConnectorId() {
