@@ -51,7 +51,7 @@ public class ClaimConfigBuilder {
 
         if (claimConfigFile.getClaims() != null) {
 
-            // TODO: Ugly use of streams, very hard to read
+            // TODO: very hard to read
             claimConfig.setMetaClaims(claimConfigFile.getClaims().stream()
                     // Claim URI must be present
                     .filter(claimEntry -> claimEntry.getClaimURI() != null &&
