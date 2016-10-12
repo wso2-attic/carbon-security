@@ -21,17 +21,8 @@ package org.wso2.carbon.security.caas.user.core.bean;
  */
 public class Attribute {
 
-    private String identityStoreId;
     private String attributeName;
     private String attributeValue;
-
-    public String getIdentityStoreId() {
-        return identityStoreId;
-    }
-
-    public void setIdentityStoreId(String identityStoreId) {
-        this.identityStoreId = identityStoreId;
-    }
 
     public String getAttributeName() {
         return attributeName;

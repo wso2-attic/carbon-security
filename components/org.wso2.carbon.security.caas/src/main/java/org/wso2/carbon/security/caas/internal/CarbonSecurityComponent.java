@@ -63,6 +63,7 @@ import org.wso2.carbon.security.caas.user.core.exception.DomainException;
 import org.wso2.carbon.security.caas.user.core.exception.IdentityStoreException;
 import org.wso2.carbon.security.caas.user.core.exception.MetaClaimStoreException;
 import org.wso2.carbon.security.caas.user.core.exception.PermissionConfigException;
+import org.wso2.carbon.security.caas.user.core.exception.UserManagerException;
 import org.wso2.carbon.security.caas.user.core.service.RealmService;
 import org.wso2.carbon.security.caas.user.core.store.AuthorizationStore;
 import org.wso2.carbon.security.caas.user.core.store.AuthorizationStoreImpl;
@@ -77,6 +78,8 @@ import org.wso2.carbon.security.caas.user.core.store.connector.CredentialStoreCo
 import org.wso2.carbon.security.caas.user.core.store.connector.CredentialStoreConnectorFactory;
 import org.wso2.carbon.security.caas.user.core.store.connector.IdentityStoreConnector;
 import org.wso2.carbon.security.caas.user.core.store.connector.IdentityStoreConnectorFactory;
+import org.wso2.carbon.security.caas.user.core.user.FileBasedUserManager;
+import org.wso2.carbon.security.caas.user.core.user.UserManager;
 
 import java.io.IOException;
 import java.security.Policy;
@@ -329,6 +332,10 @@ public class CarbonSecurityComponent implements RequiredCapabilityListener {
 
             carbonSecurityDataHolder.setMetaClaimStore(metaClaimStore);
 
+            UserManager userManager = new FileBasedUserManager();
+
+            carbonSecurityDataHolder.setUserManager(userManager);
+
             DomainConfig domainConfig = DomainConfigBuilder.getDomainConfig();
             carbonSecurityDataHolder.setDomainConfig(domainConfig);
 
@@ -376,6 +383,8 @@ public class CarbonSecurityComponent implements RequiredCapabilityListener {
             log.error("Error occurred in building the domain configuration", e);
         } catch (IOException e) {
             log.error("Error initializing claim store from file", e);
+        } catch (UserManagerException e) {
+            log.error("Error initializing FileBasedUserManager", e);
         }
 
         log.info("Carbon-Security bundle activated successfully.");
