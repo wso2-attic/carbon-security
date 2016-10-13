@@ -38,11 +38,10 @@ import org.wso2.carbon.security.caas.api.util.CarbonSecurityConstants;
 import org.wso2.carbon.security.caas.boot.ProxyLoginModule;
 import org.wso2.carbon.security.caas.internal.config.ClaimConfig;
 import org.wso2.carbon.security.caas.internal.config.ClaimConfigBuilder;
-import org.wso2.carbon.security.caas.internal.config.DefaultPermissionInfo;
-import org.wso2.carbon.security.caas.internal.config.DefaultPermissionInfoCollection;
 import org.wso2.carbon.security.caas.internal.config.DomainConfig;
 import org.wso2.carbon.security.caas.internal.config.DomainConfigBuilder;
-import org.wso2.carbon.security.caas.internal.config.SecurityConfigBuilder;
+import org.wso2.carbon.security.caas.internal.config.PermissionConfigBuilder;
+import org.wso2.carbon.security.caas.internal.config.PermissionConfigFile;
 import org.wso2.carbon.security.caas.internal.config.StoreConfigBuilder;
 import org.wso2.carbon.security.caas.internal.osgi.UserNamePasswordLoginModuleFactory;
 import org.wso2.carbon.security.caas.internal.osgi.UsernamePasswordCallbackHandlerFactory;
@@ -60,6 +59,7 @@ import org.wso2.carbon.security.caas.user.core.exception.CredentialStoreExceptio
 import org.wso2.carbon.security.caas.user.core.exception.DomainConfigException;
 import org.wso2.carbon.security.caas.user.core.exception.DomainException;
 import org.wso2.carbon.security.caas.user.core.exception.IdentityStoreException;
+import org.wso2.carbon.security.caas.user.core.exception.PermissionConfigException;
 import org.wso2.carbon.security.caas.user.core.service.RealmService;
 import org.wso2.carbon.security.caas.user.core.store.AuthorizationStore;
 import org.wso2.carbon.security.caas.user.core.store.AuthorizationStoreImpl;
@@ -76,12 +76,11 @@ import org.wso2.carbon.security.caas.user.core.store.connector.IdentityStoreConn
 import org.wso2.carbon.security.caas.user.core.store.connector.IdentityStoreConnectorFactory;
 
 import java.security.Policy;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 import javax.security.auth.spi.LoginModule;
 
 /**
@@ -264,9 +263,10 @@ public class CarbonSecurityComponent implements RequiredCapabilityListener {
     /**
      * Initialize authorization related configs.
      *
-     * @param bundleContext
+     * @param bundleContext BundleContext
      */
-    private void initAuthorizationConfigs(BundleContext bundleContext) {
+    private void initAuthorizationConfigs(BundleContext bundleContext)
+            throws PermissionConfigException {
 
         // Set default permissions for all bundles.
         setDefaultPermissions(bundleContext);
@@ -281,39 +281,33 @@ public class CarbonSecurityComponent implements RequiredCapabilityListener {
      *
      * @param context Bundle context.
      */
-    private void setDefaultPermissions(BundleContext context) {
+    private void setDefaultPermissions(BundleContext context) throws PermissionConfigException {
 
         PermissionAdmin permissionAdmin = getPermissionAdmin(context);
+
         if (permissionAdmin == null) {
             return;
         }
 
-        DefaultPermissionInfoCollection permissionInfoCollection = SecurityConfigBuilder
-                .buildDefaultPermissionInfoCollection();
-        if (Collections.EMPTY_SET.equals(permissionInfoCollection.getPermissions())) {
-            throw new RuntimeException("Default permission info collection can't be empty.");
-        }
+        PermissionConfigFile permissionConfigFile = PermissionConfigBuilder.buildPermissionConfig();
 
-        List<PermissionInfo> permissionInfoList = new ArrayList<>();
+        if (permissionConfigFile != null) {
 
-        for (DefaultPermissionInfo permissionInfo : permissionInfoCollection.getPermissions()) {
-
-            if (permissionInfo.getType() == null || permissionInfo.getType().trim().isEmpty()) {
-                throw new IllegalArgumentException("Type can't be null or empty.");
-
-            }
-            if (permissionInfo.getName() == null || permissionInfo.getName().trim().isEmpty()) {
-                throw new IllegalArgumentException("Name can't be null or empty.");
+            if (permissionConfigFile.getPermissions().isEmpty()) {
+                log.error("Permission entry list cannot be empty");
             }
 
-            permissionInfoList.add(new PermissionInfo(permissionInfo.getType(), permissionInfo.getName(),
-                    (permissionInfo.getActions() != null && !permissionInfo
-                            .getActions().trim().isEmpty()) ?
-                            permissionInfo.getActions().trim() : null));
-        }
+            List<PermissionInfo> permissionInfoList = permissionConfigFile.getPermissions()
+                    .stream()
+                    .map(permissionEntry ->
+                            new PermissionInfo(permissionEntry.getType(),
+                                    permissionEntry.getName(),
+                                    permissionEntry.getActions()))
+                    .collect(Collectors.toList());
 
-        permissionAdmin.setDefaultPermissions(
-                permissionInfoList.toArray(new PermissionInfo[permissionInfoList.size()]));
+            permissionAdmin.setDefaultPermissions(
+                    permissionInfoList.toArray(new PermissionInfo[permissionInfoList.size()]));
+        }
     }
 
     /**
@@ -333,7 +327,12 @@ public class CarbonSecurityComponent implements RequiredCapabilityListener {
 
         // If security manager is enabled init authorization configs
         if (System.getProperty("java.security.manager") != null) {
-            initAuthorizationConfigs(bundleContext);
+
+            try {
+                initAuthorizationConfigs(bundleContext);
+            } catch (PermissionConfigException e) {
+                log.error("Error in setting up default permissions", e);
+            }
         }
 
         StoreConfig storeConfig = StoreConfigBuilder.buildStoreConfigs();
