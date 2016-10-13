@@ -21,6 +21,7 @@ import org.wso2.carbon.caching.CarbonCachingService;
 import org.wso2.carbon.security.caas.internal.config.ClaimConfig;
 import org.wso2.carbon.security.caas.internal.config.DomainConfig;
 import org.wso2.carbon.security.caas.user.core.common.CarbonRealmServiceImpl;
+import org.wso2.carbon.security.caas.user.core.exception.CarbonSecurityDataHolderException;
 import org.wso2.carbon.security.caas.user.core.store.connector.AuthorizationStoreConnectorFactory;
 import org.wso2.carbon.security.caas.user.core.store.connector.CredentialStoreConnectorFactory;
 import org.wso2.carbon.security.caas.user.core.store.connector.IdentityStoreConnectorFactory;
@@ -30,6 +31,7 @@ import java.util.Map;
 
 /**
  * Carbon security data holder.
+ *
  * @since 1.0.0
  */
 public class CarbonSecurityDataHolder {
@@ -49,6 +51,7 @@ public class CarbonSecurityDataHolder {
 
     /**
      * Get the instance of this class.
+     *
      * @return CarbonSecurityDataHolder.
      */
     public static CarbonSecurityDataHolder getInstance() {
@@ -61,15 +64,16 @@ public class CarbonSecurityDataHolder {
 
     public CarbonRealmServiceImpl getCarbonRealmService() {
 
-        if (this.carbonRealmService == null) {
+        if (carbonRealmService == null) {
             throw new IllegalStateException("Carbon Realm Service is null.");
         }
-        return this.carbonRealmService;
+        return carbonRealmService;
     }
 
     /**
      * Register authorization store connector factory.
-     * @param key Id of the factory.
+     *
+     * @param key                                Id of the factory.
      * @param authorizationStoreConnectorFactory AuthorizationStoreConnectorFactory.
      */
     void registerAuthorizationStoreConnectorFactory(String key, AuthorizationStoreConnectorFactory
@@ -79,7 +83,8 @@ public class CarbonSecurityDataHolder {
 
     /**
      * Register credential store connector factory.
-     * @param key Id of the factory.
+     *
+     * @param key                             Id of the factory.
      * @param credentialStoreConnectorFactory CredentialStoreConnectorFactory.
      */
     void registerCredentialStoreConnectorFactory(String key,
@@ -89,7 +94,8 @@ public class CarbonSecurityDataHolder {
 
     /**
      * Register identity store connector factory.
-     * @param key Id of the factory.
+     *
+     * @param key                           Id of the factory.
      * @param identityStoreConnectorFactory IdentityStoreConnectorFactory.
      */
     void registerIdentityStoreConnectorFactory(String key,
@@ -109,11 +115,16 @@ public class CarbonSecurityDataHolder {
         return identityStoreConnectorFactoryMap;
     }
 
-    void registerCacheService(CarbonCachingService carbonCachingService)  {
+    void registerCacheService(CarbonCachingService carbonCachingService) {
         this.carbonCachingService = carbonCachingService;
     }
 
-    public CarbonCachingService getCarbonCachingService() {
+    public CarbonCachingService getCarbonCachingService() throws CarbonSecurityDataHolderException {
+
+        if (carbonCachingService == null) {
+            throw new CarbonSecurityDataHolderException("Carbon caching service is null");
+        }
+
         return carbonCachingService;
     }
 
@@ -123,13 +134,18 @@ public class CarbonSecurityDataHolder {
 
     public BundleContext getBundleContext() {
 
-        if (this.bundleContext == null) {
+        if (bundleContext == null) {
             throw new IllegalStateException("BundleContext is null.");
         }
         return bundleContext;
     }
 
-    public ClaimConfig getClaimConfig() {
+    public ClaimConfig getClaimConfig() throws CarbonSecurityDataHolderException {
+
+        if (claimConfig == null) {
+            throw new CarbonSecurityDataHolderException("Claim configuration is null.");
+        }
+
         return claimConfig;
     }
 
@@ -137,7 +153,12 @@ public class CarbonSecurityDataHolder {
         this.claimConfig = claimConfig;
     }
 
-    public DomainConfig getDomainConfig() {
+    public DomainConfig getDomainConfig() throws CarbonSecurityDataHolderException {
+
+        if (domainConfig == null) {
+            throw new CarbonSecurityDataHolderException("Domain configuration is null.");
+        }
+
         return domainConfig;
     }
 

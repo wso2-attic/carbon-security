@@ -19,20 +19,16 @@
 package org.wso2.carbon.security.caas.user.core.exception;
 
 /**
- * Domain manager exception
+ * This class is an extension of {@code Exception} class and used to
+ * indicate domain config exception.
  */
-public class DomainManagerException extends Exception {
+public class DomainConfigException extends Exception {
 
-    public DomainManagerException() {
-        super();
-    }
-
-    public DomainManagerException(String message) {
+    public DomainConfigException(String message) {
         super(message);
     }
 
-    public DomainManagerException(String message, Throwable cause) {
+    public DomainConfigException(String message, Throwable cause) {
         super(message, cause);
     }
-
 }

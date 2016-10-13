@@ -201,7 +201,6 @@ public class AuthorizationStoreImpl implements AuthorizationStore {
     @Override
     public Role getRole(String roleName) throws RoleNotFoundException, AuthorizationStoreException {
 
-        RoleNotFoundException roleNotFoundException = new RoleNotFoundException("Role not found for the given name.");
         RealmService realmService = CarbonSecurityDataHolder.getInstance().getCarbonRealmService();
 
         for (AuthorizationStoreConnector authorizationStoreConnector : authorizationStoreConnectors.values()) {
@@ -210,27 +209,30 @@ public class AuthorizationStoreImpl implements AuthorizationStore {
                         .setAuthorizationStore(realmService.getAuthorizationStore())
                         .build();
             } catch (RoleNotFoundException e) {
-                roleNotFoundException.addSuppressed(e);
+
+                if (log.isDebugEnabled()) {
+                    log.debug(String.format("Role for role name %s not found", roleName), e);
+                }
             }
         }
-        throw roleNotFoundException;
+        throw new RoleNotFoundException("Role not found for the given name.");
     }
 
     @Override
     public Permission getPermission(String resource, String action) throws PermissionNotFoundException,
             AuthorizationStoreException {
 
-        PermissionNotFoundException permissionNotFoundException =
-                new PermissionNotFoundException("Permission not found for the given resource id and the action.");
-
         for (AuthorizationStoreConnector authorizationStoreConnector : authorizationStoreConnectors.values()) {
             try {
                 return authorizationStoreConnector.getPermission(new Resource(resource), new Action(action)).build();
             } catch (PermissionNotFoundException e) {
-                permissionNotFoundException.addSuppressed(e);
+
+                if (log.isDebugEnabled()) {
+                    log.debug(String.format("Permission for resource %s and action %s not found", resource, action), e);
+                }
             }
         }
-        throw permissionNotFoundException;
+        throw new PermissionNotFoundException("Permission not found for the given resource id and the action.");
     }
 
     @Override

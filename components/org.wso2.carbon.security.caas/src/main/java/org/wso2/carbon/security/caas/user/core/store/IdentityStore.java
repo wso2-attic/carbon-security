@@ -35,6 +35,7 @@ import javax.security.auth.callback.Callback;
  *
  * @since 1.0.0
  */
+// TODO: Resolve username with primary / unique attribute
 public interface IdentityStore {
     /**
      * Initialize the identity store instance.
@@ -103,21 +104,21 @@ public interface IdentityStore {
     /**
      * Get user attribute values.
      *
-     * @param userID Id of the user.
+     * @param userName unique user name of the user.
      * @return Map of user attributes.
      * @throws IdentityStoreException Identity Store Exception.
      */
-    List<Attribute> getUserAttributeValues(String userID) throws IdentityStoreException;
+    List<Attribute> getUserAttributeValues(String userName) throws IdentityStoreException;
 
     /**
      * Get user's claim values for the given URIs.
      *
-     * @param userID         Id of the user.
+     * @param userName       Name of the user.
      * @param attributeNames Attribute names.
      * @return Map of user attributes.
      * @throws IdentityStoreException Identity Store Exception.
      */
-    List<Attribute> getUserAttributeValues(String userID, List<String> attributeNames)
+    List<Attribute> getUserAttributeValues(String userName, List<String> attributeNames)
             throws IdentityStoreException;
 
     /**
@@ -166,11 +167,11 @@ public interface IdentityStore {
     /**
      * Get the groups assigned to the specified user.
      *
-     * @param userId Id of the user.
+     * @param userName user name of the user.
      * @return List of Group assigned to the user.
      * @throws IdentityStoreException Identity Store Exception.
      */
-    List<Group> getGroupsOfUser(String userId) throws IdentityStoreException;
+    List<Group> getGroupsOfUser(String userName) throws IdentityStoreException;
 
     /**
      * Get the users assigned to the specified group.
@@ -184,17 +185,10 @@ public interface IdentityStore {
     /**
      * Checks whether the user is in the group.
      *
-     * @param userId  Id of the user.
-     * @param groupId Id of the group.
+     * @param userName user name of the user.
+     * @param groupId  Id of the group.
      * @return True if the user is in the group.
      * @throws IdentityStoreException Identity Store Exception.
      */
-    boolean isUserInGroup(String userId, String groupId) throws IdentityStoreException;
-
-    /**
-     * Get all available identity store connector names.
-     *
-     * @return Map of display names against the connector id.
-     */
-    Map<String, String> getAllIdentityStoreNames();
+    boolean isUserInGroup(String userName, String groupId) throws IdentityStoreException;
 }

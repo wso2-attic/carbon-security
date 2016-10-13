@@ -51,7 +51,8 @@ public interface IdentityStoreConnector {
 
     /**
      * Get user builder from the user name.
-     * @param attributeName Name of the attribute.
+     *
+     * @param attributeName  Name of the attribute.
      * @param attributeValue Value of the attribute.
      * @return User.UserBuilder.
      * @throws UserNotFoundException  User not found exception.
@@ -62,6 +63,7 @@ public interface IdentityStoreConnector {
 
     /**
      * Get user builder from callbacks.
+     *
      * @param callbacks Array of callbacks.
      * @return User.UserBuilder.
      * @throws UserNotFoundException  User not found exception.
@@ -79,6 +81,7 @@ public interface IdentityStoreConnector {
 
     /**
      * Get user builders list in User Store for the given filter pattern.
+     *
      * @param attributeName Name of the attribute that should use for the filter pattern.
      * @param filterPattern Filter pattern to be used.
      * @param offset        Offset to get the Users.
@@ -89,6 +92,18 @@ public interface IdentityStoreConnector {
      */
     List<User.UserBuilder> getUserBuilderList(String attributeName, String filterPattern, int offset, int length)
             throws IdentityStoreException;
+
+    /**
+     * Get all the user builders from the identity store.
+     *
+     * @param attributeName Name of the attribute that should use for the filter pattern.
+     * @param filterPattern Filter pattern to be used.
+     * @return List of Identities which matches the given claim attribute with given filter or empty list if there are
+     * no identities to match.
+     * @throws IdentityStoreException Identity Store Exception.
+     */
+    List<User.UserBuilder> getAllUserBuilderList(String attributeName, String filterPattern)
+    throws IdentityStoreException;
 
     /**
      * Retrieve attributes of the user with the given ID.
@@ -113,7 +128,8 @@ public interface IdentityStoreConnector {
 
     /**
      * Retrieve group builder from the given attribute and the value.
-     * @param attributeName Name of the attribute.
+     *
+     * @param attributeName  Name of the attribute.
      * @param attributeValue Value of the attribute.
      * @return Group with the given group name.
      * @throws IdentityStoreException Identity Store Exception.
@@ -131,6 +147,7 @@ public interface IdentityStoreConnector {
 
     /**
      * Get all group builders list according to the given filter pattern.
+     *
      * @param filterPattern Filter pattern for to list groups.
      * @param offset        Offset for the group list.
      * @param length        Length from the offset.
@@ -163,6 +180,7 @@ public interface IdentityStoreConnector {
 
     /**
      * Retrieve group builders of a given User with unique ID.
+     *
      * @param userID Id of the User.
      * @return List of Groups which this user is assigned to
      * @throws IdentityStoreException Identity Store Exception.
@@ -171,6 +189,7 @@ public interface IdentityStoreConnector {
 
     /**
      * Retrieve list of user builders that belongs to a group.
+     *
      * @param groupID Unique ID of the group
      * @return Set of IdentityObjects resides in Group
      * @throws IdentityStoreException Identity Store Exception.

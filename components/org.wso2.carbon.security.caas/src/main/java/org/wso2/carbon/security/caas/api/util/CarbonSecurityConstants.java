@@ -48,8 +48,8 @@ public final class CarbonSecurityConstants {
     public static final String CLAIM_CONFIG_FILE = "claim-config.yml";
     public static final String DOMAIN_CONFIG_FILE = "domain-config.yml";
 
-    // Default domain name
-    public static final String DEFAULT_DOMAIN_NAME = "defaultDomain";
+    // Delimiters
+    public static final String URL_SPLITTER = "/";
 
     public static Path getCarbonHomeDirectory() {
         return Paths.get(System.getProperty(CARBON_HOME));

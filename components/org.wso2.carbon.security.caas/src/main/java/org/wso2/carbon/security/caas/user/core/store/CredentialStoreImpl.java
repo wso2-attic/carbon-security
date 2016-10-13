@@ -20,6 +20,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.wso2.carbon.security.caas.api.CarbonCallback;
 import org.wso2.carbon.security.caas.internal.CarbonSecurityDataHolder;
+import org.wso2.carbon.security.caas.user.core.bean.Domain;
 import org.wso2.carbon.security.caas.user.core.bean.User;
 import org.wso2.carbon.security.caas.user.core.config.CredentialStoreConnectorConfig;
 import org.wso2.carbon.security.caas.user.core.constant.UserCoreConstants;
@@ -27,7 +28,7 @@ import org.wso2.carbon.security.caas.user.core.context.AuthenticationContext;
 import org.wso2.carbon.security.caas.user.core.domain.DomainManager;
 import org.wso2.carbon.security.caas.user.core.exception.AuthenticationFailure;
 import org.wso2.carbon.security.caas.user.core.exception.CredentialStoreException;
-import org.wso2.carbon.security.caas.user.core.exception.DomainManagerException;
+import org.wso2.carbon.security.caas.user.core.exception.DomainException;
 import org.wso2.carbon.security.caas.user.core.exception.IdentityStoreException;
 import org.wso2.carbon.security.caas.user.core.exception.StoreException;
 import org.wso2.carbon.security.caas.user.core.exception.UserNotFoundException;
@@ -37,8 +38,8 @@ import org.wso2.carbon.security.caas.user.core.store.connector.CredentialStoreCo
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.stream.Collectors;
 import javax.security.auth.callback.Callback;
+import javax.security.auth.callback.NameCallback;
 
 /**
  * Represents a virtual credential store to abstract the underlying stores.
@@ -77,15 +78,6 @@ public class CredentialStoreImpl implements CredentialStore {
 
             CredentialStoreConnector credentialStoreConnector = credentialStoreConnectorFactory.getInstance();
             credentialStoreConnector.init(credentialStoreConfig.getKey(), credentialStoreConfig.getValue());
-
-            try {
-                this.domainManager.getDefaultDomain().addCredentialStoreConnector(credentialStoreConnector);
-            } catch (DomainManagerException e) {
-                CredentialStoreException credentialStoreException =
-                        new CredentialStoreException("Error in adding credential store connector to default domain");
-                credentialStoreException.addSuppressed(e);
-                throw credentialStoreException;
-            }
         }
 
         if (log.isDebugEnabled()) {
@@ -94,7 +86,8 @@ public class CredentialStoreImpl implements CredentialStore {
     }
 
     @Override
-    public AuthenticationContext authenticate(Callback[] callbacks) throws AuthenticationFailure {
+    public AuthenticationContext authenticate(Callback[] callbacks)
+            throws AuthenticationFailure {
 
         // As user related data is in the Identity store and the credential data is in the Credential store,
         // we need to get the user unique id from Identity store to get the user related credential information
@@ -127,12 +120,13 @@ public class CredentialStoreImpl implements CredentialStore {
         }
 
         // TODO: Resolve domain
-        Map<String, CredentialStoreConnector> credentialStoreConnectorsMap =
-                null;
+        Map<String, CredentialStoreConnector> credentialStoreConnectorsMap;
+
         try {
-            credentialStoreConnectorsMap = this.domainManager.getDefaultDomain().getCredentialStoreConnectorMap();
-        } catch (DomainManagerException e) {
+            credentialStoreConnectorsMap = resolveDomain(callbacks).getCredentialStoreConnectorMap();
+        } catch (CredentialStoreException e) {
             credentialStoreConnectorsMap = Collections.emptyMap();
+            log.error("Error occurred in obtaining the credential store connector map", e);
         }
 
         for (CredentialStoreConnector credentialStoreConnector : credentialStoreConnectorsMap.values()) {
@@ -143,34 +137,46 @@ public class CredentialStoreImpl implements CredentialStore {
             }
 
             try {
-                credentialStoreConnector.authenticate(callbacks);
                 // If the authentication failed, there will be an authentication failure exception.
+                credentialStoreConnector.authenticate(callbacks);
 
                 return new AuthenticationContext(user);
-            } catch (AuthenticationFailure | CredentialStoreException failure) {
-                throw new AuthenticationFailure("Invalid user credentials.");
+            } catch (CredentialStoreException e) {
+
+                if (log.isDebugEnabled()) {
+                    log.debug(String
+                            .format("Failed to authenticate user using credential store connector %s",
+                                    credentialStoreConnector.getCredentialStoreId()), e);
+                }
             }
         }
 
         throw new AuthenticationFailure("Invalid user credentials.");
     }
 
-    @Override
-    public Map<String, String> getAllCredentialStoreNames() {
+    /**
+     * Resolve domain using the callbacks array
+     *
+     * @param callbacks Callback array
+     * @return Domain for the callbacks
+     * @throws CredentialStoreException CredentialStoreException on unable to locate NameCallBack instance
+     */
+    private Domain resolveDomain(Callback[] callbacks) throws CredentialStoreException {
 
-        Map<String, CredentialStoreConnector> credentialStoreConnectorsMap =
-                null;
-        try {
-            credentialStoreConnectorsMap = this.domainManager.getDefaultDomain().getCredentialStoreConnectorMap();
-        } catch (DomainManagerException e) {
-            credentialStoreConnectorsMap = Collections.emptyMap();
+        for (Callback callback : callbacks) {
+            if (callback instanceof NameCallback) {
+                String username = ((NameCallback) callback).getName();
+
+                try {
+                    return domainManager.getDomainFromUserName(username);
+                } catch (DomainException e) {
+                    throw new CredentialStoreException(String
+                            .format("Domain for username %s do not exist", username), e);
+                }
+            }
         }
 
-        return credentialStoreConnectorsMap.entrySet()
-                .stream()
-                .collect(Collectors.toMap(Map.Entry::getKey,
-                        entry -> entry.getValue().getCredentialStoreConfig().getStoreProperties()
-                                .getProperty(UserCoreConstants.USERSTORE_DISPLAY_NAME, "")));
+        throw new CredentialStoreException("NameCallBack instance not found in the callbacks array");
     }
 
 }

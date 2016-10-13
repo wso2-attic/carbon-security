@@ -3,6 +3,7 @@ package org.wso2.carbon.security.caas.internal.config;
 import org.wso2.carbon.security.caas.api.util.CarbonSecurityConstants;
 import org.wso2.carbon.security.caas.user.core.claim.MetaClaim;
 import org.wso2.carbon.security.caas.user.core.claim.MetaClaimMapping;
+import org.wso2.carbon.security.caas.user.core.exception.DomainConfigException;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.introspector.BeanAccess;
 
@@ -56,20 +57,24 @@ public class DomainConfigBuilder {
      *
      * @param metaClaims MetaClaims that are referenced from domain configuration, <ClaimURI, MetaClaim>.
      * @return Domain Configuration
+     * @throws DomainConfigException DomainConfigException
      */
-    public static DomainConfig getDomainConfig(Map<String, MetaClaim> metaClaims) {
+    public static DomainConfig getDomainConfig(Map<String, MetaClaim> metaClaims)
+            throws DomainConfigException {
+
         DomainConfigFile domainConfigFile = buildDomainConfig();
 
-        List<String> domains = new ArrayList<>();
         Map<String, List<String>> domainIdentityStoreConnectors = new HashMap<>();
         Map<String, List<String>> domainCredentialStoreConnectors = new HashMap<>();
 
         Map<String, List<MetaClaimMapping>> identityStoreConnectorMapping = new HashMap<>();
 
-        for (DomainConfigEntry domainConfigEntry : domainConfigFile.getDomains()) {
+        Map<Integer, List<String>> domainPriorityToDomainMap = new HashMap<>();
+
+        for (DomainConfigEntry domainConfigEntry : domainConfigFile.getDomainConfigEntries()) {
             // Set domain name
             String domainName = domainConfigEntry.getDomainName();
-            domains.add(domainName);
+            int domainPriority = domainConfigEntry.getDomainPriority();
 
             List<String> identityStoreConnectors = new ArrayList<>();
             List<String> credentialStoreConnectors = new ArrayList<>();
@@ -93,6 +98,14 @@ public class DomainConfigBuilder {
                 identityStoreConnectorMapping.put(identityStoreConnectorId, metaClaimMappings);
             }
 
+            // Check for duplicate domain names
+            // It is not necessary to check other maps since the same domain name is added
+            if (domainIdentityStoreConnectors.containsKey(domainName)) {
+                throw new DomainConfigException(String
+                        .format("Duplicate domain name entries detected in domain configuration for domain name %s",
+                                domainName));
+            }
+
             domainIdentityStoreConnectors.put(domainName, identityStoreConnectors);
 
             // Add domain to connector mapping
@@ -100,10 +113,17 @@ public class DomainConfigBuilder {
                     (DomainStoreConfigEntry::getStoreConnectorId).collect(Collectors.toList()));
 
             domainCredentialStoreConnectors.put(domainName, credentialStoreConnectors);
+
+            // Add domain to domain priority list
+            if (!domainPriorityToDomainMap.containsKey(domainPriority)) {
+                domainPriorityToDomainMap.put(domainPriority, new ArrayList<>());
+            }
+
+            domainPriorityToDomainMap.get(domainPriority).add(domainName);
         }
 
 
-        return new DomainConfig(domains, domainIdentityStoreConnectors, domainCredentialStoreConnectors,
-                identityStoreConnectorMapping);
+        return new DomainConfig(domainPriorityToDomainMap, domainIdentityStoreConnectors,
+                domainCredentialStoreConnectors, identityStoreConnectorMapping);
     }
 }

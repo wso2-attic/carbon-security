@@ -17,9 +17,13 @@ authorizationStore:
   connector: "#JDBCAS1"
 credentialStore:
   connector: "#JDBCCS1"
+  connector: "#JDBCCS2"
+  connector: "#JDBCCS3"
 enableCache: true
 identityStore:
   connector: "#JDBCIS1"
+  connector: "#JDBCIS2"
+  connector: "#JDBCIS3"
 storeConnectors:
   -
     connectorType: JDBCCredentialStore
@@ -29,8 +33,34 @@ storeConnectors:
       databaseType: MySQL
       hashAlgorithm: SHA256
   -
+    connectorType: JDBCCredentialStore
+    name: JDBCCS2
+    properties:
+      dataSource: WSO2_CARBON_DB
+      databaseType: MySQL
+      hashAlgorithm: SHA256
+  -
+    connectorType: JDBCCredentialStore
+    name: JDBCCS3
+    properties:
+      dataSource: WSO2_CARBON_DB
+      databaseType: MySQL
+      hashAlgorithm: SHA256
+  -
     connectorType: JDBCIdentityStore
     name: JDBCIS1
+    properties:
+      dataSource: WSO2_CARBON_DB
+      databaseType: MySQL
+  -
+    connectorType: JDBCIdentityStore
+    name: JDBCIS2
+    properties:
+      dataSource: WSO2_CARBON_DB
+      databaseType: MySQL
+  -
+    connectorType: JDBCIdentityStore
+    name: JDBCIS3
     properties:
       dataSource: WSO2_CARBON_DB
       databaseType: MySQL
