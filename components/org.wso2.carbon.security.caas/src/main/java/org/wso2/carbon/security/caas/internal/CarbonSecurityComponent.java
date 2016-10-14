@@ -36,25 +36,27 @@ import org.wso2.carbon.security.caas.api.CarbonPolicy;
 import org.wso2.carbon.security.caas.api.module.UsernamePasswordLoginModule;
 import org.wso2.carbon.security.caas.api.util.CarbonSecurityConstants;
 import org.wso2.carbon.security.caas.boot.ProxyLoginModule;
-import org.wso2.carbon.security.caas.internal.config.ClaimConfig;
-import org.wso2.carbon.security.caas.internal.config.ClaimConfigBuilder;
-import org.wso2.carbon.security.caas.internal.config.DomainConfig;
-import org.wso2.carbon.security.caas.internal.config.DomainConfigBuilder;
+import org.wso2.carbon.security.caas.internal.config.CredentialStoreConnectorConfig;
+import org.wso2.carbon.security.caas.internal.config.IdentityStoreConnectorConfig;
 import org.wso2.carbon.security.caas.internal.config.PermissionConfigBuilder;
 import org.wso2.carbon.security.caas.internal.config.PermissionConfigFile;
 import org.wso2.carbon.security.caas.internal.config.StoreConfigBuilder;
+import org.wso2.carbon.security.caas.internal.config.domain.DomainConfig;
+import org.wso2.carbon.security.caas.internal.config.domain.DomainConfigBuilder;
+import org.wso2.carbon.security.caas.internal.config.domain.DomainIdentityStoreConnectorConfigEntry;
 import org.wso2.carbon.security.caas.internal.osgi.UserNamePasswordLoginModuleFactory;
 import org.wso2.carbon.security.caas.internal.osgi.UsernamePasswordCallbackHandlerFactory;
+
 import org.wso2.carbon.security.caas.user.core.bean.Domain;
 import org.wso2.carbon.security.caas.user.core.claim.ClaimManager;
 import org.wso2.carbon.security.caas.user.core.claim.InMemoryClaimManager;
+import org.wso2.carbon.security.caas.user.core.claim.MetaClaim;
 import org.wso2.carbon.security.caas.user.core.claim.MetaClaimMapping;
+import org.wso2.carbon.security.caas.user.core.claim.MetaClaimStore;
 import org.wso2.carbon.security.caas.user.core.common.CarbonRealmServiceImpl;
 import org.wso2.carbon.security.caas.user.core.config.StoreConfig;
 import org.wso2.carbon.security.caas.user.core.domain.DomainManager;
 import org.wso2.carbon.security.caas.user.core.exception.AuthorizationStoreException;
-import org.wso2.carbon.security.caas.user.core.exception.CarbonSecurityDataHolderException;
-import org.wso2.carbon.security.caas.user.core.exception.ClaimManagerException;
 import org.wso2.carbon.security.caas.user.core.exception.CredentialStoreException;
 import org.wso2.carbon.security.caas.user.core.exception.DomainConfigException;
 import org.wso2.carbon.security.caas.user.core.exception.DomainException;
@@ -200,30 +202,7 @@ public class CarbonSecurityComponent implements RequiredCapabilityListener {
             unbind = "unregisterClaimManager"
     )
     protected void registerClaimManager(ClaimManager claimManager, Map<String, String> properties) {
-
-        String claimMangerName = properties.get("claim-manager");
-
-        ClaimConfig claimConfig = null;
-
-        try {
-            claimConfig = CarbonSecurityDataHolder.getInstance().getClaimConfig();
-        } catch (CarbonSecurityDataHolderException e) {
-            log.error("Error occurred in retrieving the claim configuration", e);
-        }
-
-        if (claimMangerName != null && !claimMangerName.trim().isEmpty()
-                && claimMangerName.equals(claimConfig.getClaimManager())) {
-
-            try {
-                claimManager.init(CarbonSecurityDataHolder.getInstance().getDomainConfig()
-                        .getIdentityStoreConnectorMapping());
-                CarbonSecurityDataHolder.getInstance().getCarbonRealmService().setClaimManager(claimManager);
-            } catch (ClaimManagerException e) {
-                log.error("Failed to initialize Claim Manager - " + claimMangerName, e);
-            } catch (CarbonSecurityDataHolderException e) {
-                log.error("Error occurred in retrieving the domain configuration", e);
-            }
-        }
+        CarbonSecurityDataHolder.getInstance().getCarbonRealmService().setClaimManager(claimManager);
     }
 
     protected void unregisterClaimManager(ClaimManager claimManager) {
@@ -335,26 +314,14 @@ public class CarbonSecurityComponent implements RequiredCapabilityListener {
             }
         }
 
-        StoreConfig storeConfig = StoreConfigBuilder.buildStoreConfigs();
-        ClaimConfig claimConfig = ClaimConfigBuilder.getClaimConfig();
+        StoreConfig storeConfig = StoreConfigBuilder.getStoreConfig();
+
 
         try {
-            DomainConfig domainConfig = DomainConfigBuilder.getDomainConfig(claimConfig.getMetaClaims());
+            DomainConfig domainConfig = DomainConfigBuilder.getDomainConfig();
             CarbonSecurityDataHolder.getInstance().setDomainConfig(domainConfig);
-        } catch (DomainConfigException e) {
-            log.error("Error occurred in building the domain configuration - ", e);
-        }
 
-        // Set domains to domain manager.
-        DomainManager domainManager = null;
-        try {
-            domainManager = createDomainManagerFromConfig(CarbonSecurityDataHolder
-                    .getInstance().getDomainConfig());
-        } catch (DomainException e) {
-            log.error("Error occurred in creating the domain manager from the domain config", e);
-        } catch (CarbonSecurityDataHolderException e) {
-            log.error("Error occurred in retrieving domain configuration", e);
-        }
+            DomainManager domainManager = createDomainManagerFromConfig(domainConfig, storeConfig);
 
         AuthorizationStore authorizationStore;
         CredentialStore credentialStore;
@@ -372,39 +339,30 @@ public class CarbonSecurityComponent implements RequiredCapabilityListener {
 
         credentialStore = new CredentialStoreImpl();
 
-        try {
             credentialStore.init(domainManager, storeConfig.getCredentialConnectorConfigMap());
             identityStore.init(domainManager, storeConfig.getIdentityConnectorConfigMap());
             authorizationStore.init(storeConfig.getAuthorizationConnectorConfigMap());
+
+
+            // Register the carbon realm service.
+            CarbonRealmServiceImpl<IdentityStore, CredentialStore> carbonRealmService
+                    = new CarbonRealmServiceImpl(identityStore, credentialStore, authorizationStore);
+
+            CarbonSecurityDataHolder.getInstance().registerCarbonRealmService(carbonRealmService);
+            realmServiceRegistration = bundleContext.registerService(RealmService.class.getName(), carbonRealmService,
+                    null);
+            log.info("Realm service registered successfully.");
+
+            // Initialize and register the claim manager.
+            InMemoryClaimManager claimManager = new InMemoryClaimManager();
+
+            CarbonSecurityDataHolder.getInstance().getCarbonRealmService().setClaimManager(claimManager);
         } catch (CredentialStoreException | AuthorizationStoreException | IdentityStoreException e) {
             log.error("Error occurred in initialising store", e);
-        }
-
-        // Register the carbon realm service.
-        CarbonRealmServiceImpl carbonRealmService = new CarbonRealmServiceImpl(identityStore, credentialStore,
-                authorizationStore);
-        CarbonSecurityDataHolder.getInstance().registerCarbonRealmService(carbonRealmService);
-        realmServiceRegistration = bundleContext.registerService(RealmService.class.getName(), carbonRealmService,
-                null);
-        log.info("Realm service registered successfully.");
-
-        // Initialize and register the claim manager.
-
-        CarbonSecurityDataHolder.getInstance().setClaimConfig(claimConfig);
-
-        if ("DEFAULT".equals(claimConfig.getClaimManager())) {
-            InMemoryClaimManager claimManager = new InMemoryClaimManager();
-            try {
-                claimManager.init(CarbonSecurityDataHolder
-                        .getInstance().getDomainConfig().getIdentityStoreConnectorMapping());
-                log.info("Claim manager initialized successfully.");
-            } catch (ClaimManagerException e) {
-                log.error("Failed to initialize In-memory Claim Manager", e);
-            } catch (CarbonSecurityDataHolderException e) {
-                log.error("Failed to obtain domain configuration from CarbonSecurityDataHolder", e);
-            }
-            CarbonSecurityDataHolder.getInstance().getCarbonRealmService().setClaimManager(claimManager);
-            log.info("Claim manager registered successfully.");
+        } catch (DomainException e) {
+            log.error("Error occurred in creating the domain manager from the domain config", e);
+        } catch (DomainConfigException e) {
+            log.error("Error occurred in building the domain configuration", e);
         }
 
         log.info("Carbon-Security bundle activated successfully.");
@@ -417,49 +375,89 @@ public class CarbonSecurityComponent implements RequiredCapabilityListener {
      * @return DomainManager
      * @throws DomainException Domain Manager Exception
      */
-    private DomainManager createDomainManagerFromConfig(DomainConfig domainConfig) throws DomainException {
+    private DomainManager createDomainManagerFromConfig(DomainConfig domainConfig, StoreConfig storeConfig) throws
+            DomainException {
 
         DomainManager domainManager = new DomainManager();
+        MetaClaimStore metaClaimStore = CarbonSecurityDataHolder.getInstance().getMetaClaimStore();
 
-        Map<String, List<MetaClaimMapping>> metaClaimMappings = domainConfig.getIdentityStoreConnectorMapping();
+        Map<String, Integer> domainNameToDomainPriorityMap = domainConfig.getDomainNameToDomainPriorityMap();
 
-        for (Map.Entry<Integer, List<String>> domainPriorityToNameEntry
-                : domainConfig.getDomainPriorityToDomainNameMap().entrySet()) {
+        Map<String, IdentityStoreConnectorConfig> identityStoreConnectorConfigs =
+                storeConfig.getIdentityConnectorConfigMap();
 
-            List<String> domainNameList = domainPriorityToNameEntry.getValue();
-            int domainPriority = domainPriorityToNameEntry.getKey();
+        Map<String, IdentityStoreConnectorFactory> identityStoreConnectorFactories =
+                CarbonSecurityDataHolder.getInstance().getIdentityStoreConnectorFactoryMap();
 
-            for (String domainName : domainNameList) {
+        Map<String, Domain> domains = new HashMap<>();
 
-                Domain domain = new Domain(domainName, domainPriority);
+        for (Map.Entry<String, List<DomainIdentityStoreConnectorConfigEntry>> domainConfigEntry :
+                domainConfig.getDomainIdentityStoreConnectors().entrySet()) {
 
-                List<String> identityStoreConnectors = domainConfig.getDomainIdentityStoreConnectors().get(domainName);
+            String domainName = domainConfigEntry.getKey();
+            int domainPriority = domainNameToDomainPriorityMap.get(domainName);
 
-                Map<String, List<MetaClaimMapping>> domainMetaClaimMappings = new HashMap<>();
+            // Create new domain
+            Domain domain = new Domain(domainName, domainPriority);
+            domainManager.addDomain(domain);
+            domains.put(domainName, domain);
 
-                for (String identityStoreConnectorId : identityStoreConnectors) {
-                    IdentityStoreConnector identityStoreConnector = CarbonSecurityDataHolder.getInstance()
-                            .getIdentityStoreConnectorFactoryMap().get(identityStoreConnectorId).getConnector();
+            // Domain connector meta claims mappings
+            Map<String, List<MetaClaimMapping>> connectorMetaClaimMappings = new HashMap<>();
 
-                    domain.addIdentityStoreConnector(identityStoreConnector);
+            for (DomainIdentityStoreConnectorConfigEntry domainIdentityStoreConnectorConfigEntry :
+                    domainConfigEntry.getValue()) {
+                String identityStoreConnectorId = domainIdentityStoreConnectorConfigEntry.getIdentityStoreConnectorId();
+                IdentityStoreConnectorConfig identityStoreConnectorConfig =
+                        identityStoreConnectorConfigs.get(identityStoreConnectorId);
 
-                    domainMetaClaimMappings.put(identityStoreConnectorId, metaClaimMappings.get
-                            (identityStoreConnectorId));
-                }
+                IdentityStoreConnector identityStoreConnector =  identityStoreConnectorFactories
+                        .get(identityStoreConnectorConfig.getConnectorType()).getConnector();
 
-                domain.setClaimMappings(domainMetaClaimMappings);
+                domain.addIdentityStoreConnector(identityStoreConnector);
 
-                List<String> credentialStoreConnectors = domainConfig.getDomainCredentialStoreConnectors().get
-                        (domainName);
-                for (String credentialStoreConnectorId : credentialStoreConnectors) {
-                    CredentialStoreConnector credentialStoreConnector = CarbonSecurityDataHolder.getInstance()
-                            .getCredentialStoreConnectorFactoryMap().get(credentialStoreConnectorId).getInstance();
+                List<MetaClaimMapping> metaClaimMappings = domainIdentityStoreConnectorConfigEntry
+                        .getAttributeMappings().entrySet().stream().map(entry -> {
 
+                            MetaClaim metaClaim = metaClaimStore.getMetaClaim(entry.getKey());
+                            return new MetaClaimMapping(metaClaim, identityStoreConnectorId, entry.getValue());
+                        }).collect(Collectors.toList());
+
+                connectorMetaClaimMappings.put(identityStoreConnectorId, metaClaimMappings);
+
+            }
+
+
+            domain.setClaimMappings(connectorMetaClaimMappings);
+
+        }
+
+        for (Map.Entry<String, CredentialStoreConnectorConfig> credentialStoreConnectorConfigEntry :
+                storeConfig.getCredentialConnectorConfigMap().entrySet()) {
+
+            String credentialStoreConnectorId = credentialStoreConnectorConfigEntry.getKey();
+
+            CredentialStoreConnectorConfig credentialStoreConnectorConfig =
+                    credentialStoreConnectorConfigEntry.getValue();
+
+            CredentialStoreConnector credentialStoreConnector = CarbonSecurityDataHolder.getInstance()
+                    .getCredentialStoreConnectorFactoryMap()
+                    .get(credentialStoreConnectorConfig.getConnectorType()).getInstance();
+
+            try {
+                credentialStoreConnector.init(credentialStoreConnectorId, credentialStoreConnectorConfig);
+
+                String domainName = credentialStoreConnectorConfig.getDomainName();
+                Domain domain = domains.get(domainName);
+
+                if (domain != null) {
                     domain.addCredentialStoreConnector(credentialStoreConnector);
+                } else {
+                    log.error("Domain " + domainName + " was not found when creating CredentialStoreConnector "
+                            + credentialStoreConnectorId);
                 }
-
-                // Domain Object creation is complete, add it to the domain manager
-                domainManager.addDomain(domain);
+            } catch (CredentialStoreException e) {
+                log.error("Error initializing CredentialStoreConnector " + credentialStoreConnectorId);
             }
         }
 

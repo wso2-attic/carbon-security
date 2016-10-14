@@ -1,13 +1,13 @@
-package org.wso2.carbon.security.caas.internal.config;
+package org.wso2.carbon.security.caas.internal.config.domain;
 
 /**
  * Domain attribute mapping config entry.
  */
 public class DomainAttributeConfigEntry {
 
-    private String attribute;
-
     private String claimURI;
+
+    private String attribute;
 
     public String getAttribute() {
         return attribute;

@@ -15,42 +15,29 @@
 ###############################################################################
 domains:
   -
-    domainName: "A"
+    domain: "A"
+    priority: 1
     identityStoreConnectors:
-      -
-        storeConnectorId: "JDBCIS1"
-        attributeMappings:
-        -
-          attribute: "firstName"
-          claimURI: "http://wso2.org/claims/firstName"
-        -
-          attribute: "lastName"
-          claimURI: "http://wso2.org/claims/lastName"
-
-    credentialStoreConnectors:
-      -
-        storeConnectorId : "JDBCCS1"
-      -
-        storeConnectorId : "JDBCCS2"
+    -
+      connectorName: "JDBCISC1"
+      attributeMappings:
+      - http://wso2.org/claims/username: "username"
+      - http://wso2.org/claims/firstName: "firstName"
+      - http://wso2.org/claims/lastName: "lastName"
+    -
+      connectorName: "JDBCISC2"
+      attributeMappings:
+      - http://wso2.org/claims/username: "email"
+      - http://wso2.org/claims/firstName: "firstName"
+      - http://wso2.org/claims/lastName: "lastName"
   -
-    domainName: "B"
+    domain: "B"
+    priority: 2
     identityStoreConnectors:
     -
-      storeConnectorId: "JDBCIS2"
+      connectorName: "JDBCISC3"
       attributeMappings:
-      -
-        attribute: "firstName"
-        claimURI: "http://wso2.org/claims/firstName"
-      -
-        attribute: "lastName"
-        claimURI: "http://wso2.org/claims/lastName"
-    -
-      storeConnectorId: "JDBCIS3"
-      attributeMappings:
-      -
-        attribute: "email"
-        claimURI: "http://wso2.org/claims/email"
+      - http://wso2.org/claims/username: "email"
+      - http://wso2.org/claims/firstName: "firstName"
+      - http://wso2.org/claims/lastName: "lastName"
 
-    credentialStoreConnectors:
-    -
-      storeConnectorId: "JDBCS3"

@@ -16,9 +16,6 @@
 
 package org.wso2.carbon.security.caas.internal.config;
 
-import java.util.Collections;
-import java.util.List;
-
 /**
  * StoreConfigs Bean.
  *
@@ -31,7 +28,7 @@ public class StoreConfigFile {
     private StoreConfigEntry identityStore;
     private StoreConfigEntry authorizationStore;
 
-    private List<StoreConnectorConfigEntry> storeConnectors;
+    private StoreConnectorsConfigEntry storeConnectors;
 
     public boolean isEnableCache() {
         return enableCache;
@@ -65,16 +62,12 @@ public class StoreConfigFile {
         this.authorizationStore = authorizationStore;
     }
 
-    public List<StoreConnectorConfigEntry> getStoreConnectors() {
-        if (storeConnectors == null) {
-            return Collections.EMPTY_LIST;
-        }
+    public StoreConnectorsConfigEntry getStoreConnectors() {
         return storeConnectors;
     }
 
-    public void setStoreConnectors(List<StoreConnectorConfigEntry> storeConnectors) {
+    public void setStoreConnectors(StoreConnectorsConfigEntry storeConnectors) {
         this.storeConnectors = storeConnectors;
     }
-
 }
 
