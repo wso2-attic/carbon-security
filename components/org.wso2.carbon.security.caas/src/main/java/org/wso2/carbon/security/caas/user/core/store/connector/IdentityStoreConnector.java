@@ -24,8 +24,8 @@ import org.wso2.carbon.security.caas.user.core.exception.GroupNotFoundException;
 import org.wso2.carbon.security.caas.user.core.exception.IdentityStoreException;
 import org.wso2.carbon.security.caas.user.core.exception.UserNotFoundException;
 
-import java.util.List;
 import javax.security.auth.callback.Callback;
+import java.util.List;
 
 /**
  * User store.

@@ -20,10 +20,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.wso2.carbon.caching.CarbonCachingService;
 import org.wso2.carbon.security.caas.internal.CarbonSecurityDataHolder;
-import org.wso2.carbon.security.caas.user.core.bean.Attribute;
 import org.wso2.carbon.security.caas.user.core.bean.Group;
 import org.wso2.carbon.security.caas.user.core.bean.User;
 import org.wso2.carbon.security.caas.user.core.claim.Claim;
+import org.wso2.carbon.security.caas.user.core.claim.MetaClaim;
 import org.wso2.carbon.security.caas.user.core.config.CacheConfig;
 import org.wso2.carbon.security.caas.user.core.config.IdentityStoreConnectorConfig;
 import org.wso2.carbon.security.caas.user.core.constant.CacheNames;
@@ -34,11 +34,10 @@ import org.wso2.carbon.security.caas.user.core.exception.IdentityStoreException;
 import org.wso2.carbon.security.caas.user.core.exception.UserNotFoundException;
 import org.wso2.carbon.security.caas.user.core.util.CacheHelper;
 
-import java.util.List;
-import java.util.Map;
 import javax.cache.Cache;
 import javax.cache.CacheManager;
-import javax.security.auth.callback.Callback;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Virtual identity store with the caching.
@@ -111,19 +110,31 @@ public class CacheBackedIdentityStore implements IdentityStore {
     }
 
     @Override
+    public User getUser(String userId, String domain) throws IdentityStoreException, UserNotFoundException {
+        return null;
+    }
+
+    @Override
     public User getUser(Claim claim) throws IdentityStoreException, UserNotFoundException {
         // TODO: Implement this method.
         return null;
     }
 
     @Override
-    public User getUser(Callback[] callbacks)
-            throws IdentityStoreException, UserNotFoundException {
-
-        // We are using this method mostly internally and for to aid the authenticate() method. I see no use of
-        // caching in here.
-        return identityStore.getUser(callbacks);
+    public User getUser(Claim claim, String domain) throws IdentityStoreException, UserNotFoundException {
+        return null;
     }
+
+    @Override
+    public List<User> listUsers(int offset, int length) throws IdentityStoreException {
+        return null;
+    }
+
+    @Override
+    public List<User> listUsers(int offset, int length, String domain) throws IdentityStoreException {
+        return null;
+    }
+
 
 //    @Override
 //    public User getUserBuilder(String userId, Domain domain) throws IdentityStoreException {
@@ -146,10 +157,6 @@ public class CacheBackedIdentityStore implements IdentityStore {
 //        return user;
 //    }
 
-    @Override
-    public List<User> listUsers(String filterPattern, int offset, int length) throws IdentityStoreException {
-        return identityStore.listUsers(filterPattern, offset, length);
-    }
 
     @Override
     public List<User> listUsers(Claim claim, int offset, int length) throws IdentityStoreException {
@@ -158,15 +165,22 @@ public class CacheBackedIdentityStore implements IdentityStore {
     }
 
     @Override
-    public List<Attribute> getUserAttributeValues(String userName) throws IdentityStoreException {
-        return identityStore.getUserAttributeValues(userName);
+    public List<User> listUsers(Claim claim, int offset, int length, String domain) throws IdentityStoreException {
+        return null;
     }
 
     @Override
-    public List<Attribute> getUserAttributeValues(String userName, List<String> attributeNames)
-            throws IdentityStoreException {
-        return identityStore.getUserAttributeValues(userName, attributeNames);
+    public List<User> listUsers(MetaClaim metaClaim, String filterPattern, int offset, int length) throws
+            IdentityStoreException {
+        return null;
     }
+
+    @Override
+    public List<User> listUsers(MetaClaim metaClaim, String filterPattern, int offset, int length, String domain)
+            throws IdentityStoreException {
+        return null;
+    }
+
 
     @Override
     public Group getGroup(String groupName) throws IdentityStoreException, GroupNotFoundException {
@@ -190,8 +204,50 @@ public class CacheBackedIdentityStore implements IdentityStore {
     }
 
     @Override
+    public Group getGroup(String groupId, String domain) throws IdentityStoreException, GroupNotFoundException {
+        return null;
+    }
+
+    @Override
     public Group getGroup(Claim claim) throws IdentityStoreException, GroupNotFoundException {
         // TODO: Implement this.
+        return null;
+    }
+
+    @Override
+    public Group getGroup(Claim claim, String domain) throws IdentityStoreException, GroupNotFoundException {
+        return null;
+    }
+
+    @Override
+    public List<Group> listGroups(int offset, int length) throws IdentityStoreException {
+        return null;
+    }
+
+    @Override
+    public List<Group> listGroups(int offset, int length, String domain) throws IdentityStoreException {
+        return null;
+    }
+
+    @Override
+    public List<Group> listGroups(Claim claim, int offset, int length) throws IdentityStoreException {
+        return null;
+    }
+
+    @Override
+    public List<Group> listGroups(Claim claim, int offset, int length, String domain) throws IdentityStoreException {
+        return null;
+    }
+
+    @Override
+    public List<Group> listGroups(MetaClaim metaClaim, String filterPattern, int offset, int length)
+            throws IdentityStoreException {
+        return null;
+    }
+
+    @Override
+    public List<Group> listGroups(MetaClaim metaClaim, String filterPattern, int offset, int length, String domain)
+            throws IdentityStoreException {
         return null;
     }
 
@@ -216,22 +272,6 @@ public class CacheBackedIdentityStore implements IdentityStore {
 //        return group;
 //    }
 
-    @Override
-    public List<Group> listGroups(String filterPattern, int offset, int length) throws IdentityStoreException {
-        return identityStore.listGroups(filterPattern, offset, length);
-    }
-
-    @Override
-    public List<Attribute> getGroupAttributeValues(String groupId)
-            throws IdentityStoreException {
-        return identityStore.getGroupAttributeValues(groupId);
-    }
-
-    @Override
-    public List<Attribute> getGroupAttributeValues(String groupId,
-                                                   List<String> attributeNames) throws IdentityStoreException {
-        return identityStore.getGroupAttributeValues(groupId, attributeNames);
-    }
 
     @Override
     public List<Group> getGroupsOfUser(String userName) throws IdentityStoreException {
@@ -262,6 +302,16 @@ public class CacheBackedIdentityStore implements IdentityStore {
     }
 
     @Override
+    public List<Group> getGroupsOfUser(String userId, String domain) throws IdentityStoreException {
+        return null;
+    }
+
+    @Override
+    public List<User> getUsersOfGroup(String groupId, String domain) throws IdentityStoreException {
+        return null;
+    }
+
+    @Override
     public boolean isUserInGroup(String userName, String groupId) throws IdentityStoreException {
 
         if (CacheHelper.isCacheDisabled(cacheConfigs, CacheNames.GROUPS_USERID_IDENTITYSTOREID)) {
@@ -287,5 +337,10 @@ public class CacheBackedIdentityStore implements IdentityStore {
             }
         }
         return isUserInGroup;
+    }
+
+    @Override
+    public boolean isUserInGroup(String userId, String groupId, String domain) throws IdentityStoreException {
+        return false;
     }
 }

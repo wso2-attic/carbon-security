@@ -38,11 +38,11 @@ import org.wso2.carbon.security.caas.user.core.exception.RoleNotFoundException;
 import org.wso2.carbon.security.caas.user.core.exception.StoreException;
 import org.wso2.carbon.security.caas.user.core.util.CacheHelper;
 
+import javax.cache.Cache;
+import javax.cache.CacheManager;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import javax.cache.Cache;
-import javax.cache.CacheManager;
 
 /**
  * Virtual authorization store with caching.

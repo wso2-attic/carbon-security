@@ -35,11 +35,11 @@ import org.wso2.carbon.security.caas.user.core.exception.UserNotFoundException;
 import org.wso2.carbon.security.caas.user.core.store.connector.CredentialStoreConnector;
 import org.wso2.carbon.security.caas.user.core.store.connector.CredentialStoreConnectorFactory;
 
+import javax.security.auth.callback.Callback;
+import javax.security.auth.callback.NameCallback;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import javax.security.auth.callback.Callback;
-import javax.security.auth.callback.NameCallback;
 
 /**
  * Represents a virtual credential store to abstract the underlying stores.
