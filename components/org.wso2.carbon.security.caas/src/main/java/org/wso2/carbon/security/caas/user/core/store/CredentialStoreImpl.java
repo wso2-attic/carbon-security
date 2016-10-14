@@ -35,9 +35,11 @@ import org.wso2.carbon.security.caas.user.core.exception.UserNotFoundException;
 import org.wso2.carbon.security.caas.user.core.store.connector.CredentialStoreConnector;
 import org.wso2.carbon.security.caas.user.core.store.connector.CredentialStoreConnectorFactory;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
 import javax.security.auth.callback.Callback;
 import javax.security.auth.callback.NameCallback;
 
@@ -93,11 +95,24 @@ public class CredentialStoreImpl implements CredentialStore {
         // we need to get the user unique id from Identity store to get the user related credential information
         // from the Credential store.
 
+        // TODO: Override the NameCallBack class in a way so that you can obtain the unique attribute name.
+        NameCallback callback = (NameCallback) Arrays.stream(callbacks)
+                .filter(c ->
+                        c instanceof NameCallback)
+                .collect(Collectors.toList())
+                .get(0);
+
+        if (callback == null) {
+            throw new AuthenticationFailure("NameCallBack not found in callback list");
+        }
+
+        String username = callback.getName();
+
         User user;
         try {
             // Get the user using given callbacks. We need to find the user unique id.
             user = CarbonSecurityDataHolder.getInstance()
-                    .getCarbonRealmService().getIdentityStore().getUser(callbacks);
+                    .getCarbonRealmService().getIdentityStore().getUser(username);
 
             // Crete a new call back array from existing one and add new user data (user id and identity store id)
             // as a carbon callback to the new array.
@@ -123,7 +138,7 @@ public class CredentialStoreImpl implements CredentialStore {
         Map<String, CredentialStoreConnector> credentialStoreConnectorsMap;
 
         try {
-            credentialStoreConnectorsMap = resolveDomain(callbacks).getCredentialStoreConnectorMap();
+            credentialStoreConnectorsMap = resolveDomain(username).getCredentialStoreConnectorMap();
         } catch (CredentialStoreException e) {
             credentialStoreConnectorsMap = Collections.emptyMap();
             log.error("Error occurred in obtaining the credential store connector map", e);
@@ -155,28 +170,20 @@ public class CredentialStoreImpl implements CredentialStore {
     }
 
     /**
-     * Resolve domain using the callbacks array
+     * Resolve domain using username.
      *
-     * @param callbacks Callback array
-     * @return Domain for the callbacks
-     * @throws CredentialStoreException CredentialStoreException on unable to locate NameCallBack instance
+     * @param username String username
+     * @return Domain for the username
+     * @throws CredentialStoreException CredentialStoreException on unable to locate username
      */
-    private Domain resolveDomain(Callback[] callbacks) throws CredentialStoreException {
+    private Domain resolveDomain(String username) throws CredentialStoreException {
 
-        for (Callback callback : callbacks) {
-            if (callback instanceof NameCallback) {
-                String username = ((NameCallback) callback).getName();
-
-                try {
-                    return domainManager.getDomainFromUserName(username);
-                } catch (DomainException e) {
-                    throw new CredentialStoreException(String
-                            .format("Domain for username %s do not exist", username), e);
-                }
-            }
+        try {
+            return domainManager.getDomainFromUserName(username);
+        } catch (DomainException e) {
+            throw new CredentialStoreException(String
+                    .format("Domain for username %s do not exist", username), e);
         }
-
-        throw new CredentialStoreException("NameCallBack instance not found in the callbacks array");
     }
 
 }
