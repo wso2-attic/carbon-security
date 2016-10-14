@@ -16,7 +16,6 @@
 
 package org.wso2.carbon.security.caas.user.core.store;
 
-import org.wso2.carbon.security.caas.user.core.bean.Attribute;
 import org.wso2.carbon.security.caas.user.core.bean.Group;
 import org.wso2.carbon.security.caas.user.core.bean.User;
 import org.wso2.carbon.security.caas.user.core.claim.Claim;
@@ -29,7 +28,6 @@ import org.wso2.carbon.security.caas.user.core.exception.UserNotFoundException;
 
 import java.util.List;
 import java.util.Map;
-import javax.security.auth.callback.Callback;
 
 /**
  * Represents a virtual identity store to abstract the underlying stores.
@@ -55,8 +53,10 @@ public interface IdentityStore {
     List<User> listUsers(Claim claim, int offset, int length) throws IdentityStoreException;
     List<User> listUsers(Claim claim, int offset, int length, String domain) throws IdentityStoreException;
 
-    List<User> listUsers(MetaClaim metaClaim, String filterPattern, int offset, int length) throws IdentityStoreException;
-    List<User> listUsers(MetaClaim metaClaim, String filterPattern, int offset, int length, String domain) throws IdentityStoreException;
+    List<User> listUsers(MetaClaim metaClaim, String filterPattern, int offset, int length)
+            throws IdentityStoreException;
+    List<User> listUsers(MetaClaim metaClaim, String filterPattern, int offset, int length, String domain)
+            throws IdentityStoreException;
 
     Group getGroup(String groupId) throws IdentityStoreException, GroupNotFoundException;
     Group getGroup(String groupId, String domain) throws IdentityStoreException, GroupNotFoundException;
@@ -70,8 +70,10 @@ public interface IdentityStore {
     List<Group> listGroups(Claim claim, int offset, int length) throws IdentityStoreException;
     List<Group> listGroups(Claim claim, int offset, int length, String domain) throws IdentityStoreException;
 
-    List<Group> listGroups(MetaClaim metaClaim, String filterPattern, int offset, int length) throws IdentityStoreException;
-    List<Group> listGroups(MetaClaim metaClaim, String filterPattern, int offset, int length, String domain) throws IdentityStoreException;
+    List<Group> listGroups(MetaClaim metaClaim, String filterPattern, int offset, int length)
+            throws IdentityStoreException;
+    List<Group> listGroups(MetaClaim metaClaim, String filterPattern, int offset, int length, String domain)
+            throws IdentityStoreException;
 
     List<Group> getGroupsOfUser(String userId) throws IdentityStoreException;
     List<User> getUsersOfGroup(String groupId) throws IdentityStoreException;

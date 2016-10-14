@@ -22,8 +22,8 @@ import org.wso2.carbon.security.caas.user.core.domain.DomainManager;
 import org.wso2.carbon.security.caas.user.core.exception.AuthenticationFailure;
 import org.wso2.carbon.security.caas.user.core.exception.CredentialStoreException;
 
-import java.util.Map;
 import javax.security.auth.callback.Callback;
+import java.util.Map;
 
 /**
  * Represents a virtual credential store to abstract the underlying stores.
