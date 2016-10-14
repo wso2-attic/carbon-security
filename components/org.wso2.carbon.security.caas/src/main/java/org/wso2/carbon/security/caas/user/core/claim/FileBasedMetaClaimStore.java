@@ -1,14 +1,11 @@
 package org.wso2.carbon.security.caas.user.core.claim;
 
+import org.wso2.carbon.security.caas.api.util.CarbonSecurityConstants;
+import org.wso2.carbon.security.caas.user.core.exception.ConfigurationFileReadException;
 import org.wso2.carbon.security.caas.user.core.exception.MetaClaimStoreException;
-import org.yaml.snakeyaml.Yaml;
-import org.yaml.snakeyaml.introspector.BeanAccess;
+import org.wso2.carbon.security.caas.user.core.util.FileUtil;
 
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
@@ -22,29 +19,21 @@ public class FileBasedMetaClaimStore implements MetaClaimStore {
 
     /**
      * ClaimURI to MetaClaim map.
+     *
+     * @throws ConfigurationFileReadException on error in reading file
+     * @throws IOException                    on file not found
      */
     Map<String, MetaClaim> metaClaims;
 
-    public FileBasedMetaClaimStore(String filepath) throws IOException {
-        Path file = Paths.get(filepath);
+    public FileBasedMetaClaimStore() throws ConfigurationFileReadException, IOException {
 
-        if (Files.exists(file)) {
+        Path file = Paths.get(CarbonSecurityConstants.getCarbonHomeDirectory().toString(), "conf", "security",
+                CarbonSecurityConstants.CLAIM_STORE_FILE);
 
-            try (Reader in = new InputStreamReader(Files.newInputStream(file), StandardCharsets.UTF_8)) {
-                Yaml yaml = new Yaml();
-                yaml.setBeanAccess(BeanAccess.FIELD);
-                MetaClaimStoreFile metaClaimStoreFile = yaml.loadAs(in, MetaClaimStoreFile.class);
+        MetaClaimStoreFile metaClaimStoreFile = FileUtil.readConfigFile(file, MetaClaimStoreFile.class);
 
-
-                this.metaClaims = metaClaimStoreFile.getClaims().stream()
-                        .collect(Collectors.toMap(MetaClaim::getClaimURI, metaClaim -> metaClaim));
-
-            } catch (IOException e) {
-                throw new RuntimeException("Error while loading claim store " + filepath, e);
-            }
-        } else {
-            throw new IOException("Claim Store file " + filepath + "' is not available.");
-        }
+        metaClaims = metaClaimStoreFile.getClaims().stream()
+                .collect(Collectors.toMap(MetaClaim::getClaimURI, metaClaim -> metaClaim));
     }
 
     @Override

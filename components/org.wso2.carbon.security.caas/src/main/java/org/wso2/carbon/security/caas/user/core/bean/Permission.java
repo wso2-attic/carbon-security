@@ -23,7 +23,7 @@ import org.wso2.carbon.security.caas.user.core.exception.StoreException;
  */
 public class Permission {
 
-    private String authorizationStoreId;
+    private String authorizationStoreConnectorId;
     private String permissionId;
 
     private Resource resource;
@@ -39,11 +39,12 @@ public class Permission {
         this.action = action;
     }
 
-    private Permission(Resource resource, Action action, String permissionId, String authorizationStoreId) {
+    private Permission(Resource resource, Action action,
+                       String permissionId, String authorizationStoreConnectorId) {
         this.resource = resource;
         this.action = action;
         this.permissionId = permissionId;
-        this.authorizationStoreId = authorizationStoreId;
+        this.authorizationStoreConnectorId = authorizationStoreConnectorId;
     }
 
     /**
@@ -58,8 +59,8 @@ public class Permission {
      * Get the authorization store id.
      * @return Authorization store id.
      */
-    public String getAuthorizationStoreId() {
-        return authorizationStoreId;
+    public String getAuthorizationStoreConnectorId() {
+        return authorizationStoreConnectorId;
     }
 
     /**

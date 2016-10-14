@@ -11,9 +11,9 @@ import java.util.List;
  */
 public class StoreConnectorsConfigEntry {
 
-    List<IdentityStoreConnectorConfig> identityStoreConnectors;
-    List<CredentialStoreConnectorConfig> credentialStoreConnectors;
-    List<AuthorizationStoreConnectorConfig> authorizationStoreConnectors;
+    private List<IdentityStoreConnectorConfig> identityStoreConnectors;
+    private List<CredentialStoreConnectorConfig> credentialStoreConnectors;
+    private List<AuthorizationStoreConnectorConfig> authorizationStoreConnectors;
 
     public List<IdentityStoreConnectorConfig> getIdentityStoreConnectors() {
         return identityStoreConnectors;
@@ -35,7 +35,8 @@ public class StoreConnectorsConfigEntry {
         return authorizationStoreConnectors;
     }
 
-    public void setAuthorizationStoreConnectors(List<AuthorizationStoreConnectorConfig> authorizationStoreConnectors) {
+    public void setAuthorizationStoreConnectors(
+            List<AuthorizationStoreConnectorConfig> authorizationStoreConnectors) {
         this.authorizationStoreConnectors = authorizationStoreConnectors;
     }
 }

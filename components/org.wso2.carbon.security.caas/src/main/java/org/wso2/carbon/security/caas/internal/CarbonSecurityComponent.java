@@ -57,6 +57,7 @@ import org.wso2.carbon.security.caas.user.core.config.IdentityStoreConnectorConf
 import org.wso2.carbon.security.caas.user.core.config.StoreConfig;
 import org.wso2.carbon.security.caas.user.core.domain.DomainManager;
 import org.wso2.carbon.security.caas.user.core.exception.AuthorizationStoreException;
+import org.wso2.carbon.security.caas.user.core.exception.ConfigurationFileReadException;
 import org.wso2.carbon.security.caas.user.core.exception.CredentialStoreException;
 import org.wso2.carbon.security.caas.user.core.exception.DomainConfigException;
 import org.wso2.carbon.security.caas.user.core.exception.DomainException;
@@ -321,14 +322,10 @@ public class CarbonSecurityComponent implements RequiredCapabilityListener {
             }
         }
 
-        StoreConfig storeConfig = StoreConfigBuilder.getStoreConfig();
-
-
         try {
+            StoreConfig storeConfig = StoreConfigBuilder.getStoreConfig();
 
-            MetaClaimStore metaClaimStore = new FileBasedMetaClaimStore(
-                    CarbonSecurityConstants.getCarbonHomeDirectory().toString() + "/conf/security/" +
-                            CarbonSecurityConstants.CLAIM_STORE_FILE);
+            MetaClaimStore metaClaimStore = new FileBasedMetaClaimStore();
 
             carbonSecurityDataHolder.setMetaClaimStore(metaClaimStore);
 
@@ -385,6 +382,8 @@ public class CarbonSecurityComponent implements RequiredCapabilityListener {
             log.error("Error initializing claim store from file", e);
         } catch (UserManagerException e) {
             log.error("Error initializing FileBasedUserManager", e);
+        } catch (ConfigurationFileReadException e) {
+            log.error("Error reading configuration file", e);
         }
 
         log.info("Carbon-Security bundle activated successfully.");

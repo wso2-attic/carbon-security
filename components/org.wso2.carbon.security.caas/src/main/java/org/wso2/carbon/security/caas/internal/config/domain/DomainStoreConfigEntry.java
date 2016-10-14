@@ -8,19 +8,19 @@ import java.util.Map;
  */
 public class DomainStoreConfigEntry {
 
-    private String connectorName;
+    private String connectorId;
 
     /**
      * Domain IdentityStoreConnector attribute mapping configuration list.
      */
     private List<Map<String, String>> attributeMappings;
 
-    public String getConnectorName() {
-        return connectorName;
+    public String getConnectorId() {
+        return connectorId;
     }
 
-    public void setConnectorName(String connectorName) {
-        this.connectorName = connectorName;
+    public void setConnectorId(String connectorId) {
+        this.connectorId = connectorId;
     }
 
     public List<Map<String, String>> getAttributeMappings() {

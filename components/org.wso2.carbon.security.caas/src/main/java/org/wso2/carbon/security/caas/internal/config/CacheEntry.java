@@ -23,9 +23,9 @@ import org.wso2.carbon.security.caas.user.core.config.CacheConfig;
  */
 public class CacheEntry {
 
-    String name;
-    CacheConfig cacheConfig;
-    int size;
+    private String name;
+    private CacheConfig cacheConfig;
+    private int size;
 
     public int getSize() {
         return size;

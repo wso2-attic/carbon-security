@@ -58,9 +58,13 @@ public class AuthorizationStoreImpl implements AuthorizationStore {
 
     private Map<String, AuthorizationStoreConnector> authorizationStoreConnectors = new HashMap<>();
 
+    private RealmService carbonRealmService;
+
     @Override
     public void init(Map<String, AuthorizationStoreConnectorConfig>
                              authorizationConnectorConfigs) throws AuthorizationStoreException {
+
+        this.carbonRealmService = CarbonSecurityDataHolder.getInstance().getCarbonRealmService();
 
         if (authorizationConnectorConfigs.isEmpty()) {
             throw new StoreException("At least one authorization store configuration must present.");
@@ -74,7 +78,7 @@ public class AuthorizationStoreImpl implements AuthorizationStore {
                     .getInstance().getAuthorizationStoreConnectorFactoryMap().get(connectorType);
 
             if (authorizationStoreConnectorFactory == null) {
-                throw new StoreException("No credential store connector factory found for given type.");
+                throw new StoreException("No authorization store connector factory found for given type.");
             }
 
             AuthorizationStoreConnector authorizationStoreConnector = authorizationStoreConnectorFactory.getInstance();
@@ -92,26 +96,25 @@ public class AuthorizationStoreImpl implements AuthorizationStore {
     public boolean isUserAuthorized(String userId, Permission permission, Domain domain)
             throws AuthorizationStoreException, IdentityStoreException {
 
+        // TODO: Is it necessarily like this? what if an admin changes the permission of the owner?
         // If this user owns this resource, we assume this user has all permissions.
-        if (permission.getResource().getOwner().getUserId().equals(userId)) {
+        if (permission.getResource().getOwnerId().equals(userId)) {
             return true;
         }
 
         // Get the roles directly associated to the user.
         List<Role> roles = new ArrayList<>();
-        RealmService realmService = CarbonSecurityDataHolder.getInstance().getCarbonRealmService();
         for (AuthorizationStoreConnector authorizationStoreConnector : authorizationStoreConnectors.values()) {
             roles.addAll(authorizationStoreConnector.getRolesForUser(userId, domain.getDomainName())
                     .stream()
-                    .map(roleBuilder -> roleBuilder
-                            .setAuthorizationStore(realmService.getAuthorizationStore())
-                            .build())
+                    .map(role ->
+                            role.setAuthorizationStoreConnectorId(authorizationStoreConnector
+                                    .getAuthorizationStoreId()).build())
                     .collect(Collectors.toList()));
         }
 
         // Get the roles associated through groups.
-        List<Group> groups = CarbonSecurityDataHolder.getInstance()
-                .getCarbonRealmService().getIdentityStore().getGroupsOfUser(userId);
+        List<Group> groups = carbonRealmService.getIdentityStore().getGroupsOfUser(userId);
         for (Group group : groups) {
             roles.addAll(getRolesOfGroup(group.getGroupId(), domain));
         }
@@ -201,12 +204,10 @@ public class AuthorizationStoreImpl implements AuthorizationStore {
     @Override
     public Role getRole(String roleName) throws RoleNotFoundException, AuthorizationStoreException {
 
-        RealmService realmService = CarbonSecurityDataHolder.getInstance().getCarbonRealmService();
-
         for (AuthorizationStoreConnector authorizationStoreConnector : authorizationStoreConnectors.values()) {
             try {
                 return authorizationStoreConnector.getRole(roleName)
-                        .setAuthorizationStore(realmService.getAuthorizationStore())
+                        .setAuthorizationStoreConnectorId(authorizationStoreConnector.getAuthorizationStoreId())
                         .build();
             } catch (RoleNotFoundException e) {
 
@@ -252,16 +253,15 @@ public class AuthorizationStoreImpl implements AuthorizationStore {
                 roleCount = authorizationStoreConnector.listRoles("*", 0, -1).size();
             }
 
-            RealmService realmService = CarbonSecurityDataHolder.getInstance().getCarbonRealmService();
-
             // If there are roles in this user store more than the offset, we can get roles from this offset.
             // If this offset exceeds the available count of the current authorization store, move to the next
             // user store.
             if (roleCount > offset) {
                 roles.addAll(authorizationStoreConnector.listRoles(filterPattern, offset, length)
                         .stream()
-                        .map(roleBuilder -> roleBuilder.setAuthorizationStore(
-                                realmService.getAuthorizationStore()).build())
+                        .map(role ->
+                                role.setAuthorizationStoreConnectorId(authorizationStoreConnector
+                                        .getAuthorizationStoreId()).build())
                         .collect(Collectors.toList()));
                 length -= roles.size();
                 offset = 0;
@@ -354,12 +354,13 @@ public class AuthorizationStoreImpl implements AuthorizationStore {
     public List<Role> getRolesOfUser(String userId, Domain domain) throws AuthorizationStoreException {
 
         List<Role> roles = new ArrayList<>();
-        RealmService realmService = CarbonSecurityDataHolder.getInstance().getCarbonRealmService();
 
         for (AuthorizationStoreConnector authorizationStoreConnector : authorizationStoreConnectors.values()) {
             roles.addAll(authorizationStoreConnector.getRolesForUser(userId, domain.getDomainName())
                     .stream()
-                    .map(roleBuilder -> roleBuilder.setAuthorizationStore(realmService.getAuthorizationStore()).build())
+                    .map(role ->
+                            role.setAuthorizationStoreConnectorId(authorizationStoreConnector
+                                    .getAuthorizationStoreId()).build())
                     .collect(Collectors.toList()));
         }
 
@@ -378,14 +379,12 @@ public class AuthorizationStoreImpl implements AuthorizationStore {
 //                    authorizationStoreId));
 //        }
 //
-
-//        RealmService realmService = CarbonSecurityDataHolder.getInstance().getCarbonRealmService();
 //
 //        return authorizationStoreConnector.getUsersOfRole(roleId)
 //                .stream()
 //                .map(LambdaExceptionUtils.rethrowFunction(userBuilder -> userBuilder
 //                        .setIdentityStore(domain.getIdentityStore())
-//                        .setAuthorizationStore(realmService.getAuthorizationStore())
+//                        .setAuthorizationStoreConnectorId(carbonRealmService.getAuthorizationStoreConnectorId())
 //                        .setClaimManager(realmService.getClaimManager())
 //                        .build()))
 //                .collect(Collectors.toList());
@@ -405,13 +404,11 @@ public class AuthorizationStoreImpl implements AuthorizationStore {
 //                    authorizationStoreConnectorId));
 //        }
 //
-//        RealmService realmService = CarbonSecurityDataHolder.getInstance().getCarbonRealmService();
-//
 //        return authorizationStoreConnector.getGroupsOfRole(roleId)
 //                .stream()
 //                .map(LambdaExceptionUtils.rethrowFunction(groupBuilder -> groupBuilder
 //                        .setIdentityStore(domain.getIdentityStore())
-//                        .setAuthorizationStore(realmService.getAuthorizationStore())
+//                        .setAuthorizationStoreConnectorId(carbonRealmService.getAuthorizationStoreConnectorId())
 //                        .build()))
 //                .collect(Collectors.toList());
 
@@ -423,14 +420,12 @@ public class AuthorizationStoreImpl implements AuthorizationStore {
 
         List<Role> roles = new ArrayList<>();
 
-        RealmService realmService = CarbonSecurityDataHolder.getInstance().getCarbonRealmService();
-
         for (AuthorizationStoreConnector authorizationStoreConnector : authorizationStoreConnectors.values()) {
             roles.addAll(authorizationStoreConnector.getRolesForGroup(groupId, domain.getDomainName())
                     .stream()
-                    .map(roleBuilder -> roleBuilder
-                            .setAuthorizationStore(realmService.getAuthorizationStore())
-                            .build())
+                    .map(role ->
+                            role.setAuthorizationStoreConnectorId(authorizationStoreConnector
+                                    .getAuthorizationStoreId()).build())
                     .collect(Collectors.toList()));
         }
 
@@ -529,9 +524,8 @@ public class AuthorizationStoreImpl implements AuthorizationStore {
             throw new AuthorizationStoreException("Role builder is null.");
         }
 
-        RealmService realmService = CarbonSecurityDataHolder.getInstance().getCarbonRealmService();
-
-        return roleBuilder.setAuthorizationStore(realmService.getAuthorizationStore()).build();
+        return roleBuilder
+                .setAuthorizationStoreConnectorId(authorizationStoreId).build();
     }
 
     @Override
@@ -569,18 +563,18 @@ public class AuthorizationStoreImpl implements AuthorizationStore {
         }
 
         return authorizationStoreConnector.addResource(resourceNamespace, resourceId, userId)
-                .setAuthorizationStore(authorizationStoreId).build();
+                .setAuthorizationStoreConnectorId(authorizationStoreId).build();
     }
 
     @Override
     public void deleteResource(Resource resource) throws AuthorizationStoreException {
 
         AuthorizationStoreConnector authorizationStoreConnector = authorizationStoreConnectors
-                .get(resource.getAuthorizationStore());
+                .get(resource.getAuthorizationStoreConnectorId());
 
         if (authorizationStoreConnector == null) {
             throw new StoreException(String.format("No authorization store found for the given id: %s.",
-                    resource.getAuthorizationStore()));
+                    resource.getAuthorizationStoreConnectorId()));
         }
 
         authorizationStoreConnector.deleteResource(resource);
@@ -648,11 +642,11 @@ public class AuthorizationStoreImpl implements AuthorizationStore {
     public void deletePermission(Permission permission) throws AuthorizationStoreException {
 
         AuthorizationStoreConnector authorizationStoreConnector = authorizationStoreConnectors
-                .get(permission.getAuthorizationStoreId());
+                .get(permission.getAuthorizationStoreConnectorId());
 
         if (authorizationStoreConnector == null) {
             throw new StoreException(String.format("No authorization store found for the given id: %s.",
-                    permission.getAuthorizationStoreId()));
+                    permission.getAuthorizationStoreConnectorId()));
         }
 
         authorizationStoreConnector.deletePermission(permission.getPermissionId());

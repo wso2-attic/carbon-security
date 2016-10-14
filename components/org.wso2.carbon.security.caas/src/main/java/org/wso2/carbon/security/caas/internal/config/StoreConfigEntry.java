@@ -17,7 +17,6 @@
 package org.wso2.carbon.security.caas.internal.config;
 
 import java.util.List;
-import java.util.Properties;
 
 /**
  * StoreConfig Bean.
@@ -26,8 +25,6 @@ import java.util.Properties;
  */
 public class StoreConfigEntry {
 
-    private String connector;
-    private Properties properties;
     private List<CacheEntry> caches;
 
     public List<CacheEntry> getCaches() {
@@ -36,22 +33,6 @@ public class StoreConfigEntry {
 
     public void setCaches(List<CacheEntry> cache) {
         this.caches = cache;
-    }
-
-    public String getConnector() {
-        return connector;
-    }
-
-    public void setConnector(String connector) {
-        this.connector = connector;
-    }
-
-    public Properties getProperties() {
-        return properties;
-    }
-
-    public void setProperties(Properties properties) {
-        this.properties = properties;
     }
 }
 
