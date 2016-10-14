@@ -20,6 +20,7 @@ import org.wso2.carbon.security.caas.user.core.bean.Attribute;
 import org.wso2.carbon.security.caas.user.core.bean.Group;
 import org.wso2.carbon.security.caas.user.core.bean.User;
 import org.wso2.carbon.security.caas.user.core.claim.Claim;
+import org.wso2.carbon.security.caas.user.core.claim.MetaClaim;
 import org.wso2.carbon.security.caas.user.core.config.IdentityStoreConnectorConfig;
 import org.wso2.carbon.security.caas.user.core.domain.DomainManager;
 import org.wso2.carbon.security.caas.user.core.exception.GroupNotFoundException;
@@ -38,37 +39,47 @@ import javax.security.auth.callback.Callback;
 
 public interface IdentityStore {
 
-    /**
-     * Initialize the identity store instance.
-     *
-     * @param domainManager            DomainManager instance for which is shared by the identity store
-     *                                 and the credentials store.
-     * @param identityConnectorConfigs Connector configs related to the identity store.
-     * @throws IdentityStoreException Identity Store Exception.
-     */
     void init(DomainManager domainManager, Map<String, IdentityStoreConnectorConfig> identityConnectorConfigs)
             throws IdentityStoreException;
 
+    User getUser(String userId) throws IdentityStoreException, UserNotFoundException;
+    User getUser(String userId, String domain) throws IdentityStoreException, UserNotFoundException;
 
-    void getUser(String userId) throws IdentityStoreException, UserNotFoundException;
-    void getUser(String userId, String domain) throws IdentityStoreException, UserNotFoundException;
+    User getUser(Claim claim) throws IdentityStoreException, UserNotFoundException;
+    User getUser(Claim claim, String domain) throws IdentityStoreException, UserNotFoundException;
 
-    void getUser(Claim claim) throws IdentityStoreException, UserNotFoundException;
-    void getUser(Claim claim, String domain) throws IdentityStoreException, UserNotFoundException;
+    List<User> listUsers(int offset, int length) throws IdentityStoreException;
+    List<User> listUsers(int offset, int length, String domain) throws IdentityStoreException;
+
 
     List<User> listUsers(Claim claim, int offset, int length) throws IdentityStoreException;
-    List<User> listUsers(Claim claim, String filterPattern, int offset, int length) throws IdentityStoreException;
+    List<User> listUsers(Claim claim, int offset, int length, String domain) throws IdentityStoreException;
+
+    List<User> listUsers(MetaClaim metaClaim, String filterPattern, int offset, int length) throws IdentityStoreException;
+    List<User> listUsers(MetaClaim metaClaim, String filterPattern, int offset, int length, String domain) throws IdentityStoreException;
 
     Group getGroup(String groupId) throws IdentityStoreException, GroupNotFoundException;
-    Group getGroup(Claim claim) throws IdentityStoreException, GroupNotFoundException;
+    Group getGroup(String groupId, String domain) throws IdentityStoreException, GroupNotFoundException;
 
-    List<Group> listGroups(String groupId) throws IdentityStoreException;
-    List<Group> listGroups(Claim claim, String filterPattern, int offset, int length) throws IdentityStoreException;
+    Group getGroup(Claim claim) throws IdentityStoreException, GroupNotFoundException;
+    Group getGroup(Claim claim, String domain) throws IdentityStoreException, GroupNotFoundException;
+
+    List<Group> listGroups(int offset, int length) throws IdentityStoreException;
+    List<Group> listGroups(int offset, int length, String domain) throws IdentityStoreException;
+
+    List<Group> listGroups(Claim claim, int offset, int length) throws IdentityStoreException;
+    List<Group> listGroups(Claim claim, int offset, int length, String domain) throws IdentityStoreException;
+
+    List<Group> listGroups(MetaClaim metaClaim, String filterPattern, int offset, int length) throws IdentityStoreException;
+    List<Group> listGroups(MetaClaim metaClaim, String filterPattern, int offset, int length, String domain) throws IdentityStoreException;
 
     List<Group> getGroupsOfUser(String userId) throws IdentityStoreException;
     List<User> getUsersOfGroup(String groupId) throws IdentityStoreException;
 
-    boolean isUserInGroup(String userId, String groupId) throws IdentityStoreException;
+    List<Group> getGroupsOfUser(String userId, String domain) throws IdentityStoreException;
+    List<User> getUsersOfGroup(String groupId, String domain) throws IdentityStoreException;
 
+    boolean isUserInGroup(String userId, String groupId) throws IdentityStoreException;
+    boolean isUserInGroup(String userId, String groupId, String domain) throws IdentityStoreException;
 
 }
