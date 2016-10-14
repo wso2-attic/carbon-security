@@ -24,6 +24,7 @@ import org.wso2.carbon.security.caas.user.core.bean.Domain;
 import org.wso2.carbon.security.caas.user.core.bean.Group;
 import org.wso2.carbon.security.caas.user.core.bean.User;
 import org.wso2.carbon.security.caas.user.core.claim.Claim;
+import org.wso2.carbon.security.caas.user.core.claim.MetaClaim;
 import org.wso2.carbon.security.caas.user.core.config.IdentityStoreConnectorConfig;
 import org.wso2.carbon.security.caas.user.core.domain.DomainManager;
 import org.wso2.carbon.security.caas.user.core.exception.DomainException;
@@ -86,6 +87,44 @@ public class IdentityStoreImpl implements IdentityStore {
         }
     }
 
+
+    @Override
+    public Group getGroup(Claim claim, String domain) throws IdentityStoreException, GroupNotFoundException {
+        return null;
+    }
+
+    @Override
+    public List<Group> listGroups(int offset, int length) throws IdentityStoreException {
+        return null;
+    }
+
+    @Override
+    public List<Group> listGroups(int offset, int length, String domain) throws IdentityStoreException {
+        return null;
+    }
+
+    @Override
+    public List<Group> listGroups(Claim claim, int offset, int length) throws IdentityStoreException {
+        return null;
+    }
+
+    @Override
+    public List<Group> listGroups(Claim claim, int offset, int length, String domain) throws IdentityStoreException {
+        return null;
+    }
+
+    @Override
+    public List<Group> listGroups(MetaClaim metaClaim, String filterPattern, int offset, int length)
+            throws IdentityStoreException {
+        return null;
+    }
+
+    @Override
+    public List<Group> listGroups(MetaClaim metaClaim, String filterPattern, int offset, int length, String domain)
+            throws IdentityStoreException {
+        return null;
+    }
+
     @Override
     public User getUser(String username)
             throws IdentityStoreException, UserNotFoundException {
@@ -96,6 +135,11 @@ public class IdentityStoreImpl implements IdentityStore {
         claim.setValue(username);
 
         return getUser(claim);
+    }
+
+    @Override
+    public User getUser(String userId, String domain) throws IdentityStoreException, UserNotFoundException {
+        return null;
     }
 
     @Override
@@ -126,6 +170,20 @@ public class IdentityStoreImpl implements IdentityStore {
     }
 
     @Override
+    public User getUser(Claim claim, String domain) throws IdentityStoreException, UserNotFoundException {
+        return null;
+    }
+
+    @Override
+    public List<User> listUsers(int offset, int length) throws IdentityStoreException {
+        return null;
+    }
+
+    @Override
+    public List<User> listUsers(int offset, int length, String domain) throws IdentityStoreException {
+        return null;
+    }
+
     public User getUser(Callback[] callbacks) throws IdentityStoreException, UserNotFoundException {
 
         Map<String, IdentityStoreConnector> identityStoreConnectorsMap =
@@ -145,7 +203,6 @@ public class IdentityStoreImpl implements IdentityStore {
         throw new UserNotFoundException("User not found for the given callbacks.");
     }
 
-    @Override
     public List<User> listUsers(String filterPattern, int offset, int length) throws IdentityStoreException {
 
         Claim claim = new Claim();
@@ -207,6 +264,22 @@ public class IdentityStoreImpl implements IdentityStore {
     }
 
     @Override
+    public List<User> listUsers(Claim claim, int offset, int length, String domain) throws IdentityStoreException {
+        return null;
+    }
+
+    @Override
+    public List<User> listUsers(MetaClaim metaClaim, String filterPattern, int offset, int length)
+            throws IdentityStoreException {
+        return null;
+    }
+
+    @Override
+    public List<User> listUsers(MetaClaim metaClaim, String filterPattern, int offset, int length, String domain)
+            throws IdentityStoreException {
+        return null;
+    }
+
     public List<Attribute> getUserAttributeValues(String userName) throws IdentityStoreException {
 
         List<Attribute> userAttributes = new ArrayList<>();
@@ -227,7 +300,6 @@ public class IdentityStoreImpl implements IdentityStore {
         return userAttributes;
     }
 
-    @Override
     public List<Attribute> getUserAttributeValues(String userName, List<String> attributeNames)
             throws IdentityStoreException {
 
@@ -260,6 +332,11 @@ public class IdentityStoreImpl implements IdentityStore {
     }
 
     @Override
+    public Group getGroup(String groupId, String domain) throws IdentityStoreException, GroupNotFoundException {
+        return null;
+    }
+
+    @Override
     public Group getGroup(Claim claim) throws IdentityStoreException, GroupNotFoundException {
 
         String attributeName = claim.getClaimURI(); // TODO: Get the attribute name from the claim uri.
@@ -281,9 +358,9 @@ public class IdentityStoreImpl implements IdentityStore {
         throw new GroupNotFoundException("Group not found for the given name");
     }
 
+
     // TODO: Create method to list group by Claim.
 
-    @Override
     public List<Group> listGroups(String filterPattern, int offset, int length) throws IdentityStoreException {
 
         List<Group> groups = new ArrayList<>();
@@ -330,7 +407,6 @@ public class IdentityStoreImpl implements IdentityStore {
         return groups;
     }
 
-    @Override
     public List<Attribute> getGroupAttributeValues(String groupId)
             throws IdentityStoreException {
 
@@ -345,7 +421,6 @@ public class IdentityStoreImpl implements IdentityStore {
         return groupAttributes;
     }
 
-    @Override
     public List<Attribute> getGroupAttributeValues(String groupId, List<String> attributeNames)
             throws IdentityStoreException {
 
@@ -408,6 +483,16 @@ public class IdentityStoreImpl implements IdentityStore {
     }
 
     @Override
+    public List<Group> getGroupsOfUser(String userId, String domain) throws IdentityStoreException {
+        return null;
+    }
+
+    @Override
+    public List<User> getUsersOfGroup(String groupId, String domain) throws IdentityStoreException {
+        return null;
+    }
+
+    @Override
     public boolean isUserInGroup(String userName, String groupId) throws IdentityStoreException {
 
         Map<String, IdentityStoreConnector> identityStoreConnectorsMap;
@@ -426,6 +511,11 @@ public class IdentityStoreImpl implements IdentityStore {
             }
         }
 
+        return false;
+    }
+
+    @Override
+    public boolean isUserInGroup(String userId, String groupId, String domain) throws IdentityStoreException {
         return false;
     }
 

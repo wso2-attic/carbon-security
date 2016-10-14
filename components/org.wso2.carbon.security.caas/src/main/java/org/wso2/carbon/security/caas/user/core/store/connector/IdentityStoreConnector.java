@@ -103,7 +103,7 @@ public interface IdentityStoreConnector {
      * @throws IdentityStoreException Identity Store Exception.
      */
     List<User.UserBuilder> getAllUserBuilderList(String attributeName, String filterPattern)
-    throws IdentityStoreException;
+            throws IdentityStoreException;
 
     /**
      * Retrieve attributes of the user with the given ID.

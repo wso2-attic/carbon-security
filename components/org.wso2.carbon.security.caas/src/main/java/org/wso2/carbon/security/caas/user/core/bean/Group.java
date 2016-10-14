@@ -71,25 +71,6 @@ public class Group {
     }
 
     /**
-     * Get attributes of this group.
-     * @return Map of attributes.
-     * @throws IdentityStoreException
-     */
-    public List<Attribute> getAttributes() throws IdentityStoreException {
-        return identityStore.getGroupAttributeValues(groupId);
-    }
-
-    /**
-     * Get attributes for given attribute names.
-     * @param attributeNames List of attribute names.
-     * @return Map of group attributes.
-     * @throws IdentityStoreException
-     */
-    public List<Attribute> getAttributes(List<String> attributeNames) throws IdentityStoreException {
-        return identityStore.getGroupAttributeValues(groupId, attributeNames);
-    }
-
-    /**
      * Get the users assigned to this group.
      * @return List of users assigned to this group.
      * @throws IdentityStoreException Identity store exception.
