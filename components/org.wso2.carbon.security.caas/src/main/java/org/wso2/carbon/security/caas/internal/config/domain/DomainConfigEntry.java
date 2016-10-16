@@ -10,7 +10,7 @@ public class DomainConfigEntry {
     /**
      * Unique name of the domain.
      */
-    private String domain;
+    private String domainName;
 
     /**
      * Priority level of the domain
@@ -27,17 +27,17 @@ public class DomainConfigEntry {
      *
      * @return Name of the domain
      */
-    public String getDomain() {
-        return domain;
+    public String getDomainName() {
+        return domainName;
     }
 
     /**
      * Set the name of the domain.
      *
-     * @param domain Name of the domain
+     * @param domainName Name of the domain
      */
-    public void setDomain(String domain) {
-        this.domain = domain;
+    public void setDomainName(String domainName) {
+        this.domainName = domainName;
     }
 
     /**

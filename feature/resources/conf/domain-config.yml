@@ -15,7 +15,7 @@
 ###############################################################################
 domains:
   -
-    domain: "A"
+    domainName: "A"
     priority: 1
     identityStoreConnectors:
     -
@@ -31,7 +31,7 @@ domains:
       - http://wso2.org/claims/firstName: "firstName"
       - http://wso2.org/claims/lastName: "lastName"
   -
-    domain: "B"
+    domainName: "B"
     priority: 2
     identityStoreConnectors:
     -

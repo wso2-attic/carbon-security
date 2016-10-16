@@ -48,6 +48,16 @@ public class Domain {
     private Map<String, List<MetaClaimMapping>> claimMappings = new HashMap<>();
 
     /**
+     * IdentityStoreConnector Id to primary attribute map.
+     */
+    private Map<String, String> identityStorePrimaryAttributes = new HashMap<>();
+
+    /**
+     * CredentialStoreConnector Id to primary attribute map.
+     */
+    private Map<String, String> credentialStorePrimaryAttributes = new HashMap<>();
+
+    /**
      * Name of the domain.
      */
     private String domainName;
@@ -205,5 +215,25 @@ public class Domain {
     public void setClaimMappings(Map<String, List<MetaClaimMapping>> claimMappings) {
 
         this.claimMappings = claimMappings;
+    }
+
+    /**
+     * Add primary attribute for an IdentityStoreConnector.
+     *
+     * @param connectorId
+     * @param primaryAttribute
+     */
+    public void addIdentityStoreConnectorPrimaryAttribute(String connectorId, String primaryAttribute) {
+        identityStorePrimaryAttributes.put(connectorId, primaryAttribute);
+    }
+
+    /**
+     * Add primary attribute for a CredentialStoreConnector.
+     *
+     * @param connectorId
+     * @param primaryAttribute
+     */
+    public void addCredentialStoreConnectorPrimaryAttribute(String connectorId, String primaryAttribute) {
+        credentialStorePrimaryAttributes.put(connectorId, primaryAttribute);
     }
 }

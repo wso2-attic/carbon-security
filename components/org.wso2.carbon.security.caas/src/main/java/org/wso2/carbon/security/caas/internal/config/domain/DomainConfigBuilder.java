@@ -27,7 +27,7 @@ public class DomainConfigBuilder {
      *
      * @return DomainConfiguration YAML java representation.
      */
-    private static DomainConfigFile buildDomainConfig() {
+    private static DomainConfigFile buildDomainConfig() throws DomainConfigException {
 
         Path file = Paths.get(CarbonSecurityConstants.getCarbonHomeDirectory().toString(), "conf", "security",
                 CarbonSecurityConstants.DOMAIN_CONFIG_FILE);
@@ -39,12 +39,12 @@ public class DomainConfigBuilder {
                 yaml.setBeanAccess(BeanAccess.FIELD);
                 domainConfigFile = yaml.loadAs(in, DomainConfigFile.class);
             } catch (IOException e) {
-                throw new RuntimeException("Error while loading " + CarbonSecurityConstants.DOMAIN_CONFIG_FILE +
+                throw new DomainConfigException("Error while loading " + CarbonSecurityConstants.DOMAIN_CONFIG_FILE +
                         " configuration file", e);
             }
         } else {
-            throw new RuntimeException("Configuration file " + CarbonSecurityConstants.DOMAIN_CONFIG_FILE + "' is not" +
-                    " available.");
+            throw new DomainConfigException("Configuration file " + CarbonSecurityConstants.DOMAIN_CONFIG_FILE
+                    + "' is not available.");
         }
         return domainConfigFile;
     }
@@ -66,7 +66,7 @@ public class DomainConfigBuilder {
 
 
         domainConfigFile.getDomains().stream().forEach(domainConfigEntry -> {
-            String domainName = domainConfigEntry.getDomain();
+            String domainName = domainConfigEntry.getDomainName();
             int domainPriority = domainConfigEntry.getDomainPriority();
 
             List<DomainIdentityStoreConnectorConfigEntry> domainIdentityStoreConnectorConfigEntries =

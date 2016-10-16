@@ -20,7 +20,7 @@ domains:
         credentialStoreConnectorId: JDBCCS1
       -
         credentialStoreConnectorId: JDBCCS2
-    domain: A
+    domainName: A
     priority: 1
     identityStoreConnectors:
       -
@@ -36,7 +36,7 @@ domains:
     credentialStoreConnectors:
       -
         credentialStoreConnectorId: JDBCS3
-    domain: B
+    domainName: B
     priority: 2
     identityStoreConnectors:
       -

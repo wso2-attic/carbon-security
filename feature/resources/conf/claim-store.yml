@@ -13,11 +13,10 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 ###############################################################################
-claimManager: "DEFAULT"
-dialectURI: "http://wso2.org/claims"
 claims:
  -
   claimURI: "http://wso2.org/claims/firstName"
+  dialectURI: "http://wso2.org/claims"
   properties:
    displayName: "First Name"
    description: "First Name"
@@ -25,6 +24,7 @@ claims:
    supportedByDefault: "true"
  -
   claimURI: "http://wso2.org/claims/lastName"
+  dialectURI: "http://wso2.org/claims"
   properties:
    displayName: "Last Name"
    description: "Last Name"
@@ -32,6 +32,7 @@ claims:
    supportedByDefault: "true"
  -
   claimURI: "http://wso2.org/claims/email"
+  dialectURI: "http://wso2.org/claims"
   properties:
    displayName: "Email Address"
    description: "Email Address"

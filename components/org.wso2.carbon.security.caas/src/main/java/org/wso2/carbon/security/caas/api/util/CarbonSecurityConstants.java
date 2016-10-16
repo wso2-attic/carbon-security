@@ -45,7 +45,7 @@ public final class CarbonSecurityConstants {
     //Config file names
     public static final String STORE_CONFIG_FILE = "store-config.yml";
     public static final String PERMISSION_CONFIG_FILE = "permissions.yml";
-    public static final String CLAIM_CONFIG_FILE = "claim-config.yml";
+    public static final String CLAIM_STORE_FILE = "claim-store.yml";
     public static final String DOMAIN_CONFIG_FILE = "domain-config.yml";
 
     // Delimiters

@@ -27,7 +27,7 @@ storeConnectors:
  -
     connectorName: "JDBCIS1"
     connectorType: "JDBCCredentialStore"
-    domain: "A"
+    domainName: "A"
     primaryAttribute: "username"
     uniqueAttributes:
       - username
@@ -44,7 +44,7 @@ storeConnectors:
   -
     connectorName: "JDBCCS1"
     connectorType: "JDBCIdentityStore"
-    domain: "A"
+    domainName: "A"
     primaryAttribute: "username"
     properties:
       dataSource: "WSO2_CARBON_DB"
