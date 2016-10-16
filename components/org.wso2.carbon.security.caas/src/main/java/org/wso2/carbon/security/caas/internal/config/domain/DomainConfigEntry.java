@@ -1,4 +1,4 @@
-package org.wso2.carbon.security.caas.internal.config;
+package org.wso2.carbon.security.caas.internal.config.domain;
 
 import java.util.List;
 
@@ -21,11 +21,6 @@ public class DomainConfigEntry {
      * IdentityStoreConnector domain configuration list.
      */
     private List<DomainStoreConfigEntry> identityStoreConnectors;
-
-    /**
-     * CredentialStoreConnector domain configuration list.
-     */
-    private List<DomainStoreConfigEntry> credentialStoreConnectors;
 
     /**
      * Get the name of the domain.
@@ -79,23 +74,5 @@ public class DomainConfigEntry {
      */
     public void setIdentityStoreConnectors(List<DomainStoreConfigEntry> identityStoreConnectors) {
         this.identityStoreConnectors = identityStoreConnectors;
-    }
-
-    /**
-     * Get a list of domain store configuration entries for credential connectors.
-     *
-     * @return DomainStoreConfigEntry
-     */
-    public List<DomainStoreConfigEntry> getCredentialStoreConnectors() {
-        return credentialStoreConnectors;
-    }
-
-    /**
-     * Set a list of domain store configuration entries for credential connectors.
-     *
-     * @param credentialStoreConnectors List<DomainStoreConfigEntry>
-     */
-    public void setCredentialStoreConnectors(List<DomainStoreConfigEntry> credentialStoreConnectors) {
-        this.credentialStoreConnectors = credentialStoreConnectors;
     }
 }

@@ -20,19 +20,11 @@ import org.wso2.carbon.security.caas.user.core.bean.User;
 import org.wso2.carbon.security.caas.user.core.exception.ClaimManagerException;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * InMemory Claim Manager.
  */
 public class InMemoryClaimManager implements ClaimManager {
-
-    private Map<String, List<MetaClaimMapping>> metaClaimMappingMap;
-
-    @Override
-    public void init(Map<String, List<MetaClaimMapping>> metaClaimMappingMap) throws ClaimManagerException {
-        this.metaClaimMappingMap = metaClaimMappingMap;
-    }
 
     @Override
     public List<Claim> getClaims(User user) throws ClaimManagerException {
@@ -42,9 +34,5 @@ public class InMemoryClaimManager implements ClaimManager {
     @Override
     public List<Claim> getClaims(User user, List<String> claimURIs) throws ClaimManagerException {
         return null;
-    }
-
-    public Map<String, List<MetaClaimMapping>> getMetaClaimMappingMap() {
-        return metaClaimMappingMap;
     }
 }

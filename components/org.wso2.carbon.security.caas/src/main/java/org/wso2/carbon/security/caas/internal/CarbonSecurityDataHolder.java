@@ -18,8 +18,8 @@ package org.wso2.carbon.security.caas.internal;
 
 import org.osgi.framework.BundleContext;
 import org.wso2.carbon.caching.CarbonCachingService;
-import org.wso2.carbon.security.caas.internal.config.ClaimConfig;
-import org.wso2.carbon.security.caas.internal.config.DomainConfig;
+import org.wso2.carbon.security.caas.internal.config.domain.DomainConfig;
+import org.wso2.carbon.security.caas.user.core.claim.MetaClaimStore;
 import org.wso2.carbon.security.caas.user.core.common.CarbonRealmServiceImpl;
 import org.wso2.carbon.security.caas.user.core.exception.CarbonSecurityDataHolderException;
 import org.wso2.carbon.security.caas.user.core.store.connector.AuthorizationStoreConnectorFactory;
@@ -42,9 +42,10 @@ public class CarbonSecurityDataHolder {
     private Map<String, CredentialStoreConnectorFactory> credentialStoreConnectorFactoryMap = new HashMap<>();
     private Map<String, IdentityStoreConnectorFactory> identityStoreConnectorFactoryMap = new HashMap<>();
     private CarbonCachingService carbonCachingService;
-    private ClaimConfig claimConfig;
     private DomainConfig domainConfig;
     private BundleContext bundleContext = null;
+
+    private MetaClaimStore metaClaimStore;
 
     private CarbonSecurityDataHolder() {
     }
@@ -140,19 +141,6 @@ public class CarbonSecurityDataHolder {
         return bundleContext;
     }
 
-    public ClaimConfig getClaimConfig() throws CarbonSecurityDataHolderException {
-
-        if (claimConfig == null) {
-            throw new CarbonSecurityDataHolderException("Claim configuration is null.");
-        }
-
-        return claimConfig;
-    }
-
-    void setClaimConfig(ClaimConfig claimConfig) {
-        this.claimConfig = claimConfig;
-    }
-
     public DomainConfig getDomainConfig() throws CarbonSecurityDataHolderException {
 
         if (domainConfig == null) {
@@ -164,5 +152,13 @@ public class CarbonSecurityDataHolder {
 
     public void setDomainConfig(DomainConfig domainConfig) {
         this.domainConfig = domainConfig;
+    }
+
+    public MetaClaimStore getMetaClaimStore() {
+        return metaClaimStore;
+    }
+
+    public void setMetaClaimStore(MetaClaimStore metaClaimStore) {
+        this.metaClaimStore = metaClaimStore;
     }
 }

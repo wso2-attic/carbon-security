@@ -25,12 +25,12 @@ import java.util.Properties;
  */
 public class StoreConnectorConfigEntry {
 
-    private String name;
+    private String connectorName;
     private String connectorType;
     private Properties properties;
 
-    public String getName() {
-        return name;
+    public String getConnectorName() {
+        return connectorName;
     }
 
     public Properties getProperties() {
@@ -41,8 +41,8 @@ public class StoreConnectorConfigEntry {
         return connectorType;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setConnectorName(String connectorName) {
+        this.connectorName = connectorName;
     }
 
     public void setProperties(Properties properties) {

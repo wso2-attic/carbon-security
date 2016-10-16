@@ -1,4 +1,4 @@
-package org.wso2.carbon.security.caas.internal.config;
+package org.wso2.carbon.security.caas.internal.config.domain;
 
 import java.util.List;
 
@@ -10,15 +10,15 @@ public class DomainConfigFile {
     /**
      * List of domain configuration entries.
      */
-    List<DomainConfigEntry> domainConfigEntries;
+    private List<DomainConfigEntry> domains;
 
     /**
      * Get Domain configuration entries.
      *
      * @return List<DomainConfigEntry> - List of domain configuration entries
      */
-    public List<DomainConfigEntry> getDomainConfigEntries() {
-        return domainConfigEntries;
+    public List<DomainConfigEntry> getDomains() {
+        return domains;
     }
 
     /**
@@ -26,7 +26,7 @@ public class DomainConfigFile {
      *
      * @param domains List<DomainConfigEntry> - List of domain configuration entries
      */
-    public void setDomainConfigEntries(List<DomainConfigEntry> domains) {
-        this.domainConfigEntries = domains;
+    public void setDomains(List<DomainConfigEntry> domains) {
+        this.domains = domains;
     }
 }

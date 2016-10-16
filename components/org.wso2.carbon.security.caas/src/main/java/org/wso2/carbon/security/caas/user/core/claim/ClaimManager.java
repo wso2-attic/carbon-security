@@ -20,20 +20,11 @@ import org.wso2.carbon.security.caas.user.core.bean.User;
 import org.wso2.carbon.security.caas.user.core.exception.ClaimManagerException;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * This is the interface to manage claims in the system.
  */
 public interface ClaimManager {
-
-    /**
-     * Initialize Claim Manager.
-     *
-     * @param metaClaimMapping Meta claim mappings.
-     * @throws ClaimManagerException Claim Manager initialization failure.
-     */
-    void init(Map<String, List<MetaClaimMapping>> metaClaimMapping) throws ClaimManagerException;
 
     /**
      * Get all claims of a user.

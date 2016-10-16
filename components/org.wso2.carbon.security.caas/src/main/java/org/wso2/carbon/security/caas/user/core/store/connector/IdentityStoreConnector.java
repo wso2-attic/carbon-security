@@ -16,10 +16,10 @@
 
 package org.wso2.carbon.security.caas.user.core.store.connector;
 
+import org.wso2.carbon.security.caas.internal.config.IdentityStoreConnectorConfig;
 import org.wso2.carbon.security.caas.user.core.bean.Attribute;
 import org.wso2.carbon.security.caas.user.core.bean.Group;
 import org.wso2.carbon.security.caas.user.core.bean.User;
-import org.wso2.carbon.security.caas.user.core.config.IdentityStoreConnectorConfig;
 import org.wso2.carbon.security.caas.user.core.exception.GroupNotFoundException;
 import org.wso2.carbon.security.caas.user.core.exception.IdentityStoreException;
 import org.wso2.carbon.security.caas.user.core.exception.UserNotFoundException;

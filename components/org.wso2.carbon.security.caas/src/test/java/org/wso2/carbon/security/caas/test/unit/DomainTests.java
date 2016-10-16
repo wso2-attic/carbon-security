@@ -114,7 +114,7 @@
 //            throws CredentialStoreException, AuthenticationFailure,
 //            UserNotFoundException, IdentityStoreException {
 //
-//        StoreConfig storeConfig = StoreConfigBuilder.buildStoreConfigs();
+//        StoreConfig storeConfig = StoreConfigBuilder.getStoreConfig();
 //        Domain domain = new Domain("D1", storeConfig);
 //
 //        // User builder initialisation
