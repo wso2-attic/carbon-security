@@ -37,7 +37,6 @@ import org.wso2.carbon.security.caas.api.module.UsernamePasswordLoginModule;
 import org.wso2.carbon.security.caas.api.util.CarbonSecurityConstants;
 import org.wso2.carbon.security.caas.boot.ProxyLoginModule;
 import org.wso2.carbon.security.caas.internal.config.CredentialStoreConnectorConfig;
-import org.wso2.carbon.security.caas.internal.config.IdentityStoreConnectorConfig;
 import org.wso2.carbon.security.caas.internal.config.PermissionConfigBuilder;
 import org.wso2.carbon.security.caas.internal.config.PermissionConfigFile;
 import org.wso2.carbon.security.caas.internal.config.StoreConfigBuilder;
@@ -46,7 +45,6 @@ import org.wso2.carbon.security.caas.internal.config.domain.DomainConfigBuilder;
 import org.wso2.carbon.security.caas.internal.config.domain.DomainIdentityStoreConnectorConfigEntry;
 import org.wso2.carbon.security.caas.internal.osgi.UserNamePasswordLoginModuleFactory;
 import org.wso2.carbon.security.caas.internal.osgi.UsernamePasswordCallbackHandlerFactory;
-
 import org.wso2.carbon.security.caas.user.core.bean.Domain;
 import org.wso2.carbon.security.caas.user.core.claim.ClaimManager;
 import org.wso2.carbon.security.caas.user.core.claim.FileBasedMetaClaimStore;
@@ -55,6 +53,7 @@ import org.wso2.carbon.security.caas.user.core.claim.MetaClaim;
 import org.wso2.carbon.security.caas.user.core.claim.MetaClaimMapping;
 import org.wso2.carbon.security.caas.user.core.claim.MetaClaimStore;
 import org.wso2.carbon.security.caas.user.core.common.CarbonRealmServiceImpl;
+import org.wso2.carbon.security.caas.user.core.config.IdentityStoreConnectorConfig;
 import org.wso2.carbon.security.caas.user.core.config.StoreConfig;
 import org.wso2.carbon.security.caas.user.core.domain.DomainManager;
 import org.wso2.carbon.security.caas.user.core.exception.AuthorizationStoreException;
@@ -326,7 +325,7 @@ public class CarbonSecurityComponent implements RequiredCapabilityListener {
 
             MetaClaimStore metaClaimStore = new FileBasedMetaClaimStore(
                     CarbonSecurityConstants.getCarbonHomeDirectory().toString() + "conf/security/" +
-                    CarbonSecurityConstants.CLAIM_STORE_FILE);
+                            CarbonSecurityConstants.CLAIM_STORE_FILE);
 
             carbonSecurityDataHolder.setMetaClaimStore(metaClaimStore);
 
@@ -425,7 +424,7 @@ public class CarbonSecurityComponent implements RequiredCapabilityListener {
                 IdentityStoreConnectorConfig identityStoreConnectorConfig =
                         identityStoreConnectorConfigs.get(identityStoreConnectorId);
 
-                IdentityStoreConnector identityStoreConnector =  identityStoreConnectorFactories
+                IdentityStoreConnector identityStoreConnector = identityStoreConnectorFactories
                         .get(identityStoreConnectorConfig.getConnectorType()).getConnector();
 
                 domain.addIdentityStoreConnectorPrimaryAttribute(identityStoreConnectorId,

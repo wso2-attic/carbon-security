@@ -16,11 +16,11 @@
 
 package org.wso2.carbon.security.caas.user.core.store;
 
-import org.wso2.carbon.security.caas.internal.config.IdentityStoreConnectorConfig;
 import org.wso2.carbon.security.caas.user.core.bean.Group;
 import org.wso2.carbon.security.caas.user.core.bean.User;
 import org.wso2.carbon.security.caas.user.core.claim.Claim;
 import org.wso2.carbon.security.caas.user.core.claim.MetaClaim;
+import org.wso2.carbon.security.caas.user.core.config.IdentityStoreConnectorConfig;
 import org.wso2.carbon.security.caas.user.core.domain.DomainManager;
 import org.wso2.carbon.security.caas.user.core.exception.GroupNotFoundException;
 import org.wso2.carbon.security.caas.user.core.exception.IdentityStoreException;
