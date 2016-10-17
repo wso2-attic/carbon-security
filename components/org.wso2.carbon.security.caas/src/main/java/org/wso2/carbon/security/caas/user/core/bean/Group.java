@@ -48,6 +48,7 @@ public class Group {
 
     /**
      * Get the group id.
+     *
      * @return Group id.
      */
     public String getGroupId() {
@@ -56,6 +57,7 @@ public class Group {
 
     /**
      * Get this group's domain.
+     *
      * @return Domain of this group.
      */
     public Domain getDomain() {
@@ -64,6 +66,7 @@ public class Group {
 
     /**
      * Get the tenant domain name.
+     *
      * @return Name of the tenant domain.
      */
     public String getTenantDomain() {
@@ -72,6 +75,7 @@ public class Group {
 
     /**
      * Get the users assigned to this group.
+     *
      * @return List of users assigned to this group.
      * @throws IdentityStoreException Identity store exception.
      */
@@ -81,6 +85,7 @@ public class Group {
 
     /**
      * Get Roles assigned to this Group.
+     *
      * @return List of Roles.
      * @throws AuthorizationStoreException Authorization store exception.
      */
@@ -90,6 +95,7 @@ public class Group {
 
     /**
      * Checks whether this Group is authorized for given Permission.
+     *
      * @param permission Permission to be checked.
      * @return True if authorized.
      * @throws AuthorizationStoreException Authorization store exception.
@@ -100,6 +106,7 @@ public class Group {
 
     /**
      * Checks whether the User in this Group.
+     *
      * @param userId Id of the User to be checked.
      * @return True if User is in this Group.
      * @throws IdentityStoreException Identity store exception.
@@ -110,6 +117,7 @@ public class Group {
 
     /**
      * Checks whether this Group has the Role.
+     *
      * @param roleName Name of the Role to be checked.
      * @return True if this Group has the Role.
      * @throws AuthorizationStoreException Authorization store exception.
@@ -120,6 +128,7 @@ public class Group {
 
     /**
      * Add a new User list by <b>replacing</b> the existing User list. (PUT)
+     *
      * @param newUserList List of User names needs to be assigned to this Group.
      * @throws IdentityStoreException Identity store exception.
      */
@@ -129,7 +138,8 @@ public class Group {
 
     /**
      * Assign a new list of Users to existing list and/or un-assign Users from existing list. (PATCH)
-     * @param assignList List to be added to the new list.
+     *
+     * @param assignList   List to be added to the new list.
      * @param unAssignList List to be removed from the existing list.
      * @throws IdentityStoreException Identity store exception.
      */
@@ -139,6 +149,7 @@ public class Group {
 
     /**
      * Add a new Role list by <b>replacing</b> the existing Role list. (PUT)
+     *
      * @param newRoleList List of Roles needs to be assigned to this Group.
      * @throws AuthorizationStoreException Authorization store exception.
      */
@@ -148,7 +159,8 @@ public class Group {
 
     /**
      * Assign a new list of Roles to existing list and/or un-assign Roles from existing list. (PATCH)
-     * @param assignList List to be added to the new list.
+     *
+     * @param assignList   List to be added to the new list.
      * @param unAssignList List to be removed from the existing list.
      * @throws AuthorizationStoreException Authorization store exception.
      */
