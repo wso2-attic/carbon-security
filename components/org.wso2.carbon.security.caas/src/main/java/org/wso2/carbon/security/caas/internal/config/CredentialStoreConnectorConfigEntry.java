@@ -5,16 +5,16 @@ package org.wso2.carbon.security.caas.internal.config;
  */
 public class CredentialStoreConnectorConfigEntry extends StoreConnectorConfigEntry {
 
-    String domain;
+    String domainName;
 
     String primaryAttribute;
 
-    public String getDomain() {
-        return domain;
+    public String getDomainName() {
+        return domainName;
     }
 
-    public void setDomain(String domain) {
-        this.domain = domain;
+    public void setDomainName(String domainName) {
+        this.domainName = domainName;
     }
 
     public String getPrimaryAttribute() {
