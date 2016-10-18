@@ -53,7 +53,7 @@ public class InMemoryIdentityStoreConnector implements IdentityStoreConnector {
             IdentityStoreException {
 
         if (InMemoryStoreUtil.getPassword(attributeValue) != null) {
-            return new User.UserBuilder().setUserId(UUID.randomUUID().toString()).setTenantDomain("carbon.super");
+            return new User.UserBuilder().setUserId(UUID.randomUUID().toString());
         }
         throw new UserNotFoundException("No user found for username: " + attributeValue +
                 " in In-Memory identity store.");
@@ -70,7 +70,7 @@ public class InMemoryIdentityStoreConnector implements IdentityStoreConnector {
         }
 
         if (InMemoryStoreUtil.getPassword(username) != null) {
-            return new User.UserBuilder().setUserId(UUID.randomUUID().toString()).setTenantDomain("carbon.super");
+            return new User.UserBuilder().setUserId(UUID.randomUUID().toString());
         }
         throw new UserNotFoundException("No user found for username: " + username + " in In-Memory identity store.");
 

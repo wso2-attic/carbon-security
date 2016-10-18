@@ -33,20 +33,45 @@ import java.util.List;
  */
 public class User {
 
+    /**
+     * The globally unique userId of the user.
+     */
     private String userId;
-    private Domain domain;
-    private String tenantDomain;
 
+    /**
+     * The domain this user belongs to.
+     */
+    private Domain domain;
+
+    /**
+     * The primary claim attribute value of this user.
+     *
+     * The primary attribute value will be most frequent claim to be retrieved from a user.
+     * Hence keeping is as an attribute.
+     */
+    private String primaryAttributeValue;
+
+    /**
+     * The IdentityStore this user originates from.
+     */
     private IdentityStore identityStore;
+
+    /**
+     * The AuthorizationStore that manages permissions of this user.
+     */
     private AuthorizationStore authorizationStore;
+
+    /**
+     * The ClaimManager which manages claims of this user.
+     */
     private ClaimManager claimManager;
 
-    private User(String userId, Domain domain, String tenantDomain, IdentityStore identityStore,
+    private User(String userId, Domain domain, String primaryAttributeValue, IdentityStore identityStore,
                  AuthorizationStore authorizationStore, ClaimManager claimManager) {
 
         this.userId = userId;
         this.domain = domain;
-        this.tenantDomain = tenantDomain;
+        this.primaryAttributeValue = primaryAttributeValue;
         this.identityStore = identityStore;
         this.authorizationStore = authorizationStore;
         this.claimManager = claimManager;
@@ -71,12 +96,12 @@ public class User {
     }
 
     /**
-     * Get tenant domain.
+     * Get this users primary attribute value.
      *
-     * @return Tenant domain.
+     * @return The primary attribute value
      */
-    public String getTenantDomain() {
-        return tenantDomain;
+    public String getPrimaryAttributeValue() {
+        return primaryAttributeValue;
     }
 
     /**
@@ -86,22 +111,7 @@ public class User {
      * @throws IdentityStoreException Identity store exception.
      */
     public List<Claim> getClaims() throws IdentityStoreException, ClaimManagerException {
-
-//        List<Attribute> userAttributes = identityStore.getUserAttributeValues(userId, domain);
-//        if (userAttributes == null || userAttributes.isEmpty()) {
-//            return Collections.emptyList();
-//        }
-//
-//        List<IdnStoreMetaClaimMapping> idnStoreMetaClaimMappings = claimManager
-//                .getMetaClaimMappingsByIdentityStoreId(identityStoreId);
-//        if (idnStoreMetaClaimMappings == null || idnStoreMetaClaimMappings.isEmpty()) {
-//            return Collections.emptyList();
-//        }
-//
-//        return buildClaims(idnStoreMetaClaimMappings, userAttributes);
-
-        // TODO: Uncomment and fix.
-        return null;
+        return claimManager.getClaims(this);
     }
 
     /**
@@ -112,27 +122,7 @@ public class User {
      * @throws IdentityStoreException Identity store exception.
      */
     public List<Claim> getClaims(List<String> claimURIs) throws IdentityStoreException, ClaimManagerException {
-
-//        List<IdnStoreMetaClaimMapping> idnStoreMetaClaimMappings = claimManager
-//                .getMetaClaimMappingsByIdentityStoreId(identityStoreId, claimURIs);
-//        if (idnStoreMetaClaimMappings == null || idnStoreMetaClaimMappings.isEmpty()) {
-//            return Collections.emptyList();
-//        }
-//
-//        List<String> attributeNames = idnStoreMetaClaimMappings.stream()
-//                .map(IdnStoreMetaClaimMapping::getAttributeName)
-//                .collect(Collectors.toList());
-//
-//        Map<String, String> attributeValues = identityStore
-//                .getUserAttributeValues(userId, attributeNames, identityStoreId);
-//        if (attributeValues == null || attributeValues.isEmpty()) {
-//            return Collections.emptyList();
-//        }
-//
-//        return buildClaims(idnStoreMetaClaimMappings, attributeValues);
-
-        // TODO: Uncomment and fix.
-        return null;
+        return claimManager.getClaims(this, claimURIs);
     }
 
     /**
@@ -233,18 +223,6 @@ public class User {
         authorizationStore.updateRolesInUser(userId, domain, assignList, unAssignList);
     }
 
-//    private List<Claim> buildClaims(List<IdnStoreMetaClaimMapping> idnStoreMetaClaimMappings,
-//                                    Map<String, String> userAttributeValues) {
-//
-//        return idnStoreMetaClaimMappings.stream()
-//                .filter(idnStoreMetaClaimMapping -> userAttributeValues.containsKey(idnStoreMetaClaimMapping
-//                        .getAttributeName()) && idnStoreMetaClaimMapping.getMetaClaim() != null)
-//                .map(idnStoreMetaClaimMapping -> new Claim(idnStoreMetaClaimMapping.getMetaClaim().getDialectURI(),
-//                        idnStoreMetaClaimMapping.getMetaClaim().getClaimURI(), userAttributeValues.get
-//                        (idnStoreMetaClaimMapping.getAttributeName())))
-//                .collect(Collectors.toList());
-//    }
-
     /**
      * Builder for the user bean.
      */
@@ -252,7 +230,8 @@ public class User {
 
         private String userId;
         private Domain domain;
-        private String tenantDomain;
+
+        private String primaryAttributeValue;
 
         private IdentityStore identityStore;
         private AuthorizationStore authorizationStore;
@@ -260,10 +239,6 @@ public class User {
 
         public String getUserId() {
             return userId;
-        }
-
-        public String getTenantDomain() {
-            return tenantDomain;
         }
 
         public IdentityStore getIdentityStore() {
@@ -288,8 +263,8 @@ public class User {
             return this;
         }
 
-        public UserBuilder setTenantDomain(String tenantDomain) {
-            this.tenantDomain = tenantDomain;
+        public UserBuilder setPrimaryAttributeValue(String primaryAttributeValue) {
+            this.primaryAttributeValue = primaryAttributeValue;
             return this;
         }
 
@@ -310,12 +285,12 @@ public class User {
 
         public User build() {
 
-            if (userId == null || domain == null || tenantDomain == null || identityStore == null ||
+            if (userId == null || identityStore == null || primaryAttributeValue == null ||
                     authorizationStore == null || claimManager == null) {
                 throw new StoreException("Required data missing for building user.");
             }
 
-            return new User(userId, domain, tenantDomain, identityStore, authorizationStore, claimManager);
+            return new User(userId, domain, primaryAttributeValue, identityStore, authorizationStore, claimManager);
         }
     }
 }

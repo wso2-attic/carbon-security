@@ -25,6 +25,7 @@ import org.wso2.carbon.security.caas.user.core.exception.CarbonSecurityDataHolde
 import org.wso2.carbon.security.caas.user.core.store.connector.AuthorizationStoreConnectorFactory;
 import org.wso2.carbon.security.caas.user.core.store.connector.CredentialStoreConnectorFactory;
 import org.wso2.carbon.security.caas.user.core.store.connector.IdentityStoreConnectorFactory;
+import org.wso2.carbon.security.caas.user.core.user.UserManager;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -46,6 +47,8 @@ public class CarbonSecurityDataHolder {
     private BundleContext bundleContext = null;
 
     private MetaClaimStore metaClaimStore;
+
+    private UserManager userManager;
 
     private CarbonSecurityDataHolder() {
     }
@@ -160,5 +163,13 @@ public class CarbonSecurityDataHolder {
 
     public void setMetaClaimStore(MetaClaimStore metaClaimStore) {
         this.metaClaimStore = metaClaimStore;
+    }
+
+    public UserManager getUserManager() {
+        return userManager;
+    }
+
+    public void setUserManager(UserManager userManager) {
+        this.userManager = userManager;
     }
 }
