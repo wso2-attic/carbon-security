@@ -123,7 +123,10 @@ public class StoreConfigBuilder {
         }
         storeConfig.setAuthorizationStoreCacheConfigMap(authorizationStoreCacheConfigMap);
 
-        // TODO: Load connector configs with external config files
+        // TODO: Load connector configs
+        storeConfig.setIdentityConnectorConfigMap(Collections.emptyMap());
+        storeConfig.setCredentialConnectorConfigMap(Collections.emptyMap());
+        storeConfig.setAuthorizationConnectorConfigMap(Collections.emptyMap());
 
         return storeConfig;
     }
