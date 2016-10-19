@@ -327,7 +327,7 @@ public class CarbonSecurityComponent implements RequiredCapabilityListener {
         try {
 
             MetaClaimStore metaClaimStore = new FileBasedMetaClaimStore(
-                    CarbonSecurityConstants.getCarbonHomeDirectory().toString() + "conf/security/" +
+                    CarbonSecurityConstants.getCarbonHomeDirectory().toString() + "/conf/security/" +
                             CarbonSecurityConstants.CLAIM_STORE_FILE);
 
             carbonSecurityDataHolder.setMetaClaimStore(metaClaimStore);
@@ -433,38 +433,43 @@ public class CarbonSecurityComponent implements RequiredCapabilityListener {
                 IdentityStoreConnectorConfig identityStoreConnectorConfig =
                         identityStoreConnectorConfigs.get(identityStoreConnectorId);
 
-                IdentityStoreConnector identityStoreConnector = identityStoreConnectorFactories
-                        .get(identityStoreConnectorConfig.getConnectorType()).getConnector();
+                if (identityStoreConnectorConfig != null) {
+                    IdentityStoreConnector identityStoreConnector = identityStoreConnectorFactories
+                            .get(identityStoreConnectorConfig.getConnectorType()).getConnector();
 
-                domain.addIdentityStoreConnectorPrimaryAttribute(identityStoreConnectorId,
-                        identityStoreConnectorConfig.getPrimaryAttributeName());
+                    domain.addIdentityStoreConnectorPrimaryAttribute(identityStoreConnectorId,
+                            identityStoreConnectorConfig.getPrimaryAttributeName());
 
-                List<String> uniqueAttributes = identityStoreConnectorConfig.getUniqueAttributes();
-                List<String> otherAttributes = identityStoreConnectorConfig.getOtherAttributes();
+                    List<String> uniqueAttributes = identityStoreConnectorConfig.getUniqueAttributes();
+                    List<String> otherAttributes = identityStoreConnectorConfig.getOtherAttributes();
 
-                domain.addIdentityStoreConnector(identityStoreConnector);
+                    domain.addIdentityStoreConnector(identityStoreConnector);
 
-                List<MetaClaimMapping> metaClaimMappings = new ArrayList<>();
+                    List<MetaClaimMapping> metaClaimMappings = new ArrayList<>();
 
-                for (Map.Entry<String, String> attributeMapping :
-                        domainIdentityStoreConnectorConfigEntry.getAttributeMappings().entrySet()) {
+                    for (Map.Entry<String, String> attributeMapping :
+                            domainIdentityStoreConnectorConfigEntry.getAttributeMappings().entrySet()) {
 
-                    String attributeName = attributeMapping.getValue();
-                    boolean unique = false;
+                        String attributeName = attributeMapping.getValue();
+                        boolean unique = false;
 
-                    if (uniqueAttributes.contains(attributeName)) {
-                        unique = true;
-                    } else if (!otherAttributes.contains(attributeName)) {
-                        throw new DomainConfigException("Attribute " + attributeName
-                                + " not found in connector for claim mapping");
+                        if (uniqueAttributes.contains(attributeName)) {
+                            unique = true;
+                        } else if (!otherAttributes.contains(attributeName)) {
+                            throw new DomainConfigException("Attribute " + attributeName
+                                    + " not found in connector for claim mapping");
+                        }
+
+                        MetaClaim metaClaim = metaClaimStore.getMetaClaim(attributeMapping.getKey());
+                        metaClaimMappings.add(new MetaClaimMapping(metaClaim, identityStoreConnectorId, attributeName,
+                                unique));
                     }
 
-                    MetaClaim metaClaim = metaClaimStore.getMetaClaim(attributeMapping.getKey());
-                    metaClaimMappings.add(new MetaClaimMapping(metaClaim, identityStoreConnectorId, attributeName,
-                            unique));
+                    connectorMetaClaimMappings.put(identityStoreConnectorId, metaClaimMappings);
+                } else {
+                    throw new DomainConfigException("IdentityStoreConfig not found for connectorId "
+                            + identityStoreConnectorId);
                 }
-
-                connectorMetaClaimMappings.put(identityStoreConnectorId, metaClaimMappings);
 
             }
 

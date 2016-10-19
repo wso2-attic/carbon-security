@@ -78,6 +78,7 @@
                                         <include>conf/store-config.yml</include>
                                         <include>conf/claim-store.yml</include>
                                         <include>conf/domain-config.yml</include>
+                                        <include>conf/user-mapping.csv</include>
                                         <include>p2.inf</include>
                                         <include>build.properties</include>
                                     </includes>
