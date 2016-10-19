@@ -19,7 +19,6 @@ package org.wso2.carbon.security.caas.user.core.store;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.wso2.carbon.security.caas.internal.CarbonSecurityDataHolder;
-import org.wso2.carbon.security.caas.user.core.bean.Attribute;
 import org.wso2.carbon.security.caas.user.core.bean.Domain;
 import org.wso2.carbon.security.caas.user.core.bean.Group;
 import org.wso2.carbon.security.caas.user.core.bean.User;
@@ -40,8 +39,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-import javax.security.auth.callback.Callback;
-import javax.security.auth.callback.NameCallback;
+
 /**
  * Represents a virtual identity store to abstract the underlying stores.
  *
@@ -183,35 +181,6 @@ public class IdentityStoreImpl implements IdentityStore {
         return null;
     }
 
-    public User getUser(Callback[] callbacks) throws IdentityStoreException, UserNotFoundException {
-
-        Map<String, IdentityStoreConnector> identityStoreConnectorsMap =
-                resolveDomain(callbacks).getIdentityStoreConnectorMap();
-
-        for (IdentityStoreConnector identityStoreConnector : identityStoreConnectorsMap.values()) {
-            try {
-                User.UserBuilder userBuilder = identityStoreConnector.getUserBuilder(callbacks);
-                return buildUser(userBuilder);
-            } catch (UserNotFoundException e) {
-
-                if (log.isDebugEnabled()) {
-                    log.debug("User for the callback not found", e);
-                }
-            }
-        }
-        throw new UserNotFoundException("User not found for the given callbacks.");
-    }
-
-    public List<User> listUsers(String filterPattern, int offset, int length) throws IdentityStoreException {
-
-        Claim claim = new Claim();
-        claim.setDialectURI(""); // TODO: Set the dialect URI for the primary attribute.
-        claim.setClaimURI(""); // TODO: Set the URI for the primary attribute.
-        claim.setValue(filterPattern);
-
-        return listUsers(claim, offset, length);
-    }
-
     @Override
     public List<User> listUsers(Claim claim, int offset, int length) throws IdentityStoreException {
 
@@ -279,46 +248,6 @@ public class IdentityStoreImpl implements IdentityStore {
         return null;
     }
 
-    public List<Attribute> getUserAttributeValues(String userName) throws IdentityStoreException {
-
-        List<Attribute> userAttributes = new ArrayList<>();
-
-        Map<String, IdentityStoreConnector> identityStoreConnectorsMap;
-
-        try {
-            identityStoreConnectorsMap = this.domainManager
-                    .getDomainFromUserName(userName).getIdentityStoreConnectorMap();
-        } catch (DomainException e) {
-            throw new IdentityStoreException(e);
-        }
-
-        for (IdentityStoreConnector identityStoreConnector : identityStoreConnectorsMap.values()) {
-            userAttributes.addAll(identityStoreConnector.getUserAttributeValues(userName));
-        }
-
-        return userAttributes;
-    }
-
-    public List<Attribute> getUserAttributeValues(String userName, List<String> attributeNames)
-            throws IdentityStoreException {
-
-        List<Attribute> userAttributes = new ArrayList<>();
-        Map<String, IdentityStoreConnector> identityStoreConnectorsMap;
-
-        try {
-            identityStoreConnectorsMap = this.domainManager
-                    .getDomainFromUserName(userName).getIdentityStoreConnectorMap();
-        } catch (DomainException e) {
-            throw new IdentityStoreException(e);
-        }
-
-        for (IdentityStoreConnector identityStoreConnector : identityStoreConnectorsMap.values()) {
-            userAttributes.addAll(identityStoreConnector.getUserAttributeValues(userName, attributeNames));
-        }
-
-        return userAttributes;
-    }
-
     @Override
     public Group getGroup(String groupName) throws IdentityStoreException, GroupNotFoundException {
 
@@ -357,83 +286,6 @@ public class IdentityStoreImpl implements IdentityStore {
         throw new GroupNotFoundException("Group not found for the given name");
     }
 
-
-    // TODO: Create method to list group by Claim.
-
-    public List<Group> listGroups(String filterPattern, int offset, int length) throws IdentityStoreException {
-
-        List<Group> groups = new ArrayList<>();
-
-        Map<String, IdentityStoreConnector> identityStoreConnectorsMap = resolveDomain().getIdentityStoreConnectorMap();
-
-        int groupCount = 0;
-
-        for (IdentityStoreConnector identityStoreConnector : identityStoreConnectorsMap.values()) {
-
-            // Get the total count of groups in the identity store
-            try {
-                groupCount += identityStoreConnector.getGroupCount();
-            } catch (UnsupportedOperationException e) {
-                log.warn("Count operation is not supported by this identity store. Running the operation in " +
-                        "performance intensive mode.");
-                groupCount += identityStoreConnector.getGroupBuilderList("*", 0, -1).size();
-            }
-
-            // If there are groups in this identity store more than the offset, we can get groups from this offset.
-            // If this offset exceeds the available count of the current identity store, move to the next
-            // identity store.
-            // TODO: Set domain for group builder
-            if (groupCount > offset) {
-                groups.addAll(identityStoreConnector.getGroupBuilderList(filterPattern, offset, length)
-                        .stream()
-                        .map(groupBuilder -> groupBuilder
-                                .setIdentityStore(carbonRealmService.getIdentityStore())
-                                .setAuthorizationStore(carbonRealmService.getAuthorizationStore())
-                                .build())
-                        .collect(Collectors.toList()));
-                length -= groups.size();
-                offset = 0;
-            } else {
-                offset -= groupCount;
-            }
-
-            // If we retrieved all the required users.
-            if (length == 0) {
-                break;
-            }
-        }
-
-        return groups;
-    }
-
-    public List<Attribute> getGroupAttributeValues(String groupId)
-            throws IdentityStoreException {
-
-        List<Attribute> groupAttributes = new ArrayList<>();
-
-        Map<String, IdentityStoreConnector> identityStoreConnectorsMap = resolveDomain().getIdentityStoreConnectorMap();
-
-        for (IdentityStoreConnector identityStoreConnector : identityStoreConnectorsMap.values()) {
-            groupAttributes.addAll(identityStoreConnector.getGroupAttributeValues(groupId));
-        }
-
-        return groupAttributes;
-    }
-
-    public List<Attribute> getGroupAttributeValues(String groupId, List<String> attributeNames)
-            throws IdentityStoreException {
-
-        List<Attribute> groupAttributes = new ArrayList<>();
-
-        Map<String, IdentityStoreConnector> identityStoreConnectorsMap = resolveDomain().getIdentityStoreConnectorMap();
-
-        for (IdentityStoreConnector identityStoreConnector : identityStoreConnectorsMap.values()) {
-            groupAttributes.addAll(identityStoreConnector.getGroupAttributeValues(groupId, attributeNames));
-        }
-
-        return groupAttributes;
-    }
-
     @Override
     public List<Group> getGroupsOfUser(String username) throws IdentityStoreException {
 
@@ -467,7 +319,8 @@ public class IdentityStoreImpl implements IdentityStore {
 
         List<User> userList = new ArrayList<>();
 
-        Map<String, IdentityStoreConnector> identityStoreConnectorsMap = resolveDomain().getIdentityStoreConnectorMap();
+        Map<String, IdentityStoreConnector> identityStoreConnectorsMap =
+                resolveDomain(groupID).getIdentityStoreConnectorMap();
 
         for (IdentityStoreConnector identityStoreConnector : identityStoreConnectorsMap.values()) {
 
@@ -556,33 +409,8 @@ public class IdentityStoreImpl implements IdentityStore {
         }
     }
 
-    /**
-     * Resolve domain using the callbacks array
-     *
-     * @param callbacks Callback array
-     * @return Domain for the callbacks
-     * @throws IdentityStoreException IdentityStoreException on unable to locate NameCallBack instance
-     */
-    private Domain resolveDomain(Callback[] callbacks) throws IdentityStoreException {
-
-        for (Callback callback : callbacks) {
-            if (callback instanceof NameCallback) {
-                String username = ((NameCallback) callback).getName();
-
-                try {
-                    return domainManager.getDomainFromUserName(username);
-                } catch (DomainException e) {
-                    throw new IdentityStoreException(String
-                            .format("Domain for username %s do not exist", username), e);
-                }
-            }
-        }
-
-        throw new IdentityStoreException("NameCallBack instance not found in the callbacks array");
-    }
-
     // TODO: Resolve domain from String filter pattern and group ID
-    private Domain resolveDomain() {
+    private Domain resolveDomain(String groupId) {
         return null;
     }
 }
