@@ -28,8 +28,6 @@ import org.wso2.carbon.security.caas.userstore.inmemory.util.InMemoryStoreUtil;
 
 import java.util.List;
 import java.util.UUID;
-import javax.security.auth.callback.Callback;
-import javax.security.auth.callback.NameCallback;
 
 /**
  * Identity store connector for InMemory based stores.
@@ -57,23 +55,6 @@ public class InMemoryIdentityStoreConnector implements IdentityStoreConnector {
         }
         throw new UserNotFoundException("No user found for username: " + attributeValue +
                 " in In-Memory identity store.");
-    }
-
-    @Override
-    public User.UserBuilder getUserBuilder(Callback[] callbacks) throws UserNotFoundException, IdentityStoreException {
-
-        String username = null;
-        for (Callback callback : callbacks) {
-            if (callback instanceof NameCallback) {
-                username = ((NameCallback) callback).getName();
-            }
-        }
-
-        if (InMemoryStoreUtil.getPassword(username) != null) {
-            return new User.UserBuilder().setUserId(UUID.randomUUID().toString());
-        }
-        throw new UserNotFoundException("No user found for username: " + username + " in In-Memory identity store.");
-
     }
 
     @Override
