@@ -67,7 +67,7 @@ public class IdentityStoreImpl implements IdentityStore {
         for (Map.Entry<String, IdentityStoreConnectorConfig> identityStoreConfig :
                 identityConnectorConfigs.entrySet()) {
 
-            String connectorType = identityStoreConfig.getValue().getStoreConnectorType();
+            String connectorType = identityStoreConfig.getValue().getConnectorType();
             IdentityStoreConnectorFactory identityStoreConnectorFactory = CarbonSecurityDataHolder.getInstance()
                     .getIdentityStoreConnectorFactoryMap().get(connectorType);
 
@@ -76,7 +76,7 @@ public class IdentityStoreImpl implements IdentityStore {
             }
 
             IdentityStoreConnector identityStoreConnector = identityStoreConnectorFactory.getConnector();
-            identityStoreConnector.init(identityStoreConfig.getKey(), identityStoreConfig.getValue());
+            identityStoreConnector.init(identityStoreConfig.getValue());
         }
 
         if (log.isDebugEnabled()) {

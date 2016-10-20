@@ -357,16 +357,16 @@ public class CarbonSecurityComponent implements RequiredCapabilityListener {
 
             credentialStore = new CredentialStoreImpl();
 
-            credentialStore.init(domainManager, storeConfig.getCredentialConnectorConfigMap());
-            identityStore.init(domainManager, storeConfig.getIdentityConnectorConfigMap());
-            authorizationStore.init(storeConfig.getAuthorizationConnectorConfigMap());
-
-
             // Register the carbon realm service.
             CarbonRealmServiceImpl<IdentityStore, CredentialStore> carbonRealmService
                     = new CarbonRealmServiceImpl(identityStore, credentialStore, authorizationStore);
 
             carbonSecurityDataHolder.registerCarbonRealmService(carbonRealmService);
+
+            credentialStore.init(domainManager, storeConfig.getCredentialConnectorConfigMap());
+            identityStore.init(domainManager, storeConfig.getIdentityConnectorConfigMap());
+            authorizationStore.init(storeConfig.getAuthorizationConnectorConfigMap());
+
             realmServiceRegistration = bundleContext.registerService(RealmService.class.getName(), carbonRealmService,
                     null);
             log.info("Realm service registered successfully.");
@@ -434,8 +434,15 @@ public class CarbonSecurityComponent implements RequiredCapabilityListener {
                         identityStoreConnectorConfigs.get(identityStoreConnectorId);
 
                 if (identityStoreConnectorConfig != null) {
-                    IdentityStoreConnector identityStoreConnector = identityStoreConnectorFactories
-                            .get(identityStoreConnectorConfig.getStoreConnectorType()).getConnector();
+                    IdentityStoreConnectorFactory identityStoreConnectorFactory = identityStoreConnectorFactories
+                            .get(identityStoreConnectorConfig.getConnectorType());
+
+                    if (identityStoreConnectorFactory == null) {
+                        throw new DomainConfigException("Connector type "
+                                + identityStoreConnectorConfig.getConnectorType() + " is not registered");
+                    }
+
+                    IdentityStoreConnector identityStoreConnector = identityStoreConnectorFactory.getConnector();
 
                     List<String> uniqueAttributes = identityStoreConnectorConfig.getUniqueAttributes();
                     List<String> otherAttributes = identityStoreConnectorConfig.getOtherAttributes();
@@ -485,10 +492,10 @@ public class CarbonSecurityComponent implements RequiredCapabilityListener {
 
             CredentialStoreConnector credentialStoreConnector = CarbonSecurityDataHolder.getInstance()
                     .getCredentialStoreConnectorFactoryMap()
-                    .get(credentialStoreConnectorConfig.getStoreConnectorType()).getInstance();
+                    .get(credentialStoreConnectorConfig.getConnectorType()).getInstance();
 
             try {
-                credentialStoreConnector.init(credentialStoreConnectorId, credentialStoreConnectorConfig);
+                credentialStoreConnector.init(credentialStoreConnectorConfig);
 
                 String domainName = credentialStoreConnectorConfig.getDomainName();
                 Domain domain = domains.get(domainName);

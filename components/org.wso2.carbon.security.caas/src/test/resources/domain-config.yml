@@ -13,41 +13,31 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 ###############################################################################
-enableCache: true
-credentialStore:
- connector: "#JDBCCS1"
-identityStore:
- connector: "#JDBCIS1"
-authorizationStore:
- connector: "#JDBCAS1"
-
-storeConnectors:
-
- identityStoreConnectors:
- -
-    connectorId: "FBIS1"
-    connectorType: "FileBasedIdentityStore"
-    domainName: "A"
-    uniqueAttributes:
-      - username
-      - email
-    otherAttributes:
-      - firstName
-      - lastName
-    properties:
-      storeFile: "./conf/security/identity-store-connector.csv"
-
- credentialStoreConnectors:
+domains:
   -
-    connectorId: "FBCS1"
-    connectorType: "FileBasedCredentialStore"
     domainName: "A"
-    properties:
-      storeFile: "./conf/security/credential-store-connector.csv"
-
- authorizationStoreConnectors:
+    priority: 1
+    identityStoreConnectors:
+    -
+      connectorName: "JDBCISC1"
+      attributeMappings:
+      - http://wso2.org/claims/username: "username"
+      - http://wso2.org/claims/firstName: "firstName"
+      - http://wso2.org/claims/lastName: "lastName"
+    -
+      connectorName: "JDBCISC2"
+      attributeMappings:
+      - http://wso2.org/claims/username: "email"
+      - http://wso2.org/claims/firstName: "firstName"
+      - http://wso2.org/claims/lastName: "lastName"
   -
-    connectorId: "FBAS1"
-    connectorType: "FileBasedAuthorizationStore"
-    properties:
-      storeFile: "WSO2_CARBON_DB"
+    domainName: "B"
+    priority: 2
+    identityStoreConnectors:
+    -
+      connectorName: "JDBCISC3"
+      attributeMappings:
+      - http://wso2.org/claims/username: "email"
+      - http://wso2.org/claims/firstName: "firstName"
+      - http://wso2.org/claims/lastName: "lastName"
+

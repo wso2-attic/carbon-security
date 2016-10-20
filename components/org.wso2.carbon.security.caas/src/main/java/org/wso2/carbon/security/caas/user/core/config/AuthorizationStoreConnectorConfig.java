@@ -7,26 +7,26 @@ import java.util.Properties;
  */
 public class AuthorizationStoreConnectorConfig {
 
-    private String storeConnectorId;
+    private String connectorId;
 
-    private String storeConnectorType;
+    private String connectorType;
 
     private Properties properties;
 
-    public String getStoreConnectorId() {
-        return storeConnectorId;
+    public String getConnectorId() {
+        return connectorId;
     }
 
-    public void setStoreConnectorId(String storeConnectorId) {
-        this.storeConnectorId = storeConnectorId;
+    public void setConnectorId(String connectorId) {
+        this.connectorId = connectorId;
     }
 
-    public String getStoreConnectorType() {
-        return storeConnectorType;
+    public String getConnectorType() {
+        return connectorType;
     }
 
-    public void setStoreConnectorType(String storeConnectorType) {
-        this.storeConnectorType = storeConnectorType;
+    public void setConnectorType(String connectorType) {
+        this.connectorType = connectorType;
     }
 
     public Properties getProperties() {

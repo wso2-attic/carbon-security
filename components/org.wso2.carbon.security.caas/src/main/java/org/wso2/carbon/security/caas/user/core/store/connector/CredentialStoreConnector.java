@@ -30,10 +30,9 @@ public interface CredentialStoreConnector {
     /**
      * Initialize the Credential store connector.
      * @param credentialStoreConnectorConfig Credential store configurations for this connector.
-     * @param storeId Id of this store.
      * @throws CredentialStoreException Credential Store Exception.
      */
-    void init(String storeId, CredentialStoreConnectorConfig credentialStoreConnectorConfig)
+    void init(CredentialStoreConnectorConfig credentialStoreConnectorConfig)
             throws CredentialStoreException;
 
     /**

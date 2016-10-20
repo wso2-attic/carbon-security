@@ -69,7 +69,7 @@ public class AuthorizationStoreImpl implements AuthorizationStore {
         for (Map.Entry<String, AuthorizationStoreConnectorConfig> authorizationStoreConfig :
                 authorizationConnectorConfigs.entrySet()) {
 
-            String connectorType = authorizationStoreConfig.getValue().getStoreConnectorType();
+            String connectorType = authorizationStoreConfig.getValue().getConnectorType();
             AuthorizationStoreConnectorFactory authorizationStoreConnectorFactory = CarbonSecurityDataHolder
                     .getInstance().getAuthorizationStoreConnectorFactoryMap().get(connectorType);
 
@@ -78,7 +78,7 @@ public class AuthorizationStoreImpl implements AuthorizationStore {
             }
 
             AuthorizationStoreConnector authorizationStoreConnector = authorizationStoreConnectorFactory.getInstance();
-            authorizationStoreConnector.init(authorizationStoreConfig.getKey(), authorizationStoreConfig.getValue());
+            authorizationStoreConnector.init(authorizationStoreConfig.getValue());
 
             authorizationStoreConnectors.put(authorizationStoreConfig.getKey(), authorizationStoreConnector);
         }

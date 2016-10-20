@@ -70,7 +70,7 @@ public class CredentialStoreImpl implements CredentialStore {
         for (Map.Entry<String, CredentialStoreConnectorConfig> credentialStoreConfig :
                 credentialConnectorConfigs.entrySet()) {
 
-            String connectorType = credentialStoreConfig.getValue().getStoreConnectorType();
+            String connectorType = credentialStoreConfig.getValue().getConnectorType();
             CredentialStoreConnectorFactory credentialStoreConnectorFactory = CarbonSecurityDataHolder.getInstance()
                     .getCredentialStoreConnectorFactoryMap().get(connectorType);
 
@@ -79,7 +79,7 @@ public class CredentialStoreImpl implements CredentialStore {
             }
 
             CredentialStoreConnector credentialStoreConnector = credentialStoreConnectorFactory.getInstance();
-            credentialStoreConnector.init(credentialStoreConfig.getKey(), credentialStoreConfig.getValue());
+            credentialStoreConnector.init(credentialStoreConfig.getValue());
         }
 
         if (log.isDebugEnabled()) {

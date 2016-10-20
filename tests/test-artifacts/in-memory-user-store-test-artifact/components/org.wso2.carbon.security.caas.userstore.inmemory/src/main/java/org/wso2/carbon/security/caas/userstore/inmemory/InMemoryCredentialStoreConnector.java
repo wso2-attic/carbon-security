@@ -35,7 +35,7 @@ import javax.security.auth.callback.PasswordCallback;
 public class InMemoryCredentialStoreConnector implements CredentialStoreConnector {
 
     @Override
-    public void init(String storeId, CredentialStoreConnectorConfig credentialStoreConnectorConfig)
+    public void init(CredentialStoreConnectorConfig credentialStoreConnectorConfig)
             throws CredentialStoreException {
         
     }

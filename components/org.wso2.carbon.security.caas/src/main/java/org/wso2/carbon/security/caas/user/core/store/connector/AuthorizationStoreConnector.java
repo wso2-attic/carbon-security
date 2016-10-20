@@ -37,11 +37,10 @@ public interface AuthorizationStoreConnector {
     /**
      * Initialize the authorization store.
      *
-     * @param storeId                           Id of this store.
      * @param authorizationStoreConnectorConfig Authorization store configurations for this connector.
      * @throws AuthorizationStoreException Authorization store exception.
      */
-    void init(String storeId, AuthorizationStoreConnectorConfig authorizationStoreConnectorConfig)
+    void init(AuthorizationStoreConnectorConfig authorizationStoreConnectorConfig)
             throws AuthorizationStoreException;
 
     /**

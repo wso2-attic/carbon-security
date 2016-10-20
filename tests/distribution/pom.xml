@@ -28,8 +28,8 @@
     <packaging>pom</packaging>
     <name>WSO2 Carbon Security CAAS - Test Distribution</name>
     <description>
-        This module generates the product distribution (zip) by installing sample in-memory user store and
-        carbon-security feature on top of kernel core and runtime features and finally assembles product specific
+        This module generates the product distribution (zip) by installing carbon-security feature
+        on top of kernel core and runtime features and finally assembles product specific
         configurations files and startup scripts using assembly plugin.
     </description>
     <url>http://wso2.com</url>
@@ -63,12 +63,6 @@
             <groupId>org.wso2.carbon.messaging</groupId>
             <artifactId>org.wso2.carbon.messaging.feature</artifactId>
             <version>${org.wso2.carbon.messaging.version}</version>
-            <type>zip</type>
-        </dependency>
-        <dependency>
-            <groupId>org.wso2.carbon.security.caas.tests.artifacts.userstore</groupId>
-            <artifactId>org.wso2.carbon.security.caas.userstore.inmemory.feature</artifactId>
-            <version>${carbon.security.caas.version}</version>
             <type>zip</type>
         </dependency>
     </dependencies>
@@ -133,10 +127,6 @@
                                     <id>org.wso2.carbon.messaging.feature</id>
                                     <version>${org.wso2.carbon.messaging.version}</version>
                                 </feature>
-                                <feature>
-                                    <id>org.wso2.carbon.security.caas.userstore.inmemory.feature</id>
-                                    <version>${carbon.security.caas.version}</version>
-                                </feature>
                             </features>
                         </configuration>
                     </execution>
@@ -189,10 +179,6 @@
                                 <!--carbon security feature-->
                                 <feature>
                                     <id>org.wso2.carbon.security.caas.feature</id>
-                                    <version>${carbon.security.caas.version}</version>
-                                </feature>
-                                <feature>
-                                    <id>org.wso2.carbon.security.caas.userstore.inmemory.feature</id>
                                     <version>${carbon.security.caas.version}</version>
                                 </feature>
                             </features>

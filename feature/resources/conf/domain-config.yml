@@ -19,25 +19,10 @@ domains:
     priority: 1
     identityStoreConnectors:
     -
-      connectorName: "JDBCISC1"
+      connectorName: "FBIS1"
       attributeMappings:
       - http://wso2.org/claims/username: "username"
-      - http://wso2.org/claims/firstName: "firstName"
-      - http://wso2.org/claims/lastName: "lastName"
-    -
-      connectorName: "JDBCISC2"
-      attributeMappings:
-      - http://wso2.org/claims/username: "email"
-      - http://wso2.org/claims/firstName: "firstName"
-      - http://wso2.org/claims/lastName: "lastName"
-  -
-    domainName: "B"
-    priority: 2
-    identityStoreConnectors:
-    -
-      connectorName: "JDBCISC3"
-      attributeMappings:
-      - http://wso2.org/claims/username: "email"
+      - http://wso2.org/claims/email: "email"
       - http://wso2.org/claims/firstName: "firstName"
       - http://wso2.org/claims/lastName: "lastName"
 

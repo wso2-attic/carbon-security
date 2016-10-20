@@ -125,7 +125,7 @@ public class StoreConfigBuilder {
         // Populate IdentityStoreConnectors
         Map<String, IdentityStoreConnectorConfig> identityStoreConnectorConfigMap =
                 storeConfigFile.getStoreConnectors().getIdentityStoreConnectors().stream().collect(
-                Collectors.toMap(IdentityStoreConnectorConfig::getStoreConnectorId,
+                Collectors.toMap(IdentityStoreConnectorConfig::getConnectorId,
                         identityStoreConnectorConfig -> identityStoreConnectorConfig)
         );
 
@@ -134,7 +134,7 @@ public class StoreConfigBuilder {
         // Populate CredentialStoreConnectors
         Map<String, CredentialStoreConnectorConfig> credentialStoreConnectorConfigMap =
                 storeConfigFile.getStoreConnectors().getCredentialStoreConnectors().stream().collect(
-                Collectors.toMap(CredentialStoreConnectorConfig::getStoreConnectorId,
+                Collectors.toMap(CredentialStoreConnectorConfig::getConnectorId,
                         credentialStoreConnectorConfig -> credentialStoreConnectorConfig)
         );
 
@@ -143,7 +143,7 @@ public class StoreConfigBuilder {
         // Populate AuthorizationStoreConnectors
         Map<String, AuthorizationStoreConnectorConfig> authorizationStoreConnectorConfigMap =
                 storeConfigFile.getStoreConnectors().getAuthorizationStoreConnectors().stream().collect(
-                Collectors.toMap(AuthorizationStoreConnectorConfig::getStoreConnectorId,
+                Collectors.toMap(AuthorizationStoreConnectorConfig::getConnectorId,
                         authorizationStoreConnectorConfig -> authorizationStoreConnectorConfig)
         );
 
