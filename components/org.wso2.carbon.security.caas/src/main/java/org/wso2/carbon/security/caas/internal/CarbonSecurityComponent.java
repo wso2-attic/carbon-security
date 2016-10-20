@@ -36,7 +36,6 @@ import org.wso2.carbon.security.caas.api.CarbonPolicy;
 import org.wso2.carbon.security.caas.api.module.UsernamePasswordLoginModule;
 import org.wso2.carbon.security.caas.api.util.CarbonSecurityConstants;
 import org.wso2.carbon.security.caas.boot.ProxyLoginModule;
-import org.wso2.carbon.security.caas.internal.config.CredentialStoreConnectorConfig;
 import org.wso2.carbon.security.caas.internal.config.PermissionConfigBuilder;
 import org.wso2.carbon.security.caas.internal.config.PermissionConfigFile;
 import org.wso2.carbon.security.caas.internal.config.StoreConfigBuilder;
@@ -53,6 +52,7 @@ import org.wso2.carbon.security.caas.user.core.claim.MetaClaim;
 import org.wso2.carbon.security.caas.user.core.claim.MetaClaimMapping;
 import org.wso2.carbon.security.caas.user.core.claim.MetaClaimStore;
 import org.wso2.carbon.security.caas.user.core.common.CarbonRealmServiceImpl;
+import org.wso2.carbon.security.caas.user.core.config.CredentialStoreConnectorConfig;
 import org.wso2.carbon.security.caas.user.core.config.IdentityStoreConnectorConfig;
 import org.wso2.carbon.security.caas.user.core.config.StoreConfig;
 import org.wso2.carbon.security.caas.user.core.domain.DomainManager;
@@ -435,10 +435,7 @@ public class CarbonSecurityComponent implements RequiredCapabilityListener {
 
                 if (identityStoreConnectorConfig != null) {
                     IdentityStoreConnector identityStoreConnector = identityStoreConnectorFactories
-                            .get(identityStoreConnectorConfig.getConnectorType()).getConnector();
-
-                    domain.addIdentityStoreConnectorPrimaryAttribute(identityStoreConnectorId,
-                            identityStoreConnectorConfig.getPrimaryAttributeName());
+                            .get(identityStoreConnectorConfig.getStoreConnectorType()).getConnector();
 
                     List<String> uniqueAttributes = identityStoreConnectorConfig.getUniqueAttributes();
                     List<String> otherAttributes = identityStoreConnectorConfig.getOtherAttributes();
@@ -488,7 +485,7 @@ public class CarbonSecurityComponent implements RequiredCapabilityListener {
 
             CredentialStoreConnector credentialStoreConnector = CarbonSecurityDataHolder.getInstance()
                     .getCredentialStoreConnectorFactoryMap()
-                    .get(credentialStoreConnectorConfig.getConnectorType()).getInstance();
+                    .get(credentialStoreConnectorConfig.getStoreConnectorType()).getInstance();
 
             try {
                 credentialStoreConnector.init(credentialStoreConnectorId, credentialStoreConnectorConfig);
@@ -498,8 +495,6 @@ public class CarbonSecurityComponent implements RequiredCapabilityListener {
 
                 if (domain != null) {
                     domain.addCredentialStoreConnector(credentialStoreConnector);
-                    domain.addCredentialStoreConnectorPrimaryAttribute(credentialStoreConnectorId,
-                            credentialStoreConnectorConfig.getPrimaryAttributeName());
                 } else {
                     log.error("Domain " + domainName + " was not found when creating CredentialStoreConnector "
                             + credentialStoreConnectorId);

@@ -69,7 +69,7 @@ public class AuthorizationStoreImpl implements AuthorizationStore {
         for (Map.Entry<String, AuthorizationStoreConnectorConfig> authorizationStoreConfig :
                 authorizationConnectorConfigs.entrySet()) {
 
-            String connectorType = authorizationStoreConfig.getValue().getConnectorType();
+            String connectorType = authorizationStoreConfig.getValue().getStoreConnectorType();
             AuthorizationStoreConnectorFactory authorizationStoreConnectorFactory = CarbonSecurityDataHolder
                     .getInstance().getAuthorizationStoreConnectorFactoryMap().get(connectorType);
 
@@ -851,7 +851,7 @@ public class AuthorizationStoreImpl implements AuthorizationStore {
         return authorizationStoreConnectors.entrySet()
                 .stream()
                 .collect(Collectors.toMap(Map.Entry::getKey,
-                        entry -> entry.getValue().getAuthorizationStoreConfig().getStoreProperties()
+                        entry -> entry.getValue().getAuthorizationStoreConfig().getProperties()
                                 .getProperty(UserCoreConstants.USERSTORE_DISPLAY_NAME, "")));
     }
 
@@ -887,6 +887,7 @@ public class AuthorizationStoreImpl implements AuthorizationStore {
      * @return Id of the primary authorization store.
      */
     private String getPrimaryAuthorizationStoreId() {
+        // TODO: Should be able to simply
 
         // To get the primary authorization store, first check whether the primary property is set to true, if not sort
         // the connectors by there priority. If non of above properties were set, then get the first connector id from
@@ -894,7 +895,7 @@ public class AuthorizationStoreImpl implements AuthorizationStore {
         return authorizationStoreConnectors.entrySet()
                 .stream()
                 .filter(connectorEntry -> Boolean.parseBoolean((connectorEntry.getValue().getAuthorizationStoreConfig()
-                        .getStoreProperties())
+                        .getProperties())
                         .getProperty(UserCoreConstants.PRIMARY_USERSTORE)))
                 .findFirst()
                 .map(Map.Entry::getKey)
@@ -902,10 +903,10 @@ public class AuthorizationStoreImpl implements AuthorizationStore {
                         .stream()
                         .sorted((c1, c2) ->
                                 Integer.compare(Integer.parseInt(c1.getValue().getAuthorizationStoreConfig()
-                                                .getStoreProperties()
+                                                .getProperties()
                                                 .getProperty(UserCoreConstants.USERSTORE_PRIORITY)),
                                         Integer.parseInt(c2.getValue().getAuthorizationStoreConfig()
-                                                .getStoreProperties()
+                                                .getProperties()
                                                 .getProperty(UserCoreConstants.USERSTORE_PRIORITY))))
                         .findFirst()
                         .map(Map.Entry::getKey)

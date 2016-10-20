@@ -1,7 +1,5 @@
 package org.wso2.carbon.security.caas.user.core.config;
 
-import org.wso2.carbon.security.caas.internal.config.CredentialStoreConnectorConfig;
-
 import java.util.List;
 
 /**

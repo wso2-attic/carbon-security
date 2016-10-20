@@ -1,5 +1,9 @@
 package org.wso2.carbon.security.caas.internal.config;
 
+import org.wso2.carbon.security.caas.user.core.config.AuthorizationStoreConnectorConfig;
+import org.wso2.carbon.security.caas.user.core.config.CredentialStoreConnectorConfig;
+import org.wso2.carbon.security.caas.user.core.config.IdentityStoreConnectorConfig;
+
 import java.util.List;
 
 /**
@@ -7,31 +11,31 @@ import java.util.List;
  */
 public class StoreConnectorsConfigEntry {
 
-    List<IdentityStoreConnectorConfigEntry> identityStoreConnectors;
-    List<CredentialStoreConnectorConfigEntry> credentialStoreConnectors;
-    List<StoreConnectorConfigEntry> authorizationStoreConnectors;
+    List<IdentityStoreConnectorConfig> identityStoreConnectors;
+    List<CredentialStoreConnectorConfig> credentialStoreConnectors;
+    List<AuthorizationStoreConnectorConfig> authorizationStoreConnectors;
 
-    public List<IdentityStoreConnectorConfigEntry> getIdentityStoreConnectors() {
+    public List<IdentityStoreConnectorConfig> getIdentityStoreConnectors() {
         return identityStoreConnectors;
     }
 
-    public void setIdentityStoreConnectors(List<IdentityStoreConnectorConfigEntry> identityStoreConnectors) {
+    public void setIdentityStoreConnectors(List<IdentityStoreConnectorConfig> identityStoreConnectors) {
         this.identityStoreConnectors = identityStoreConnectors;
     }
 
-    public List<CredentialStoreConnectorConfigEntry> getCredentialStoreConnectors() {
+    public List<CredentialStoreConnectorConfig> getCredentialStoreConnectors() {
         return credentialStoreConnectors;
     }
 
-    public void setCredentialStoreConnectors(List<CredentialStoreConnectorConfigEntry> credentialStoreConnectors) {
+    public void setCredentialStoreConnectors(List<CredentialStoreConnectorConfig> credentialStoreConnectors) {
         this.credentialStoreConnectors = credentialStoreConnectors;
     }
 
-    public List<StoreConnectorConfigEntry> getAuthorizationStoreConnectors() {
+    public List<AuthorizationStoreConnectorConfig> getAuthorizationStoreConnectors() {
         return authorizationStoreConnectors;
     }
 
-    public void setAuthorizationStoreConnectors(List<StoreConnectorConfigEntry> authorizationStoreConnectors) {
+    public void setAuthorizationStoreConnectors(List<AuthorizationStoreConnectorConfig> authorizationStoreConnectors) {
         this.authorizationStoreConnectors = authorizationStoreConnectors;
     }
 }

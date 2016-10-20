@@ -1,59 +1,39 @@
-/*
- * Copyright (c) 2016, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 package org.wso2.carbon.security.caas.user.core.config;
 
-import java.util.Map;
 import java.util.Properties;
 
 /**
- * Authorization store config.
+ * Basic StoreConnector config.
  */
 public class AuthorizationStoreConnectorConfig {
 
-    private String connectorType;
-    private Properties storeProperties;
-    private Map<String, CacheConfig> cacheConfigs;
+    private String storeConnectorId;
 
-    public AuthorizationStoreConnectorConfig(String connectorType, Properties properties) {
-        this.connectorType = connectorType;
-        this.storeProperties = properties;
+    private String storeConnectorType;
+
+    private Properties properties;
+
+    public String getStoreConnectorId() {
+        return storeConnectorId;
     }
 
-    public Properties getStoreProperties() {
-        return storeProperties;
+    public void setStoreConnectorId(String storeConnectorId) {
+        this.storeConnectorId = storeConnectorId;
     }
 
-    public String getConnectorType() {
-        return connectorType;
+    public String getStoreConnectorType() {
+        return storeConnectorType;
     }
 
-    public Map<String, CacheConfig> getCacheConfigs() {
-        return cacheConfigs;
+    public void setStoreConnectorType(String storeConnectorType) {
+        this.storeConnectorType = storeConnectorType;
     }
 
-    public void setCacheConfigs(Map<String, CacheConfig> cacheConfigs) {
-        this.cacheConfigs = cacheConfigs;
+    public Properties getProperties() {
+        return properties;
     }
 
-    public void setConnectorType(String connectorType) {
-        this.connectorType = connectorType;
-    }
-
-    public void setStoreProperties(Properties storeProperties) {
-        this.storeProperties = storeProperties;
+    public void setProperties(Properties properties) {
+        this.properties = properties;
     }
 }

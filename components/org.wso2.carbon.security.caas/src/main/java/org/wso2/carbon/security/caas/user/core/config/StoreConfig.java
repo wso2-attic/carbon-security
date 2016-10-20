@@ -16,8 +16,6 @@
 
 package org.wso2.carbon.security.caas.user.core.config;
 
-import org.wso2.carbon.security.caas.internal.config.CredentialStoreConnectorConfig;
-
 import java.util.HashMap;
 import java.util.Map;
 
@@ -51,20 +49,12 @@ public class StoreConfig {
         this.authorizationConnectorConfigMap = authorizationConnectorConfigMap;
     }
 
-    public void addAuthorizationStoreConfig(String name, AuthorizationStoreConnectorConfig authorizationStoreConfig) {
-        this.authorizationConnectorConfigMap.put(name, authorizationStoreConfig);
-    }
-
     public Map<String, IdentityStoreConnectorConfig> getIdentityConnectorConfigMap() {
         return identityConnectorConfigMap;
     }
 
     public void setIdentityConnectorConfigMap(Map<String, IdentityStoreConnectorConfig> identityConnectorConfigMap) {
         this.identityConnectorConfigMap = identityConnectorConfigMap;
-    }
-
-    public void addIdentityStoreConfig(String name, IdentityStoreConnectorConfig identityStoreConfig) {
-        this.identityConnectorConfigMap.put(name, identityStoreConfig);
     }
 
     public Map<String, CredentialStoreConnectorConfig> getCredentialConnectorConfigMap() {
@@ -74,10 +64,6 @@ public class StoreConfig {
     public void setCredentialConnectorConfigMap(Map<String, CredentialStoreConnectorConfig>
                                                         credentialConnectorConfigMap) {
         this.credentialConnectorConfigMap = credentialConnectorConfigMap;
-    }
-
-    public void addCredentialStoreConfig(String name, CredentialStoreConnectorConfig credentialStoreConfig) {
-        this.credentialConnectorConfigMap.put(name, credentialStoreConfig);
     }
 
     public Map<String, CacheConfig> getAuthorizationStoreCacheConfigMap() {

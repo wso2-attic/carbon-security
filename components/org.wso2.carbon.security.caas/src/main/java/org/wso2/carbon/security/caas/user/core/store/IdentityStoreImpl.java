@@ -67,7 +67,7 @@ public class IdentityStoreImpl implements IdentityStore {
         for (Map.Entry<String, IdentityStoreConnectorConfig> identityStoreConfig :
                 identityConnectorConfigs.entrySet()) {
 
-            String connectorType = identityStoreConfig.getValue().getConnectorType();
+            String connectorType = identityStoreConfig.getValue().getStoreConnectorType();
             IdentityStoreConnectorFactory identityStoreConnectorFactory = CarbonSecurityDataHolder.getInstance()
                     .getIdentityStoreConnectorFactoryMap().get(connectorType);
 
