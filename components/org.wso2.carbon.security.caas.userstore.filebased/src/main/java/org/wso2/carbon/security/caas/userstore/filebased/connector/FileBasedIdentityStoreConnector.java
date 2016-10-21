@@ -1,6 +1,21 @@
+/*
+ * Copyright (c) 2016, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package org.wso2.carbon.security.caas.userstore.filebased.connector;
 
-import org.wso2.carbon.kernel.utils.StringUtils;
 import org.wso2.carbon.security.caas.user.core.bean.Attribute;
 import org.wso2.carbon.security.caas.user.core.bean.Group;
 import org.wso2.carbon.security.caas.user.core.bean.User;
@@ -28,8 +43,6 @@ public class FileBasedIdentityStoreConnector implements IdentityStoreConnector {
     String identityStoreConnectorId;
     IdentityStoreConnectorConfig identityStoreConnectorConfig;
 
-    BufferedReader bufferedReader;
-
     private static final int PRIMARY_ATTRIBUTE_COLUMN = 1;
 
     /**
@@ -41,6 +54,8 @@ public class FileBasedIdentityStoreConnector implements IdentityStoreConnector {
      * Number of columns represented in the csv.
      */
     private int numberOfColumns = 7;
+
+    private Path userStorePath;
 
     @Override
     public void init(IdentityStoreConnectorConfig identityStoreConnectorConfig)
@@ -55,15 +70,9 @@ public class FileBasedIdentityStoreConnector implements IdentityStoreConnector {
             throw new IdentityStoreException("storeFile property is not provided for file based connector");
         }
 
-        Path userStorePath = Paths.get(userStoreFile);
+        userStorePath = Paths.get(userStoreFile);
 
         populateAttributeMap();
-
-        try {
-            bufferedReader = Files.newBufferedReader(userStorePath);
-        } catch (IOException e) {
-            throw new IdentityStoreException("Error initializing file based identity store connector", e);
-        }
     }
 
     /**
@@ -88,17 +97,22 @@ public class FileBasedIdentityStoreConnector implements IdentityStoreConnector {
     @Override
     public User.UserBuilder getUserBuilder(String attributeName, String attributeValue) throws UserNotFoundException,
             IdentityStoreException {
-        try {
-            bufferedReader.reset();
+
+        try (BufferedReader bufferedReader = Files.newBufferedReader(userStorePath)) {
+
+            if (bufferedReader == null) {
+                throw new IdentityStoreException("Error loading user store file");
+            }
             String line;
-            while (!StringUtils.isNullOrEmpty(line = bufferedReader.readLine())) {
+            while ((line = bufferedReader.readLine()) != null) {
 
                 // Skip comments
                 if (line.startsWith(Constants.COMMENT_PREFIX)) {
                     continue;
                 }
 
-                String[] userData = line.split(Constants.DELIMITER);
+                // Can have empty attributes, therefore having -1 for split
+                String[] userData = line.split(Constants.DELIMITER, -1);
 
                 if (userData.length != numberOfColumns) {
                     throw new IdentityStoreException("Invalid user data found in FileBasedIdentityStoreConnector");
@@ -125,7 +139,8 @@ public class FileBasedIdentityStoreConnector implements IdentityStoreConnector {
 
     @Override
     public int getUserCount() throws IdentityStoreException {
-        try {
+
+        try (BufferedReader bufferedReader = Files.newBufferedReader(userStorePath)) {
             bufferedReader.reset();
 
             long count = bufferedReader.lines().count();

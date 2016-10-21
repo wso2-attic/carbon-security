@@ -364,7 +364,7 @@ public class CarbonSecurityComponent implements RequiredCapabilityListener {
             carbonSecurityDataHolder.registerCarbonRealmService(carbonRealmService);
 
             credentialStore.init(domainManager, storeConfig.getCredentialConnectorConfigMap());
-            identityStore.init(domainManager, storeConfig.getIdentityConnectorConfigMap());
+            identityStore.init(domainManager);
             authorizationStore.init(storeConfig.getAuthorizationConnectorConfigMap());
 
             realmServiceRegistration = bundleContext.registerService(RealmService.class.getName(), carbonRealmService,
@@ -447,7 +447,7 @@ public class CarbonSecurityComponent implements RequiredCapabilityListener {
                     List<String> uniqueAttributes = identityStoreConnectorConfig.getUniqueAttributes();
                     List<String> otherAttributes = identityStoreConnectorConfig.getOtherAttributes();
 
-                    domain.addIdentityStoreConnector(identityStoreConnector);
+                    domain.addIdentityStoreConnector(identityStoreConnector, identityStoreConnectorConfig);
 
                     List<MetaClaimMapping> metaClaimMappings = new ArrayList<>();
 

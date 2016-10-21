@@ -44,14 +44,6 @@ public class User {
     private Domain domain;
 
     /**
-     * The primary claim attribute value of this user.
-     *
-     * The primary attribute value will be most frequent claim to be retrieved from a user.
-     * Hence keeping is as an attribute.
-     */
-    private String primaryAttributeValue;
-
-    /**
      * The IdentityStore this user originates from.
      */
     private IdentityStore identityStore;
@@ -66,12 +58,11 @@ public class User {
      */
     private ClaimManager claimManager;
 
-    private User(String userId, Domain domain, String primaryAttributeValue, IdentityStore identityStore,
+    private User(String userId, Domain domain, IdentityStore identityStore,
                  AuthorizationStore authorizationStore, ClaimManager claimManager) {
 
         this.userId = userId;
         this.domain = domain;
-        this.primaryAttributeValue = primaryAttributeValue;
         this.identityStore = identityStore;
         this.authorizationStore = authorizationStore;
         this.claimManager = claimManager;
@@ -93,15 +84,6 @@ public class User {
      */
     public Domain getDomain() {
         return this.domain;
-    }
-
-    /**
-     * Get this users primary attribute value.
-     *
-     * @return The primary attribute value
-     */
-    public String getPrimaryAttributeValue() {
-        return primaryAttributeValue;
     }
 
     /**
@@ -231,8 +213,6 @@ public class User {
         private String userId;
         private Domain domain;
 
-        private String primaryAttributeValue;
-
         private IdentityStore identityStore;
         private AuthorizationStore authorizationStore;
         private ClaimManager claimManager;
@@ -263,11 +243,6 @@ public class User {
             return this;
         }
 
-        public UserBuilder setPrimaryAttributeValue(String primaryAttributeValue) {
-            this.primaryAttributeValue = primaryAttributeValue;
-            return this;
-        }
-
         public UserBuilder setIdentityStore(IdentityStore identityStore) {
             this.identityStore = identityStore;
             return this;
@@ -285,12 +260,11 @@ public class User {
 
         public User build() {
 
-            if (userId == null || identityStore == null || primaryAttributeValue == null ||
-                    authorizationStore == null || claimManager == null) {
+            if (userId == null || identityStore == null || authorizationStore == null || claimManager == null) {
                 throw new StoreException("Required data missing for building user.");
             }
 
-            return new User(userId, domain, primaryAttributeValue, identityStore, authorizationStore, claimManager);
+            return new User(userId, domain, identityStore, authorizationStore, claimManager);
         }
     }
 }

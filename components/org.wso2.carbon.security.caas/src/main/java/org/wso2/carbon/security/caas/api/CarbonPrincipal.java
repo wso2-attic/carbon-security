@@ -58,11 +58,7 @@ public class CarbonPrincipal implements Principal {
 
     @Override
     public String getName() {
-
-        // TODO: Uncomment this.
-        // return this.user.getUserName();
-
-        return null;
+         return user.getUserId();
     }
 
     public User getUser() {

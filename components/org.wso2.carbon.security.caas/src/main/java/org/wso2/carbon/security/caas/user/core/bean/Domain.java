@@ -18,7 +18,9 @@ package org.wso2.carbon.security.caas.user.core.bean;
 
 import org.wso2.carbon.security.caas.user.core.claim.Claim;
 import org.wso2.carbon.security.caas.user.core.claim.MetaClaimMapping;
+import org.wso2.carbon.security.caas.user.core.config.IdentityStoreConnectorConfig;
 import org.wso2.carbon.security.caas.user.core.exception.DomainException;
+import org.wso2.carbon.security.caas.user.core.exception.IdentityStoreException;
 import org.wso2.carbon.security.caas.user.core.store.connector.CredentialStoreConnector;
 import org.wso2.carbon.security.caas.user.core.store.connector.IdentityStoreConnector;
 
@@ -93,10 +95,11 @@ public class Domain {
      *
      * @param identityStoreConnector Identity Store connector
      */
-    public void addIdentityStoreConnector(IdentityStoreConnector identityStoreConnector)
+    public void addIdentityStoreConnector(IdentityStoreConnector identityStoreConnector,
+                                          IdentityStoreConnectorConfig identityStoreConnectorConfig)
             throws DomainException {
 
-        String identityStoreConnectorId = identityStoreConnector.getIdentityStoreId();
+        String identityStoreConnectorId = identityStoreConnectorConfig.getConnectorId();
 
         if (identityStoreConnectorsMap.containsKey(identityStoreConnectorId)) {
 
@@ -105,7 +108,12 @@ public class Domain {
                             identityStoreConnectorId));
         }
 
-        identityStoreConnectorsMap.put(identityStoreConnectorId, identityStoreConnector);
+        try {
+            identityStoreConnector.init(identityStoreConnectorConfig);
+            identityStoreConnectorsMap.put(identityStoreConnectorId, identityStoreConnector);
+        } catch (IdentityStoreException e) {
+            throw new DomainException("Error adding identity store to domain", e);
+        }
     }
 
     /**

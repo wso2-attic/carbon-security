@@ -1,6 +1,21 @@
+/*
+ * Copyright (c) 2016, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package org.wso2.carbon.security.caas.userstore.filebased.connector;
 
-import org.wso2.carbon.kernel.utils.StringUtils;
 import org.wso2.carbon.security.caas.user.core.config.CredentialStoreConnectorConfig;
 import org.wso2.carbon.security.caas.user.core.exception.AuthenticationFailure;
 import org.wso2.carbon.security.caas.user.core.exception.CredentialStoreException;
@@ -12,8 +27,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import javax.security.auth.callback.Callback;
 import javax.security.auth.callback.NameCallback;
 import javax.security.auth.callback.PasswordCallback;
@@ -25,12 +38,12 @@ public class FileBasedCredentialStoreConnector implements CredentialStoreConnect
 
     private CredentialStoreConnectorConfig credentialStoreConnectorConfig;
 
-    private BufferedReader bufferedReader;
+    private Path credentialStorePath;
 
     /**
      * Number of columns represented in the csv.
      */
-    private int numberOfColumns = 7;
+    private int numberOfColumns = 2;
 
     @Override
     public void init(CredentialStoreConnectorConfig credentialStoreConnectorConfig) throws CredentialStoreException {
@@ -42,13 +55,7 @@ public class FileBasedCredentialStoreConnector implements CredentialStoreConnect
             throw new CredentialStoreException("storeFile property is not provided for file based connector");
         }
 
-        Path userStorePath = Paths.get(userStoreFile);
-
-        try {
-            bufferedReader = Files.newBufferedReader(userStorePath);
-        } catch (IOException e) {
-            throw new CredentialStoreException("Error initializing file based credential store connector", e);
-        }
+        credentialStorePath = Paths.get(userStoreFile);
     }
 
     @Override
@@ -74,15 +81,20 @@ public class FileBasedCredentialStoreConnector implements CredentialStoreConnect
             throw new AuthenticationFailure("Information required for authentication not provided");
         }
 
+        String passwordString = new String(password);
 
-        try {
-            byte[] passwordBytes = String.valueOf(password).getBytes("UTF-8");
-            MessageDigest md = MessageDigest.getInstance("SHA-256");
-            String passwordHash = new String(md.digest(passwordBytes), "UTF-8");
+        try (BufferedReader bufferedReader = Files.newBufferedReader(credentialStorePath)) {
 
-            bufferedReader.reset();
+            if (bufferedReader == null) {
+                throw new CredentialStoreException("Error loading credential store file");
+            }
+            // TODO: HashPassword
+//            byte[] passwordBytes = String.valueOf(password).getBytes("UTF-8");
+//            MessageDigest md = MessageDigest.getInstance("SHA-256");
+//            String passwordHash = new String(md.digest(passwordBytes), "UTF-8");
+
             String line;
-            while (!StringUtils.isNullOrEmpty(line = bufferedReader.readLine())) {
+            while ((line = bufferedReader.readLine()) != null) {
 
                 // Skip comments
                 if (line.startsWith(Constants.COMMENT_PREFIX)) {
@@ -96,7 +108,7 @@ public class FileBasedCredentialStoreConnector implements CredentialStoreConnect
                 }
 
                 // Check if this is the same user
-                if (userData[1].equals(username) && userData[2].equals(passwordHash)) {
+                if (userData[0].equals(username) && userData[1].equals(passwordString)) {
                     return;
                 }
             }
@@ -104,9 +116,6 @@ public class FileBasedCredentialStoreConnector implements CredentialStoreConnect
             throw new AuthenticationFailure("Failed to authenticate");
         } catch (IOException e) {
             throw new CredentialStoreException("An error occurred while authentication user", e);
-        } catch (NoSuchAlgorithmException e) {
-            // not returning e as it contains hash details
-            throw new CredentialStoreException("An invalid Hash algorithm has been specified");
         }
     }
 
