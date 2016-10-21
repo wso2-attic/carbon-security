@@ -119,7 +119,7 @@
         <private.package>org.wso2.carbon.security.caas.internal</private.package>
         <export.package>
             !org.wso2.carbon.security.caas.internal,
-            org.wso2.carbon.security.caas.*
+            org.wso2.carbon.security.caas.*;version="${project.version}"
         </export.package>
         <import.package>
             org.osgi.framework.*;version="${osgi.framework.package.import.version.range}",
