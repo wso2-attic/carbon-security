@@ -851,7 +851,7 @@ public class AuthorizationStoreImpl implements AuthorizationStore {
         return authorizationStoreConnectors.entrySet()
                 .stream()
                 .collect(Collectors.toMap(Map.Entry::getKey,
-                        entry -> entry.getValue().getAuthorizationStoreConfig().getStoreProperties()
+                        entry -> entry.getValue().getAuthorizationStoreConfig().getProperties()
                                 .getProperty(UserCoreConstants.USERSTORE_DISPLAY_NAME, "")));
     }
 
@@ -894,7 +894,7 @@ public class AuthorizationStoreImpl implements AuthorizationStore {
         return authorizationStoreConnectors.entrySet()
                 .stream()
                 .filter(connectorEntry -> Boolean.parseBoolean((connectorEntry.getValue().getAuthorizationStoreConfig()
-                        .getStoreProperties())
+                        .getProperties())
                         .getProperty(UserCoreConstants.PRIMARY_USERSTORE)))
                 .findFirst()
                 .map(Map.Entry::getKey)
@@ -902,10 +902,10 @@ public class AuthorizationStoreImpl implements AuthorizationStore {
                         .stream()
                         .sorted((c1, c2) ->
                                 Integer.compare(Integer.parseInt(c1.getValue().getAuthorizationStoreConfig()
-                                                .getStoreProperties()
+                                                .getProperties()
                                                 .getProperty(UserCoreConstants.USERSTORE_PRIORITY)),
                                         Integer.parseInt(c2.getValue().getAuthorizationStoreConfig()
-                                                .getStoreProperties()
+                                                .getProperties()
                                                 .getProperty(UserCoreConstants.USERSTORE_PRIORITY))))
                         .findFirst()
                         .map(Map.Entry::getKey)

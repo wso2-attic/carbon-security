@@ -25,16 +25,12 @@ import java.util.Properties;
 public class AuthorizationStoreConnectorConfig {
 
     private String connectorType;
-    private Properties storeProperties;
+    private Properties properties;
+    private String connectorName;
     private Map<String, CacheConfig> cacheConfigs;
 
-    public AuthorizationStoreConnectorConfig(String connectorType, Properties properties) {
-        this.connectorType = connectorType;
-        this.storeProperties = properties;
-    }
-
-    public Properties getStoreProperties() {
-        return storeProperties;
+    public Properties getProperties() {
+        return properties;
     }
 
     public String getConnectorType() {
@@ -53,7 +49,15 @@ public class AuthorizationStoreConnectorConfig {
         this.connectorType = connectorType;
     }
 
-    public void setStoreProperties(Properties storeProperties) {
-        this.storeProperties = storeProperties;
+    public void setProperties(Properties properties) {
+        this.properties = properties;
+    }
+
+    public String getConnectorName() {
+        return connectorName;
+    }
+
+    public void setConnectorName(String connectorName) {
+        this.connectorName = connectorName;
     }
 }

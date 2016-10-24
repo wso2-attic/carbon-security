@@ -357,9 +357,6 @@ public class CarbonSecurityComponent implements RequiredCapabilityListener {
 
             credentialStore = new CredentialStoreImpl();
 
-            credentialStore.init(domainManager, storeConfig.getCredentialConnectorConfigMap());
-            identityStore.init(domainManager, storeConfig.getIdentityConnectorConfigMap());
-            authorizationStore.init(storeConfig.getAuthorizationConnectorConfigMap());
 
 
             // Register the carbon realm service.
@@ -370,6 +367,11 @@ public class CarbonSecurityComponent implements RequiredCapabilityListener {
             realmServiceRegistration = bundleContext.registerService(RealmService.class.getName(), carbonRealmService,
                     null);
             log.info("Realm service registered successfully.");
+
+            //stores requires the realm service
+            credentialStore.init(domainManager, storeConfig.getCredentialConnectorConfigMap());
+            identityStore.init(domainManager, storeConfig.getIdentityConnectorConfigMap());
+            authorizationStore.init(storeConfig.getAuthorizationConnectorConfigMap());
 
             // Initialize and register the claim manager.
             InMemoryClaimManager claimManager = new InMemoryClaimManager();

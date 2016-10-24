@@ -19,15 +19,15 @@ domains:
     priority: 1
     identityStoreConnectors:
     -
-      connectorName: "JDBCISC1"
+      connectorName: "JDBCIS1"
       attributeMappings:
       - http://wso2.org/claims/username: "username"
       - http://wso2.org/claims/firstName: "firstName"
       - http://wso2.org/claims/lastName: "lastName"
     -
-      connectorName: "JDBCISC2"
+      connectorName: "JDBCIS2"
       attributeMappings:
-      - http://wso2.org/claims/username: "email"
+      - http://wso2.org/claims/email: "email"
       - http://wso2.org/claims/firstName: "firstName"
       - http://wso2.org/claims/lastName: "lastName"
   -
@@ -35,7 +35,7 @@ domains:
     priority: 2
     identityStoreConnectors:
     -
-      connectorName: "JDBCISC3"
+      connectorName: "JDBCIS3"
       attributeMappings:
       - http://wso2.org/claims/username: "email"
       - http://wso2.org/claims/firstName: "firstName"

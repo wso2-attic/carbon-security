@@ -19,7 +19,9 @@ package org.wso2.carbon.security.caas.internal.config;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.wso2.carbon.security.caas.api.util.CarbonSecurityConstants;
+import org.wso2.carbon.security.caas.user.core.config.AuthorizationStoreConnectorConfig;
 import org.wso2.carbon.security.caas.user.core.config.CacheConfig;
+import org.wso2.carbon.security.caas.user.core.config.IdentityStoreConnectorConfig;
 import org.wso2.carbon.security.caas.user.core.config.StoreConfig;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.introspector.BeanAccess;
@@ -32,12 +34,14 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
  * Configuration builder for stores.
+ *
  * @since 1.0.0
  */
 public class StoreConfigBuilder {
@@ -66,6 +70,7 @@ public class StoreConfigBuilder {
 
     /**
      * Builder a config object based on the store-config.yml properties.
+     *
      * @return StoreConfig
      */
     public static StoreConfig getStoreConfig() {
@@ -79,9 +84,9 @@ public class StoreConfigBuilder {
 
         // Validate for all mandatory parts in the store config file.
         if (storeConfigFile == null || storeConfigFile.getCredentialStore() == null
-            || storeConfigFile.getAuthorizationStore() == null || storeConfigFile.getIdentityStore() == null) {
+                || storeConfigFile.getAuthorizationStore() == null || storeConfigFile.getIdentityStore() == null) {
             throw new IllegalArgumentException("Invalid or missing configurations in the file - " +
-                                               CarbonSecurityConstants.STORE_CONFIG_FILE);
+                    CarbonSecurityConstants.STORE_CONFIG_FILE);
         }
 
         // Check if the global cache is enabled.
@@ -123,10 +128,50 @@ public class StoreConfigBuilder {
         }
         storeConfig.setAuthorizationStoreCacheConfigMap(authorizationStoreCacheConfigMap);
 
+        Map<String, IdentityStoreConnectorConfig> identityConnectorConfigMap = new HashMap<>();
+        for (IdentityStoreConnectorConfigEntry config : storeConfigFile.getStoreConnectors()
+                .getIdentityStoreConnectors()) {
+            IdentityStoreConnectorConfig identityStoreConnectorConfig = new IdentityStoreConnectorConfig();
+            String connectorName = config.getConnectorName();
+            identityStoreConnectorConfig.setProperties(config.getProperties());
+            identityStoreConnectorConfig.setUniqueAttributes(config.getUniqueAttributes());
+            identityStoreConnectorConfig.setOtherAttributes(config.getOtherAttributes());
+            identityStoreConnectorConfig.setPrimaryAttributeName(config.getPrimaryAttribute());
+            identityStoreConnectorConfig.setDomainName(config.getDomainName());
+            identityStoreConnectorConfig.setConnectorName(connectorName);
+            identityStoreConnectorConfig.setConnectorType(config.getConnectorType());
+            identityConnectorConfigMap.put(connectorName, identityStoreConnectorConfig);
+        }
+
+        Map<String, CredentialStoreConnectorConfig> credentialConnectorConfigMap = new HashMap<>();
+        for (CredentialStoreConnectorConfigEntry config : storeConfigFile.getStoreConnectors()
+                .getCredentialStoreConnectors()) {
+            CredentialStoreConnectorConfig credentialStoreConnectorConfig = new CredentialStoreConnectorConfig();
+            String connectorName = config.getConnectorName();
+            credentialStoreConnectorConfig.setProperties(config.getProperties());
+            credentialStoreConnectorConfig.setPrimaryAttributeName(config.getPrimaryAttribute());
+            credentialStoreConnectorConfig.setDomainName(config.getDomainName());
+            credentialStoreConnectorConfig.setConnectorName(connectorName);
+            credentialStoreConnectorConfig.setConnectorType(config.getConnectorType());
+            credentialConnectorConfigMap.put(connectorName, credentialStoreConnectorConfig);
+        }
+
+        Map<String, AuthorizationStoreConnectorConfig> authorizationConnectorConfigMap = new HashMap<>();
+        for (StoreConnectorConfigEntry config : storeConfigFile.getStoreConnectors()
+                .getAuthorizationStoreConnectors()) {
+            AuthorizationStoreConnectorConfig authorizationStoreConnectorConfig = new
+                    AuthorizationStoreConnectorConfig();
+            String connectorName = config.getConnectorName();
+            authorizationStoreConnectorConfig.setProperties(config.getProperties());
+            authorizationStoreConnectorConfig.setConnectorName(connectorName);
+            authorizationStoreConnectorConfig.setConnectorType(config.getConnectorType());
+            authorizationConnectorConfigMap.put(connectorName, authorizationStoreConnectorConfig);
+        }
+
         // TODO: Load connector configs
-        storeConfig.setIdentityConnectorConfigMap(Collections.emptyMap());
-        storeConfig.setCredentialConnectorConfigMap(Collections.emptyMap());
-        storeConfig.setAuthorizationConnectorConfigMap(Collections.emptyMap());
+        storeConfig.setIdentityConnectorConfigMap(identityConnectorConfigMap);
+        storeConfig.setCredentialConnectorConfigMap(credentialConnectorConfigMap);
+        storeConfig.setAuthorizationConnectorConfigMap(authorizationConnectorConfigMap);
 
         return storeConfig;
     }
@@ -165,6 +210,7 @@ public class StoreConfigBuilder {
 
     /**
      * Get cache configs for each connector.
+     *
      * @param cacheEntries Cache entry of the connector.
      * @return Map of CacheConfigs.
      */
