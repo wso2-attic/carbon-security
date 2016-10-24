@@ -16,10 +16,11 @@
 
 package org.wso2.carbon.security.caas.internal.config;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.wso2.carbon.security.caas.api.util.CarbonSecurityConstants;
+import org.wso2.carbon.security.caas.user.core.config.AuthorizationStoreConnectorConfig;
 import org.wso2.carbon.security.caas.user.core.config.CacheConfig;
+import org.wso2.carbon.security.caas.user.core.config.CredentialStoreConnectorConfig;
+import org.wso2.carbon.security.caas.user.core.config.IdentityStoreConnectorConfig;
 import org.wso2.carbon.security.caas.user.core.config.StoreConfig;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.introspector.BeanAccess;
@@ -41,8 +42,6 @@ import java.util.stream.Collectors;
  * @since 1.0.0
  */
 public class StoreConfigBuilder {
-
-    private static final Logger log = LoggerFactory.getLogger(StoreConfigBuilder.class);
 
     private static StoreConfigFile buildStoreConfig() {
         Path file = Paths.get(CarbonSecurityConstants.getCarbonHomeDirectory().toString(), "conf", "security",
@@ -123,10 +122,32 @@ public class StoreConfigBuilder {
         }
         storeConfig.setAuthorizationStoreCacheConfigMap(authorizationStoreCacheConfigMap);
 
-        // TODO: Load connector configs
-        storeConfig.setIdentityConnectorConfigMap(Collections.emptyMap());
-        storeConfig.setCredentialConnectorConfigMap(Collections.emptyMap());
-        storeConfig.setAuthorizationConnectorConfigMap(Collections.emptyMap());
+        // Populate IdentityStoreConnectors
+        Map<String, IdentityStoreConnectorConfig> identityStoreConnectorConfigMap =
+                storeConfigFile.getStoreConnectors().getIdentityStoreConnectors().stream().collect(
+                Collectors.toMap(IdentityStoreConnectorConfig::getConnectorId,
+                        identityStoreConnectorConfig -> identityStoreConnectorConfig)
+        );
+
+        storeConfig.setIdentityConnectorConfigMap(identityStoreConnectorConfigMap);
+
+        // Populate CredentialStoreConnectors
+        Map<String, CredentialStoreConnectorConfig> credentialStoreConnectorConfigMap =
+                storeConfigFile.getStoreConnectors().getCredentialStoreConnectors().stream().collect(
+                Collectors.toMap(CredentialStoreConnectorConfig::getConnectorId,
+                        credentialStoreConnectorConfig -> credentialStoreConnectorConfig)
+        );
+
+        storeConfig.setCredentialConnectorConfigMap(credentialStoreConnectorConfigMap);
+
+        // Populate AuthorizationStoreConnectors
+        Map<String, AuthorizationStoreConnectorConfig> authorizationStoreConnectorConfigMap =
+                storeConfigFile.getStoreConnectors().getAuthorizationStoreConnectors().stream().collect(
+                Collectors.toMap(AuthorizationStoreConnectorConfig::getConnectorId,
+                        authorizationStoreConnectorConfig -> authorizationStoreConnectorConfig)
+        );
+
+        storeConfig.setAuthorizationConnectorConfigMap(authorizationStoreConnectorConfigMap);
 
         return storeConfig;
     }

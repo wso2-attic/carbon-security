@@ -36,7 +36,6 @@ import org.wso2.carbon.security.caas.api.CarbonPolicy;
 import org.wso2.carbon.security.caas.api.module.UsernamePasswordLoginModule;
 import org.wso2.carbon.security.caas.api.util.CarbonSecurityConstants;
 import org.wso2.carbon.security.caas.boot.ProxyLoginModule;
-import org.wso2.carbon.security.caas.internal.config.CredentialStoreConnectorConfig;
 import org.wso2.carbon.security.caas.internal.config.PermissionConfigBuilder;
 import org.wso2.carbon.security.caas.internal.config.PermissionConfigFile;
 import org.wso2.carbon.security.caas.internal.config.StoreConfigBuilder;
@@ -53,6 +52,7 @@ import org.wso2.carbon.security.caas.user.core.claim.MetaClaim;
 import org.wso2.carbon.security.caas.user.core.claim.MetaClaimMapping;
 import org.wso2.carbon.security.caas.user.core.claim.MetaClaimStore;
 import org.wso2.carbon.security.caas.user.core.common.CarbonRealmServiceImpl;
+import org.wso2.carbon.security.caas.user.core.config.CredentialStoreConnectorConfig;
 import org.wso2.carbon.security.caas.user.core.config.IdentityStoreConnectorConfig;
 import org.wso2.carbon.security.caas.user.core.config.StoreConfig;
 import org.wso2.carbon.security.caas.user.core.domain.DomainManager;
@@ -357,16 +357,16 @@ public class CarbonSecurityComponent implements RequiredCapabilityListener {
 
             credentialStore = new CredentialStoreImpl();
 
-            credentialStore.init(domainManager, storeConfig.getCredentialConnectorConfigMap());
-            identityStore.init(domainManager, storeConfig.getIdentityConnectorConfigMap());
-            authorizationStore.init(storeConfig.getAuthorizationConnectorConfigMap());
-
-
             // Register the carbon realm service.
             CarbonRealmServiceImpl<IdentityStore, CredentialStore> carbonRealmService
                     = new CarbonRealmServiceImpl(identityStore, credentialStore, authorizationStore);
 
             carbonSecurityDataHolder.registerCarbonRealmService(carbonRealmService);
+
+            credentialStore.init(domainManager, storeConfig.getCredentialConnectorConfigMap());
+            identityStore.init(domainManager);
+            authorizationStore.init(storeConfig.getAuthorizationConnectorConfigMap());
+
             realmServiceRegistration = bundleContext.registerService(RealmService.class.getName(), carbonRealmService,
                     null);
             log.info("Realm service registered successfully.");
@@ -434,16 +434,20 @@ public class CarbonSecurityComponent implements RequiredCapabilityListener {
                         identityStoreConnectorConfigs.get(identityStoreConnectorId);
 
                 if (identityStoreConnectorConfig != null) {
-                    IdentityStoreConnector identityStoreConnector = identityStoreConnectorFactories
-                            .get(identityStoreConnectorConfig.getConnectorType()).getConnector();
+                    IdentityStoreConnectorFactory identityStoreConnectorFactory = identityStoreConnectorFactories
+                            .get(identityStoreConnectorConfig.getConnectorType());
 
-                    domain.addIdentityStoreConnectorPrimaryAttribute(identityStoreConnectorId,
-                            identityStoreConnectorConfig.getPrimaryAttributeName());
+                    if (identityStoreConnectorFactory == null) {
+                        throw new DomainConfigException("Connector type "
+                                + identityStoreConnectorConfig.getConnectorType() + " is not registered");
+                    }
+
+                    IdentityStoreConnector identityStoreConnector = identityStoreConnectorFactory.getConnector();
 
                     List<String> uniqueAttributes = identityStoreConnectorConfig.getUniqueAttributes();
                     List<String> otherAttributes = identityStoreConnectorConfig.getOtherAttributes();
 
-                    domain.addIdentityStoreConnector(identityStoreConnector);
+                    domain.addIdentityStoreConnector(identityStoreConnector, identityStoreConnectorConfig);
 
                     List<MetaClaimMapping> metaClaimMappings = new ArrayList<>();
 
@@ -491,15 +495,13 @@ public class CarbonSecurityComponent implements RequiredCapabilityListener {
                     .get(credentialStoreConnectorConfig.getConnectorType()).getInstance();
 
             try {
-                credentialStoreConnector.init(credentialStoreConnectorId, credentialStoreConnectorConfig);
+                credentialStoreConnector.init(credentialStoreConnectorConfig);
 
                 String domainName = credentialStoreConnectorConfig.getDomainName();
                 Domain domain = domains.get(domainName);
 
                 if (domain != null) {
                     domain.addCredentialStoreConnector(credentialStoreConnector);
-                    domain.addCredentialStoreConnectorPrimaryAttribute(credentialStoreConnectorId,
-                            credentialStoreConnectorConfig.getPrimaryAttributeName());
                 } else {
                     log.error("Domain " + domainName + " was not found when creating CredentialStoreConnector "
                             + credentialStoreConnectorId);

@@ -19,10 +19,11 @@ package org.wso2.carbon.security.caas.user.core.store;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.wso2.carbon.security.caas.api.CarbonCallback;
+import org.wso2.carbon.security.caas.api.util.CarbonSecurityConstants;
 import org.wso2.carbon.security.caas.internal.CarbonSecurityDataHolder;
-import org.wso2.carbon.security.caas.internal.config.CredentialStoreConnectorConfig;
 import org.wso2.carbon.security.caas.user.core.bean.Domain;
 import org.wso2.carbon.security.caas.user.core.bean.User;
+import org.wso2.carbon.security.caas.user.core.config.CredentialStoreConnectorConfig;
 import org.wso2.carbon.security.caas.user.core.constant.UserCoreConstants;
 import org.wso2.carbon.security.caas.user.core.context.AuthenticationContext;
 import org.wso2.carbon.security.caas.user.core.domain.DomainManager;
@@ -79,7 +80,7 @@ public class CredentialStoreImpl implements CredentialStore {
             }
 
             CredentialStoreConnector credentialStoreConnector = credentialStoreConnectorFactory.getInstance();
-            credentialStoreConnector.init(credentialStoreConfig.getKey(), credentialStoreConfig.getValue());
+            credentialStoreConnector.init(credentialStoreConfig.getValue());
         }
 
         if (log.isDebugEnabled()) {
@@ -107,6 +108,15 @@ public class CredentialStoreImpl implements CredentialStore {
         }
 
         String username = callback.getName();
+
+        String[] domainSplit = username.split(CarbonSecurityConstants.URL_SPLITTER);
+
+        // Remove domain information before forwarding the callback to the credential store
+        if (domainSplit.length > 1) {
+            String domainUnawareUsername = domainSplit[1];
+
+            callback.setName(domainUnawareUsername);
+        }
 
         User user;
         try {

@@ -16,7 +16,7 @@
 
 package org.wso2.carbon.security.caas.user.core.store.connector;
 
-import org.wso2.carbon.security.caas.internal.config.CredentialStoreConnectorConfig;
+import org.wso2.carbon.security.caas.user.core.config.CredentialStoreConnectorConfig;
 import org.wso2.carbon.security.caas.user.core.exception.AuthenticationFailure;
 import org.wso2.carbon.security.caas.user.core.exception.CredentialStoreException;
 
@@ -30,10 +30,9 @@ public interface CredentialStoreConnector {
     /**
      * Initialize the Credential store connector.
      * @param credentialStoreConnectorConfig Credential store configurations for this connector.
-     * @param storeId Id of this store.
      * @throws CredentialStoreException Credential Store Exception.
      */
-    void init(String storeId, CredentialStoreConnectorConfig credentialStoreConnectorConfig)
+    void init(CredentialStoreConnectorConfig credentialStoreConnectorConfig)
             throws CredentialStoreException;
 
     /**

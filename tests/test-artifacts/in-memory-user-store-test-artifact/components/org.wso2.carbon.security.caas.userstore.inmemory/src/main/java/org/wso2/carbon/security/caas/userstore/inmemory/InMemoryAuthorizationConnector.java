@@ -35,7 +35,7 @@ import java.util.List;
 public class InMemoryAuthorizationConnector implements AuthorizationStoreConnector {
 
     @Override
-    public void init(String storeId, AuthorizationStoreConnectorConfig authorizationStoreConnectorConfig)
+    public void init(AuthorizationStoreConnectorConfig authorizationStoreConnectorConfig)
             throws AuthorizationStoreException {
     }
 

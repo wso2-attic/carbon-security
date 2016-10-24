@@ -37,7 +37,7 @@ import java.util.UUID;
 public class InMemoryIdentityStoreConnector implements IdentityStoreConnector {
 
     @Override
-    public void init(String storeId, IdentityStoreConnectorConfig identityStoreConnectorConfig)
+    public void init(IdentityStoreConnectorConfig identityStoreConnectorConfig)
             throws IdentityStoreException {
     }
 

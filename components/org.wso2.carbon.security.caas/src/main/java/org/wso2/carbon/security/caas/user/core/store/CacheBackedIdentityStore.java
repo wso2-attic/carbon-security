@@ -25,7 +25,6 @@ import org.wso2.carbon.security.caas.user.core.bean.User;
 import org.wso2.carbon.security.caas.user.core.claim.Claim;
 import org.wso2.carbon.security.caas.user.core.claim.MetaClaim;
 import org.wso2.carbon.security.caas.user.core.config.CacheConfig;
-import org.wso2.carbon.security.caas.user.core.config.IdentityStoreConnectorConfig;
 import org.wso2.carbon.security.caas.user.core.constant.CacheNames;
 import org.wso2.carbon.security.caas.user.core.domain.DomainManager;
 import org.wso2.carbon.security.caas.user.core.exception.CarbonSecurityDataHolderException;
@@ -57,7 +56,7 @@ public class CacheBackedIdentityStore implements IdentityStore {
     }
 
     @Override
-    public void init(DomainManager domainManager, Map<String, IdentityStoreConnectorConfig> identityConnectorConfigs)
+    public void init(DomainManager domainManager)
             throws IdentityStoreException {
 
         CarbonCachingService carbonCachingService;
@@ -68,7 +67,7 @@ public class CacheBackedIdentityStore implements IdentityStore {
             throw new IdentityStoreException("Caching service is not available.", e);
         }
         cacheManager = carbonCachingService.getCachingProvider().getCacheManager();
-        identityStore.init(domainManager, identityConnectorConfigs);
+        identityStore.init(domainManager);
 
         // Initialize all caches.
         CacheHelper.createCache(CacheNames.USER_USERNAME, String.class, User.class, CacheHelper.MEDIUM_EXPIRE_TIME,

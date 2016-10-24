@@ -18,22 +18,21 @@ package org.wso2.carbon.security.caas.user.core.store;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.wso2.carbon.security.caas.api.util.CarbonSecurityConstants;
 import org.wso2.carbon.security.caas.internal.CarbonSecurityDataHolder;
 import org.wso2.carbon.security.caas.user.core.bean.Domain;
 import org.wso2.carbon.security.caas.user.core.bean.Group;
 import org.wso2.carbon.security.caas.user.core.bean.User;
 import org.wso2.carbon.security.caas.user.core.claim.Claim;
 import org.wso2.carbon.security.caas.user.core.claim.MetaClaim;
-import org.wso2.carbon.security.caas.user.core.config.IdentityStoreConnectorConfig;
+import org.wso2.carbon.security.caas.user.core.claim.MetaClaimMapping;
 import org.wso2.carbon.security.caas.user.core.domain.DomainManager;
 import org.wso2.carbon.security.caas.user.core.exception.DomainException;
 import org.wso2.carbon.security.caas.user.core.exception.GroupNotFoundException;
 import org.wso2.carbon.security.caas.user.core.exception.IdentityStoreException;
-import org.wso2.carbon.security.caas.user.core.exception.StoreException;
 import org.wso2.carbon.security.caas.user.core.exception.UserNotFoundException;
 import org.wso2.carbon.security.caas.user.core.service.RealmService;
 import org.wso2.carbon.security.caas.user.core.store.connector.IdentityStoreConnector;
-import org.wso2.carbon.security.caas.user.core.store.connector.IdentityStoreConnectorFactory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -54,30 +53,11 @@ public class IdentityStoreImpl implements IdentityStore {
     private RealmService carbonRealmService;
 
     @Override
-    public void init(DomainManager domainManager, Map<String, IdentityStoreConnectorConfig> identityConnectorConfigs)
+    public void init(DomainManager domainManager)
             throws IdentityStoreException {
 
         this.domainManager = domainManager;
         this.carbonRealmService = CarbonSecurityDataHolder.getInstance().getCarbonRealmService();
-
-        if (identityConnectorConfigs.isEmpty()) {
-            throw new StoreException("At least one identity store configuration must present.");
-        }
-
-        for (Map.Entry<String, IdentityStoreConnectorConfig> identityStoreConfig :
-                identityConnectorConfigs.entrySet()) {
-
-            String connectorType = identityStoreConfig.getValue().getConnectorType();
-            IdentityStoreConnectorFactory identityStoreConnectorFactory = CarbonSecurityDataHolder.getInstance()
-                    .getIdentityStoreConnectorFactoryMap().get(connectorType);
-
-            if (identityStoreConnectorFactory == null) {
-                throw new StoreException("No identity store connector factory found for given type.");
-            }
-
-            IdentityStoreConnector identityStoreConnector = identityStoreConnectorFactory.getConnector();
-            identityStoreConnector.init(identityStoreConfig.getKey(), identityStoreConfig.getValue());
-        }
 
         if (log.isDebugEnabled()) {
             log.debug("Identity store successfully initialized.");
@@ -127,8 +107,8 @@ public class IdentityStoreImpl implements IdentityStore {
             throws IdentityStoreException, UserNotFoundException {
 
         Claim claim = new Claim();
-        claim.setDialectURI(""); // TODO: Set the dialect URI for the primary attribute.
-        claim.setClaimURI(""); // TODO: Set the URI for the primary attribute.
+        claim.setDialectURI("http://wso2.org/claims"); // TODO: Set the dialect URI for the primary attribute.
+        claim.setClaimURI("http://wso2.org/claims/username"); // TODO: Set the URI for the primary attribute.
         claim.setValue(username);
 
         return getUser(claim);
@@ -142,28 +122,54 @@ public class IdentityStoreImpl implements IdentityStore {
     @Override
     public User getUser(Claim claim) throws IdentityStoreException, UserNotFoundException {
 
-        String attributeName = claim.getClaimURI(); // TODO: Get the attribute name from the claim manager.
         String attributeValue = claim.getValue();
 
-        Map<String, IdentityStoreConnector> identityStoreConnectorsMap = resolveDomain(claim)
-                .getIdentityStoreConnectorMap();
+        Domain domain = resolveUserDomain(attributeValue);
 
-        for (IdentityStoreConnector identityStoreConnector : identityStoreConnectorsMap.values()) {
-            try {
-                // The getUserBuilder method will set the connector specific user id
-                User.UserBuilder userBuilder = identityStoreConnector.getUserBuilder(attributeName, attributeValue);
+        String claimURI = claim.getClaimURI();
 
-                return buildUser(userBuilder);
+        Map<String, List<MetaClaimMapping>> metaClaimMappings = domain.getClaimMappings();
 
-            } catch (UserNotFoundException e) {
+        MetaClaimMapping metaClaimMapping = null;
 
-                if (log.isDebugEnabled()) {
-                    log.debug(String.format("User for %s:%s not found", attributeName, attributeValue), e);
+        for (Map.Entry<String, List<MetaClaimMapping>> entry : metaClaimMappings.entrySet()) {
+
+            for (MetaClaimMapping metaClaimMappingEntry : entry.getValue()) {
+                if (metaClaimMappingEntry.getMetaClaim().getClaimURI().equals(claimURI)) {
+                    metaClaimMapping = metaClaimMappingEntry;
                 }
             }
         }
 
-        throw new UserNotFoundException("User not found for the given name.");
+        if (metaClaimMapping == null) {
+            throw new IdentityStoreException("Claim URI " + claimURI + " was not found");
+        }
+
+        String attributeName = metaClaimMapping.getAttributeName();
+
+        String[] domainSplit = attributeValue.split(CarbonSecurityConstants.URL_SPLITTER);
+
+        String domainUnawareAttributeValue;
+
+        if (domainSplit.length > 1) {
+            domainUnawareAttributeValue = domainSplit[1];
+        } else {
+            domainUnawareAttributeValue = attributeValue;
+        }
+
+        IdentityStoreConnector identityStoreConnector =
+                domain.getIdentityStoreConnectorFromId(metaClaimMapping.getIdentityStoreConnectorId());
+
+        User.UserBuilder userBuilder =
+                identityStoreConnector.getUserBuilder(attributeName, domainUnawareAttributeValue);
+
+        userBuilder.setDomain(domain)
+                .setUserId(domainUnawareAttributeValue)
+                .setIdentityStore(carbonRealmService.getIdentityStore())
+                .setAuthorizationStore(carbonRealmService.getAuthorizationStore())
+                .setClaimManager(carbonRealmService.getClaimManager());
+
+        return userBuilder.build();
     }
 
     @Override
@@ -320,7 +326,7 @@ public class IdentityStoreImpl implements IdentityStore {
         List<User> userList = new ArrayList<>();
 
         Map<String, IdentityStoreConnector> identityStoreConnectorsMap =
-                resolveDomain(groupID).getIdentityStoreConnectorMap();
+                resolveGroupDomain(groupID).getIdentityStoreConnectorMap();
 
         for (IdentityStoreConnector identityStoreConnector : identityStoreConnectorsMap.values()) {
 
@@ -410,8 +416,16 @@ public class IdentityStoreImpl implements IdentityStore {
     }
 
     // TODO: Resolve domain from String filter pattern and group ID
-    private Domain resolveDomain(String groupId) {
+    private Domain resolveGroupDomain(String groupId) {
         return null;
+    }
+
+    private Domain resolveUserDomain(String attributeValue) throws IdentityStoreException {
+        try {
+            return domainManager.getDomainFromUserName(attributeValue);
+        } catch (DomainException e) {
+            throw new IdentityStoreException("Error resolving domain", e);
+        }
     }
 }
 

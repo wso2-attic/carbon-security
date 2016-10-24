@@ -118,12 +118,14 @@ public class DomainManager {
         // Check if the domain information is available in username
         String[] usernameSplit = username.split(CarbonSecurityConstants.URL_SPLITTER);
 
-        if (usernameSplit.length > 0) {
+        if (usernameSplit.length > 1) {
 
             String domainName = usernameSplit[0];
 
             // Throws an exception if the specified domain is not found
             return getDomainFromDomainName(domainName);
+        } else {
+            return getDomainsFromPriority(1).entrySet().stream().findAny().get().getValue();
         }
 
         // If the domain information is not available iterate through the connectors and find the
@@ -140,25 +142,8 @@ public class DomainManager {
 //            }
 //        }
 
-        return null;
-
         // Domain for the username specified do not exist even in primary domain.
 //        throw new DomainException(String.format("Username %s do not exist in any domain", username));
-    }
-
-    /**
-     * Add an identity store connector to the map of a domain.
-     *
-     * @param identityStoreConnector Identity Store connector
-     * @param domainName             Name of the domain to add the connector
-     */
-    public void addIdentityStoreConnectorToDomain(
-            IdentityStoreConnector identityStoreConnector,
-            String domainName) throws DomainException {
-
-        Domain domain = getDomainFromDomainName(domainName);
-
-        domain.addIdentityStoreConnector(identityStoreConnector);
     }
 
     /**

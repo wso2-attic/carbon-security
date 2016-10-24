@@ -45,6 +45,11 @@
             <version>${carbon.security.caas.version}</version>
         </dependency>
         <dependency>
+            <groupId>org.wso2.carbon.security.caas</groupId>
+            <artifactId>org.wso2.carbon.security.caas.userstore.filebased</artifactId>
+            <version>${carbon.security.caas.version}</version>
+        </dependency>
+        <dependency>
             <groupId>net.minidev.wso2</groupId>
             <artifactId>json-smart</artifactId>
         </dependency>
@@ -79,8 +84,11 @@
                                         <include>conf/claim-store.yml</include>
                                         <include>conf/domain-config.yml</include>
                                         <include>conf/user-mapping.csv</include>
+                                        <include>conf/identity-store-connector.csv</include>
+                                        <include>conf/credential-store-connector.csv</include>
                                         <include>p2.inf</include>
                                         <include>build.properties</include>
+
                                     </includes>
                                 </resource>
                             </resources>
@@ -118,6 +126,10 @@
                                 </bundle>
                                 <bundle>
                                     <symbolicName>org.wso2.carbon.security.caas</symbolicName>
+                                    <version>${carbon.security.caas.version}</version>
+                                </bundle>
+                                <bundle>
+                                    <symbolicName>org.wso2.carbon.security.caas.userstore.filebased</symbolicName>
                                     <version>${carbon.security.caas.version}</version>
                                 </bundle>
                                 <bundle>

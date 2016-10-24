@@ -15,6 +15,14 @@
 ###############################################################################
 claims:
  -
+  claimURI: "http://wso2.org/claims/username"
+  dialectURI: "http://wso2.org/claims"
+  properties:
+   displayName: "Username"
+   description: "Username"
+   required: "true"
+   supportedByDefault: "true"
+ -
   claimURI: "http://wso2.org/claims/firstName"
   dialectURI: "http://wso2.org/claims"
   properties:

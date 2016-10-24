@@ -20,14 +20,12 @@ import org.wso2.carbon.security.caas.user.core.bean.Group;
 import org.wso2.carbon.security.caas.user.core.bean.User;
 import org.wso2.carbon.security.caas.user.core.claim.Claim;
 import org.wso2.carbon.security.caas.user.core.claim.MetaClaim;
-import org.wso2.carbon.security.caas.user.core.config.IdentityStoreConnectorConfig;
 import org.wso2.carbon.security.caas.user.core.domain.DomainManager;
 import org.wso2.carbon.security.caas.user.core.exception.GroupNotFoundException;
 import org.wso2.carbon.security.caas.user.core.exception.IdentityStoreException;
 import org.wso2.carbon.security.caas.user.core.exception.UserNotFoundException;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * Represents a virtual identity store to abstract the underlying stores.
@@ -37,7 +35,7 @@ import java.util.Map;
 
 public interface IdentityStore {
 
-    void init(DomainManager domainManager, Map<String, IdentityStoreConnectorConfig> identityConnectorConfigs)
+    void init(DomainManager domainManager)
             throws IdentityStoreException;
 
     User getUser(String userId) throws IdentityStoreException, UserNotFoundException;

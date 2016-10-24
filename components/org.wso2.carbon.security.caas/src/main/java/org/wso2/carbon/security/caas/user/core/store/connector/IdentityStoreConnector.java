@@ -35,10 +35,9 @@ public interface IdentityStoreConnector {
      * Initialize identity store by passing identity store configurations read from files.
      *
      * @param identityStoreConnectorConfig IdentityStoreConnectorConfig for this connector.
-     * @param storeId                      Id of this store.
      * @throws IdentityStoreException Identity Store Exception.
      */
-    void init(String storeId, IdentityStoreConnectorConfig identityStoreConnectorConfig)
+    void init(IdentityStoreConnectorConfig identityStoreConnectorConfig)
             throws IdentityStoreException;
 
     /**

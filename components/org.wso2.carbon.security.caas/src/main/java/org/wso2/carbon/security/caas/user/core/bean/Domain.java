@@ -18,7 +18,9 @@ package org.wso2.carbon.security.caas.user.core.bean;
 
 import org.wso2.carbon.security.caas.user.core.claim.Claim;
 import org.wso2.carbon.security.caas.user.core.claim.MetaClaimMapping;
+import org.wso2.carbon.security.caas.user.core.config.IdentityStoreConnectorConfig;
 import org.wso2.carbon.security.caas.user.core.exception.DomainException;
+import org.wso2.carbon.security.caas.user.core.exception.IdentityStoreException;
 import org.wso2.carbon.security.caas.user.core.store.connector.CredentialStoreConnector;
 import org.wso2.carbon.security.caas.user.core.store.connector.IdentityStoreConnector;
 
@@ -46,16 +48,6 @@ public class Domain {
      * Mapping between IdentityStoreConnector ID and MetaClaimMapping
      */
     private Map<String, List<MetaClaimMapping>> claimMappings = new HashMap<>();
-
-    /**
-     * IdentityStoreConnector Id to primary attribute map.
-     */
-    private Map<String, String> identityStorePrimaryAttributes = new HashMap<>();
-
-    /**
-     * CredentialStoreConnector Id to primary attribute map.
-     */
-    private Map<String, String> credentialStorePrimaryAttributes = new HashMap<>();
 
     /**
      * Name of the domain.
@@ -103,10 +95,11 @@ public class Domain {
      *
      * @param identityStoreConnector Identity Store connector
      */
-    public void addIdentityStoreConnector(IdentityStoreConnector identityStoreConnector)
+    public void addIdentityStoreConnector(IdentityStoreConnector identityStoreConnector,
+                                          IdentityStoreConnectorConfig identityStoreConnectorConfig)
             throws DomainException {
 
-        String identityStoreConnectorId = identityStoreConnector.getIdentityStoreId();
+        String identityStoreConnectorId = identityStoreConnectorConfig.getConnectorId();
 
         if (identityStoreConnectorsMap.containsKey(identityStoreConnectorId)) {
 
@@ -115,7 +108,12 @@ public class Domain {
                             identityStoreConnectorId));
         }
 
-        identityStoreConnectorsMap.put(identityStoreConnectorId, identityStoreConnector);
+        try {
+            identityStoreConnector.init(identityStoreConnectorConfig);
+            identityStoreConnectorsMap.put(identityStoreConnectorId, identityStoreConnector);
+        } catch (IdentityStoreException e) {
+            throw new DomainException("Error adding identity store to domain", e);
+        }
     }
 
     /**
@@ -132,7 +130,7 @@ public class Domain {
     /**
      * Get identity store connector map.
      *
-     * @return Map<String, IdentityStoreConnector> identityStoreConnectorsMap
+     * @return Map of connectorId to IdentityStoreConnector
      */
     public Map<String, IdentityStoreConnector> getIdentityStoreConnectorMap() {
 
@@ -174,7 +172,7 @@ public class Domain {
     /**
      * Get credential store connector map.
      *
-     * @return Map<String, CredentialStoreConnector> credentialStoreConnectorsMap
+     * @return Map of connector Id to CredentialStoreConnector
      */
     public Map<String, CredentialStoreConnector> getCredentialStoreConnectorMap() {
 
@@ -200,7 +198,7 @@ public class Domain {
     /**
      * Get claim mappings for an identity store id.
      *
-     * @return Map<String, List<MetaClaimMapping>>
+     * @return Map of claimURI to List of MetaClaimMapping
      */
     public Map<String, List<MetaClaimMapping>> getClaimMappings() {
 
@@ -215,25 +213,5 @@ public class Domain {
     public void setClaimMappings(Map<String, List<MetaClaimMapping>> claimMappings) {
 
         this.claimMappings = claimMappings;
-    }
-
-    /**
-     * Add primary attribute for an IdentityStoreConnector.
-     *
-     * @param connectorId
-     * @param primaryAttribute
-     */
-    public void addIdentityStoreConnectorPrimaryAttribute(String connectorId, String primaryAttribute) {
-        identityStorePrimaryAttributes.put(connectorId, primaryAttribute);
-    }
-
-    /**
-     * Add primary attribute for a CredentialStoreConnector.
-     *
-     * @param connectorId
-     * @param primaryAttribute
-     */
-    public void addCredentialStoreConnectorPrimaryAttribute(String connectorId, String primaryAttribute) {
-        credentialStorePrimaryAttributes.put(connectorId, primaryAttribute);
     }
 }
