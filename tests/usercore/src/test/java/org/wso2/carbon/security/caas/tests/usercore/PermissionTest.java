@@ -46,8 +46,8 @@ import org.wso2.carbon.security.caas.user.core.context.AuthenticationContext;
 import org.wso2.carbon.security.caas.user.core.domain.DomainManager;
 import org.wso2.carbon.security.caas.user.core.exception.AuthenticationFailure;
 import org.wso2.carbon.security.caas.user.core.exception.AuthorizationStoreException;
+import org.wso2.carbon.security.caas.user.core.exception.CarbonSecurityConfigException;
 import org.wso2.carbon.security.caas.user.core.exception.CarbonSecurityDataHolderException;
-import org.wso2.carbon.security.caas.user.core.exception.ConfigurationFileReadException;
 import org.wso2.carbon.security.caas.user.core.exception.CredentialStoreException;
 import org.wso2.carbon.security.caas.user.core.exception.DomainConfigException;
 import org.wso2.carbon.security.caas.user.core.exception.IdentityStoreException;
@@ -63,7 +63,6 @@ import org.wso2.carbon.security.caas.userstore.filebased.connector.FileBasedAuth
 import org.wso2.carbon.security.caas.userstore.filebased.connector.FileBasedCredentialStoreConnectorFactory;
 import org.wso2.carbon.security.caas.userstore.filebased.connector.FileBasedIdentityStoreConnectorFactory;
 
-import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.nio.file.Paths;
@@ -121,14 +120,13 @@ public class PermissionTest extends PowerMockTestCase {
      * @throws NoSuchMethodException             When the stated method is not found
      * @throws InvocationTargetException         When error occurred invoking the method
      * @throws IllegalAccessException            When the invoking method is not accessible
-     * @throws ConfigurationFileReadException    on error in reading file
-     * @throws IOException                       on file not found
+     * @throws CarbonSecurityConfigException    on error in reading file
      */
     @Test
     public void authenticateUser() throws AuthorizationStoreException, IdentityStoreException,
             CredentialStoreException, UserNotFoundException, AuthenticationFailure, InvocationTargetException,
             NoSuchMethodException, DomainConfigException, IllegalAccessException, CarbonSecurityDataHolderException,
-            IOException, ConfigurationFileReadException {
+            CarbonSecurityConfigException {
 
         char[] password = new char[]{'a', 'd', 'm', 'i', 'n'};
 
@@ -186,15 +184,14 @@ public class PermissionTest extends PowerMockTestCase {
      * @param storeConfig Store configuration
      * @return DomainManager initialised domain manager
      * @throws CarbonSecurityDataHolderException When getting domain configuration from CarbonSecurityDataHolder
-     * @throws ConfigurationFileReadException    on error in reading file
-     * @throws IOException                       on file not found
+     * @throws CarbonSecurityConfigException    on error in reading file
      * @throws NoSuchMethodException             When the stated method is not found
      * @throws InvocationTargetException         When error occurred invoking the method
      * @throws IllegalAccessException            When the invoking method is not accessible
      */
     private DomainManager initialiseDomainManager(StoreConfig storeConfig)
             throws CarbonSecurityDataHolderException, NoSuchMethodException,
-            InvocationTargetException, IllegalAccessException, IOException, ConfigurationFileReadException {
+            InvocationTargetException, IllegalAccessException, CarbonSecurityConfigException {
 
         DomainConfig domainConfig = DomainConfigBuilder.getDomainConfig();
 
@@ -241,10 +238,9 @@ public class PermissionTest extends PowerMockTestCase {
      * Initialise store configuration.
      *
      * @return StoreConfig
-     * @throws ConfigurationFileReadException on error in reading file
-     * @throws IOException                    on file not found
+     * @throws CarbonSecurityConfigException on error in reading file
      */
-    private StoreConfig createStoreConfig() throws IOException, ConfigurationFileReadException {
+    private StoreConfig createStoreConfig() throws CarbonSecurityConfigException {
 
         StoreConfig storeConfig = StoreConfigBuilder.getStoreConfig();
 

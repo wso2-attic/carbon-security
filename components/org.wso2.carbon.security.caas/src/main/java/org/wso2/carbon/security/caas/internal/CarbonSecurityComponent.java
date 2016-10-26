@@ -57,7 +57,7 @@ import org.wso2.carbon.security.caas.user.core.config.IdentityStoreConnectorConf
 import org.wso2.carbon.security.caas.user.core.config.StoreConfig;
 import org.wso2.carbon.security.caas.user.core.domain.DomainManager;
 import org.wso2.carbon.security.caas.user.core.exception.AuthorizationStoreException;
-import org.wso2.carbon.security.caas.user.core.exception.ConfigurationFileReadException;
+import org.wso2.carbon.security.caas.user.core.exception.CarbonSecurityConfigException;
 import org.wso2.carbon.security.caas.user.core.exception.CredentialStoreException;
 import org.wso2.carbon.security.caas.user.core.exception.DomainConfigException;
 import org.wso2.carbon.security.caas.user.core.exception.DomainException;
@@ -82,7 +82,6 @@ import org.wso2.carbon.security.caas.user.core.store.connector.IdentityStoreConn
 import org.wso2.carbon.security.caas.user.core.user.FileBasedUserManager;
 import org.wso2.carbon.security.caas.user.core.user.UserManager;
 
-import java.io.IOException;
 import java.security.Policy;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -378,12 +377,10 @@ public class CarbonSecurityComponent implements RequiredCapabilityListener {
             log.error("Error occurred in creating the domain manager from the domain config", e);
         } catch (DomainConfigException | MetaClaimStoreException e) {
             log.error("Error occurred in building the domain configuration", e);
-        } catch (IOException e) {
-            log.error("Error initializing claim store from file", e);
         } catch (UserManagerException e) {
             log.error("Error initializing FileBasedUserManager", e);
-        } catch (ConfigurationFileReadException e) {
-            log.error("Error reading configuration file", e);
+        } catch (CarbonSecurityConfigException e) {
+            log.error("Error loading store configurations", e);
         }
 
         log.info("Carbon-Security bundle activated successfully.");

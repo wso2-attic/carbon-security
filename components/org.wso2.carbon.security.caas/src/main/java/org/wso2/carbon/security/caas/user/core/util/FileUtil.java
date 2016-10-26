@@ -18,7 +18,7 @@
 
 package org.wso2.carbon.security.caas.user.core.util;
 
-import org.wso2.carbon.security.caas.user.core.exception.ConfigurationFileReadException;
+import org.wso2.carbon.security.caas.user.core.exception.CarbonSecurityConfigException;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.introspector.BeanAccess;
 
@@ -46,11 +46,10 @@ public class FileUtil {
      * @param classType Class type of the yml bean
      * @param <T>       Class T
      * @return Config file bean
-     * @throws ConfigurationFileReadException Error if the file do not exists
-     * @throws IOException                    Error if the file do not exists
+     * @throws CarbonSecurityConfigException Error if the file do not exists
      */
     public static <T> T readConfigFile(String filePath, Class<T> classType)
-            throws ConfigurationFileReadException, IOException {
+            throws CarbonSecurityConfigException {
 
         Path file = Paths.get(filePath);
 
@@ -64,20 +63,22 @@ public class FileUtil {
      * @param classType Class type of the yml bean
      * @param <T>       Class T
      * @return Config file bean
-     * @throws ConfigurationFileReadException Error in reading configuration file
-     * @throws IOException                    Error if the file do not exists
+     * @throws CarbonSecurityConfigException Error in reading configuration file
      */
     public static <T> T readConfigFile(Path file, Class<T> classType)
-            throws ConfigurationFileReadException, IOException {
+            throws CarbonSecurityConfigException {
 
         if (Files.exists(file)) {
-
-            Reader in = new InputStreamReader(Files.newInputStream(file), StandardCharsets.UTF_8);
-            Yaml yaml = new Yaml();
-            yaml.setBeanAccess(BeanAccess.FIELD);
-            return yaml.loadAs(in, classType);
+            try {
+                Reader in = new InputStreamReader(Files.newInputStream(file), StandardCharsets.UTF_8);
+                Yaml yaml = new Yaml();
+                yaml.setBeanAccess(BeanAccess.FIELD);
+                return yaml.loadAs(in, classType);
+            } catch (IOException e) {
+                throw new CarbonSecurityConfigException(String.format("Error in reading file %s", file.toString()), e);
+            }
         } else {
-            throw new ConfigurationFileReadException(String
+            throw new CarbonSecurityConfigException(String
                     .format("Configuration file %s is not available.", file.toString()));
         }
     }

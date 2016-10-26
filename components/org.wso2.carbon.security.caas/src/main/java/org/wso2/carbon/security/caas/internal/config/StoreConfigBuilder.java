@@ -22,10 +22,14 @@ import org.wso2.carbon.security.caas.user.core.config.CacheConfig;
 import org.wso2.carbon.security.caas.user.core.config.CredentialStoreConnectorConfig;
 import org.wso2.carbon.security.caas.user.core.config.IdentityStoreConnectorConfig;
 import org.wso2.carbon.security.caas.user.core.config.StoreConfig;
-import org.wso2.carbon.security.caas.user.core.exception.ConfigurationFileReadException;
+import org.wso2.carbon.security.caas.user.core.exception.CarbonSecurityConfigException;
 import org.wso2.carbon.security.caas.user.core.util.FileUtil;
+import org.yaml.snakeyaml.Yaml;
 
 import java.io.IOException;
+import java.nio.file.DirectoryIteratorException;
+import java.nio.file.DirectoryStream;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -49,10 +53,9 @@ public class StoreConfigBuilder {
      * Read store-config.yml file
      *
      * @return StoreConfig file from store-config.yml
-     * @throws ConfigurationFileReadException on error in reading file
-     * @throws IOException                    on file not found
+     * @throws CarbonSecurityConfigException on error in reading file
      */
-    private static StoreConfigFile buildStoreConfig() throws ConfigurationFileReadException, IOException {
+    private static StoreConfigFile buildStoreConfig() throws CarbonSecurityConfigException {
 
         Path file = Paths.get(CarbonSecurityConstants.getCarbonHomeDirectory().toString(), "conf", "security",
                 CarbonSecurityConstants.STORE_CONFIG_FILE);
@@ -65,15 +68,11 @@ public class StoreConfigBuilder {
      * Builder a config object based on the store-config.yml properties.
      *
      * @return StoreConfig
-     * @throws ConfigurationFileReadException on error in reading file
-     * @throws IOException                    on file not found
+     * @throws CarbonSecurityConfigException
      */
-    public static StoreConfig getStoreConfig() throws IOException, ConfigurationFileReadException {
+    public static StoreConfig getStoreConfig() throws CarbonSecurityConfigException {
 
         StoreConfig storeConfig = new StoreConfig();
-
-        // TODO: Include external config entries
-//        Map<String, AuthorizationStoreConnectorConfig> externalConfigEntries = getExternalConfigEntries();
 
         StoreConfigFile storeConfigFile = buildStoreConfig();
 
@@ -99,30 +98,49 @@ public class StoreConfigBuilder {
                 getCacheEntriesForAuthorizationStore(storeConfigFile, cacheEnabled);
         storeConfig.setAuthorizationStoreCacheConfigMap(authorizationStoreCacheConfigMap);
 
+        // Load external connector config files
+        StoreConnectorsConfigEntry storeConnectors = storeConfigFile.getStoreConnectors();
+
+        List<IdentityStoreConnectorConfig> identityStoreConnectorConfigs =
+                storeConnectors.getIdentityStoreConnectors();
+
+        identityStoreConnectorConfigs.addAll(getExternalIdentityStoreConnectorConfig());
+
+        List<CredentialStoreConnectorConfig> credentialStoreConnectorConfigs =
+                storeConnectors.getCredentialStoreConnectors();
+
+        credentialStoreConnectorConfigs.addAll(getExternalCredentialStoreConnectorConfig());
+
+        List<AuthorizationStoreConnectorConfig> authorizationStoreConnectorConfigs =
+                storeConnectors.getAuthorizationStoreConnectors();
+
+        authorizationStoreConnectorConfigs.addAll(getExternalAuthorizationStoreConnectorConfig());
+
+
         // Populate IdentityStoreConnectors
         Map<String, IdentityStoreConnectorConfig> identityStoreConnectorConfigMap =
-                storeConfigFile.getStoreConnectors().getIdentityStoreConnectors()
-                        .stream()
-                        .collect(Collectors.toMap(IdentityStoreConnectorConfig::getConnectorId,
-                                identityStoreConnectorConfig -> identityStoreConnectorConfig));
+                storeConfigFile.getStoreConnectors().getIdentityStoreConnectors().stream().collect(
+                Collectors.toMap(IdentityStoreConnectorConfig::getConnectorId,
+                        identityStoreConnectorConfig -> identityStoreConnectorConfig)
+        );
 
         storeConfig.setIdentityConnectorConfigMap(identityStoreConnectorConfigMap);
 
         // Populate CredentialStoreConnectors
         Map<String, CredentialStoreConnectorConfig> credentialStoreConnectorConfigMap =
-                storeConfigFile.getStoreConnectors().getCredentialStoreConnectors()
-                        .stream()
-                        .collect(Collectors.toMap(CredentialStoreConnectorConfig::getConnectorId,
-                                credentialStoreConnectorConfig -> credentialStoreConnectorConfig));
+                credentialStoreConnectorConfigs.stream().collect(
+                Collectors.toMap(CredentialStoreConnectorConfig::getConnectorId,
+                        credentialStoreConnectorConfig -> credentialStoreConnectorConfig)
+        );
 
         storeConfig.setCredentialConnectorConfigMap(credentialStoreConnectorConfigMap);
 
         // Populate AuthorizationStoreConnectors
         Map<String, AuthorizationStoreConnectorConfig> authorizationStoreConnectorConfigMap =
-                storeConfigFile.getStoreConnectors().getAuthorizationStoreConnectors()
-                        .stream()
-                        .collect(Collectors.toMap(AuthorizationStoreConnectorConfig::getConnectorId,
-                                authorizationStoreConnectorConfig -> authorizationStoreConnectorConfig));
+                authorizationStoreConnectorConfigs.stream().collect(
+                Collectors.toMap(AuthorizationStoreConnectorConfig::getConnectorId,
+                        authorizationStoreConnectorConfig -> authorizationStoreConnectorConfig)
+        );
 
         storeConfig.setAuthorizationConnectorConfigMap(authorizationStoreConnectorConfigMap);
 
@@ -130,37 +148,90 @@ public class StoreConfigBuilder {
     }
 
     /**
-     * Read the config entries from external connector.yml files.
-     * @return Map of Store config entries.
+     * Read the IdentityStoreConnector config entries from external identity-connector.yml files.
+     *
+     * @return List of external IdentityStoreConnector config entries.
+     * @throws CarbonSecurityConfigException
      */
-//    private static Map<String, AuthorizationStoreConnectorConfig> getExternalConfigEntries() {
-//
-//        Map<String, AuthorizationStoreConnectorConfig> configEntryMap = new HashMap<>();
-//        Path path = Paths.get(CarbonSecurityConstants.getCarbonHomeDirectory().toString(), "conf", "security");
-//
-//        if (Files.exists(path)) {
-//            try (DirectoryStream<Path> stream = Files.newDirectoryStream(path, "*-connector.yml")) {
-//                for (Path filePath : stream) {
-//                    AuthorizationStoreConnectorConfig config =
-//                            new Yaml().loadAs(Files.newInputStream(filePath),
-//                                    AuthorizationStoreConnectorConfig.class);
-//
-//                    String name = config != null && !StringUtils.isNullOrEmpty(config.getConnectorId()) ?
-//                                  config.getConnectorId().trim() : null;
-//                    if (name != null) {
-//                        configEntryMap.put(name, config);
-//                    } else {
-//                        log.warn("Connector name is not available in the connector config file: "
-//                                 + filePath.toString());
-//                    }
-//                }
-//            } catch (DirectoryIteratorException | IOException ex) {
-//                throw new RuntimeException("Failed to read connector files from path: " + path.toString(), ex);
-//            }
-//        }
-//
-//        return configEntryMap;
-//    }
+    private static List<IdentityStoreConnectorConfig> getExternalIdentityStoreConnectorConfig()
+            throws CarbonSecurityConfigException {
+
+        List<IdentityStoreConnectorConfig> configEntries = new ArrayList<>();
+        Path path = Paths.get(CarbonSecurityConstants.getCarbonHomeDirectory().toString(), "conf", "security");
+
+        if (Files.exists(path)) {
+            try (DirectoryStream<Path> stream = Files.newDirectoryStream(path, "*-identity-connector.yml")) {
+                for (Path filePath : stream) {
+                    IdentityStoreConnectorConfig config = new Yaml().loadAs(Files.newInputStream(filePath),
+                            IdentityStoreConnectorConfig.class);
+
+                    configEntries.add(config);
+                }
+            } catch (DirectoryIteratorException | IOException e) {
+                throw new CarbonSecurityConfigException("Failed to read identity connector files from path: "
+                        + path.toString(), e);
+            }
+        }
+
+        return configEntries;
+    }
+    /**
+     * Read the CredentialStoreConnector config entries from external identity-connector.yml files.
+     *
+     * @return List of external CredentialStoreConnector Store config entries.
+     * @throws CarbonSecurityConfigException
+     */
+    private static List<CredentialStoreConnectorConfig> getExternalCredentialStoreConnectorConfig()
+            throws CarbonSecurityConfigException {
+
+        List<CredentialStoreConnectorConfig> configEntries = new ArrayList<>();
+        Path path = Paths.get(CarbonSecurityConstants.getCarbonHomeDirectory().toString(), "conf", "security");
+
+        if (Files.exists(path)) {
+            try (DirectoryStream<Path> stream = Files.newDirectoryStream(path, "*-credential-connector.yml")) {
+                for (Path filePath : stream) {
+                    CredentialStoreConnectorConfig config = new Yaml().loadAs(Files.newInputStream(filePath),
+                            CredentialStoreConnectorConfig.class);
+
+                    configEntries.add(config);
+                }
+            } catch (DirectoryIteratorException | IOException e) {
+                throw new CarbonSecurityConfigException("Failed to read credential store connector files from path: "
+                        + path.toString(), e);
+            }
+        }
+
+        return configEntries;
+    }
+
+    /**
+     * Read the AuthorizationStoreConnector config entries from external identity-connector.yml files.
+     *
+     * @return List of Store external AuthorizationStoreConnector config entries.
+     * @throws CarbonSecurityConfigException
+     */
+    private static List<AuthorizationStoreConnectorConfig> getExternalAuthorizationStoreConnectorConfig()
+            throws CarbonSecurityConfigException {
+
+        List<AuthorizationStoreConnectorConfig> configEntries = new ArrayList<>();
+        Path path = Paths.get(CarbonSecurityConstants.getCarbonHomeDirectory().toString(), "conf", "security");
+
+        if (Files.exists(path)) {
+            try (DirectoryStream<Path> stream = Files.newDirectoryStream(path, "*-authorization-connector.yml")) {
+                for (Path filePath : stream) {
+                    AuthorizationStoreConnectorConfig config = new Yaml().loadAs(Files.newInputStream(filePath),
+                            AuthorizationStoreConnectorConfig.class);
+
+                    configEntries.add(config);
+                }
+            } catch (DirectoryIteratorException | IOException e) {
+                throw new CarbonSecurityConfigException("Failed to read authorization store connector files from path: "
+                        + path.toString(), e);
+            }
+        }
+
+        return configEntries;
+    }
 
     /**
      * Get cache configs for each connector.

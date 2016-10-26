@@ -1,10 +1,9 @@
 package org.wso2.carbon.security.caas.internal.config.domain;
 
 import org.wso2.carbon.security.caas.api.util.CarbonSecurityConstants;
-import org.wso2.carbon.security.caas.user.core.exception.ConfigurationFileReadException;
+import org.wso2.carbon.security.caas.user.core.exception.CarbonSecurityConfigException;
 import org.wso2.carbon.security.caas.user.core.util.FileUtil;
 
-import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
@@ -21,10 +20,9 @@ public class DomainConfigBuilder {
      * Create configuration from the config file.
      *
      * @return DomainConfiguration YAML java representation.
-     * @throws ConfigurationFileReadException on error in reading file
-     * @throws IOException                    on file not found
+     * @throws CarbonSecurityConfigException on error in reading file
      */
-    private static DomainConfigFile buildDomainConfig() throws ConfigurationFileReadException, IOException {
+    private static DomainConfigFile buildDomainConfig() throws CarbonSecurityConfigException {
 
         Path file = Paths.get(CarbonSecurityConstants.getCarbonHomeDirectory().toString(), "conf", "security",
                 CarbonSecurityConstants.DOMAIN_CONFIG_FILE);
@@ -36,11 +34,9 @@ public class DomainConfigBuilder {
      * Retrieve domain configurations.
      *
      * @return Domain Configuration
-     * @throws ConfigurationFileReadException on error in reading file
-     * @throws IOException                    on file not found
+     * @throws CarbonSecurityConfigException on error in reading file
      */
-    public static DomainConfig getDomainConfig()
-            throws IOException, ConfigurationFileReadException {
+    public static DomainConfig getDomainConfig() throws CarbonSecurityConfigException {
 
         DomainConfigFile domainConfigFile = buildDomainConfig();
 
