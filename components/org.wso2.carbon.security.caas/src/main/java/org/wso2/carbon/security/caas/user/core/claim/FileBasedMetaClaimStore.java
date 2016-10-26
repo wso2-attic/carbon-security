@@ -34,11 +34,14 @@ public class FileBasedMetaClaimStore implements MetaClaimStore {
 
     /**
      * ClaimURI to MetaClaim map.
-     *
-     * @throws CarbonSecurityConfigException on error in reading file
      */
     Map<String, MetaClaim> metaClaims;
 
+    /**
+     * Initialize meta claim store by eagerly loading meta claims from file.
+     *
+     * @throws CarbonSecurityConfigException
+     */
     public FileBasedMetaClaimStore() throws CarbonSecurityConfigException {
 
         Path file = Paths.get(CarbonSecurityConstants.getCarbonHomeDirectory().toString(), "conf", "security",
