@@ -66,7 +66,7 @@ public class FileBasedCredentialStoreConnector implements CredentialStoreConnect
     @Override
     public void authenticate(Callback[] callbacks) throws CredentialStoreException, AuthenticationFailure {
 
-        char [] password = null;
+        char[] password = null;
         String username = null;
 
         for (Callback callback : callbacks) {

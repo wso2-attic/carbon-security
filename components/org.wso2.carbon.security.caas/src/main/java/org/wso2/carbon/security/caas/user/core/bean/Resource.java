@@ -28,8 +28,11 @@ public class Resource {
     private String resourceNamespace;
     private String resourceId;
 
-    private String authorizationStore;
+    private String authorizationStoreConnectorId;
 
+    /**
+     * Unique user id of the user.
+     */
     private String ownerId;
 
     public Resource(String resourceString) {
@@ -55,12 +58,13 @@ public class Resource {
         this.ownerId = ownerId;
     }
 
-    private Resource(String resourceNamespace, String resourceId, String ownerId, String authorizationStore) {
+    private Resource(String resourceNamespace, String resourceId, String ownerId,
+                     String authorizationStoreConnectorId) {
 
         this.resourceNamespace = resourceNamespace;
         this.resourceId = resourceId;
         this.ownerId = ownerId;
-        this.authorizationStore = authorizationStore;
+        this.authorizationStoreConnectorId = authorizationStoreConnectorId;
     }
 
     public static Resource getUniversalResource() {
@@ -79,17 +83,16 @@ public class Resource {
         return resourceNamespace + DELIMITER + resourceId;
     }
 
-    public void setAuthorizationStore(String authorizationStore) {
-        this.authorizationStore = authorizationStore;
+    public void setAuthorizationStoreConnectorId(String authorizationStoreConnectorId) {
+        this.authorizationStoreConnectorId = authorizationStoreConnectorId;
     }
 
-    public String getAuthorizationStore() {
-        return authorizationStore;
+    public String getAuthorizationStoreConnectorId() {
+        return authorizationStoreConnectorId;
     }
 
-    public User.UserBuilder getOwner() {
-        return new User.UserBuilder()
-                .setUserId(ownerId);
+    public String getOwnerId() {
+        return ownerId;
     }
 
     /**
@@ -99,7 +102,7 @@ public class Resource {
 
         private String resourceNamespace;
         private String resourceId;
-        private String authorizationStore;
+        private String authorizationStoreConnectorId;
         private String ownerId;
 
         public ResourceBuilder setResourceNamespace(String resourceNamespace) {
@@ -112,8 +115,8 @@ public class Resource {
             return this;
         }
 
-        public ResourceBuilder setAuthorizationStore(String authorizationStore) {
-            this.authorizationStore = authorizationStore;
+        public ResourceBuilder setAuthorizationStoreConnectorId(String authorizationStoreConnectorId) {
+            this.authorizationStoreConnectorId = authorizationStoreConnectorId;
             return this;
         }
 
@@ -124,11 +127,12 @@ public class Resource {
 
         public Resource build() {
 
-            if (resourceNamespace == null || resourceId == null || authorizationStore == null || ownerId == null) {
+            if (resourceNamespace == null || resourceId == null ||
+                    authorizationStoreConnectorId == null || ownerId == null) {
                 throw new StoreException("Required data is missing to build the resource.");
             }
 
-            return new Resource(resourceNamespace, resourceId, ownerId, authorizationStore);
+            return new Resource(resourceNamespace, resourceId, ownerId, authorizationStoreConnectorId);
         }
     }
 }

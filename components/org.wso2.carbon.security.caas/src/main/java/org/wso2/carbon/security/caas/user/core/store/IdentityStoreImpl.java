@@ -281,15 +281,27 @@ public class IdentityStoreImpl implements IdentityStore {
 
         for (IdentityStoreConnector identityStoreConnector : identityStoreConnectorsMap.values()) {
 
-            // TODO: Set domain for group builder
-            // TODO: Consider the logic in this loop
+            Group.GroupBuilder groupBuilder;
 
-            return identityStoreConnector.getGroupBuilder(attributeName, attributeValue)
-                    .setIdentityStore(carbonRealmService.getIdentityStore())
-                    .setAuthorizationStore(carbonRealmService.getAuthorizationStore())
-                    .build();
+            try {
+                groupBuilder = identityStoreConnector.getGroupBuilder(attributeName, attributeValue);
+
+            } catch (GroupNotFoundException e) {
+
+                if (log.isDebugEnabled()) {
+                    log.debug(String
+                            .format("Group not found for %s : %s", attributeName, attributeValue), e);
+                }
+
+                continue;
+            }
+
+            Domain domain = resolveDomain(claim);
+
+            return groupBuilder.setDomain(domain).build();
         }
-        throw new GroupNotFoundException("Group not found for the given name");
+        throw new GroupNotFoundException(String
+                .format("Group not found for %s : %s", attributeName, attributeValue));
     }
 
     @Override
@@ -297,22 +309,23 @@ public class IdentityStoreImpl implements IdentityStore {
 
         List<Group> groupList = new ArrayList<>();
 
-        Map<String, IdentityStoreConnector> identityStoreConnectorsMap;
+        Domain domain;
 
         try {
-            identityStoreConnectorsMap = domainManager
-                    .getDomainFromUserName(username).getIdentityStoreConnectorMap();
+            domain = domainManager.getDomainFromUserName(username);
         } catch (DomainException e) {
-            throw new IdentityStoreException(e);
+            throw new IdentityStoreException(String
+                    .format("Error in getting domain for username %s", username), e);
         }
 
-        // TODO: Set domain for group builder
+        Map<String, IdentityStoreConnector> identityStoreConnectorsMap =
+                domain.getIdentityStoreConnectorMap();
+
         for (IdentityStoreConnector identityStoreConnector : identityStoreConnectorsMap.values()) {
             groupList.addAll(identityStoreConnector.getGroupBuildersOfUser(username)
                     .stream()
                     .map(groupBuilder -> groupBuilder
-                            .setAuthorizationStore(carbonRealmService.getAuthorizationStore())
-                            .setIdentityStore(carbonRealmService.getIdentityStore())
+                            .setDomain(domain)
                             .build())
                     .collect(Collectors.toList()));
         }
@@ -356,7 +369,7 @@ public class IdentityStoreImpl implements IdentityStore {
         Map<String, IdentityStoreConnector> identityStoreConnectorsMap;
 
         try {
-            identityStoreConnectorsMap = this.domainManager
+            identityStoreConnectorsMap = domainManager
                     .getDomainFromUserName(userName).getIdentityStoreConnectorMap();
         } catch (DomainException e) {
             throw new IdentityStoreException(e);
@@ -409,7 +422,7 @@ public class IdentityStoreImpl implements IdentityStore {
     private Domain resolveDomain(Claim claim) throws IdentityStoreException {
 
         try {
-            return this.domainManager.getDomainFromClaim(claim);
+            return domainManager.getDomainFromClaim(claim);
         } catch (DomainException e) {
             throw new IdentityStoreException("Resolving domain from claim failed", e);
         }
