@@ -896,12 +896,12 @@ public class AuthorizationStoreImpl implements AuthorizationStore {
                 .orElse(authorizationStoreConnectors.entrySet()
                         .stream()
                         .sorted((c1, c2) ->
-                                Integer.compare(Integer.parseInt(c1.getValue().getAuthorizationStoreConfig()
+                                Integer.compare((Integer) (c1.getValue().getAuthorizationStoreConfig()
                                                 .getProperties()
-                                                .getProperty(UserCoreConstants.USERSTORE_PRIORITY)),
-                                        Integer.parseInt(c2.getValue().getAuthorizationStoreConfig()
+                                                .get(UserCoreConstants.USERSTORE_PRIORITY)),
+                                        (Integer) (c2.getValue().getAuthorizationStoreConfig()
                                                 .getProperties()
-                                                .getProperty(UserCoreConstants.USERSTORE_PRIORITY))))
+                                                .get(UserCoreConstants.USERSTORE_PRIORITY))))
                         .findFirst()
                         .map(Map.Entry::getKey)
                         .orElse(authorizationStoreConnectors.entrySet()
