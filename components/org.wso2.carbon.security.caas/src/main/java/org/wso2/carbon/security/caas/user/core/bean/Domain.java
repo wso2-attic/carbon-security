@@ -195,7 +195,7 @@ public class Domain {
     /**
      * Get claim mappings for an identity store id.
      *
-     * @return Map of claimURI to List of MetaClaimMapping
+     * @return Map of connector Id to List of MetaClaimMapping
      */
     public Map<String, List<MetaClaimMapping>> getClaimMappings() {
 

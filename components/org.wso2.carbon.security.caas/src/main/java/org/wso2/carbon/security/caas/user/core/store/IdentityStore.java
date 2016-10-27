@@ -53,6 +53,16 @@ public interface IdentityStore {
      * @throws UserNotFoundException
      */
     User getUser(String userId) throws IdentityStoreException, UserNotFoundException;
+
+    /**
+     * Retrieve a user by global unique Id.
+     *
+     * @param userId The globally unique user Id
+     * @param domain The domain the user is in
+     * @return User
+     * @throws IdentityStoreException
+     * @throws UserNotFoundException
+     */
     User getUser(String userId, String domain) throws IdentityStoreException, UserNotFoundException;
 
     /**

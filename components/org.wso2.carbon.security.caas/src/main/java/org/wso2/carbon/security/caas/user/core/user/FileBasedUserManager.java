@@ -1,6 +1,5 @@
 package org.wso2.carbon.security.caas.user.core.user;
 
-import org.wso2.carbon.kernel.utils.StringUtils;
 import org.wso2.carbon.security.caas.api.util.CarbonSecurityConstants;
 import org.wso2.carbon.security.caas.user.core.exception.UserManagerException;
 
@@ -20,26 +19,18 @@ public class FileBasedUserManager implements UserManager {
 
     private Path userMappingFile;
 
-    BufferedReader bufferedReader;
-
     public FileBasedUserManager() throws UserManagerException {
         userMappingFile = Paths.get(CarbonSecurityConstants.getCarbonHomeDirectory().toString(), "conf",
                 "security", USER_MAPPING_FILE_NAME);
-
-        try {
-            bufferedReader = Files.newBufferedReader(userMappingFile);
-        } catch (IOException e) {
-            throw new UserManagerException("Error reading user mappings", e);
-        }
     }
 
     @Override
     public String getUniqueUserId(String connectorUserId, String connectorId) throws UserManagerException {
 
-        try {
-            bufferedReader.reset();
+        try (BufferedReader bufferedReader = Files.newBufferedReader(userMappingFile)) {
+
             String line;
-            while (!StringUtils.isNullOrEmpty(line = bufferedReader.readLine())) {
+            while ((line = bufferedReader.readLine()) != null) {
                 String[] mappings = line.split(DELIMITER);
 
                 if (mappings.length != 3) {
@@ -59,10 +50,11 @@ public class FileBasedUserManager implements UserManager {
 
     @Override
     public String getConnectorUserId(String uniqueUserId, String connectorId) throws UserManagerException {
-        try {
-            bufferedReader.reset();
+
+        try (BufferedReader bufferedReader = Files.newBufferedReader(userMappingFile)) {
+
             String line;
-            while (!StringUtils.isNullOrEmpty(line = bufferedReader.readLine())) {
+            while ((line = bufferedReader.readLine()) != null) {
                 String[] mappings = line.split(DELIMITER);
 
                 if (mappings.length != 3) {

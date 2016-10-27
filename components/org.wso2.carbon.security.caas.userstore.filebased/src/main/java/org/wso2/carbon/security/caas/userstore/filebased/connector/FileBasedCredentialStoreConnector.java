@@ -84,10 +84,7 @@ public class FileBasedCredentialStoreConnector implements CredentialStoreConnect
         String passwordString = new String(password);
 
         try (BufferedReader bufferedReader = Files.newBufferedReader(credentialStorePath)) {
-
-            if (bufferedReader == null) {
-                throw new CredentialStoreException("Error loading credential store file");
-            }
+            
             // TODO: HashPassword
 //            byte[] passwordBytes = String.valueOf(password).getBytes("UTF-8");
 //            MessageDigest md = MessageDigest.getInstance("SHA-256");
