@@ -15,7 +15,7 @@
 ###############################################################################
 domains:
   -
-    domainName: "A"
+    domainName: "carbon"
     priority: 1
     identityStoreConnectors:
     -

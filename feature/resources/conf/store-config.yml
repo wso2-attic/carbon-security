@@ -31,7 +31,7 @@ storeConnectors:
  -
     connectorId: "FBIS1"
     connectorType: "FileBasedIdentityStore"
-    domainName: "A"
+    domainName: "carbon"
     uniqueAttributes:
       - username
       - email
@@ -45,7 +45,7 @@ storeConnectors:
   -
     connectorId: "FBCS1"
     connectorType: "FileBasedCredentialStore"
-    domainName: "A"
+    domainName: "carbon"
     properties:
       storeFile: "./conf/security/credential-store-connector.csv"
 
