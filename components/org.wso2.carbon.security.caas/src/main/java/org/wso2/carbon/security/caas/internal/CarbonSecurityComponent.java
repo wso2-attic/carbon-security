@@ -45,9 +45,7 @@ import org.wso2.carbon.security.caas.internal.config.domain.DomainIdentityStoreC
 import org.wso2.carbon.security.caas.internal.osgi.UserNamePasswordLoginModuleFactory;
 import org.wso2.carbon.security.caas.internal.osgi.UsernamePasswordCallbackHandlerFactory;
 import org.wso2.carbon.security.caas.user.core.bean.Domain;
-import org.wso2.carbon.security.caas.user.core.claim.ClaimManager;
 import org.wso2.carbon.security.caas.user.core.claim.FileBasedMetaClaimStore;
-import org.wso2.carbon.security.caas.user.core.claim.InMemoryClaimManager;
 import org.wso2.carbon.security.caas.user.core.claim.MetaClaim;
 import org.wso2.carbon.security.caas.user.core.claim.MetaClaimMapping;
 import org.wso2.carbon.security.caas.user.core.claim.MetaClaimStore;
@@ -198,22 +196,6 @@ public class CarbonSecurityComponent implements RequiredCapabilityListener {
 
     protected void unRegisterCachingService(CarbonCachingService carbonCachingService) {
         CarbonSecurityDataHolder.getInstance().registerCacheService(null);
-    }
-
-    @Reference(
-            name = "ClaimManager",
-            service = ClaimManager.class,
-            cardinality = ReferenceCardinality.OPTIONAL,
-            policy = ReferencePolicy.DYNAMIC,
-            unbind = "unregisterClaimManager"
-    )
-    protected void registerClaimManager(ClaimManager claimManager, Map<String, String> properties) {
-        CarbonSecurityDataHolder.getInstance().getCarbonRealmService().setClaimManager(claimManager);
-    }
-
-    protected void unregisterClaimManager(ClaimManager claimManager) {
-
-        CarbonSecurityDataHolder.getInstance().getCarbonRealmService().setClaimManager(null);
     }
 
     /**
@@ -367,10 +349,6 @@ public class CarbonSecurityComponent implements RequiredCapabilityListener {
                     null);
             log.info("Realm service registered successfully.");
 
-            // Initialize and register the claim manager.
-            InMemoryClaimManager claimManager = new InMemoryClaimManager();
-
-            carbonSecurityDataHolder.getCarbonRealmService().setClaimManager(claimManager);
         } catch (CredentialStoreException | AuthorizationStoreException | IdentityStoreException e) {
             log.error("Error occurred in initialising store", e);
         } catch (DomainException e) {

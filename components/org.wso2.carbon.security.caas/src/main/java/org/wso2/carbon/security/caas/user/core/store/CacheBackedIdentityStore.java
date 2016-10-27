@@ -342,4 +342,14 @@ public class CacheBackedIdentityStore implements IdentityStore {
     public boolean isUserInGroup(String userId, String groupId, String domain) throws IdentityStoreException {
         return false;
     }
+
+    @Override
+    public List<Claim> getClaims(User user) throws IdentityStoreException {
+        return identityStore.getClaims(user);
+    }
+
+    @Override
+    public List<Claim> getClaims(User user, List<String> claimURIs) throws IdentityStoreException {
+        return identityStore.getClaims(user, claimURIs);
+    }
 }

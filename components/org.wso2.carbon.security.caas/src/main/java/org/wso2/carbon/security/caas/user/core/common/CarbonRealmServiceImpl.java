@@ -16,7 +16,6 @@
 
 package org.wso2.carbon.security.caas.user.core.common;
 
-import org.wso2.carbon.security.caas.user.core.claim.ClaimManager;
 import org.wso2.carbon.security.caas.user.core.service.RealmService;
 import org.wso2.carbon.security.caas.user.core.store.AuthorizationStore;
 import org.wso2.carbon.security.caas.user.core.store.CredentialStore;
@@ -30,8 +29,6 @@ import org.wso2.carbon.security.caas.user.core.store.IdentityStore;
  */
 public class CarbonRealmServiceImpl<T1 extends IdentityStore, T2 extends CredentialStore>
         implements RealmService<T1, T2> {
-
-    private ClaimManager claimManager;
 
     /**
      * Authorization store in the realm service.
@@ -61,11 +58,6 @@ public class CarbonRealmServiceImpl<T1 extends IdentityStore, T2 extends Credent
     }
 
     @Override
-    public ClaimManager getClaimManager() {
-        return claimManager;
-    }
-
-    @Override
     public T1 getIdentityStore() {
         return this.identityStore;
     }
@@ -73,14 +65,5 @@ public class CarbonRealmServiceImpl<T1 extends IdentityStore, T2 extends Credent
     @Override
     public T2 getCredentialStore() {
         return this.credentialStore;
-    }
-
-    /**
-     * Set the claim manger.
-     *
-     * @param claimManager Claim manager.
-     */
-    public void setClaimManager(ClaimManager claimManager) {
-        this.claimManager = claimManager;
     }
 }

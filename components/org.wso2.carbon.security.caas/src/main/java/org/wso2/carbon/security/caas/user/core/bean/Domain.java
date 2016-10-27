@@ -16,7 +16,6 @@
 
 package org.wso2.carbon.security.caas.user.core.bean;
 
-import org.wso2.carbon.security.caas.user.core.claim.Claim;
 import org.wso2.carbon.security.caas.user.core.claim.MetaClaimMapping;
 import org.wso2.carbon.security.caas.user.core.config.IdentityStoreConnectorConfig;
 import org.wso2.carbon.security.caas.user.core.exception.DomainException;
@@ -180,14 +179,12 @@ public class Domain {
     }
 
     /**
-     * Checks weather a certain claim exists in the domain claim mappings.
+     * Checks weather a certain claim URI exists in the domain claim mappings.
      *
-     * @param claim Claim
+     * @param claimURI Claim
      * @return is claim belong to domain
      */
-    public boolean isClaimBelongToDomain(Claim claim) {
-
-        String claimURI = claim.getClaimURI();
+    public boolean isClaimAvailable(String claimURI) {
 
         return claimMappings.values().stream()
                 .anyMatch(list -> list.stream().filter(metaClaimMapping ->

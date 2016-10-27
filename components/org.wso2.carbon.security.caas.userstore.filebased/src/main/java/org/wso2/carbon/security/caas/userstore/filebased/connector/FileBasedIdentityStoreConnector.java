@@ -31,9 +31,13 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 /**
  * FileBased IdentityStoreConnector implementation for test usage.
@@ -67,7 +71,8 @@ public class FileBasedIdentityStoreConnector implements IdentityStoreConnector {
         String userStoreFile = identityStoreConnectorConfig.getProperties().getProperty("storeFile");
 
         if (userStoreFile == null) {
-            throw new IdentityStoreException("storeFile property is not provided for file based connector");
+            throw new IdentityStoreException("storeFile property is not provided for connector " +
+                    identityStoreConnectorId);
         }
 
         userStorePath = Paths.get(userStoreFile);
@@ -100,9 +105,6 @@ public class FileBasedIdentityStoreConnector implements IdentityStoreConnector {
 
         try (BufferedReader bufferedReader = Files.newBufferedReader(userStorePath)) {
 
-            if (bufferedReader == null) {
-                throw new IdentityStoreException("Error loading user store file");
-            }
             String line;
             while ((line = bufferedReader.readLine()) != null) {
 
@@ -115,14 +117,15 @@ public class FileBasedIdentityStoreConnector implements IdentityStoreConnector {
                 String[] userData = line.split(Constants.DELIMITER, -1);
 
                 if (userData.length != numberOfColumns) {
-                    throw new IdentityStoreException("Invalid user data found in FileBasedIdentityStoreConnector");
+                    throw new IdentityStoreException("Invalid user data found in connector " +
+                            identityStoreConnectorId);
                 }
 
                 Integer attributePosition = attributeMap.get(attributeName);
 
                 if (attributePosition == null) {
-                    throw new UserNotFoundException("Attribute " + attributeName
-                            + " is not found in the FileBasedIndeityStoreConnector");
+                    throw new UserNotFoundException("Attribute " + attributeName + " is not found in the connector " +
+                            identityStoreConnectorId);
                 }
 
                 // Check if this is the same user
@@ -133,53 +136,224 @@ public class FileBasedIdentityStoreConnector implements IdentityStoreConnector {
 
             throw new UserNotFoundException("User " + attributeName + " was not found");
         } catch (IOException e) {
-            throw new IdentityStoreException("Error retrieving user mappings", e);
+            throw new IdentityStoreException("Error retrieving user mappings from connector " +
+                    identityStoreConnectorId, e);
         }
     }
 
     @Override
     public int getUserCount() throws IdentityStoreException {
 
+        int userCount = 0;
+
         try (BufferedReader bufferedReader = Files.newBufferedReader(userStorePath)) {
-            bufferedReader.reset();
+            String line;
+            while ((line = bufferedReader.readLine()) != null) {
 
-            long count = bufferedReader.lines().count();
+                // Skip comments
+                if (line.startsWith(Constants.COMMENT_PREFIX)) {
+                    continue;
+                }
 
-            int userCount;
-
-            if (count > Integer.MAX_VALUE) {
-                userCount = Integer.MAX_VALUE;
-            } else {
-                userCount = (int) count;
+                userCount++;
             }
 
             return userCount;
         } catch (IOException e) {
-            throw new IdentityStoreException("Error getting user count", e);
+            throw new IdentityStoreException("Error getting user count from connector " + identityStoreConnectorId, e);
         }
     }
 
     @Override
     public List<User.UserBuilder> getUserBuilderList(String attributeName, String filterPattern, int offset, int
             length) throws IdentityStoreException {
-        return null;
+        Pattern pattern = Pattern.compile("(" + filterPattern + ")");
+
+        try (BufferedReader bufferedReader = Files.newBufferedReader(userStorePath)) {
+
+            List<User.UserBuilder> userBuilderList = new ArrayList<>();
+
+            int position = 0;
+
+            String line;
+            while ((line = bufferedReader.readLine()) != null) {
+
+                // Skip to the offset
+                if (position < offset) {
+                    continue;
+                }
+
+                // Skip comments
+                if (line.startsWith(Constants.COMMENT_PREFIX)) {
+                    continue;
+                }
+
+                // Can have empty attributes, therefore having -1 for split
+                String[] userData = line.split(Constants.DELIMITER, -1);
+
+                if (userData.length != numberOfColumns) {
+                    throw new IdentityStoreException("Invalid user data found in connector " +
+                            identityStoreConnectorId);
+                }
+
+                Integer attributePosition = attributeMap.get(attributeName);
+
+                if (attributePosition == null) {
+                    throw new IdentityStoreException("Attribute " + attributeName + " is not found in the connector "
+                            + identityStoreConnectorId);
+                }
+
+                // Check if this is the same user
+                Matcher matcher = pattern.matcher(userData[attributePosition]);
+
+                if (matcher.find()) {
+                    userBuilderList.add(createUserBuilder(userData[PRIMARY_ATTRIBUTE_COLUMN]));
+
+                    if (userBuilderList.size() == length) {
+                        break;
+                    }
+                }
+            }
+
+            return userBuilderList;
+        } catch (IOException e) {
+            throw new IdentityStoreException("Error retrieving user mappings from connector " +
+                    identityStoreConnectorId, e);
+        }
     }
 
     @Override
     public List<User.UserBuilder> getAllUserBuilderList(String attributeName, String filterPattern)
             throws IdentityStoreException {
-        return null;
+        Pattern pattern = Pattern.compile("(" + filterPattern + ")");
+
+        try (BufferedReader bufferedReader = Files.newBufferedReader(userStorePath)) {
+
+            List<User.UserBuilder> userBuilderList = new ArrayList<>();
+
+            String line;
+            while ((line = bufferedReader.readLine()) != null) {
+
+                // Skip comments
+                if (line.startsWith(Constants.COMMENT_PREFIX)) {
+                    continue;
+                }
+
+                // Can have empty attributes, therefore having -1 for split
+                String[] userData = line.split(Constants.DELIMITER, -1);
+
+                if (userData.length != numberOfColumns) {
+                    throw new IdentityStoreException("Invalid user data found in connector " +
+                            identityStoreConnectorId);
+                }
+
+                Integer attributePosition = attributeMap.get(attributeName);
+
+                if (attributePosition == null) {
+                    throw new IdentityStoreException("Attribute " + attributeName + " is not found in the connector " +
+                            identityStoreConnectorId);
+                }
+
+                // Check if this is the same user
+                Matcher matcher = pattern.matcher(userData[attributePosition]);
+
+                if (matcher.find()) {
+                    userBuilderList.add(createUserBuilder(userData[PRIMARY_ATTRIBUTE_COLUMN]));
+                }
+            }
+
+            return userBuilderList;
+        } catch (IOException e) {
+            throw new IdentityStoreException("Error retrieving user mappings from connector" +
+                    identityStoreConnectorId, e);
+        }
     }
 
     @Override
     public List<Attribute> getUserAttributeValues(String userID) throws IdentityStoreException {
-        return null;
+        try (BufferedReader bufferedReader = Files.newBufferedReader(userStorePath)) {
+
+            String line;
+            while ((line = bufferedReader.readLine()) != null) {
+
+                // Skip comments
+                if (line.startsWith(Constants.COMMENT_PREFIX)) {
+                    continue;
+                }
+
+                // Can have empty attributes, therefore having -1 for split
+                String[] userData = line.split(Constants.DELIMITER, -1);
+
+                if (userData.length != numberOfColumns) {
+                    throw new IdentityStoreException("Invalid user data found in connector " +
+                            identityStoreConnectorId);
+                }
+
+                // Check if this is the same user
+                if (userData[PRIMARY_ATTRIBUTE_COLUMN].equals(userID)) {
+
+                    return attributeMap.entrySet().stream().map(attributeMapEntry -> {
+                        Attribute attribute = new Attribute();
+                        attribute.setAttributeValue(attributeMapEntry.getKey());
+
+                        String attributeValue = userData[attributeMapEntry.getValue()];
+                        attribute.setAttributeValue(attributeValue);
+                        return attribute;
+                    }).collect(Collectors.toList());
+                }
+            }
+
+            throw new IdentityStoreException("User with primary attribute " + userID + " was not found in connector" +
+                    identityStoreConnectorId);
+        } catch (IOException e) {
+            throw new IdentityStoreException("Error retrieving user mappings from connector " +
+                    identityStoreConnectorId, e);
+        }
     }
 
     @Override
     public List<Attribute> getUserAttributeValues(String userID, List<String> attributeNames)
             throws IdentityStoreException {
-        return null;
+        try (BufferedReader bufferedReader = Files.newBufferedReader(userStorePath)) {
+
+            String line;
+            while ((line = bufferedReader.readLine()) != null) {
+
+                // Skip comments
+                if (line.startsWith(Constants.COMMENT_PREFIX)) {
+                    continue;
+                }
+
+                // Can have empty attributes, therefore having -1 for split
+                String[] userData = line.split(Constants.DELIMITER, -1);
+
+                if (userData.length != numberOfColumns) {
+                    throw new IdentityStoreException("Invalid user data found in connector " +
+                            identityStoreConnectorId);
+                }
+
+                // Check if this is the same user
+                if (userData[PRIMARY_ATTRIBUTE_COLUMN].equals(userID)) {
+
+                    return attributeMap.entrySet().stream()
+                            .filter(attributeMapEntry -> attributeNames.contains(attributeMapEntry.getKey()))
+                            .map(attributeMapEntry -> {
+                        Attribute attribute = new Attribute();
+                        attribute.setAttributeValue(attributeMapEntry.getKey());
+
+                        String attributeValue = userData[attributeMapEntry.getValue()];
+                        attribute.setAttributeValue(attributeValue);
+                        return attribute;
+                    }).collect(Collectors.toList());
+                }
+            }
+
+            throw new IdentityStoreException("User with primary attribute " + userID + " was not found in connector " +
+                    identityStoreConnectorId);
+        } catch (IOException e) {
+            throw new IdentityStoreException("Error retrieving user mappings from connector " +
+                    identityStoreConnectorId, e);
+        }
     }
 
     @Override

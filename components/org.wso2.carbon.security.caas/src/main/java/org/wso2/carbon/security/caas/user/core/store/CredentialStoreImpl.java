@@ -21,7 +21,6 @@ import org.slf4j.LoggerFactory;
 import org.wso2.carbon.security.caas.api.CarbonCallback;
 import org.wso2.carbon.security.caas.api.util.CarbonSecurityConstants;
 import org.wso2.carbon.security.caas.internal.CarbonSecurityDataHolder;
-import org.wso2.carbon.security.caas.user.core.bean.Domain;
 import org.wso2.carbon.security.caas.user.core.bean.User;
 import org.wso2.carbon.security.caas.user.core.config.CredentialStoreConnectorConfig;
 import org.wso2.carbon.security.caas.user.core.constant.UserCoreConstants;
@@ -29,7 +28,6 @@ import org.wso2.carbon.security.caas.user.core.context.AuthenticationContext;
 import org.wso2.carbon.security.caas.user.core.domain.DomainManager;
 import org.wso2.carbon.security.caas.user.core.exception.AuthenticationFailure;
 import org.wso2.carbon.security.caas.user.core.exception.CredentialStoreException;
-import org.wso2.carbon.security.caas.user.core.exception.DomainException;
 import org.wso2.carbon.security.caas.user.core.exception.IdentityStoreException;
 import org.wso2.carbon.security.caas.user.core.exception.StoreException;
 import org.wso2.carbon.security.caas.user.core.exception.UserNotFoundException;
@@ -37,7 +35,6 @@ import org.wso2.carbon.security.caas.user.core.store.connector.CredentialStoreCo
 import org.wso2.carbon.security.caas.user.core.store.connector.CredentialStoreConnectorFactory;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -109,19 +106,19 @@ public class CredentialStoreImpl implements CredentialStore {
 
         String username = callback.getName();
 
-        String[] domainSplit = username.split(CarbonSecurityConstants.URL_SPLITTER);
+        String[] domainSplit = username.split(CarbonSecurityConstants.URL_SPLITTER, 2);
 
-        // Remove domain information before forwarding the callback to the credential store
-        if (domainSplit.length > 1) {
-            String domainUnawareUsername = domainSplit[1];
-
-            callback.setName(domainUnawareUsername);
-        }
-
-        User user;
         try {
+
+            // Remove domain information before forwarding the callback to the credential store
+            if (domainSplit.length == 2) {
+                String domainUnawareUsername = domainSplit[1];
+
+                callback.setName(domainUnawareUsername);
+            }
+
             // Get the user using given callbacks. We need to find the user unique id.
-            user = CarbonSecurityDataHolder.getInstance()
+            User user = CarbonSecurityDataHolder.getInstance()
                     .getCarbonRealmService().getIdentityStore().getUser(username);
 
             // Crete a new call back array from existing one and add new user data (user id and identity store id)
@@ -138,62 +135,34 @@ public class CredentialStoreImpl implements CredentialStore {
             // New callback always will be the last element.
             newCallbacks[newCallbacks.length - 1] = carbonCallback;
 
-            // Old callbacks with the new carbon callback.
-            callbacks = newCallbacks;
+            for (CredentialStoreConnector credentialStoreConnector :
+                    user.getDomain().getCredentialStoreConnectorMap().values()) {
+
+                // We need to check whether this credential store can handle this kind of callbacks.
+                if (!credentialStoreConnector.canHandle(callbacks)) {
+                    continue;
+                }
+
+                try {
+                    // If the authentication failed, there will be an authentication failure exception.
+                    credentialStoreConnector.authenticate(callbacks);
+
+                    return new AuthenticationContext(user);
+                } catch (CredentialStoreException | AuthenticationFailure e) {
+
+                    if (log.isDebugEnabled()) {
+                        log.debug(String
+                                .format("Failed to authenticate user using credential store connector %s",
+                                        credentialStoreConnector.getCredentialStoreId()), e);
+                    }
+                }
+            }
+
         } catch (IdentityStoreException | UserNotFoundException e) {
             throw new AuthenticationFailure("Error occurred while retrieving user.", e);
         }
 
-        // TODO: Resolve domain
-        Map<String, CredentialStoreConnector> credentialStoreConnectorsMap;
-
-        try {
-            credentialStoreConnectorsMap = resolveDomain(username).getCredentialStoreConnectorMap();
-        } catch (CredentialStoreException e) {
-            credentialStoreConnectorsMap = Collections.emptyMap();
-            log.error("Error occurred in obtaining the credential store connector map", e);
-        }
-
-        for (CredentialStoreConnector credentialStoreConnector : credentialStoreConnectorsMap.values()) {
-
-            // We need to check whether this credential store can handle this kind of callbacks.
-            if (!credentialStoreConnector.canHandle(callbacks)) {
-                continue;
-            }
-
-            try {
-                // If the authentication failed, there will be an authentication failure exception.
-                credentialStoreConnector.authenticate(callbacks);
-
-                return new AuthenticationContext(user);
-            } catch (CredentialStoreException e) {
-
-                if (log.isDebugEnabled()) {
-                    log.debug(String
-                            .format("Failed to authenticate user using credential store connector %s",
-                                    credentialStoreConnector.getCredentialStoreId()), e);
-                }
-            }
-        }
-
         throw new AuthenticationFailure("Invalid user credentials.");
-    }
-
-    /**
-     * Resolve domain using username.
-     *
-     * @param username String username
-     * @return Domain for the username
-     * @throws CredentialStoreException CredentialStoreException on unable to locate username
-     */
-    private Domain resolveDomain(String username) throws CredentialStoreException {
-
-        try {
-            return domainManager.getDomainFromUserName(username);
-        } catch (DomainException e) {
-            throw new CredentialStoreException(String
-                    .format("Domain for username %s do not exist", username), e);
-        }
     }
 
 }

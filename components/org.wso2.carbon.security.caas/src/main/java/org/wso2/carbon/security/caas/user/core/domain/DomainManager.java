@@ -18,15 +18,14 @@ package org.wso2.carbon.security.caas.user.core.domain;
 
 import org.wso2.carbon.security.caas.api.util.CarbonSecurityConstants;
 import org.wso2.carbon.security.caas.user.core.bean.Domain;
-import org.wso2.carbon.security.caas.user.core.claim.Claim;
 import org.wso2.carbon.security.caas.user.core.exception.DomainException;
 import org.wso2.carbon.security.caas.user.core.store.connector.CredentialStoreConnector;
 import org.wso2.carbon.security.caas.user.core.store.connector.IdentityStoreConnector;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
-import java.util.stream.Collectors;
 
 /**
  * Domain manager.
@@ -67,7 +66,7 @@ public class DomainManager {
      * Get the list of domains which belongs to a certain priority.
      *
      * @param priority domain priority
-     * @return Map<String, Domain>
+     * @return Map of domain name to Domain
      */
     public Map<String, Domain> getDomainsFromPriority(int priority) throws DomainException {
 
@@ -174,7 +173,7 @@ public class DomainManager {
      * Get identity store connector map.
      *
      * @param domainName Name of the domain which the connector instances belong
-     * @return Map<String, IdentityStoreConnector> identityStoreConnectorsMap
+     * @return Map of connector Id to IdentityStoreConnector
      * @throws DomainException DomainException
      */
     public Map<String, IdentityStoreConnector> getIdentityStoreConnectorMapForDomain(
@@ -228,7 +227,7 @@ public class DomainManager {
      * Get credential store connector map.
      *
      * @param domainName Name of the domain which the connector instances belong
-     * @return Map<String, CredentialStoreConnector> credentialStoreConnectorsMap
+     * @return Map of connector Id to CredentialStoreConnector
      * @throws DomainException Domain exception
      */
     public Map<String, CredentialStoreConnector> getCredentialStoreConnectorMapForDomain(
@@ -239,34 +238,12 @@ public class DomainManager {
     }
 
     /**
-     * Resolve domain from claim.
-     * Getting the claim from domains are done according to the priority
+     * Get all available domains.
      *
-     * @param claim Claim
-     * @return Domain which has claim
-     * @throws DomainException DomainException
+     * @return A collection of domains
      */
-    public Domain getDomainFromClaim(Claim claim) throws DomainException {
-
-        Domain domain = domainPriorityToDomainMap.values().stream()
-                .flatMap(m -> m.entrySet().stream())
-                .collect(Collectors.toMap(
-                        Map.Entry::getKey,
-                        Map.Entry::getValue
-                ))
-                .values()
-                .stream()
-                .filter(d -> d.isClaimBelongToDomain(claim))
-                .collect(Collectors.toList())
-                .get(0);
-
-        if (domain == null) {
-
-            throw new DomainException(String.format("Claim URI %s do not belong to any domain",
-                    claim.getClaimURI()));
-        }
-
-        return domain;
+    public Collection<Domain> getAllDomains() {
+        return allDomainNameToDomainMap.values();
     }
 
 }

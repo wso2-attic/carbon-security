@@ -17,7 +17,6 @@
 package org.wso2.carbon.security.caas.user.core.bean;
 
 import org.wso2.carbon.security.caas.user.core.claim.Claim;
-import org.wso2.carbon.security.caas.user.core.claim.ClaimManager;
 import org.wso2.carbon.security.caas.user.core.exception.AuthorizationStoreException;
 import org.wso2.carbon.security.caas.user.core.exception.ClaimManagerException;
 import org.wso2.carbon.security.caas.user.core.exception.IdentityStoreException;
@@ -53,19 +52,12 @@ public class User {
      */
     private AuthorizationStore authorizationStore;
 
-    /**
-     * The ClaimManager which manages claims of this user.
-     */
-    private ClaimManager claimManager;
-
-    private User(String userId, Domain domain, IdentityStore identityStore,
-                 AuthorizationStore authorizationStore, ClaimManager claimManager) {
+    private User(String userId, Domain domain, IdentityStore identityStore, AuthorizationStore authorizationStore) {
 
         this.userId = userId;
         this.domain = domain;
         this.identityStore = identityStore;
         this.authorizationStore = authorizationStore;
-        this.claimManager = claimManager;
     }
 
     /**
@@ -93,7 +85,7 @@ public class User {
      * @throws IdentityStoreException Identity store exception.
      */
     public List<Claim> getClaims() throws IdentityStoreException, ClaimManagerException {
-        return claimManager.getClaims(this);
+        return identityStore.getClaims(this);
     }
 
     /**
@@ -104,7 +96,7 @@ public class User {
      * @throws IdentityStoreException Identity store exception.
      */
     public List<Claim> getClaims(List<String> claimURIs) throws IdentityStoreException, ClaimManagerException {
-        return claimManager.getClaims(this, claimURIs);
+        return identityStore.getClaims(this, claimURIs);
     }
 
     /**
@@ -215,7 +207,6 @@ public class User {
 
         private IdentityStore identityStore;
         private AuthorizationStore authorizationStore;
-        private ClaimManager claimManager;
 
         public String getUserId() {
             return userId;
@@ -227,10 +218,6 @@ public class User {
 
         public AuthorizationStore getAuthorizationStore() {
             return authorizationStore;
-        }
-
-        public ClaimManager getClaimManager() {
-            return claimManager;
         }
 
         public UserBuilder setUserId(String userName) {
@@ -253,18 +240,13 @@ public class User {
             return this;
         }
 
-        public UserBuilder setClaimManager(ClaimManager claimManager) {
-            this.claimManager = claimManager;
-            return this;
-        }
-
         public User build() {
 
-            if (userId == null || identityStore == null || authorizationStore == null || claimManager == null) {
+            if (userId == null || identityStore == null || authorizationStore == null) {
                 throw new StoreException("Required data missing for building user.");
             }
 
-            return new User(userId, domain, identityStore, authorizationStore, claimManager);
+            return new User(userId, domain, identityStore, authorizationStore);
         }
     }
 }

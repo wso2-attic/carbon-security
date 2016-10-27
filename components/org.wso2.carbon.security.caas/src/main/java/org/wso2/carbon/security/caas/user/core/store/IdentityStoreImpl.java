@@ -20,6 +20,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.wso2.carbon.security.caas.api.util.CarbonSecurityConstants;
 import org.wso2.carbon.security.caas.internal.CarbonSecurityDataHolder;
+import org.wso2.carbon.security.caas.user.core.bean.Attribute;
 import org.wso2.carbon.security.caas.user.core.bean.Domain;
 import org.wso2.carbon.security.caas.user.core.bean.Group;
 import org.wso2.carbon.security.caas.user.core.bean.User;
@@ -30,9 +31,11 @@ import org.wso2.carbon.security.caas.user.core.domain.DomainManager;
 import org.wso2.carbon.security.caas.user.core.exception.DomainException;
 import org.wso2.carbon.security.caas.user.core.exception.GroupNotFoundException;
 import org.wso2.carbon.security.caas.user.core.exception.IdentityStoreException;
+import org.wso2.carbon.security.caas.user.core.exception.UserManagerException;
 import org.wso2.carbon.security.caas.user.core.exception.UserNotFoundException;
 import org.wso2.carbon.security.caas.user.core.service.RealmService;
 import org.wso2.carbon.security.caas.user.core.store.connector.IdentityStoreConnector;
+import org.wso2.carbon.security.caas.user.core.user.UserManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -52,12 +55,15 @@ public class IdentityStoreImpl implements IdentityStore {
 
     private RealmService carbonRealmService;
 
+    private UserManager userManager;
+
     @Override
     public void init(DomainManager domainManager)
             throws IdentityStoreException {
 
         this.domainManager = domainManager;
-        this.carbonRealmService = CarbonSecurityDataHolder.getInstance().getCarbonRealmService();
+        carbonRealmService = CarbonSecurityDataHolder.getInstance().getCarbonRealmService();
+        userManager = CarbonSecurityDataHolder.getInstance().getUserManager();
 
         if (log.isDebugEnabled()) {
             log.debug("Identity store successfully initialized.");
@@ -166,8 +172,7 @@ public class IdentityStoreImpl implements IdentityStore {
         userBuilder.setDomain(domain)
                 .setUserId(domainUnawareAttributeValue)
                 .setIdentityStore(carbonRealmService.getIdentityStore())
-                .setAuthorizationStore(carbonRealmService.getAuthorizationStore())
-                .setClaimManager(carbonRealmService.getClaimManager());
+                .setAuthorizationStore(carbonRealmService.getAuthorizationStore());
 
         return userBuilder.build();
     }
@@ -192,45 +197,58 @@ public class IdentityStoreImpl implements IdentityStore {
 
         List<User> users = new ArrayList<>();
 
-        String attributeName = claim.getClaimURI(); // TODO: Get the attribute name from the claim manager.
-        String attributeValue = claim.getValue();
+        String claimURI = claim.getClaimURI();
+        String claimValue = claim.getValue();
 
-        Map<String, IdentityStoreConnector> identityStoreConnectorsMap =
-                resolveDomain(claim).getIdentityStoreConnectorMap();
+        int currentOffset = 0;
+        int currentCount = 0;
 
-        int userCount = 0;
+        for (Domain domain : domainManager.getAllDomains()) {
 
-        for (IdentityStoreConnector identityStoreConnector : identityStoreConnectorsMap.values()) {
+            for (Map.Entry<String, List<MetaClaimMapping>> metaClaimMappings : domain.getClaimMappings().entrySet()) {
 
-            // Get the total count of users in the identity store.
-            try {
-                userCount += identityStoreConnector.getUserCount();
-            } catch (UnsupportedOperationException e) {
-                log.warn("Count operation is not supported by this identity store. Running the operation in " +
-                        "performance intensive mode.");
-                userCount += identityStoreConnector.getUserBuilderList(attributeName, "*", 0, -1).size();
-            }
+                for (MetaClaimMapping metaClaimMapping : metaClaimMappings.getValue()) {
 
-            // If there are users in this identity store more than the offset, we can get users from this offset.
-            // If this offset exceeds the available count of the current identity store, move to the next
-            // identity store.
-            if (userCount > offset) {
+                    // Required number of users have been retrieved
+                    if (currentCount >= length) {
+                        break;
+                    }
 
-                for (User.UserBuilder userBuilder
-                        : identityStoreConnector.getUserBuilderList(attributeName, attributeValue, offset, length)) {
+                    if (metaClaimMapping.getMetaClaim().getClaimURI().equals(claimURI)) {
 
-                    users.add(buildUser(userBuilder));
+                        IdentityStoreConnector identityStoreConnector =
+                                domain.getIdentityStoreConnectorFromId(metaClaimMapping.getIdentityStoreConnectorId());
+
+                        List<User.UserBuilder> userBuilderList =
+                                identityStoreConnector.getUserBuilderList(metaClaimMapping.getAttributeName(),
+                                        claimValue, offset, length - currentCount);
+
+                        for (User.UserBuilder userBuilder : userBuilderList) {
+
+                            if (currentOffset < offset) {
+                                currentOffset++;
+                                continue;
+                                // Skip all before the offset
+                            }
+
+                            try {
+                                userBuilder.setUserId(userManager.getUniqueUserId(userBuilder.getUserId(),
+                                        identityStoreConnector.getIdentityStoreId()));
+
+                                userBuilder.setIdentityStore(this);
+                                userBuilder.setAuthorizationStore(carbonRealmService.getAuthorizationStore());
+                                userBuilder.setDomain(domain);
+
+                                users.add(userBuilder.build());
+
+                                currentCount++;
+                            } catch (UserManagerException e) {
+                                throw new IdentityStoreException("Error retrieving unique user Id for user " +
+                                        userBuilder.getUserId(), e);
+                            }
+                        }
+                    }
                 }
-
-                length -= users.size();
-                offset = 0;
-            } else {
-                offset -= userCount;
-            }
-
-            // If we retrieved all the required users.
-            if (length == 0) {
-                break;
             }
         }
 
@@ -273,35 +291,42 @@ public class IdentityStoreImpl implements IdentityStore {
     @Override
     public Group getGroup(Claim claim) throws IdentityStoreException, GroupNotFoundException {
 
-        String attributeName = claim.getClaimURI(); // TODO: Get the attribute name from the claim uri.
-        String attributeValue = claim.getValue();
+        String claimURI = claim.getClaimURI();
+        String claimValue = claim.getValue();
 
-        Map<String, IdentityStoreConnector> identityStoreConnectorsMap =
-                resolveDomain(claim).getIdentityStoreConnectorMap();
 
-        for (IdentityStoreConnector identityStoreConnector : identityStoreConnectorsMap.values()) {
+        for (Domain domain : domainManager.getAllDomains()) {
 
-            Group.GroupBuilder groupBuilder;
+            for (Map.Entry<String, List<MetaClaimMapping>> metaClaimMappings : domain.getClaimMappings().entrySet()) {
 
-            try {
-                groupBuilder = identityStoreConnector.getGroupBuilder(attributeName, attributeValue);
+                for (MetaClaimMapping metaClaimMapping : metaClaimMappings.getValue()) {
 
-            } catch (GroupNotFoundException e) {
+                    if (metaClaimMapping.getMetaClaim().getClaimURI().equals(claimURI)) {
 
-                if (log.isDebugEnabled()) {
-                    log.debug(String
-                            .format("Group not found for %s : %s", attributeName, attributeValue), e);
+                        IdentityStoreConnector identityStoreConnector =
+                                domain.getIdentityStoreConnectorFromId(metaClaimMapping.getIdentityStoreConnectorId());
+
+                        try {
+                            Group.GroupBuilder groupBuilder = identityStoreConnector
+                                    .getGroupBuilder(metaClaimMapping.getAttributeName(), claimValue);
+
+                            groupBuilder.setDomain(domain);
+
+                            return groupBuilder.build();
+
+                        } catch (GroupNotFoundException e) {
+                            if (log.isDebugEnabled()) {
+                                log.debug("Group " + claimValue + " not found in identity store connector" +
+                                identityStoreConnector.getIdentityStoreId());
+                            }
+                        }
+                    }
                 }
-
-                continue;
             }
-
-            Domain domain = resolveDomain(claim);
-
-            return groupBuilder.setDomain(domain).build();
         }
+
         throw new GroupNotFoundException(String
-                .format("Group not found for %s : %s", attributeName, attributeValue));
+                .format("Group not found for claim %s : %s", claimURI, claimValue));
     }
 
     @Override
@@ -335,22 +360,8 @@ public class IdentityStoreImpl implements IdentityStore {
 
     @Override
     public List<User> getUsersOfGroup(String groupID) throws IdentityStoreException {
-
-        List<User> userList = new ArrayList<>();
-
-        Map<String, IdentityStoreConnector> identityStoreConnectorsMap =
-                resolveGroupDomain(groupID).getIdentityStoreConnectorMap();
-
-        for (IdentityStoreConnector identityStoreConnector : identityStoreConnectorsMap.values()) {
-
-            for (User.UserBuilder userBuilder
-                    : identityStoreConnector.getUserBuildersOfGroup(groupID)) {
-
-                userList.add(buildUser(userBuilder));
-            }
-        }
-
-        return userList;
+        // TODO: implement
+        return null;
     }
 
     @Override
@@ -390,55 +401,108 @@ public class IdentityStoreImpl implements IdentityStore {
         return false;
     }
 
-    /**
-     * Build a user instance from a user builder.
-     *
-     * @param userBuilder User.UserBuilder
-     * @return User user instance
-     * @throws IdentityStoreException identity exception
-     */
-    private User buildUser(User.UserBuilder userBuilder) throws IdentityStoreException {
-
-        try {
-            return userBuilder.setDomain(domainManager.getDomainFromUserName(userBuilder.getUserId()))
-                    .setIdentityStore(carbonRealmService.getIdentityStore())
-                    .setAuthorizationStore(carbonRealmService.getAuthorizationStore())
-                    .setClaimManager(carbonRealmService.getClaimManager())
-                    .build();
-        } catch (DomainException e) {
-            throw new IdentityStoreException(String
-                    .format("Error occurred in building user %s from user builder",
-                            userBuilder.getUserId()), e);
-        }
-    }
-
-    /**
-     * Resolve the domain for a given attribute.
-     *
-     * @param claim Claim
-     * @return The domain for the user.
-     * @throws IdentityStoreException identity storeexception
-     */
-    private Domain resolveDomain(Claim claim) throws IdentityStoreException {
-
-        try {
-            return domainManager.getDomainFromClaim(claim);
-        } catch (DomainException e) {
-            throw new IdentityStoreException("Resolving domain from claim failed", e);
-        }
-    }
-
-    // TODO: Resolve domain from String filter pattern and group ID
-    private Domain resolveGroupDomain(String groupId) {
-        return null;
-    }
-
     private Domain resolveUserDomain(String attributeValue) throws IdentityStoreException {
         try {
             return domainManager.getDomainFromUserName(attributeValue);
         } catch (DomainException e) {
             throw new IdentityStoreException("Error resolving domain", e);
         }
+    }
+
+    @Override
+    public List<Claim> getClaims(User user) throws IdentityStoreException {
+        List<Claim> claims = new ArrayList<>();
+        Domain domain = user.getDomain();
+
+        Map<String, List<MetaClaimMapping>> claimMappings = domain.getClaimMappings();
+
+        Map<String, IdentityStoreConnector> identityStoreConnectors = domain.getIdentityStoreConnectorMap();
+
+
+        for (Map.Entry<String, IdentityStoreConnector> identityStoreConnectorEntry :
+                identityStoreConnectors.entrySet()) {
+
+            String connectorId = identityStoreConnectorEntry.getKey();
+            List<MetaClaimMapping> metaClaimMappings = claimMappings.get(connectorId);
+
+            // Create <AttributeName, MetaClaim> map
+            Map<String, MetaClaim> attributeMapping = metaClaimMappings.stream()
+                    .collect(Collectors.toMap(MetaClaimMapping::getAttributeName, MetaClaimMapping::getMetaClaim));
+
+            IdentityStoreConnector identityStoreConnector = identityStoreConnectorEntry.getValue();
+
+            try {
+                String connectorUserId = userManager.getConnectorUserId(user.getUserId(), connectorId);
+
+                List<Attribute> attributeValues = identityStoreConnector.getUserAttributeValues(connectorUserId,
+                        new ArrayList<>(attributeMapping.keySet()));
+                claims.addAll(buildClaims(attributeValues, attributeMapping));
+            } catch (IdentityStoreException | UserManagerException e) {
+                throw new IdentityStoreException("Error retrieving claims for user : " + user.getUserId(), e);
+            }
+        }
+
+        return claims;
+    }
+
+    @Override
+    public List<Claim> getClaims(User user, List<String> claimURIs) throws IdentityStoreException {
+        List<Claim> claims = new ArrayList<>();
+        Domain domain = user.getDomain();
+
+        Map<String, List<MetaClaimMapping>> claimMappings = domain.getClaimMappings();
+
+        Map<String, IdentityStoreConnector> identityStoreConnectors = domain.getIdentityStoreConnectorMap();
+
+
+        for (Map.Entry<String, IdentityStoreConnector> identityStoreConnectorEntry :
+                identityStoreConnectors.entrySet()) {
+
+            String connectorId = identityStoreConnectorEntry.getKey();
+            List<MetaClaimMapping> metaClaimMappings = claimMappings.get(connectorId);
+
+            // Create <AttributeName, MetaClaim> map
+            Map<String, MetaClaim> attributeMapping = metaClaimMappings.stream().
+                    filter(metaClaimMapping -> claimURIs.contains(metaClaimMapping.getMetaClaim().getClaimURI()))
+                    .collect(Collectors.toMap(MetaClaimMapping::getAttributeName, MetaClaimMapping::getMetaClaim));
+
+            IdentityStoreConnector identityStoreConnector = identityStoreConnectorEntry.getValue();
+
+            try {
+                String connectorUserId = userManager.getConnectorUserId(user.getUserId(), connectorId);
+
+                List<Attribute> attributeValues = identityStoreConnector.getUserAttributeValues(connectorUserId,
+                        new ArrayList<>(attributeMapping.keySet()));
+                claims.addAll(buildClaims(attributeValues, attributeMapping));
+            } catch (IdentityStoreException | UserManagerException e) {
+                throw new IdentityStoreException("Error retrieving claims for user : " + user.getUserId(), e);
+            }
+        }
+
+        if (claims.size() < claimURIs.size()) {
+            log.warn("Some of the requested claims for the user " + user.getUserId() + " could not be found");
+        }
+
+        return claims;
+    }
+
+    /**
+     * Build Claim Objects from attribute values.
+     *
+     * @param attributes Attributes with populated values
+     * @param attributeMapping Attribute to MetaClaim mappings for the requried claims
+     * @return Claims built from attribute values
+     */
+    private List<Claim> buildClaims(List<Attribute> attributes, Map<String, MetaClaim> attributeMapping) {
+
+        return attributes.stream().map(attribute -> {
+            MetaClaim metaClaim = attributeMapping.get(attribute.getAttributeName());
+            Claim claim = new Claim();
+            claim.setClaimURI(metaClaim.getClaimURI());
+            claim.setDialectURI(metaClaim.getDialectURI());
+            claim.setValue(attribute.getAttributeValue());
+            return claim;
+        }).collect(Collectors.toList());
     }
 }
 
