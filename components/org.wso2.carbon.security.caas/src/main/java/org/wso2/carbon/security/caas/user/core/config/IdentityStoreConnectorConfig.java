@@ -12,7 +12,6 @@ public class IdentityStoreConnectorConfig {
     private String connectorType;
     private Properties properties;
     private String domainName;
-    private String primaryAttribute;
     private List<String> uniqueAttributes;
     private List<String> otherAttributes;
 
@@ -46,14 +45,6 @@ public class IdentityStoreConnectorConfig {
 
     public void setDomainName(String domainName) {
         this.domainName = domainName;
-    }
-
-    public String getPrimaryAttribute() {
-        return primaryAttribute;
-    }
-
-    public void setPrimaryAttribute(String primaryAttribute) {
-        this.primaryAttribute = primaryAttribute;
     }
 
     public List<String> getUniqueAttributes() {

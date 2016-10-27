@@ -16,16 +16,16 @@
 
 package org.wso2.carbon.security.caas.user.core.domain;
 
-import org.wso2.carbon.security.caas.api.util.CarbonSecurityConstants;
 import org.wso2.carbon.security.caas.user.core.bean.Domain;
 import org.wso2.carbon.security.caas.user.core.exception.DomainException;
 import org.wso2.carbon.security.caas.user.core.store.connector.CredentialStoreConnector;
 import org.wso2.carbon.security.caas.user.core.store.connector.IdentityStoreConnector;
 
-import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.stream.Collectors;
 
 /**
  * Domain manager.
@@ -43,6 +43,11 @@ public class DomainManager {
      * Mapping between all domain names and domain instances.
      */
     private Map<String, Domain> allDomainNameToDomainMap = new HashMap<>();
+
+    /**
+     * List of domains ordered by their priority.
+     */
+    private List<Domain> orderedDomainList;
 
     /**
      * Get the domain from the name.
@@ -102,47 +107,6 @@ public class DomainManager {
         domainPriorityToDomainMap.get(domain.getDomainPriority()).put(domainName, domain);
         allDomainNameToDomainMap.put(domainName, domain);
 
-    }
-
-    /**
-     * Get the domain instance when a user name is given.
-     *
-     * @param username String username
-     * @return Domain instance for which the user belongs
-     * @throws DomainException domain exception
-     */
-    public Domain getDomainFromUserName(String username)
-            throws DomainException {
-
-        // Check if the domain information is available in username
-        String[] usernameSplit = username.split(CarbonSecurityConstants.URL_SPLITTER);
-
-        if (usernameSplit.length > 1) {
-
-            String domainName = usernameSplit[0];
-
-            // Throws an exception if the specified domain is not found
-            return getDomainFromDomainName(domainName);
-        } else {
-            return getDomainsFromPriority(1).entrySet().stream().findAny().get().getValue();
-        }
-
-        // If the domain information is not available iterate through the connectors and find the
-        // relevant domain. If no domain found throw an exception
-
-//        for (Domain domain : allDomainNameToDomainMap.values()) {
-//
-//            Map<String, IdentityStoreConnector> identityStoreConnectorsMap =
-//                    domain.getIdentityStoreConnectorMap();
-//
-//            for (IdentityStoreConnector identityStoreConnector : identityStoreConnectorsMap.values()) {
-
-                // TODO: Implement primary and unique attributes along with unique user id.
-//            }
-//        }
-
-        // Domain for the username specified do not exist even in primary domain.
-//        throw new DomainException(String.format("Username %s do not exist in any domain", username));
     }
 
     /**
@@ -239,11 +203,19 @@ public class DomainManager {
 
     /**
      * Get all available domains.
+     * Domains are returned as a list ordered by their priority highest to lowest.
      *
-     * @return A collection of domains
+     * @return A list of domains ordered by their priority
      */
-    public Collection<Domain> getAllDomains() {
-        return allDomainNameToDomainMap.values();
+    public List<Domain> getAllDomains() {
+
+        if (orderedDomainList == null) {
+            orderedDomainList = allDomainNameToDomainMap.values().stream()
+                    .sorted((f1, f2) -> Integer.compare(f2.getDomainPriority(), f1.getDomainPriority()))
+                    .collect(Collectors.toList());
+        }
+
+        return orderedDomainList;
     }
 
 }

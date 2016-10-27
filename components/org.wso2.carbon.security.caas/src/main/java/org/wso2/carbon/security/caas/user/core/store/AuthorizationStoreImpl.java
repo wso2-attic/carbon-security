@@ -881,7 +881,7 @@ public class AuthorizationStoreImpl implements AuthorizationStore {
      * @return Id of the primary authorization store.
      */
     private String getPrimaryAuthorizationStoreId() {
-        // TODO: Should be able to simply
+        // TODO: PRIMARY_USERSTORE and USERSTORE_PRIORITY concepts have changed after introducing domain model
 
         // To get the primary authorization store, first check whether the primary property is set to true, if not sort
         // the connectors by there priority. If non of above properties were set, then get the first connector id from

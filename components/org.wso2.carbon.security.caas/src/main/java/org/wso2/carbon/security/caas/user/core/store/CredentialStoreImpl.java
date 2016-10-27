@@ -22,6 +22,7 @@ import org.wso2.carbon.security.caas.api.CarbonCallback;
 import org.wso2.carbon.security.caas.api.util.CarbonSecurityConstants;
 import org.wso2.carbon.security.caas.internal.CarbonSecurityDataHolder;
 import org.wso2.carbon.security.caas.user.core.bean.User;
+import org.wso2.carbon.security.caas.user.core.claim.Claim;
 import org.wso2.carbon.security.caas.user.core.config.CredentialStoreConnectorConfig;
 import org.wso2.carbon.security.caas.user.core.constant.UserCoreConstants;
 import org.wso2.carbon.security.caas.user.core.context.AuthenticationContext;
@@ -117,9 +118,15 @@ public class CredentialStoreImpl implements CredentialStore {
                 callback.setName(domainUnawareUsername);
             }
 
+            // TODO: resolve claimURI and dialect URI from callbacks
+            Claim claim = new Claim();
+            claim.setDialectURI("http://wso2.org/claims");
+            claim.setClaimURI("http://wso2.org/claims/username");
+            claim.setValue(username);
+
             // Get the user using given callbacks. We need to find the user unique id.
             User user = CarbonSecurityDataHolder.getInstance()
-                    .getCarbonRealmService().getIdentityStore().getUser(username);
+                    .getCarbonRealmService().getIdentityStore().getUser(claim);
 
             // Crete a new call back array from existing one and add new user data (user id and identity store id)
             // as a carbon callback to the new array.
