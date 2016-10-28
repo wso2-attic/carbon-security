@@ -753,9 +753,4 @@ public class CacheBackedAuthorizationStore implements AuthorizationStore {
             }
         }
     }
-
-    @Override
-    public Map<String, String> getAllAuthorizationStoreNames() {
-        return authorizationStore.getAllAuthorizationStoreNames();
-    }
 }

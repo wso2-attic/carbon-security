@@ -31,6 +31,8 @@ public class AuthorizationStoreConnectorConfig {
 
     private Properties properties;
 
+    private int priority;
+
     public String getConnectorId() {
         return connectorId;
     }
@@ -53,5 +55,13 @@ public class AuthorizationStoreConnectorConfig {
 
     public void setProperties(Properties properties) {
         this.properties = properties;
+    }
+
+    public int getPriority() {
+        return priority;
+    }
+
+    public void setPriority(int priority) {
+        this.priority = priority;
     }
 }

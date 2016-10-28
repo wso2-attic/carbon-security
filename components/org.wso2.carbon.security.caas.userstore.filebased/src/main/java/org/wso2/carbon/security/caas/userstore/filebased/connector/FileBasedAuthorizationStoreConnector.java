@@ -254,7 +254,7 @@ public class FileBasedAuthorizationStoreConnector implements AuthorizationStoreC
     }
 
     @Override
-    public String getAuthorizationStoreId() {
+    public String getAuthorizationStoreConnectorId() {
         return null;
     }
 }

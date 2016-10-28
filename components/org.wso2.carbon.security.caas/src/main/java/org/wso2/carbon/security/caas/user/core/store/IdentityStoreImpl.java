@@ -111,18 +111,16 @@ public class IdentityStoreImpl implements IdentityStore {
     @Override
     public User getUser(String userId) throws IdentityStoreException, UserNotFoundException {
 
-        for (Domain domain : domainManager.getAllDomains()) {
+        for (Domain domain : domainManager.getSortedDomains()) {
 
 
-            for (Map.Entry<String, IdentityStoreConnector> connectorEntry :
-                    domain.getIdentityStoreConnectorMap().entrySet()) {
+            for (IdentityStoreConnector identityStoreConnector : domain.getSortedIdentityStoreConnectors()) {
 
-                String identityStoreConnectorId = connectorEntry.getKey();
-                IdentityStoreConnector identityStoreConnector = connectorEntry.getValue();
+                String identityStoreConnectorId = identityStoreConnector.getIdentityStoreConnectorId();
 
                 try {
                     String connectorUserId =
-                            userManager.getConnectorUserId(userId, identityStoreConnector.getIdentityStoreId());
+                            userManager.getConnectorUserId(userId, identityStoreConnectorId);
 
                     for (String attribute : identityStoreConnector.getIdentityStoreConfig().getUniqueAttributes()) {
 
@@ -136,7 +134,7 @@ public class IdentityStoreImpl implements IdentityStore {
                                     .setAuthorizationStore(carbonRealmService.getAuthorizationStore())
                                     .build();
 
-                        } catch (UserNotFoundException e) { // looping through all unique attributes
+                        } catch (UserNotFoundException e) { // not throwing since looping through all unique attributes
                             log.debug("A user with attribute " + attribute + " : " + connectorUserId +
                                     " was not found in connector " + identityStoreConnectorId);
                         }
@@ -144,7 +142,7 @@ public class IdentityStoreImpl implements IdentityStore {
                     }
 
 
-                } catch (UserManagerException e) { // looping through all connectors
+                } catch (UserManagerException e) { // not throwing since looping through all connectors
                     if (log.isDebugEnabled()) {
                         log.debug("Couldn't find connect specific user Id for " + userId + " in connector " +
                                 identityStoreConnectorId);
@@ -178,17 +176,16 @@ public class IdentityStoreImpl implements IdentityStore {
 
         String claimURI = claim.getClaimURI();
 
-        for (Domain domain : domainManager.getAllDomains()) {
+        for (Domain domain : domainManager.getSortedDomains()) {
 
             if (domain.isClaimAvailable(claimURI)) {
 
                 Map<String, List<MetaClaimMapping>> claimMappings = domain.getClaimMappings();
 
-                for (Map.Entry<String, IdentityStoreConnector> connectorEntry :
-                        domain.getIdentityStoreConnectorMap().entrySet()) {
+                for (IdentityStoreConnector identityStoreConnector : domain.getSortedIdentityStoreConnectors()) {
 
-                    String identityStoreConnectorId = connectorEntry.getKey();
-                    IdentityStoreConnector identityStoreConnector = connectorEntry.getValue();
+                    String identityStoreConnectorId = identityStoreConnector.getIdentityStoreConfig().getConnectorId();
+
                     List<String> uniqueAttributes =
                             identityStoreConnector.getIdentityStoreConfig().getUniqueAttributes();
 
@@ -213,6 +210,7 @@ public class IdentityStoreImpl implements IdentityStore {
                                     .build();
 
                         } catch (UserNotFoundException e) {
+                            // not throwing since looping through all unique attributes
                             if (log.isDebugEnabled()) {
                                 log.debug("User for claim " + claimURI + " with value " + claimValue +
                                         " was not found in connector : " + identityStoreConnectorId);
@@ -253,11 +251,9 @@ public class IdentityStoreImpl implements IdentityStore {
 
                 Map<String, List<MetaClaimMapping>> metaClaimMappings = domain.getClaimMappings();
 
-                for (Map.Entry<String, IdentityStoreConnector> connectorEntry :
-                        domain.getIdentityStoreConnectorMap().entrySet()) {
+                for (IdentityStoreConnector identityStoreConnector : domain.getSortedIdentityStoreConnectors()) {
 
-                    String identityStoreConnectorId = connectorEntry.getKey();
-                    IdentityStoreConnector identityStoreConnector = connectorEntry.getValue();
+                    String identityStoreConnectorId = identityStoreConnector.getIdentityStoreConfig().getConnectorId();
 
 
                     List<String> uniqueAttributes =
@@ -284,6 +280,7 @@ public class IdentityStoreImpl implements IdentityStore {
                                     .build();
 
                         } catch (UserNotFoundException e) {
+                            // not throwing since looping through all connectors
                             if (log.isDebugEnabled()) {
                                 log.debug("User for claim " + claimURI + " with value " + claimValue +
                                         " was not found in connector : " + identityStoreConnectorId);
@@ -323,19 +320,17 @@ public class IdentityStoreImpl implements IdentityStore {
         int currentOffset = 0;
         int currentCount = 0;
 
-        for (Domain domain : domainManager.getAllDomains()) {
+        for (Domain domain : domainManager.getSortedDomains()) {
 
             Map<String, List<MetaClaimMapping>> metaClaimMappings = domain.getClaimMappings();
 
 
-            for (Map.Entry<String, IdentityStoreConnector> connectorEntry :
-                    domain.getIdentityStoreConnectorMap().entrySet()) {
+            for (IdentityStoreConnector identityStoreConnector : domain.getSortedIdentityStoreConnectors()) {
 
-                String identityStoreConnectorId = connectorEntry.getKey();
-                IdentityStoreConnector identityStoreConnector = connectorEntry.getValue();
+                String identityStoreConnectorId = identityStoreConnector.getIdentityStoreConfig().getConnectorId();
 
                 for (MetaClaimMapping metaClaimMapping :
-                        metaClaimMappings.get(identityStoreConnector.getIdentityStoreId())) {
+                        metaClaimMappings.get(identityStoreConnector.getIdentityStoreConnectorId())) {
 
                     // Required number of users have been retrieved
                     if (currentCount >= length) {
@@ -368,6 +363,7 @@ public class IdentityStoreImpl implements IdentityStore {
 
                                 currentCount++;
                             } catch (UserManagerException e) {
+                                // not throwing since looping through all connectors
                                 throw new IdentityStoreException("Error retrieving unique user Id for user " +
                                         userBuilder.getUserId(), e);
                             }
@@ -421,18 +417,16 @@ public class IdentityStoreImpl implements IdentityStore {
         String claimValue = claim.getValue();
 
 
-        for (Domain domain : domainManager.getAllDomains()) {
+        for (Domain domain : domainManager.getSortedDomains()) {
 
             Map<String, List<MetaClaimMapping>> claimMappings = domain.getClaimMappings();
 
-            for (Map.Entry<String, IdentityStoreConnector> connectorEntry :
-                    domain.getIdentityStoreConnectorMap().entrySet()) {
+            for (IdentityStoreConnector identityStoreConnector : domain.getSortedIdentityStoreConnectors()) {
 
-                String identityStoreConnectorId = connectorEntry.getKey();
-                IdentityStoreConnector identityStoreConnector = connectorEntry.getValue();
+                String identityStoreConnectorId = identityStoreConnector.getIdentityStoreConfig().getConnectorId();
 
                 for (MetaClaimMapping metaClaimMapping :
-                        claimMappings.get(identityStoreConnector.getIdentityStoreId())) {
+                        claimMappings.get(identityStoreConnector.getIdentityStoreConnectorId())) {
 
                     if (metaClaimMapping.getMetaClaim().getClaimURI().equals(claimURI)) {
 
@@ -445,6 +439,7 @@ public class IdentityStoreImpl implements IdentityStore {
                             return groupBuilder.build();
 
                         } catch (GroupNotFoundException e) {
+                            // not throwing since looping through all connectors
                             if (log.isDebugEnabled()) {
                                 log.debug("Group " + claimValue + " not found in identity store connector" +
                                         identityStoreConnectorId);
@@ -469,11 +464,9 @@ public class IdentityStoreImpl implements IdentityStore {
 
             Domain domain = user.getDomain();
 
-            for (Map.Entry<String, IdentityStoreConnector> connectorEntry :
-                    domain.getIdentityStoreConnectorMap().entrySet()) {
+            for (IdentityStoreConnector identityStoreConnector : domain.getSortedIdentityStoreConnectors()) {
 
-                String identityStoreConnectorId = connectorEntry.getKey();
-                IdentityStoreConnector identityStoreConnector = connectorEntry.getValue();
+                String identityStoreConnectorId = identityStoreConnector.getIdentityStoreConfig().getConnectorId();
 
                 try {
 
@@ -493,6 +486,7 @@ public class IdentityStoreImpl implements IdentityStore {
                     }
 
                 } catch (UserManagerException e) {
+                    // not throwing since looping through all connectors
                     throw new IdentityStoreException("Error resolving globally unique Id", e);
                 }
             }
@@ -525,11 +519,9 @@ public class IdentityStoreImpl implements IdentityStore {
         try {
             User user = getUser(userId);
 
-            for (Map.Entry<String, IdentityStoreConnector> connectorEntry :
-                    user.getDomain().getIdentityStoreConnectorMap().entrySet()) {
+            for (IdentityStoreConnector identityStoreConnector : user.getDomain().getSortedIdentityStoreConnectors()) {
 
-                String identityStoreConnectorId = connectorEntry.getKey();
-                IdentityStoreConnector identityStoreConnector = connectorEntry.getValue();
+                String identityStoreConnectorId = identityStoreConnector.getIdentityStoreConnectorId();
 
                 try {
 
@@ -540,7 +532,10 @@ public class IdentityStoreImpl implements IdentityStore {
                         return true;
                     }
                 } catch (UserManagerException e) {
-                    throw new IdentityStoreException("Error retrieving connector User Id", e);
+                    // not throwing since looping through all connectors
+                    if (log.isDebugEnabled()) {
+                        log.debug("User " + userId + " is not mapped to connector " + identityStoreConnectorId);
+                    }
                 }
             }
         } catch (UserNotFoundException e) {
@@ -562,23 +557,17 @@ public class IdentityStoreImpl implements IdentityStore {
 
         Map<String, List<MetaClaimMapping>> claimMappings = domain.getClaimMappings();
 
-        Map<String, IdentityStoreConnector> identityStoreConnectors = domain.getIdentityStoreConnectorMap();
+        for (IdentityStoreConnector identityStoreConnector : domain.getSortedIdentityStoreConnectors()) {
 
-
-        for (Map.Entry<String, IdentityStoreConnector> identityStoreConnectorEntry :
-                identityStoreConnectors.entrySet()) {
-
-            String connectorId = identityStoreConnectorEntry.getKey();
-            List<MetaClaimMapping> metaClaimMappings = claimMappings.get(connectorId);
+            String identityStoreConnectorId = identityStoreConnector.getIdentityStoreConfig().getConnectorId();
+            List<MetaClaimMapping> metaClaimMappings = claimMappings.get(identityStoreConnectorId);
 
             // Create <AttributeName, MetaClaim> map
             Map<String, MetaClaim> attributeMapping = metaClaimMappings.stream()
                     .collect(Collectors.toMap(MetaClaimMapping::getAttributeName, MetaClaimMapping::getMetaClaim));
 
-            IdentityStoreConnector identityStoreConnector = identityStoreConnectorEntry.getValue();
-
             try {
-                String connectorUserId = userManager.getConnectorUserId(user.getUserId(), connectorId);
+                String connectorUserId = userManager.getConnectorUserId(user.getUserId(), identityStoreConnectorId);
 
                 List<Attribute> attributeValues = identityStoreConnector.getUserAttributeValues(connectorUserId,
                         new ArrayList<>(attributeMapping.keySet()));
@@ -598,24 +587,19 @@ public class IdentityStoreImpl implements IdentityStore {
 
         Map<String, List<MetaClaimMapping>> claimMappings = domain.getClaimMappings();
 
-        Map<String, IdentityStoreConnector> identityStoreConnectors = domain.getIdentityStoreConnectorMap();
+        for (IdentityStoreConnector identityStoreConnector : domain.getSortedIdentityStoreConnectors()) {
 
+            String identityStoreConnectorId = identityStoreConnector.getIdentityStoreConfig().getConnectorId();
 
-        for (Map.Entry<String, IdentityStoreConnector> identityStoreConnectorEntry :
-                identityStoreConnectors.entrySet()) {
-
-            String connectorId = identityStoreConnectorEntry.getKey();
-            List<MetaClaimMapping> metaClaimMappings = claimMappings.get(connectorId);
+            List<MetaClaimMapping> metaClaimMappings = claimMappings.get(identityStoreConnectorId);
 
             // Create <AttributeName, MetaClaim> map
             Map<String, MetaClaim> attributeMapping = metaClaimMappings.stream().
                     filter(metaClaimMapping -> claimURIs.contains(metaClaimMapping.getMetaClaim().getClaimURI()))
                     .collect(Collectors.toMap(MetaClaimMapping::getAttributeName, MetaClaimMapping::getMetaClaim));
 
-            IdentityStoreConnector identityStoreConnector = identityStoreConnectorEntry.getValue();
-
             try {
-                String connectorUserId = userManager.getConnectorUserId(user.getUserId(), connectorId);
+                String connectorUserId = userManager.getConnectorUserId(user.getUserId(), identityStoreConnectorId);
 
                 List<Attribute> attributeValues = identityStoreConnector.getUserAttributeValues(connectorUserId,
                         new ArrayList<>(attributeMapping.keySet()));

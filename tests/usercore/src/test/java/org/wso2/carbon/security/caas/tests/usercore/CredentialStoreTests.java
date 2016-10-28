@@ -26,7 +26,7 @@
 //
 //        User user = Mockito.mock(User.class);
 //        Mockito.when(user.getUserId()).thenReturn("admin");
-//        // Mockito.when(user.getIdentityStoreId()).thenReturn("CSC1");
+//        // Mockito.when(user.getIdentityStoreConnectorId()).thenReturn("CSC1");
 //
 //        Mockito.doReturn(user).when(identityStore).getUser(callbacks);
 //

@@ -36,10 +36,10 @@ public interface CredentialStoreConnector {
             throws CredentialStoreException;
 
     /**
-     * Get the ID of this credential store.
-     * @return ID of the credential store.
+     * Get the Id of this CredentialStoreConnector.
+     * @return Id of the CredentialStoreConnector.
      */
-    String getCredentialStoreId();
+    String getCredentialStoreConnectorId();
 
     /**
      * Authenticate user using callbacks. Throws {@link AuthenticationFailure} if authentication is not successful.

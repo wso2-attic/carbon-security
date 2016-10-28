@@ -41,11 +41,11 @@ public interface IdentityStoreConnector {
             throws IdentityStoreException;
 
     /**
-     * Get user store ID which is unique for a user store.
+     * Get identity store connector Id.
      *
-     * @return returns the unique id for the user store
+     * @return returns the unique Id for the connector.
      */
-    String getIdentityStoreId();
+    String getIdentityStoreConnectorId();
 
     /**
      * Get user builder from the user name.

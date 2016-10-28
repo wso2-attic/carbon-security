@@ -389,9 +389,9 @@ public interface AuthorizationStoreConnector {
     AuthorizationStoreConnectorConfig getAuthorizationStoreConfig();
 
     /**
-     * Get the id of this authorization store.
+     * Get the id of this AuthorizationStoreConnector.
      *
-     * @return Id of the authorization store.
+     * @return Id of the AuthorizationStoreConnector.
      */
-    String getAuthorizationStoreId();
+    String getAuthorizationStoreConnectorId();
 }

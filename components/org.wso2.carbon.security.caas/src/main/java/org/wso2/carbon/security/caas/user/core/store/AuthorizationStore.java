@@ -509,11 +509,4 @@ public interface AuthorizationStore {
     void updatePermissionsInRole(String roleId, String authorizationStoreId,
                                  List<Permission> permissionsToBeAssign,
                                  List<Permission> permissionsToBeUnassign) throws AuthorizationStoreException;
-
-    /**
-     * Get all available authorization store connector names.
-     *
-     * @return Map of display names against the connector id.
-     */
-    Map<String, String> getAllAuthorizationStoreNames();
 }

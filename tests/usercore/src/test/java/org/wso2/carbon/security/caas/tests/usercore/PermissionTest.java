@@ -223,7 +223,7 @@ public class PermissionTest extends PowerMockTestCase {
         CredentialStoreImpl credentialStore = new CredentialStoreImpl();
         IdentityStoreImpl identityStore = Mockito.mock(IdentityStoreImpl.class);
 
-        credentialStore.init(domainManager, storeConfig.getCredentialConnectorConfigMap());
+        credentialStore.init(domainManager);
         identityStore.init(domainManager);
         authorizationStore.init(storeConfig.getAuthorizationConnectorConfigMap());
 
