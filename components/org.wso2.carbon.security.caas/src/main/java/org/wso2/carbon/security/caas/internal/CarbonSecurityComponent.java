@@ -341,7 +341,7 @@ public class CarbonSecurityComponent implements RequiredCapabilityListener {
 
             carbonSecurityDataHolder.registerCarbonRealmService(carbonRealmService);
 
-            credentialStore.init(domainManager, storeConfig.getCredentialConnectorConfigMap());
+            credentialStore.init(domainManager);
             identityStore.init(domainManager);
             authorizationStore.init(storeConfig.getAuthorizationConnectorConfigMap());
 

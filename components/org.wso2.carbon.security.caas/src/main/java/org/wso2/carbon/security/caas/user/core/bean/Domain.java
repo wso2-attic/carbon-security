@@ -23,10 +23,11 @@ import org.wso2.carbon.security.caas.user.core.exception.IdentityStoreException;
 import org.wso2.carbon.security.caas.user.core.store.connector.CredentialStoreConnector;
 import org.wso2.carbon.security.caas.user.core.store.connector.IdentityStoreConnector;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 /**
  * Represents a domain.
@@ -42,6 +43,39 @@ public class Domain {
      * Mapping between CredentialStoreConnector ID and CredentialStoreConnector
      */
     private Map<String, CredentialStoreConnector> credentialStoreConnectorsMap = new HashMap<>();
+
+    /**
+     * Set of CredentialStoreConnectors for this domain sorted by their priority.
+     */
+    private SortedSet<CredentialStoreConnector> sortedCredentialStoreConnectors = new TreeSet<>(
+            (c1, c2) -> {
+                int c1Priority = c1.getCredentialStoreConfig().getPriority();
+                int c2Priority = c2.getCredentialStoreConfig().getPriority();
+
+                if (c1Priority == c2Priority) {
+                    c2Priority++;
+                }
+
+                return Integer.compare(c1Priority, c2Priority);
+            }
+    );
+
+    /**
+     * Set of IdentityStoreConnectors for this domain sorted by their priority.
+     */
+    private SortedSet<IdentityStoreConnector> sortedIdentityStoreConnectors = new TreeSet<>(
+            (c1, c2) -> {
+                int c1Priority = c1.getIdentityStoreConfig().getPriority();
+                int c2Priority = c2.getIdentityStoreConfig().getPriority();
+
+                if (c1Priority == c2Priority) {
+                    c2Priority++;
+                }
+
+                return Integer.compare(c1Priority, c2Priority);
+            }
+    );
+
 
     /**
      * Mapping between IdentityStoreConnector ID and MetaClaimMapping
@@ -110,6 +144,7 @@ public class Domain {
         try {
             identityStoreConnector.init(identityStoreConnectorConfig);
             identityStoreConnectorsMap.put(identityStoreConnectorId, identityStoreConnector);
+            sortedIdentityStoreConnectors.add(identityStoreConnector);
         } catch (IdentityStoreException e) {
             throw new DomainException("Error adding identity store to domain", e);
         }
@@ -127,16 +162,6 @@ public class Domain {
     }
 
     /**
-     * Get identity store connector map.
-     *
-     * @return Map of connectorId to IdentityStoreConnector
-     */
-    public Map<String, IdentityStoreConnector> getIdentityStoreConnectorMap() {
-
-        return Collections.unmodifiableMap(identityStoreConnectorsMap);
-    }
-
-    /**
      * Add an credential store connector to the map.
      *
      * @param credentialStoreConnector Credential Store connector
@@ -145,7 +170,7 @@ public class Domain {
     public void addCredentialStoreConnector(CredentialStoreConnector credentialStoreConnector)
             throws DomainException {
 
-        String credentialStoreConnectorId = credentialStoreConnector.getCredentialStoreId();
+        String credentialStoreConnectorId = credentialStoreConnector.getCredentialStoreConnectorId();
 
         if (credentialStoreConnectorsMap.containsKey(credentialStoreConnectorId)) {
 
@@ -155,6 +180,7 @@ public class Domain {
         }
 
         credentialStoreConnectorsMap.put(credentialStoreConnectorId, credentialStoreConnector);
+        sortedCredentialStoreConnectors.add(credentialStoreConnector);
     }
 
     /**
@@ -166,16 +192,6 @@ public class Domain {
     public CredentialStoreConnector getCredentialStoreConnectorFromId(String credentialStoreConnectorId) {
 
         return credentialStoreConnectorsMap.get(credentialStoreConnectorId);
-    }
-
-    /**
-     * Get credential store connector map.
-     *
-     * @return Map of connector Id to CredentialStoreConnector
-     */
-    public Map<String, CredentialStoreConnector> getCredentialStoreConnectorMap() {
-
-        return Collections.unmodifiableMap(credentialStoreConnectorsMap);
     }
 
     /**
@@ -210,5 +226,23 @@ public class Domain {
     public void setClaimMappings(Map<String, List<MetaClaimMapping>> claimMappings) {
 
         this.claimMappings = claimMappings;
+    }
+
+    /**
+     * Get set of IdentityStoreConnectors for this domain sorted by their priority.
+     *
+     * @return Sorted IdentityStoreConnectors set
+     */
+    public SortedSet<IdentityStoreConnector> getSortedIdentityStoreConnectors() {
+        return sortedIdentityStoreConnectors;
+    }
+
+    /**
+     * Get set of CredentialStoreConnectors for this domain sorted by their priority.
+     *
+     * @return Sorted CredentialStoreConnectors set
+     */
+    public SortedSet<CredentialStoreConnector> getSortedCredentialStoreConnectors() {
+        return sortedCredentialStoreConnectors;
     }
 }

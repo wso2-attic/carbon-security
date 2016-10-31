@@ -59,8 +59,8 @@ public class FileBasedCredentialStoreConnector implements CredentialStoreConnect
     }
 
     @Override
-    public String getCredentialStoreId() {
-        return null;
+    public String getCredentialStoreConnectorId() {
+        return credentialStoreConnectorConfig.getConnectorId();
     }
 
     @Override

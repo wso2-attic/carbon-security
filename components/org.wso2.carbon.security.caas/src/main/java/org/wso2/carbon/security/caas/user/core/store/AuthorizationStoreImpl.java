@@ -28,7 +28,6 @@ import org.wso2.carbon.security.caas.user.core.bean.Resource;
 import org.wso2.carbon.security.caas.user.core.bean.Role;
 import org.wso2.carbon.security.caas.user.core.bean.User;
 import org.wso2.carbon.security.caas.user.core.config.AuthorizationStoreConnectorConfig;
-import org.wso2.carbon.security.caas.user.core.constant.UserCoreConstants;
 import org.wso2.carbon.security.caas.user.core.exception.AuthorizationStoreException;
 import org.wso2.carbon.security.caas.user.core.exception.IdentityStoreException;
 import org.wso2.carbon.security.caas.user.core.exception.PermissionNotFoundException;
@@ -45,6 +44,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 import java.util.stream.Collectors;
 
 /**
@@ -56,7 +57,27 @@ public class AuthorizationStoreImpl implements AuthorizationStore {
 
     private static final Logger log = LoggerFactory.getLogger(AuthorizationStoreImpl.class);
 
+    /**
+     * Map of AuthorizationStoreConnectors against the connector Id.
+     */
     private Map<String, AuthorizationStoreConnector> authorizationStoreConnectors = new HashMap<>();
+
+    /**
+     * Set of AuthorizationStoreConnectors sorted by it's priority
+     */
+    private SortedSet<AuthorizationStoreConnector> sortedAuthorizationStoreConnectors = new TreeSet<>(
+            (c1, c2) -> {
+                int c1Priority = c1.getAuthorizationStoreConfig().getPriority();
+                int c2Priority = c2.getAuthorizationStoreConfig().getPriority();
+
+                // Allow having multiple connectors with the same priority
+                if (c1Priority == c2Priority) {
+                    c2Priority++;
+                }
+
+                return Integer.compare(c1Priority, c2Priority);
+            }
+    );
 
     private RealmService carbonRealmService;
 
@@ -85,6 +106,7 @@ public class AuthorizationStoreImpl implements AuthorizationStore {
             authorizationStoreConnector.init(authorizationStoreConfig.getValue());
 
             authorizationStoreConnectors.put(authorizationStoreConfig.getKey(), authorizationStoreConnector);
+            sortedAuthorizationStoreConnectors.add(authorizationStoreConnector);
         }
 
         if (log.isDebugEnabled()) {
@@ -104,12 +126,12 @@ public class AuthorizationStoreImpl implements AuthorizationStore {
 
         // Get the roles directly associated to the user.
         List<Role> roles = new ArrayList<>();
-        for (AuthorizationStoreConnector authorizationStoreConnector : authorizationStoreConnectors.values()) {
+        for (AuthorizationStoreConnector authorizationStoreConnector : sortedAuthorizationStoreConnectors) {
             roles.addAll(authorizationStoreConnector.getRolesForUser(userId, domain.getDomainName())
                     .stream()
                     .map(role ->
                             role.setAuthorizationStoreConnectorId(authorizationStoreConnector
-                                    .getAuthorizationStoreId()).build())
+                                    .getAuthorizationStoreConnectorId()).build())
                     .collect(Collectors.toList()));
         }
 
@@ -179,7 +201,7 @@ public class AuthorizationStoreImpl implements AuthorizationStore {
     public boolean isUserInRole(String userId, String roleName)
             throws AuthorizationStoreException {
 
-        for (AuthorizationStoreConnector authorizationStoreConnector : authorizationStoreConnectors.values()) {
+        for (AuthorizationStoreConnector authorizationStoreConnector : sortedAuthorizationStoreConnectors) {
             if (authorizationStoreConnector.isUserInRole(userId, roleName)) {
                 return true;
             }
@@ -192,7 +214,7 @@ public class AuthorizationStoreImpl implements AuthorizationStore {
     public boolean isGroupInRole(String groupId, Domain domain, String roleName)
             throws AuthorizationStoreException {
 
-        for (AuthorizationStoreConnector authorizationStoreConnector : authorizationStoreConnectors.values()) {
+        for (AuthorizationStoreConnector authorizationStoreConnector : sortedAuthorizationStoreConnectors) {
             if (authorizationStoreConnector.isGroupInRole(groupId, roleName)) {
                 return true;
             }
@@ -204,10 +226,11 @@ public class AuthorizationStoreImpl implements AuthorizationStore {
     @Override
     public Role getRole(String roleName) throws RoleNotFoundException, AuthorizationStoreException {
 
-        for (AuthorizationStoreConnector authorizationStoreConnector : authorizationStoreConnectors.values()) {
+        for (AuthorizationStoreConnector authorizationStoreConnector : sortedAuthorizationStoreConnectors) {
             try {
                 return authorizationStoreConnector.getRole(roleName)
-                        .setAuthorizationStoreConnectorId(authorizationStoreConnector.getAuthorizationStoreId())
+                        .setAuthorizationStoreConnectorId(
+                                authorizationStoreConnector.getAuthorizationStoreConnectorId())
                         .build();
             } catch (RoleNotFoundException e) {
 
@@ -223,7 +246,7 @@ public class AuthorizationStoreImpl implements AuthorizationStore {
     public Permission getPermission(String resource, String action) throws PermissionNotFoundException,
             AuthorizationStoreException {
 
-        for (AuthorizationStoreConnector authorizationStoreConnector : authorizationStoreConnectors.values()) {
+        for (AuthorizationStoreConnector authorizationStoreConnector : sortedAuthorizationStoreConnectors) {
             try {
                 return authorizationStoreConnector.getPermission(new Resource(resource), new Action(action)).build();
             } catch (PermissionNotFoundException e) {
@@ -241,7 +264,7 @@ public class AuthorizationStoreImpl implements AuthorizationStore {
 
         List<Role> roles = new ArrayList<>();
 
-        for (AuthorizationStoreConnector authorizationStoreConnector : authorizationStoreConnectors.values()) {
+        for (AuthorizationStoreConnector authorizationStoreConnector : sortedAuthorizationStoreConnectors) {
 
             // Get the total count of roles in the authorization store.
             int roleCount;
@@ -261,7 +284,7 @@ public class AuthorizationStoreImpl implements AuthorizationStore {
                         .stream()
                         .map(role ->
                                 role.setAuthorizationStoreConnectorId(authorizationStoreConnector
-                                        .getAuthorizationStoreId()).build())
+                                        .getAuthorizationStoreConnectorId()).build())
                         .collect(Collectors.toList()));
                 length -= roles.size();
                 offset = 0;
@@ -284,7 +307,7 @@ public class AuthorizationStoreImpl implements AuthorizationStore {
 
         List<Permission> permissions = new ArrayList<>();
 
-        for (AuthorizationStoreConnector authorizationStoreConnector : authorizationStoreConnectors.values()) {
+        for (AuthorizationStoreConnector authorizationStoreConnector : sortedAuthorizationStoreConnectors) {
 
             // Get the total count of permissions in the authorization store.
             int permissionCount;
@@ -325,7 +348,7 @@ public class AuthorizationStoreImpl implements AuthorizationStore {
 
         List<Resource> resources = new ArrayList<>();
 
-        for (AuthorizationStoreConnector authorizationStoreConnector : authorizationStoreConnectors.values()) {
+        for (AuthorizationStoreConnector authorizationStoreConnector : sortedAuthorizationStoreConnectors) {
             resources.addAll(authorizationStoreConnector.getResources(resourcePattern)
                     .stream()
                     .map(Resource.ResourceBuilder::build)
@@ -340,7 +363,7 @@ public class AuthorizationStoreImpl implements AuthorizationStore {
 
         List<Action> actions = new ArrayList<>();
 
-        for (AuthorizationStoreConnector authorizationStoreConnector : authorizationStoreConnectors.values()) {
+        for (AuthorizationStoreConnector authorizationStoreConnector : sortedAuthorizationStoreConnectors) {
             actions.addAll(authorizationStoreConnector.getActions(actionPattern)
                     .stream()
                     .map(Action.ActionBuilder::build)
@@ -355,12 +378,12 @@ public class AuthorizationStoreImpl implements AuthorizationStore {
 
         List<Role> roles = new ArrayList<>();
 
-        for (AuthorizationStoreConnector authorizationStoreConnector : authorizationStoreConnectors.values()) {
+        for (AuthorizationStoreConnector authorizationStoreConnector : sortedAuthorizationStoreConnectors) {
             roles.addAll(authorizationStoreConnector.getRolesForUser(userId, domain.getDomainName())
                     .stream()
                     .map(role ->
                             role.setAuthorizationStoreConnectorId(authorizationStoreConnector
-                                    .getAuthorizationStoreId()).build())
+                                    .getAuthorizationStoreConnectorId()).build())
                     .collect(Collectors.toList()));
         }
 
@@ -420,12 +443,12 @@ public class AuthorizationStoreImpl implements AuthorizationStore {
 
         List<Role> roles = new ArrayList<>();
 
-        for (AuthorizationStoreConnector authorizationStoreConnector : authorizationStoreConnectors.values()) {
+        for (AuthorizationStoreConnector authorizationStoreConnector : sortedAuthorizationStoreConnectors) {
             roles.addAll(authorizationStoreConnector.getRolesForGroup(groupId, domain.getDomainName())
                     .stream()
                     .map(role ->
                             role.setAuthorizationStoreConnectorId(authorizationStoreConnector
-                                    .getAuthorizationStoreId()).build())
+                                    .getAuthorizationStoreConnectorId()).build())
                     .collect(Collectors.toList()));
         }
 
@@ -657,7 +680,7 @@ public class AuthorizationStoreImpl implements AuthorizationStore {
             throws AuthorizationStoreException {
 
         if (newRoleList == null || newRoleList.isEmpty()) {
-            for (AuthorizationStoreConnector authorizationStoreConnector : authorizationStoreConnectors.values()) {
+            for (AuthorizationStoreConnector authorizationStoreConnector : sortedAuthorizationStoreConnectors) {
                 authorizationStoreConnector.updateRolesInUser(userId, domain.getDomainName(), newRoleList);
             }
             return;
@@ -735,7 +758,7 @@ public class AuthorizationStoreImpl implements AuthorizationStore {
             throws AuthorizationStoreException {
 
         if (newRoleList == null || newRoleList.isEmpty()) {
-            for (AuthorizationStoreConnector authorizationStoreConnector : authorizationStoreConnectors.values()) {
+            for (AuthorizationStoreConnector authorizationStoreConnector : sortedAuthorizationStoreConnectors) {
                 authorizationStoreConnector.updateRolesInGroup(groupId, domain.getDomainName(), newRoleList);
             }
             return;
@@ -839,16 +862,6 @@ public class AuthorizationStoreImpl implements AuthorizationStore {
         authorizationStoreConnector.updatePermissionsInRole(roleId, permissionsToBeAssign, permissionsToBeUnassign);
     }
 
-    @Override
-    public Map<String, String> getAllAuthorizationStoreNames() {
-
-        return authorizationStoreConnectors.entrySet()
-                .stream()
-                .collect(Collectors.toMap(Map.Entry::getKey,
-                        entry -> entry.getValue().getAuthorizationStoreConfig().getProperties()
-                                .getProperty(UserCoreConstants.USERSTORE_DISPLAY_NAME, "")));
-    }
-
     /**
      * Get the roles with there respective authorization store id.
      *
@@ -881,33 +894,7 @@ public class AuthorizationStoreImpl implements AuthorizationStore {
      * @return Id of the primary authorization store.
      */
     private String getPrimaryAuthorizationStoreId() {
-        // TODO: PRIMARY_USERSTORE and USERSTORE_PRIORITY concepts have changed after introducing domain model
 
-        // To get the primary authorization store, first check whether the primary property is set to true, if not sort
-        // the connectors by there priority. If non of above properties were set, then get the first connector id from
-        // the list.
-        return authorizationStoreConnectors.entrySet()
-                .stream()
-                .filter(connectorEntry -> Boolean.parseBoolean((connectorEntry.getValue().getAuthorizationStoreConfig()
-                        .getProperties())
-                        .getProperty(UserCoreConstants.PRIMARY_USERSTORE)))
-                .findFirst()
-                .map(Map.Entry::getKey)
-                .orElse(authorizationStoreConnectors.entrySet()
-                        .stream()
-                        .sorted((c1, c2) ->
-                                Integer.compare(Integer.parseInt(c1.getValue().getAuthorizationStoreConfig()
-                                                .getProperties()
-                                                .getProperty(UserCoreConstants.USERSTORE_PRIORITY)),
-                                        Integer.parseInt(c2.getValue().getAuthorizationStoreConfig()
-                                                .getProperties()
-                                                .getProperty(UserCoreConstants.USERSTORE_PRIORITY))))
-                        .findFirst()
-                        .map(Map.Entry::getKey)
-                        .orElse(authorizationStoreConnectors.entrySet()
-                                .stream()
-                                .findFirst()
-                                .map(Map.Entry::getKey)
-                                .orElse(null)));
+        return sortedAuthorizationStoreConnectors.first().getAuthorizationStoreConnectorId();
     }
 }

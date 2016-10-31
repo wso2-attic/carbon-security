@@ -9,11 +9,18 @@ import java.util.Properties;
 public class IdentityStoreConnectorConfig {
 
     private String connectorId;
+
     private String connectorType;
+
     private Properties properties;
+
     private String domainName;
+
     private List<String> uniqueAttributes;
+
     private List<String> otherAttributes;
+
+    private int priority;
 
     public String getConnectorId() {
         return connectorId;
@@ -61,5 +68,13 @@ public class IdentityStoreConnectorConfig {
 
     public void setOtherAttributes(List<String> otherAttributes) {
         this.otherAttributes = otherAttributes;
+    }
+
+    public int getPriority() {
+        return priority;
+    }
+
+    public void setPriority(int priority) {
+        this.priority = priority;
     }
 }

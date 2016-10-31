@@ -95,7 +95,7 @@ public class FileBasedIdentityStoreConnector implements IdentityStoreConnector {
     }
 
     @Override
-    public String getIdentityStoreId() {
+    public String getIdentityStoreConnectorId() {
         return identityStoreConnectorId;
     }
 

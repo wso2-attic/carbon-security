@@ -23,17 +23,14 @@ import org.wso2.carbon.security.caas.api.util.CarbonSecurityConstants;
 import org.wso2.carbon.security.caas.internal.CarbonSecurityDataHolder;
 import org.wso2.carbon.security.caas.user.core.bean.User;
 import org.wso2.carbon.security.caas.user.core.claim.Claim;
-import org.wso2.carbon.security.caas.user.core.config.CredentialStoreConnectorConfig;
 import org.wso2.carbon.security.caas.user.core.constant.UserCoreConstants;
 import org.wso2.carbon.security.caas.user.core.context.AuthenticationContext;
 import org.wso2.carbon.security.caas.user.core.domain.DomainManager;
 import org.wso2.carbon.security.caas.user.core.exception.AuthenticationFailure;
 import org.wso2.carbon.security.caas.user.core.exception.CredentialStoreException;
 import org.wso2.carbon.security.caas.user.core.exception.IdentityStoreException;
-import org.wso2.carbon.security.caas.user.core.exception.StoreException;
 import org.wso2.carbon.security.caas.user.core.exception.UserNotFoundException;
 import org.wso2.carbon.security.caas.user.core.store.connector.CredentialStoreConnector;
-import org.wso2.carbon.security.caas.user.core.store.connector.CredentialStoreConnectorFactory;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -56,30 +53,10 @@ public class CredentialStoreImpl implements CredentialStore {
 
     @Override
     public void init(
-            DomainManager domainManager,
-            Map<String, CredentialStoreConnectorConfig> credentialConnectorConfigs)
+            DomainManager domainManager)
             throws CredentialStoreException {
 
         this.domainManager = domainManager;
-
-        if (credentialConnectorConfigs.isEmpty()) {
-            throw new StoreException("At least one credential store configuration must present.");
-        }
-
-        for (Map.Entry<String, CredentialStoreConnectorConfig> credentialStoreConfig :
-                credentialConnectorConfigs.entrySet()) {
-
-            String connectorType = credentialStoreConfig.getValue().getConnectorType();
-            CredentialStoreConnectorFactory credentialStoreConnectorFactory = CarbonSecurityDataHolder.getInstance()
-                    .getCredentialStoreConnectorFactoryMap().get(connectorType);
-
-            if (credentialStoreConnectorFactory == null) {
-                throw new StoreException("No credential store connector factory found for given type.");
-            }
-
-            CredentialStoreConnector credentialStoreConnector = credentialStoreConnectorFactory.getInstance();
-            credentialStoreConnector.init(credentialStoreConfig.getValue());
-        }
 
         if (log.isDebugEnabled()) {
             log.debug("Credential store successfully initialized.");
@@ -143,7 +120,7 @@ public class CredentialStoreImpl implements CredentialStore {
             newCallbacks[newCallbacks.length - 1] = carbonCallback;
 
             for (CredentialStoreConnector credentialStoreConnector :
-                    user.getDomain().getCredentialStoreConnectorMap().values()) {
+                    user.getDomain().getSortedCredentialStoreConnectors()) {
 
                 // We need to check whether this credential store can handle this kind of callbacks.
                 if (!credentialStoreConnector.canHandle(callbacks)) {
@@ -160,7 +137,7 @@ public class CredentialStoreImpl implements CredentialStore {
                     if (log.isDebugEnabled()) {
                         log.debug(String
                                 .format("Failed to authenticate user using credential store connector %s",
-                                        credentialStoreConnector.getCredentialStoreId()), e);
+                                        credentialStoreConnector.getCredentialStoreConnectorId()), e);
                     }
                 }
             }

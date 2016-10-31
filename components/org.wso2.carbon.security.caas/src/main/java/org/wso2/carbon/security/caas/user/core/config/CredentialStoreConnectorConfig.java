@@ -8,10 +8,16 @@ import java.util.Properties;
 public class CredentialStoreConnectorConfig {
 
     private String connectorId;
+
     private String connectorType;
+
     private Properties properties;
+
     private String domainName;
+
     private String primaryAttribute;
+
+    private int priority;
 
     public String getConnectorId() {
         return connectorId;
@@ -51,5 +57,13 @@ public class CredentialStoreConnectorConfig {
 
     public void setPrimaryAttribute(String primaryAttribute) {
         this.primaryAttribute = primaryAttribute;
+    }
+
+    public int getPriority() {
+        return priority;
+    }
+
+    public void setPriority(int priority) {
+        this.priority = priority;
     }
 }

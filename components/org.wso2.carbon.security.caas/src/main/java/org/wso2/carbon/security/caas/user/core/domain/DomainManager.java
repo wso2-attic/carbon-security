@@ -22,10 +22,10 @@ import org.wso2.carbon.security.caas.user.core.store.connector.CredentialStoreCo
 import org.wso2.carbon.security.caas.user.core.store.connector.IdentityStoreConnector;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
+import java.util.SortedSet;
 import java.util.TreeMap;
-import java.util.stream.Collectors;
+import java.util.TreeSet;
 
 /**
  * Domain manager.
@@ -45,9 +45,20 @@ public class DomainManager {
     private Map<String, Domain> allDomainNameToDomainMap = new HashMap<>();
 
     /**
-     * List of domains ordered by their priority.
+     * Set of domains sorted by their priority highest to lowest.
      */
-    private List<Domain> orderedDomainList;
+    private SortedSet<Domain> sortedDomains = new TreeSet<>((d1, d2) -> {
+
+        int d1Priority = d1.getDomainPriority();
+        int d2Priority = d2.getDomainPriority();
+
+        // Allow having multiple domains with the same priority
+        if (d1Priority == d2Priority) {
+            d2Priority++;
+        }
+
+        return Integer.compare(d1Priority, d2Priority);
+    });
 
     /**
      * Get the domain from the name.
@@ -107,6 +118,8 @@ public class DomainManager {
         domainPriorityToDomainMap.get(domain.getDomainPriority()).put(domainName, domain);
         allDomainNameToDomainMap.put(domainName, domain);
 
+        sortedDomains.add(domain);
+
     }
 
     /**
@@ -131,21 +144,6 @@ public class DomainManager {
         }
 
         return identityStoreConnector;
-    }
-
-    /**
-     * Get identity store connector map.
-     *
-     * @param domainName Name of the domain which the connector instances belong
-     * @return Map of connector Id to IdentityStoreConnector
-     * @throws DomainException DomainException
-     */
-    public Map<String, IdentityStoreConnector> getIdentityStoreConnectorMapForDomain(
-            String domainName) throws DomainException {
-
-        return getDomainFromDomainName(domainName)
-                .getIdentityStoreConnectorMap();
-
     }
 
     /**
@@ -188,34 +186,13 @@ public class DomainManager {
     }
 
     /**
-     * Get credential store connector map.
-     *
-     * @param domainName Name of the domain which the connector instances belong
-     * @return Map of connector Id to CredentialStoreConnector
-     * @throws DomainException Domain exception
-     */
-    public Map<String, CredentialStoreConnector> getCredentialStoreConnectorMapForDomain(
-            String domainName) throws DomainException {
-
-        return getDomainFromDomainName(domainName)
-                .getCredentialStoreConnectorMap();
-    }
-
-    /**
      * Get all available domains.
      * Domains are returned as a list ordered by their priority highest to lowest.
      *
      * @return A list of domains ordered by their priority
      */
-    public List<Domain> getAllDomains() {
-
-        if (orderedDomainList == null) {
-            orderedDomainList = allDomainNameToDomainMap.values().stream()
-                    .sorted((f1, f2) -> Integer.compare(f2.getDomainPriority(), f1.getDomainPriority()))
-                    .collect(Collectors.toList());
-        }
-
-        return orderedDomainList;
+    public SortedSet<Domain> getSortedDomains() {
+        return sortedDomains;
     }
 
 }

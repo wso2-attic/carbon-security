@@ -16,13 +16,11 @@
 
 package org.wso2.carbon.security.caas.user.core.store;
 
-import org.wso2.carbon.security.caas.user.core.config.CredentialStoreConnectorConfig;
 import org.wso2.carbon.security.caas.user.core.context.AuthenticationContext;
 import org.wso2.carbon.security.caas.user.core.domain.DomainManager;
 import org.wso2.carbon.security.caas.user.core.exception.AuthenticationFailure;
 import org.wso2.carbon.security.caas.user.core.exception.CredentialStoreException;
 
-import java.util.Map;
 import javax.security.auth.callback.Callback;
 
 /**
@@ -37,10 +35,9 @@ public interface CredentialStore {
      *
      * @param domainManager              DomainManager instance for which is shared by the identity store
      *                                   and the credentials store.
-     * @param credentialConnectorConfigs Connector configs related to the credential store.
      * @throws CredentialStoreException Credential Store Exception.
      */
-    void init(DomainManager domainManager, Map<String, CredentialStoreConnectorConfig> credentialConnectorConfigs)
+    void init(DomainManager domainManager)
             throws CredentialStoreException;
 
     /**
