@@ -22,11 +22,7 @@ import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.wso2.carbon.security.caas.user.core.store.connector.AuthorizationStoreConnectorFactory;
-import org.wso2.carbon.security.caas.user.core.store.connector.CredentialStoreConnectorFactory;
-import org.wso2.carbon.security.caas.user.core.store.connector.IdentityStoreConnectorFactory;
 import org.wso2.carbon.security.caas.userstore.inmemory.InMemoryAuthorizationStoreConnectorFactory;
-import org.wso2.carbon.security.caas.userstore.inmemory.InMemoryCredentialStoreConnectorFactory;
-import org.wso2.carbon.security.caas.userstore.inmemory.InMemoryIdentityStoreConnectorFactory;
 
 import java.util.Dictionary;
 import java.util.Hashtable;
@@ -50,21 +46,12 @@ public class ConnectorComponent {
     @Activate
     public void registerCarbonSecurityConnectors(BundleContext bundleContext) {
 
-        Dictionary<String, String> connectorProperties = new Hashtable<>();
-
-        connectorProperties.put("connector-type", "InMemoryIdentityStore");
-        bundleContext.registerService(IdentityStoreConnectorFactory.class, new InMemoryIdentityStoreConnectorFactory(),
-                                      connectorProperties);
+        Dictionary<String, String> connectorProperties;
 
         connectorProperties = new Hashtable<>();
         connectorProperties.put("connector-type", "InMemoryAuthorizationStore");
         bundleContext.registerService(AuthorizationStoreConnectorFactory.class,
                                       new InMemoryAuthorizationStoreConnectorFactory(), connectorProperties);
-
-        connectorProperties = new Hashtable<>();
-        connectorProperties.put("connector-type", "InMemoryCredentialStore");
-        bundleContext.registerService(CredentialStoreConnectorFactory.class,
-                                      new InMemoryCredentialStoreConnectorFactory(), connectorProperties);
 
         if (log.isDebugEnabled()) {
             log.debug("InMemory user store connectors registered as services successfully.");

@@ -16,19 +16,17 @@
 
 package org.wso2.carbon.security.caas.user.core.store;
 
+import org.wso2.carbon.identity.mgt.Group;
+import org.wso2.carbon.identity.mgt.User;
 import org.wso2.carbon.security.caas.user.core.bean.Action;
-import org.wso2.carbon.security.caas.user.core.bean.Domain;
-import org.wso2.carbon.security.caas.user.core.bean.Group;
 import org.wso2.carbon.security.caas.user.core.bean.Permission;
 import org.wso2.carbon.security.caas.user.core.bean.Resource;
 import org.wso2.carbon.security.caas.user.core.bean.Role;
-import org.wso2.carbon.security.caas.user.core.bean.User;
 import org.wso2.carbon.security.caas.user.core.config.AuthorizationStoreConnectorConfig;
 import org.wso2.carbon.security.caas.user.core.exception.AuthorizationStoreException;
-import org.wso2.carbon.security.caas.user.core.exception.IdentityStoreException;
 import org.wso2.carbon.security.caas.user.core.exception.PermissionNotFoundException;
 import org.wso2.carbon.security.caas.user.core.exception.RoleNotFoundException;
-import org.wso2.carbon.security.caas.user.core.service.RealmService;
+import org.wso2.carbon.security.caas.user.core.service.AuthorizationService;
 
 import java.util.List;
 import java.util.Map;
@@ -40,34 +38,30 @@ import java.util.Map;
 public interface AuthorizationStore {
     /**
      * Initialize the authorization store.
-     * @param realmService Parent realm service.
+     * @param authorizationService Parent realm service.
      * @param authorizationConnectorConfigs Connector configs related to the authorization store.
      * @throws AuthorizationStoreException Authorization store exception.
      */
-    void init(RealmService realmService, Map<String, AuthorizationStoreConnectorConfig> authorizationConnectorConfigs)
-            throws AuthorizationStoreException;
+    void init(AuthorizationService authorizationService, Map<String,
+            AuthorizationStoreConnectorConfig> authorizationConnectorConfigs) throws AuthorizationStoreException;
 
     /**
      * Checks whether the given user do have the permission.
      * @param userId User id of the user.
      * @param permission Permission that needs to check on.
-     * @param domain Domain this user originates from.
      * @return True if the user has required permission.
      * @throws AuthorizationStoreException Authorization store exception.
-     * @throws IdentityStoreException Identity Store Exception.
      */
-    boolean isUserAuthorized(String userId, Permission permission, Domain domain)
-            throws AuthorizationStoreException, IdentityStoreException;
+    boolean isUserAuthorized(String userId, Permission permission) throws AuthorizationStoreException;
 
     /**
      * Checks whether the group is authorized.
      * @param groupId Group id.
-     * @param domain Domain this group originates from.
      * @param permission Permission.
      * @return True if authorized.
      * @throws AuthorizationStoreException Authorization store exception.
      */
-    boolean isGroupAuthorized(String groupId, Domain domain, Permission permission)
+    boolean isGroupAuthorized(String groupId, Permission permission)
             throws AuthorizationStoreException;
 
     /**
@@ -84,23 +78,21 @@ public interface AuthorizationStore {
     /**
      * Checks whether the user is in the role.
      * @param userId User id.
-     * @param domain Domain this user originates from.
      * @param roleName Role name
      * @return True if user is in the role.
      * @throws AuthorizationStoreException Authorization store exception.
      */
-    boolean isUserInRole(String userId, Domain domain, String roleName)
+    boolean isUserInRole(String userId, String roleName)
             throws AuthorizationStoreException;
 
     /**
      * Checks whether the group has the specific role.
      * @param groupId Group id.
-     * @param domain Domain this group originates from.
      * @param roleName Role name.
      * @return True if group has the role.
      * @throws AuthorizationStoreException Authorization store exception.
      */
-    boolean isGroupInRole(String groupId, Domain domain, String roleName)
+    boolean isGroupInRole(String groupId, String roleName)
             throws AuthorizationStoreException;
 
     /**
@@ -164,11 +156,10 @@ public interface AuthorizationStore {
     /**
      * Get roles assigned to the specific user.
      * @param userId User id.
-     * @param domain Domain this user originates from.
      * @return List of Roles.
      * @throws AuthorizationStoreException Authorization store exception.
      */
-    List<Role> getRolesOfUser(String userId, Domain domain) throws AuthorizationStoreException;
+    List<Role> getRolesOfUser(String userId) throws AuthorizationStoreException;
 
     /**
      * Get users assigned to the specific role.
@@ -176,10 +167,8 @@ public interface AuthorizationStore {
      * @param authorizationStoreId Authorization store id of the role.
      * @return List of users.
      * @throws AuthorizationStoreException Authorization store exception.
-     * @throws IdentityStoreException Identity Store Exception.
      */
-    List<User> getUsersOfRole(String roleId, String authorizationStoreId) throws AuthorizationStoreException,
-            IdentityStoreException;
+    List<User> getUsersOfRole(String roleId, String authorizationStoreId) throws AuthorizationStoreException;
 
     /**
      * Get the assigned groups of the specific role.
@@ -187,19 +176,16 @@ public interface AuthorizationStore {
      * @param authorizationStoreId Authorization store id of the role.
      * @return List of Groups.
      * @throws AuthorizationStoreException Authorization store exception.
-     * @throws IdentityStoreException Identity Store Exception.
      */
-    List<Group> getGroupsOfRole(String roleId, String authorizationStoreId) throws AuthorizationStoreException,
-            IdentityStoreException;
+    List<Group> getGroupsOfRole(String roleId, String authorizationStoreId) throws AuthorizationStoreException;
 
     /**
      * Get roles for specific group.
      * @param groupId Group id.
-     * @param domain Domain this group originates from.
      * @return List of Roles.
      * @throws AuthorizationStoreException Authorization store exception.
      */
-    List<Role> getRolesOfGroup(String groupId, Domain domain) throws AuthorizationStoreException;
+    List<Role> getRolesOfGroup(String groupId) throws AuthorizationStoreException;
 
     /**
      * Get permissions for specific role and resource.
@@ -236,23 +222,21 @@ public interface AuthorizationStore {
     /**
      * Get permissions of this user filtered from the given resource.
      * @param userId Id of the user.
-     * @param domain Domain this user originates from.
      * @param resource Resource to use for filter.
      * @return List of permissions.
      * @throws AuthorizationStoreException
      */
-    List<Permission> getPermissionsOfUser(String userId, Domain domain, Resource resource)
+    List<Permission> getPermissionsOfUser(String userId, Resource resource)
             throws AuthorizationStoreException;
 
     /**
      * Get permissions of this user filtered from the given action.
      * @param userId Id of the user.
-     * @param domain Domain this user originates from.
      * @param action Action to use for filter.
      * @return List of permissions.
      * @throws AuthorizationStoreException
      */
-    List<Permission> getPermissionsOfUser(String userId, Domain domain, Action action)
+    List<Permission> getPermissionsOfUser(String userId, Action action)
             throws AuthorizationStoreException;
 
     /**
@@ -287,11 +271,10 @@ public interface AuthorizationStore {
      * @param resourceNamespace Namespace of the resource.
      * @param resourceId Id of the resource.
      * @param userId Id of the owner.
-     * @param domain Domain this user originates from.
      * @return New Resource.
      * @throws AuthorizationStoreException
      */
-    Resource addResource(String resourceNamespace, String resourceId, String userId, Domain domain)
+    Resource addResource(String resourceNamespace, String resourceId, String userId)
             throws AuthorizationStoreException;
 
     /**
@@ -300,12 +283,11 @@ public interface AuthorizationStore {
      * @param resourceId Id of the resource.
      * @param authorizationStoreId Id of the authorization store.
      * @param userId Id of the owner.
-     * @param domain Domain this user originates from.
      * @return New Resource.
      * @throws AuthorizationStoreException
      */
-    Resource addResource(String resourceNamespace, String resourceId, String authorizationStoreId, String userId,
-                         Domain domain) throws AuthorizationStoreException;
+    Resource addResource(String resourceNamespace, String resourceId, String authorizationStoreId, String userId)
+            throws AuthorizationStoreException;
 
     void deleteResource(Resource resource) throws AuthorizationStoreException;
 
@@ -363,23 +345,21 @@ public interface AuthorizationStore {
      * Sending a null or empty list will remove all of the roles associated with the specified user in all available
      * authorization stores.
      * @param userId Id of the user.
-     * @param domain Domain this user originates from.
      * @param newRoleList List of Roles needs to be assigned to this User.
      * @throws AuthorizationStoreException Authorization store exception.
      */
-    void updateRolesInUser(String userId, Domain domain, List<Role> newRoleList)
+    void updateRolesInUser(String userId, List<Role> newRoleList)
             throws AuthorizationStoreException;
 
     /**
      * Assign a new list of Roles to existing list and/or un-assign Roles from existing list. (PATCH)
      * @param userId Id of the user.
-     * @param domain Domain this user originates from.
      * @param rolesToBeAssign List to be added to the new list.
      * @param rolesToBeUnassign List to be removed from the existing list.
      * @throws AuthorizationStoreException Authorization store exception.
      */
-    void updateRolesInUser(String userId, Domain domain, List<Role> rolesToBeAssign,
-                           List<Role> rolesToBeUnassign) throws AuthorizationStoreException;
+    void updateRolesInUser(String userId, List<Role> rolesToBeAssign, List<Role> rolesToBeUnassign)
+            throws AuthorizationStoreException;
 
     /**
      * Add a new User list by <b>replacing</b> the existing User list. (PUT)
@@ -409,23 +389,20 @@ public interface AuthorizationStore {
      * Sending a null or empty list will remove all of the roles associated with the specified group in all available
      * authorization stores.
      * @param groupId Id of the group.
-     * @param domain Domain this group originates from.
      * @param newRoleList New Roles list that needs to be replace existing list.
      * @throws AuthorizationStoreException Authorization store exception.
      */
-    void updateRolesInGroup(String groupId, Domain domain, List<Role> newRoleList)
-            throws AuthorizationStoreException;
+    void updateRolesInGroup(String groupId, List<Role> newRoleList) throws AuthorizationStoreException;
 
     /**
      * Assign a new list of Roles to existing list and/or un-assign Roles from existing list. (PATCH)
      * @param groupId Id of the group.
-     * @param domain Domain this group belongs to.
      * @param rolesToBeAssign List to be added to the new list.
      * @param rolesToBeUnassigned List to be removed from the existing list.
      * @throws AuthorizationStoreException Authorization store exception.
      */
-    void updateRolesInGroup(String groupId, Domain domain, List<Role> rolesToBeAssign,
-                            List<Role> rolesToBeUnassigned) throws AuthorizationStoreException;
+    void updateRolesInGroup(String groupId, List<Role> rolesToBeAssign, List<Role> rolesToBeUnassigned)
+            throws AuthorizationStoreException;
 
     /**
      * Add a new Group list by <b>replacing</b> the existing Group list. (PUT)

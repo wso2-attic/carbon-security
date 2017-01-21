@@ -16,7 +16,7 @@
 
 package org.wso2.carbon.security.caas.user.core.bean;
 
-import org.wso2.carbon.security.caas.user.core.exception.StoreException;
+import org.wso2.carbon.identity.mgt.exception.StoreException;
 
 /**
  * Permission bean.

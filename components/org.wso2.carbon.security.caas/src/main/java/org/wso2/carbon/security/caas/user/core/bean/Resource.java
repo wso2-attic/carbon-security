@@ -16,7 +16,9 @@
 
 package org.wso2.carbon.security.caas.user.core.bean;
 
-import org.wso2.carbon.security.caas.user.core.exception.StoreException;
+import org.wso2.carbon.identity.mgt.User;
+import org.wso2.carbon.identity.mgt.exception.StoreException;
+import org.wso2.carbon.identity.mgt.impl.Domain;
 
 /**
  * Represents a resource.
@@ -94,7 +96,7 @@ public class Resource {
     public User.UserBuilder getOwner() {
         return new User.UserBuilder()
                 .setUserId(userId)
-                .setDomain(domain);
+                .setDomainName(domain.getName());
     }
 
     /**

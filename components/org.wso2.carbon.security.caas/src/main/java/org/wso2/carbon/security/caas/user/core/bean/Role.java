@@ -16,9 +16,11 @@
 
 package org.wso2.carbon.security.caas.user.core.bean;
 
+import org.wso2.carbon.identity.mgt.Group;
+import org.wso2.carbon.identity.mgt.User;
+import org.wso2.carbon.identity.mgt.exception.IdentityStoreException;
+import org.wso2.carbon.identity.mgt.exception.StoreException;
 import org.wso2.carbon.security.caas.user.core.exception.AuthorizationStoreException;
-import org.wso2.carbon.security.caas.user.core.exception.IdentityStoreException;
-import org.wso2.carbon.security.caas.user.core.exception.StoreException;
 import org.wso2.carbon.security.caas.user.core.store.AuthorizationStore;
 
 import java.util.List;
@@ -70,9 +72,8 @@ public class Role  {
      * Get the users assigned to this role.
      * @return List of users assigned to this role.
      * @throws AuthorizationStoreException Authorization store exception.
-     * @throws IdentityStoreException Identity store exception.
      */
-    public List<User> getUsers() throws AuthorizationStoreException, IdentityStoreException {
+    public List<User> getUsers() throws AuthorizationStoreException {
         return authorizationStore.getUsersOfRole(roleId, authorizationStoreId);
     }
 
@@ -126,23 +127,21 @@ public class Role  {
     /**
      * Checks whether the User is in this Role.
      * @param userId Id of the User to be checked.
-     * @param domain Domain this user belongs to.
      * @return True if User exists.
      * @throws AuthorizationStoreException Authorization store exception.
      */
-    public boolean hasUser(String userId, Domain domain) throws AuthorizationStoreException {
-        return authorizationStore.isUserInRole(userId, domain, roleName);
+    public boolean hasUser(String userId) throws AuthorizationStoreException {
+        return authorizationStore.isUserInRole(userId, roleName);
     }
 
     /**
      * Checks whether the Group is in this Role.
      * @param groupId Id of the Group to be checked.
-     * @param domain Domain this group belongs to.
      * @return True if the Group exists.
      * @throws AuthorizationStoreException Authorization store exception.
      */
-    public boolean hasGroup(String groupId, Domain domain) throws AuthorizationStoreException {
-        return authorizationStore.isGroupInRole(groupId, domain, roleName);
+    public boolean hasGroup(String groupId) throws AuthorizationStoreException {
+        return authorizationStore.isGroupInRole(groupId, roleName);
     }
 
     /**

@@ -18,11 +18,10 @@ package org.wso2.carbon.security.caas.internal;
 
 import org.osgi.framework.BundleContext;
 import org.wso2.carbon.caching.CarbonCachingService;
+import org.wso2.carbon.identity.mgt.RealmService;
 import org.wso2.carbon.security.caas.internal.config.ClaimConfig;
-import org.wso2.carbon.security.caas.user.core.common.CarbonRealmServiceImpl;
+import org.wso2.carbon.security.caas.user.core.common.CarbonAuthorizationServiceImpl;
 import org.wso2.carbon.security.caas.user.core.store.connector.AuthorizationStoreConnectorFactory;
-import org.wso2.carbon.security.caas.user.core.store.connector.CredentialStoreConnectorFactory;
-import org.wso2.carbon.security.caas.user.core.store.connector.IdentityStoreConnectorFactory;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -34,13 +33,12 @@ import java.util.Map;
 public class CarbonSecurityDataHolder {
 
     private static CarbonSecurityDataHolder instance = new CarbonSecurityDataHolder();
-    private CarbonRealmServiceImpl carbonRealmService;
+    private CarbonAuthorizationServiceImpl carbonRealmService;
     private Map<String, AuthorizationStoreConnectorFactory> authorizationStoreConnectorFactoryMap = new HashMap<>();
-    private Map<String, CredentialStoreConnectorFactory> credentialStoreConnectorFactoryMap = new HashMap<>();
-    private Map<String, IdentityStoreConnectorFactory> identityStoreConnectorFactoryMap = new HashMap<>();
     private CarbonCachingService carbonCachingService;
     private ClaimConfig claimConfig;
     private BundleContext bundleContext = null;
+    private RealmService realmService;
 
     private CarbonSecurityDataHolder() {
     }
@@ -53,11 +51,11 @@ public class CarbonSecurityDataHolder {
         return instance;
     }
 
-    void registerCarbonRealmService(CarbonRealmServiceImpl carbonRealmService) {
+    void registerCarbonRealmService(CarbonAuthorizationServiceImpl carbonRealmService) {
         this.carbonRealmService = carbonRealmService;
     }
 
-    public CarbonRealmServiceImpl getCarbonRealmService() {
+    public CarbonAuthorizationServiceImpl getCarbonRealmService() {
 
         if (this.carbonRealmService == null) {
             throw new IllegalStateException("Carbon Realm Service is null.");
@@ -75,36 +73,8 @@ public class CarbonSecurityDataHolder {
         authorizationStoreConnectorFactoryMap.put(key, authorizationStoreConnectorFactory);
     }
 
-    /**
-     * Register credential store connector factory.
-     * @param key Id of the factory.
-     * @param credentialStoreConnectorFactory CredentialStoreConnectorFactory.
-     */
-    void registerCredentialStoreConnectorFactory(String key,
-                                                 CredentialStoreConnectorFactory credentialStoreConnectorFactory) {
-        credentialStoreConnectorFactoryMap.put(key, credentialStoreConnectorFactory);
-    }
-
-    /**
-     * Register identity store connector factory.
-     * @param key Id of the factory.
-     * @param identityStoreConnectorFactory IdentityStoreConnectorFactory.
-     */
-    void registerIdentityStoreConnectorFactory(String key,
-                                               IdentityStoreConnectorFactory identityStoreConnectorFactory) {
-        identityStoreConnectorFactoryMap.put(key, identityStoreConnectorFactory);
-    }
-
     public Map<String, AuthorizationStoreConnectorFactory> getAuthorizationStoreConnectorFactoryMap() {
         return authorizationStoreConnectorFactoryMap;
-    }
-
-    public Map<String, CredentialStoreConnectorFactory> getCredentialStoreConnectorFactoryMap() {
-        return credentialStoreConnectorFactoryMap;
-    }
-
-    public Map<String, IdentityStoreConnectorFactory> getIdentityStoreConnectorFactoryMap() {
-        return identityStoreConnectorFactoryMap;
     }
 
     void registerCacheService(CarbonCachingService carbonCachingService)  {
@@ -133,5 +103,13 @@ public class CarbonSecurityDataHolder {
 
     void setClaimConfig(ClaimConfig claimConfig) {
         this.claimConfig = claimConfig;
+    }
+
+    public void setRealmService(RealmService realmService) {
+        this.realmService = realmService;
+    }
+
+    public RealmService getRealmService() {
+        return realmService;
     }
 }

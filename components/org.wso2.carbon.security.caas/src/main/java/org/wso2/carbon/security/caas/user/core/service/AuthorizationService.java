@@ -14,22 +14,19 @@
  * limitations under the License.
  */
 
-package org.wso2.carbon.security.caas.user.core.exception;
+package org.wso2.carbon.security.caas.user.core.service;
+
+import org.wso2.carbon.security.caas.user.core.store.AuthorizationStore;
 
 /**
- * Claim Manager Exception.
+ * User realm service.
  */
-public class ClaimManagerException extends Exception {
+public interface AuthorizationService {
 
-    public ClaimManagerException() {
-        super();
-    }
+    /**
+     * Get the Virtual authorization store.
+     * @return AuthorizationStoreConnector
+     */
+    AuthorizationStore getAuthorizationStore();
 
-    public ClaimManagerException(String message) {
-        super(message);
-    }
-
-    public ClaimManagerException(String messgae, Throwable cause) {
-        super(messgae, cause);
-    }
 }
