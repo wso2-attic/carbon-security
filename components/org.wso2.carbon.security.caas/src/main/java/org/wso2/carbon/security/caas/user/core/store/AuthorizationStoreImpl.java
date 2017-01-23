@@ -18,23 +18,23 @@ package org.wso2.carbon.security.caas.user.core.store;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.wso2.carbon.identity.mgt.Group;
+import org.wso2.carbon.identity.mgt.RealmService;
+import org.wso2.carbon.identity.mgt.User;
+import org.wso2.carbon.identity.mgt.exception.IdentityStoreException;
+import org.wso2.carbon.identity.mgt.exception.UserNotFoundException;
 import org.wso2.carbon.kernel.utils.LambdaExceptionUtils;
 import org.wso2.carbon.security.caas.internal.CarbonSecurityDataHolder;
 import org.wso2.carbon.security.caas.user.core.bean.Action;
-import org.wso2.carbon.security.caas.user.core.bean.Domain;
-import org.wso2.carbon.security.caas.user.core.bean.Group;
 import org.wso2.carbon.security.caas.user.core.bean.Permission;
 import org.wso2.carbon.security.caas.user.core.bean.Resource;
 import org.wso2.carbon.security.caas.user.core.bean.Role;
-import org.wso2.carbon.security.caas.user.core.bean.User;
 import org.wso2.carbon.security.caas.user.core.config.AuthorizationStoreConnectorConfig;
 import org.wso2.carbon.security.caas.user.core.constant.UserCoreConstants;
 import org.wso2.carbon.security.caas.user.core.exception.AuthorizationStoreException;
-import org.wso2.carbon.security.caas.user.core.exception.IdentityStoreException;
 import org.wso2.carbon.security.caas.user.core.exception.PermissionNotFoundException;
 import org.wso2.carbon.security.caas.user.core.exception.RoleNotFoundException;
-import org.wso2.carbon.security.caas.user.core.exception.StoreException;
-import org.wso2.carbon.security.caas.user.core.service.RealmService;
+import org.wso2.carbon.security.caas.user.core.service.AuthorizationService;
 import org.wso2.carbon.security.caas.user.core.store.connector.AuthorizationStoreConnector;
 import org.wso2.carbon.security.caas.user.core.store.connector.AuthorizationStoreConnectorFactory;
 
@@ -55,17 +55,19 @@ public class AuthorizationStoreImpl implements AuthorizationStore {
 
     private static final Logger log = LoggerFactory.getLogger(AuthorizationStoreImpl.class);
 
-    private RealmService realmService;
+    private AuthorizationService authorizationService;
     private Map<String, AuthorizationStoreConnector> authorizationStoreConnectors = new HashMap<>();
+    private RealmService realmService;
 
     @Override
-    public void init(RealmService realmService, Map<String, AuthorizationStoreConnectorConfig>
+    public void init(AuthorizationService authorizationService, Map<String, AuthorizationStoreConnectorConfig>
             authorizationConnectorConfigs) throws AuthorizationStoreException {
 
-        this.realmService = realmService;
+        this.authorizationService = authorizationService;
+        realmService = CarbonSecurityDataHolder.getInstance().getRealmService();
 
         if (authorizationConnectorConfigs.isEmpty()) {
-            throw new StoreException("At least one authorization store configuration must present.");
+            throw new AuthorizationStoreException("At least one authorization store configuration must present.");
         }
 
         for (Map.Entry<String, AuthorizationStoreConnectorConfig> authorizationStoreConfig :
@@ -76,7 +78,7 @@ public class AuthorizationStoreImpl implements AuthorizationStore {
                     .getInstance().getAuthorizationStoreConnectorFactoryMap().get(connectorType);
 
             if (authorizationStoreConnectorFactory == null) {
-                throw new StoreException("No credential store connector factory found for given type.");
+                throw new AuthorizationStoreException("No credential store connector factory found for given type.");
             }
 
             AuthorizationStoreConnector authorizationStoreConnector = authorizationStoreConnectorFactory.getInstance();
@@ -91,8 +93,7 @@ public class AuthorizationStoreImpl implements AuthorizationStore {
     }
 
     @Override
-    public boolean isUserAuthorized(String userId, Permission permission, Domain domain)
-            throws AuthorizationStoreException, IdentityStoreException {
+    public boolean isUserAuthorized(String userId, Permission permission) throws AuthorizationStoreException {
 
         // If this user owns this resource, we assume this user has all permissions.
         if (permission.getResource().getOwner().getUserId().equals(userId)) {
@@ -102,22 +103,29 @@ public class AuthorizationStoreImpl implements AuthorizationStore {
         // Get the roles directly associated to the user.
         List<Role> roles = new ArrayList<>();
         for (AuthorizationStoreConnector authorizationStoreConnector : authorizationStoreConnectors.values()) {
-            roles.addAll(authorizationStoreConnector.getRolesForUser(userId, domain.getDomainId())
+            roles.addAll(authorizationStoreConnector.getRolesForUser(userId)
                     .stream()
                     .map(roleBuilder -> roleBuilder
-                            .setAuthorizationStore(realmService.getAuthorizationStore())
+                            .setAuthorizationStore(authorizationService.getAuthorizationStore())
                             .build())
                     .collect(Collectors.toList()));
         }
 
         // Get the roles associated through groups.
-        List<Group> groups = realmService.getIdentityStore().getGroupsOfUser(userId, domain);
+        List<Group> groups = null;
+        try {
+            groups = realmService.getIdentityStore().getGroupsOfUser(userId);
+        } catch (IdentityStoreException e) {
+            throw new AuthorizationStoreException(String.format("Error while receiving groups for user %s.", userId));
+        } catch (UserNotFoundException e) {
+            throw new AuthorizationStoreException(String.format("User with userid %s not found", userId));
+        }
         for (Group group : groups) {
-            roles.addAll(getRolesOfGroup(group.getGroupId(), domain));
+            roles.addAll(getRolesOfGroup(group.getUniqueGroupId()));
         }
 
         if (roles.isEmpty()) {
-            throw new StoreException("No roles assigned for this user");
+            throw new AuthorizationStoreException("No roles assigned for this user");
         }
 
         for (Role role : roles) {
@@ -130,10 +138,9 @@ public class AuthorizationStoreImpl implements AuthorizationStore {
     }
 
     @Override
-    public boolean isGroupAuthorized(String groupId, Domain domain, Permission permission)
-            throws AuthorizationStoreException {
+    public boolean isGroupAuthorized(String groupId, Permission permission) throws AuthorizationStoreException {
 
-        List<Role> roles = getRolesOfGroup(groupId, domain);
+        List<Role> roles = getRolesOfGroup(groupId);
 
         for (Role role : roles) {
             if (isRoleAuthorized(role.getRoleId(), role.getAuthorizationStoreId(), permission)) {
@@ -152,7 +159,7 @@ public class AuthorizationStoreImpl implements AuthorizationStore {
                 .get(authorizationStoreId);
 
         if (authorizationStoreConnector == null) {
-            throw new StoreException(String.format("No authorization store found for the given id: %s.",
+            throw new AuthorizationStoreException(String.format("No authorization store found for the given id: %s.",
                     authorizationStoreId));
         }
 
@@ -160,7 +167,7 @@ public class AuthorizationStoreImpl implements AuthorizationStore {
                 .getPermissionsForRole(roleId, permission.getResource());
 
         if (permissionBuilders.isEmpty()) {
-            throw new StoreException("No permissions assigned for this role.");
+            throw new AuthorizationStoreException("No permissions assigned for this role.");
         }
 
         for (Permission.PermissionBuilder permissionBuilder : permissionBuilders) {
@@ -173,11 +180,11 @@ public class AuthorizationStoreImpl implements AuthorizationStore {
     }
 
     @Override
-    public boolean isUserInRole(String userId, Domain domain, String roleName)
+    public boolean isUserInRole(String userId, String roleName)
             throws AuthorizationStoreException {
 
         for (AuthorizationStoreConnector authorizationStoreConnector : authorizationStoreConnectors.values()) {
-            if (authorizationStoreConnector.isUserInRole(userId, domain.getDomainId(), roleName)) {
+            if (authorizationStoreConnector.isUserInRole(userId, roleName)) {
                 return true;
             }
         }
@@ -186,11 +193,11 @@ public class AuthorizationStoreImpl implements AuthorizationStore {
     }
 
     @Override
-    public boolean isGroupInRole(String groupId, Domain domain, String roleName)
+    public boolean isGroupInRole(String groupId, String roleName)
             throws AuthorizationStoreException {
 
         for (AuthorizationStoreConnector authorizationStoreConnector : authorizationStoreConnectors.values()) {
-            if (authorizationStoreConnector.isGroupInRole(groupId, domain.getDomainId(), roleName)) {
+            if (authorizationStoreConnector.isGroupInRole(groupId, roleName)) {
                 return true;
             }
         }
@@ -206,7 +213,7 @@ public class AuthorizationStoreImpl implements AuthorizationStore {
         for (AuthorizationStoreConnector authorizationStoreConnector : authorizationStoreConnectors.values()) {
             try {
                 return authorizationStoreConnector.getRole(roleName)
-                        .setAuthorizationStore(realmService.getAuthorizationStore())
+                        .setAuthorizationStore(authorizationService.getAuthorizationStore())
                         .build();
             } catch (RoleNotFoundException e) {
                 roleNotFoundException.addSuppressed(e);
@@ -256,7 +263,7 @@ public class AuthorizationStoreImpl implements AuthorizationStore {
                 roles.addAll(authorizationStoreConnector.listRoles(filterPattern, offset, length)
                         .stream()
                         .map(roleBuilder -> roleBuilder.setAuthorizationStore(
-                                realmService.getAuthorizationStore()).build())
+                                authorizationService.getAuthorizationStore()).build())
                         .collect(Collectors.toList()));
                 length -= roles.size();
                 offset = 0;
@@ -346,13 +353,14 @@ public class AuthorizationStoreImpl implements AuthorizationStore {
     }
 
     @Override
-    public List<Role> getRolesOfUser(String userId, Domain domain) throws AuthorizationStoreException {
+    public List<Role> getRolesOfUser(String userId) throws AuthorizationStoreException {
 
         List<Role> roles = new ArrayList<>();
         for (AuthorizationStoreConnector authorizationStoreConnector : authorizationStoreConnectors.values()) {
-            roles.addAll(authorizationStoreConnector.getRolesForUser(userId, domain.getDomainId())
+            roles.addAll(authorizationStoreConnector.getRolesForUser(userId)
                     .stream()
-                    .map(roleBuilder -> roleBuilder.setAuthorizationStore(realmService.getAuthorizationStore()).build())
+                    .map(roleBuilder -> roleBuilder.setAuthorizationStore(
+                            authorizationService.getAuthorizationStore()).build())
                     .collect(Collectors.toList()));
         }
 
@@ -360,14 +368,13 @@ public class AuthorizationStoreImpl implements AuthorizationStore {
     }
 
     @Override
-    public List<User> getUsersOfRole(String roleId, String authorizationStoreId) throws AuthorizationStoreException,
-            IdentityStoreException {
+    public List<User> getUsersOfRole(String roleId, String authorizationStoreId) throws AuthorizationStoreException {
 
         AuthorizationStoreConnector authorizationStoreConnector = authorizationStoreConnectors
                 .get(authorizationStoreId);
 
         if (authorizationStoreConnector == null) {
-            throw new StoreException(String.format("No authorization store found for the given id: %s.",
+            throw new AuthorizationStoreException(String.format("No authorization store found for the given id: %s.",
                     authorizationStoreId));
         }
 
@@ -375,21 +382,20 @@ public class AuthorizationStoreImpl implements AuthorizationStore {
                 .stream()
                 .map(LambdaExceptionUtils.rethrowFunction(userBuilder -> userBuilder
                                 .setIdentityStore(realmService.getIdentityStore())
-                                .setAuthorizationStore(realmService.getAuthorizationStore())
-                                .setClaimManager(realmService.getClaimManager())
+                                .setAuthorizationStore(authorizationService.getAuthorizationStore())
                                 .build()))
                 .collect(Collectors.toList());
     }
 
     @Override
-    public List<Group> getGroupsOfRole(String roleId, String authorizationStoreId) throws AuthorizationStoreException,
-            IdentityStoreException {
+    public List<Group> getGroupsOfRole(String roleId, String authorizationStoreId)
+            throws AuthorizationStoreException {
 
         AuthorizationStoreConnector authorizationStoreConnector = authorizationStoreConnectors
                 .get(authorizationStoreId);
 
         if (authorizationStoreConnector == null) {
-            throw new StoreException(String.format("No authorization store found for the given id: %s.",
+            throw new AuthorizationStoreException(String.format("No authorization store found for the given id: %s.",
                     authorizationStoreId));
         }
 
@@ -397,21 +403,21 @@ public class AuthorizationStoreImpl implements AuthorizationStore {
                 .stream()
                 .map(LambdaExceptionUtils.rethrowFunction(groupBuilder -> groupBuilder
                         .setIdentityStore(realmService.getIdentityStore())
-                        .setAuthorizationStore(realmService.getAuthorizationStore())
+                        .setAuthorizationStore(authorizationService.getAuthorizationStore())
                         .build()))
                 .collect(Collectors.toList());
     }
 
     @Override
-    public List<Role> getRolesOfGroup(String groupId, Domain domain) throws AuthorizationStoreException {
+    public List<Role> getRolesOfGroup(String groupId) throws AuthorizationStoreException {
 
         List<Role> roles = new ArrayList<>();
 
         for (AuthorizationStoreConnector authorizationStoreConnector : authorizationStoreConnectors.values()) {
-            roles.addAll(authorizationStoreConnector.getRolesForGroup(groupId, domain.getDomainId())
+            roles.addAll(authorizationStoreConnector.getRolesForGroup(groupId)
                     .stream()
                     .map(roleBuilder -> roleBuilder
-                            .setAuthorizationStore(realmService.getAuthorizationStore())
+                            .setAuthorizationStore(authorizationService.getAuthorizationStore())
                             .build())
                     .collect(Collectors.toList()));
         }
@@ -427,7 +433,7 @@ public class AuthorizationStoreImpl implements AuthorizationStore {
                 .get(authorizationStoreId);
 
         if (authorizationStoreConnector == null) {
-            throw new StoreException(String.format("No authorization store found for the given id: %s.",
+            throw new AuthorizationStoreException(String.format("No authorization store found for the given id: %s.",
                     authorizationStoreId));
         }
 
@@ -445,7 +451,7 @@ public class AuthorizationStoreImpl implements AuthorizationStore {
                 .get(authorizationStoreId);
 
         if (authorizationStoreConnector == null) {
-            throw new StoreException(String.format("No authorization store found for the given id: %s.",
+            throw new AuthorizationStoreException(String.format("No authorization store found for the given id: %s.",
                     authorizationStoreId));
         }
 
@@ -463,10 +469,10 @@ public class AuthorizationStoreImpl implements AuthorizationStore {
     }
 
     @Override
-    public List<Permission> getPermissionsOfUser(String userId, Domain domain, Resource resource)
+    public List<Permission> getPermissionsOfUser(String userId, Resource resource)
             throws AuthorizationStoreException {
 
-        return getRolesOfUser(userId, domain)
+        return getRolesOfUser(userId)
                 .stream()
                 .map(LambdaExceptionUtils.rethrowFunction(role ->
                         getPermissionsOfRole(role.getRoleId(), role.getAuthorizationStoreId(), resource)))
@@ -475,10 +481,10 @@ public class AuthorizationStoreImpl implements AuthorizationStore {
     }
 
     @Override
-    public List<Permission> getPermissionsOfUser(String userId, Domain domain, Action action)
+    public List<Permission> getPermissionsOfUser(String userId, Action action)
             throws AuthorizationStoreException {
 
-        return getRolesOfUser(userId, domain)
+        return getRolesOfUser(userId)
                 .stream()
                 .map(LambdaExceptionUtils.rethrowFunction(role ->
                         getPermissionsOfRole(role.getRoleId(), role.getAuthorizationStoreId(), action)))
@@ -501,7 +507,7 @@ public class AuthorizationStoreImpl implements AuthorizationStore {
                 .get(authorizationStoreId);
 
         if (authorizationStoreConnector == null) {
-            throw new StoreException(String.format("No authorization store found for the given id: %s.",
+            throw new AuthorizationStoreException(String.format("No authorization store found for the given id: %s.",
                     authorizationStoreId));
         }
 
@@ -511,7 +517,7 @@ public class AuthorizationStoreImpl implements AuthorizationStore {
             throw new AuthorizationStoreException("Role builder is null.");
         }
 
-        return roleBuilder.setAuthorizationStore(realmService.getAuthorizationStore()).build();
+        return roleBuilder.setAuthorizationStore(authorizationService.getAuthorizationStore()).build();
     }
 
     @Override
@@ -521,7 +527,7 @@ public class AuthorizationStoreImpl implements AuthorizationStore {
                 .getAuthorizationStoreId());
 
         if (authorizationStoreConnector == null) {
-            throw new StoreException(String.format("No authorization store found for the given id: %s.",
+            throw new AuthorizationStoreException(String.format("No authorization store found for the given id: %s.",
                     role.getAuthorizationStoreId()));
         }
 
@@ -529,26 +535,26 @@ public class AuthorizationStoreImpl implements AuthorizationStore {
     }
 
     @Override
-    public Resource addResource(String resourceNamespace, String resourceId, String userId, Domain domain)
+    public Resource addResource(String resourceNamespace, String resourceId, String userId)
             throws AuthorizationStoreException {
 
         String authorizationStoreId = getPrimaryAuthorizationStoreId();
-        return addResource(resourceNamespace, resourceId, authorizationStoreId, userId, domain);
+        return addResource(resourceNamespace, resourceId, authorizationStoreId, userId);
     }
 
     @Override
-    public Resource addResource(String resourceNamespace, String resourceId, String authorizationStoreId, String userId,
-                                Domain domain) throws AuthorizationStoreException {
+    public Resource addResource(String resourceNamespace, String resourceId, String authorizationStoreId,
+                                String userId) throws AuthorizationStoreException {
 
         AuthorizationStoreConnector authorizationStoreConnector = authorizationStoreConnectors
                 .get(authorizationStoreId);
 
         if (authorizationStoreConnector == null) {
-            throw new StoreException(String.format("No authorization store found for the given id: %s.",
+            throw new AuthorizationStoreException(String.format("No authorization store found for the given id: %s.",
                     authorizationStoreId));
         }
 
-        return authorizationStoreConnector.addResource(resourceNamespace, resourceId, userId, domain.getDomainId());
+        return authorizationStoreConnector.addResource(resourceNamespace, resourceId, userId);
     }
 
     @Override
@@ -558,7 +564,7 @@ public class AuthorizationStoreImpl implements AuthorizationStore {
                 .get(resource.getAuthorizationStore());
 
         if (authorizationStoreConnector == null) {
-            throw new StoreException(String.format("No authorization store found for the given id: %s.",
+            throw new AuthorizationStoreException(String.format("No authorization store found for the given id: %s.",
                     resource.getAuthorizationStore()));
         }
 
@@ -580,7 +586,7 @@ public class AuthorizationStoreImpl implements AuthorizationStore {
                 .get(authorizationStoreId);
 
         if (authorizationStoreConnector == null) {
-            throw new StoreException(String.format("No authorization store found for the given id: %s.",
+            throw new AuthorizationStoreException(String.format("No authorization store found for the given id: %s.",
                     authorizationStoreId));
         }
 
@@ -594,7 +600,7 @@ public class AuthorizationStoreImpl implements AuthorizationStore {
                 .get(action.getAuthorizationStore());
 
         if (authorizationStoreConnector == null) {
-            throw new StoreException(String.format("No authorization store found for the given id: %s.",
+            throw new AuthorizationStoreException(String.format("No authorization store found for the given id: %s.",
                     action.getAuthorizationStore()));
         }
 
@@ -616,7 +622,7 @@ public class AuthorizationStoreImpl implements AuthorizationStore {
                 .get(authorizationStoreId);
 
         if (authorizationStoreConnector == null) {
-            throw new StoreException(String.format("No authorization store found for the given id: %s.",
+            throw new AuthorizationStoreException(String.format("No authorization store found for the given id: %s.",
                     authorizationStoreId));
         }
 
@@ -630,7 +636,7 @@ public class AuthorizationStoreImpl implements AuthorizationStore {
                 .get(permission.getAuthorizationStoreId());
 
         if (authorizationStoreConnector == null) {
-            throw new StoreException(String.format("No authorization store found for the given id: %s.",
+            throw new AuthorizationStoreException(String.format("No authorization store found for the given id: %s.",
                     permission.getAuthorizationStoreId()));
         }
 
@@ -638,12 +644,12 @@ public class AuthorizationStoreImpl implements AuthorizationStore {
     }
 
     @Override
-    public void updateRolesInUser(String userId, Domain domain, List<Role> newRoleList)
+    public void updateRolesInUser(String userId, List<Role> newRoleList)
             throws AuthorizationStoreException {
 
         if (newRoleList == null || newRoleList.isEmpty()) {
             for (AuthorizationStoreConnector authorizationStoreConnector : authorizationStoreConnectors.values()) {
-                authorizationStoreConnector.updateRolesInUser(userId, domain.getDomainId(), newRoleList);
+                authorizationStoreConnector.updateRolesInUser(userId, newRoleList);
             }
             return;
         }
@@ -654,15 +660,15 @@ public class AuthorizationStoreImpl implements AuthorizationStore {
             AuthorizationStoreConnector authorizationStoreConnector = authorizationStoreConnectors
                     .get(roleEntry.getKey());
             if (authorizationStoreConnector == null) {
-                throw new StoreException(String.format("No authorization store found for the given id: %s.",
-                        roleEntry.getKey()));
+                throw new AuthorizationStoreException(
+                        String.format("No authorization store found for the given id: %s.", roleEntry.getKey()));
             }
-            authorizationStoreConnector.updateRolesInUser(userId, domain.getDomainId(), roleEntry.getValue());
+            authorizationStoreConnector.updateRolesInUser(userId, roleEntry.getValue());
         }
     }
 
     @Override
-    public void updateRolesInUser(String userId, Domain domain, List<Role> rolesToBeAssign,
+    public void updateRolesInUser(String userId, List<Role> rolesToBeAssign,
                                   List<Role> rolesToBeUnassign) throws AuthorizationStoreException {
 
         Map<String, List<Role>> rolesToBeAssignWithStoreId = this.getRolesWithAuthorizationStore(rolesToBeAssign);
@@ -677,10 +683,11 @@ public class AuthorizationStoreImpl implements AuthorizationStore {
             AuthorizationStoreConnector authorizationStoreConnector = authorizationStoreConnectors.get(key);
 
             if (authorizationStoreConnector == null) {
-                throw new StoreException(String.format("No authorization store found for the given id: %s.", key));
+                throw new AuthorizationStoreException(
+                        String.format("No authorization store found for the given id: %s.", key));
             }
 
-            authorizationStoreConnector.updateRolesInUser(userId, domain.getDomainId(),
+            authorizationStoreConnector.updateRolesInUser(userId,
                     rolesToBeAssignWithStoreId.get(key), rolesToBeUnAssignWithStoreId.get(key));
         }
     }
@@ -693,7 +700,7 @@ public class AuthorizationStoreImpl implements AuthorizationStore {
                 .get(authorizationStoreId);
 
         if (authorizationStoreConnector == null) {
-            throw new StoreException(String.format("No authorization store found for the given id: %s.",
+            throw new AuthorizationStoreException(String.format("No authorization store found for the given id: %s.",
                     authorizationStoreId));
         }
 
@@ -708,7 +715,7 @@ public class AuthorizationStoreImpl implements AuthorizationStore {
                 .get(authorizationStoreId);
 
         if (authorizationStoreConnector == null) {
-            throw new StoreException(String.format("No authorization store found for the given id: %s.",
+            throw new AuthorizationStoreException(String.format("No authorization store found for the given id: %s.",
                     authorizationStoreId));
         }
 
@@ -716,12 +723,12 @@ public class AuthorizationStoreImpl implements AuthorizationStore {
     }
 
     @Override
-    public void updateRolesInGroup(String groupId, Domain domain, List<Role> newRoleList)
+    public void updateRolesInGroup(String groupId, List<Role> newRoleList)
             throws AuthorizationStoreException {
 
         if (newRoleList == null || newRoleList.isEmpty()) {
             for (AuthorizationStoreConnector authorizationStoreConnector : authorizationStoreConnectors.values()) {
-                authorizationStoreConnector.updateRolesInGroup(groupId, domain.getDomainId(), newRoleList);
+                authorizationStoreConnector.updateRolesInGroup(groupId, newRoleList);
             }
             return;
         }
@@ -732,15 +739,15 @@ public class AuthorizationStoreImpl implements AuthorizationStore {
             AuthorizationStoreConnector authorizationStoreConnector = authorizationStoreConnectors
                     .get(roleEntry.getKey());
             if (authorizationStoreConnector == null) {
-                throw new StoreException(String.format("No authorization store found for the given id: %s.",
-                        roleEntry.getKey()));
+                throw new AuthorizationStoreException(
+                        String.format("No authorization store found for the given id: %s.", roleEntry.getKey()));
             }
-            authorizationStoreConnector.updateRolesInGroup(groupId, domain.getDomainId(), roleEntry.getValue());
+            authorizationStoreConnector.updateRolesInGroup(groupId, roleEntry.getValue());
         }
     }
 
     @Override
-    public void updateRolesInGroup(String groupId, Domain domain, List<Role> rolesToBeAssign,
+    public void updateRolesInGroup(String groupId, List<Role> rolesToBeAssign,
                                    List<Role> rolesToBeUnassigned) throws AuthorizationStoreException {
 
         Map<String, List<Role>> rolesToBeAssignWithStoreId = this.getRolesWithAuthorizationStore(rolesToBeAssign);
@@ -755,10 +762,11 @@ public class AuthorizationStoreImpl implements AuthorizationStore {
             AuthorizationStoreConnector authorizationStoreConnector = authorizationStoreConnectors.get(key);
 
             if (authorizationStoreConnector == null) {
-                throw new StoreException(String.format("No authorization store found for the given id: %s.", key));
+                throw new AuthorizationStoreException(
+                        String.format("No authorization store found for the given id: %s.", key));
             }
 
-            authorizationStoreConnector.updateRolesInGroup(groupId, domain.getDomainId(),
+            authorizationStoreConnector.updateRolesInGroup(groupId,
                     rolesToBeAssignWithStoreId.get(key), rolesToBeUnAssignWithStoreId.get(key));
         }
     }
@@ -771,7 +779,7 @@ public class AuthorizationStoreImpl implements AuthorizationStore {
                 .get(authorizationStoreId);
 
         if (authorizationStoreConnector == null) {
-            throw new StoreException(String.format("No authorization store found for the given id: %s.",
+            throw new AuthorizationStoreException(String.format("No authorization store found for the given id: %s.",
                     authorizationStoreId));
         }
 
@@ -786,7 +794,7 @@ public class AuthorizationStoreImpl implements AuthorizationStore {
                 .get(authorizationStoreId);
 
         if (authorizationStoreConnector == null) {
-            throw new StoreException(String.format("No authorization store found for the given id: %s.",
+            throw new AuthorizationStoreException(String.format("No authorization store found for the given id: %s.",
                     authorizationStoreId));
         }
 
@@ -801,7 +809,7 @@ public class AuthorizationStoreImpl implements AuthorizationStore {
                 .get(authorizationStoreId);
 
         if (authorizationStoreConnector == null) {
-            throw new StoreException(String.format("No authorization store found for the given id: %s.",
+            throw new AuthorizationStoreException(String.format("No authorization store found for the given id: %s.",
                     authorizationStoreId));
         }
 
@@ -817,7 +825,7 @@ public class AuthorizationStoreImpl implements AuthorizationStore {
                 .get(authorizationStoreId);
 
         if (authorizationStoreConnector == null) {
-            throw new StoreException(String.format("No authorization store found for the given id: %s.",
+            throw new AuthorizationStoreException(String.format("No authorization store found for the given id: %s.",
                     authorizationStoreId));
         }
 
