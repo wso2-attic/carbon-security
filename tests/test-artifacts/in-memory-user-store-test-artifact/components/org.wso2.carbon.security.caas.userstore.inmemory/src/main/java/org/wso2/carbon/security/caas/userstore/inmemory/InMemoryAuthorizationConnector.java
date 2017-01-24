@@ -18,13 +18,13 @@ package org.wso2.carbon.security.caas.userstore.inmemory;
 
 import org.wso2.carbon.identity.mgt.Group;
 import org.wso2.carbon.identity.mgt.User;
-import org.wso2.carbon.security.caas.user.core.bean.Action;
-import org.wso2.carbon.security.caas.user.core.bean.Permission;
-import org.wso2.carbon.security.caas.user.core.bean.Resource;
-import org.wso2.carbon.security.caas.user.core.bean.Role;
-import org.wso2.carbon.security.caas.user.core.config.AuthorizationStoreConnectorConfig;
-import org.wso2.carbon.security.caas.user.core.exception.AuthorizationStoreException;
-import org.wso2.carbon.security.caas.user.core.store.connector.AuthorizationStoreConnector;
+import org.wso2.carbon.identity.mgt.Action;
+import org.wso2.carbon.identity.mgt.Permission;
+import org.wso2.carbon.identity.mgt.Resource;
+import org.wso2.carbon.identity.mgt.Role;
+import org.wso2.carbon.identity.mgt.connector.AuthorizationStoreConnector;
+import org.wso2.carbon.identity.mgt.connector.config.AuthorizationStoreConnectorConfig;
+import org.wso2.carbon.identity.mgt.exception.AuthorizationStoreException;
 
 import java.util.List;
 

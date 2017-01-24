@@ -33,7 +33,7 @@ import java.util.Map;
 public class CarbonSecurityDataHolder {
 
     private static CarbonSecurityDataHolder instance = new CarbonSecurityDataHolder();
-    private CarbonAuthorizationServiceImpl carbonRealmService;
+    private CarbonAuthorizationServiceImpl carbonAuthorizationService;
     private Map<String, AuthorizationStoreConnectorFactory> authorizationStoreConnectorFactoryMap = new HashMap<>();
     private CarbonCachingService carbonCachingService;
     private ClaimConfig claimConfig;
@@ -52,15 +52,15 @@ public class CarbonSecurityDataHolder {
     }
 
     void registerCarbonRealmService(CarbonAuthorizationServiceImpl carbonRealmService) {
-        this.carbonRealmService = carbonRealmService;
+        this.carbonAuthorizationService = carbonRealmService;
     }
 
-    public CarbonAuthorizationServiceImpl getCarbonRealmService() {
+    public CarbonAuthorizationServiceImpl getCarbonAuthorizationService() {
 
-        if (this.carbonRealmService == null) {
-            throw new IllegalStateException("Carbon Realm Service is null.");
+        if (this.carbonAuthorizationService == null) {
+            throw new IllegalStateException("Carbon Authorization Service is null.");
         }
-        return this.carbonRealmService;
+        return this.carbonAuthorizationService;
     }
 
     /**

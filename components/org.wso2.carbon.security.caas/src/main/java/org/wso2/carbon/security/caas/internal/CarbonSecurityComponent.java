@@ -37,11 +37,6 @@ import org.wso2.carbon.security.caas.boot.ProxyLoginModule;
 import org.wso2.carbon.security.caas.internal.config.DefaultPermissionInfo;
 import org.wso2.carbon.security.caas.internal.config.DefaultPermissionInfoCollection;
 import org.wso2.carbon.security.caas.internal.config.SecurityConfigBuilder;
-import org.wso2.carbon.security.caas.internal.config.StoreConfigBuilder;
-import org.wso2.carbon.security.caas.user.core.common.CarbonAuthorizationServiceImpl;
-import org.wso2.carbon.security.caas.user.core.config.StoreConfig;
-import org.wso2.carbon.security.caas.user.core.service.AuthorizationService;
-import org.wso2.carbon.security.caas.user.core.store.connector.AuthorizationStoreConnectorFactory;
 
 import java.security.Policy;
 import java.util.ArrayList;
@@ -65,7 +60,7 @@ public class CarbonSecurityComponent implements RequiredCapabilityListener {
 
     private static final Logger log = LoggerFactory.getLogger(CarbonSecurityComponent.class);
 
-    private ServiceRegistration realmServiceRegistration;
+    private ServiceRegistration authorizationServiceRegistration;
 
     @Activate
     public void registerCarbonSecurityProvider(BundleContext bundleContext) {
@@ -78,7 +73,7 @@ public class CarbonSecurityComponent implements RequiredCapabilityListener {
     public void unregisterCarbonSecurityProvider(BundleContext bundleContext) {
 
         try {
-            bundleContext.ungetService(realmServiceRegistration.getReference());
+            bundleContext.ungetService(authorizationServiceRegistration.getReference());
         } catch (Exception e) {
             log.error(e.getMessage(), e);
         }
@@ -86,39 +81,6 @@ public class CarbonSecurityComponent implements RequiredCapabilityListener {
         log.info("Carbon-Security bundle deactivated successfully.");
     }
 
-    @Reference(
-            name = "AuthorizationStoreConnectorFactory",
-            service = AuthorizationStoreConnectorFactory.class,
-            cardinality = ReferenceCardinality.AT_LEAST_ONE,
-            policy = ReferencePolicy.DYNAMIC,
-            unbind = "unregisterAuthorizationStoreConnectorFactory"
-    )
-    protected void registerAuthorizationStoreConnectorFactory(
-            AuthorizationStoreConnectorFactory authorizationStoreConnectorFactory, Map<String, String> properties) {
-
-        String connectorId = properties.get("connector-type");
-        CarbonSecurityDataHolder.getInstance()
-                .registerAuthorizationStoreConnectorFactory(connectorId, authorizationStoreConnectorFactory);
-    }
-
-    protected void unregisterAuthorizationStoreConnectorFactory(
-            AuthorizationStoreConnectorFactory authorizationStoreConnectorFactory) {
-    }
-
-    @Reference(
-            name = "carbon.caching.service",
-            service = CarbonCachingService.class,
-            cardinality = ReferenceCardinality.MANDATORY,
-            policy = ReferencePolicy.DYNAMIC,
-            unbind = "unRegisterCachingService"
-    )
-    protected void registerCachingService(CarbonCachingService cachingService, Map<String, ?> properties) {
-        CarbonSecurityDataHolder.getInstance().registerCacheService(cachingService);
-    }
-
-    protected void unRegisterCachingService(CarbonCachingService carbonCachingService) {
-        CarbonSecurityDataHolder.getInstance().registerCacheService(null);
-    }
 
     @Reference(
             name = "RealmService",
@@ -139,6 +101,20 @@ public class CarbonSecurityComponent implements RequiredCapabilityListener {
         CarbonSecurityDataHolder.getInstance().setRealmService(null);
     }
 
+    @Reference(
+            name = "carbon.caching.service",
+            service = CarbonCachingService.class,
+            cardinality = ReferenceCardinality.MANDATORY,
+            policy = ReferencePolicy.DYNAMIC,
+            unbind = "unRegisterCachingService"
+    )
+    protected void registerCachingService(CarbonCachingService cachingService, Map<String, ?> properties) {
+        CarbonSecurityDataHolder.getInstance().registerCacheService(cachingService);
+    }
+
+    protected void unRegisterCachingService(CarbonCachingService carbonCachingService) {
+        CarbonSecurityDataHolder.getInstance().registerCacheService(null);
+    }
 
     /**
      * Initialize authentication related configs.
@@ -228,19 +204,6 @@ public class CarbonSecurityComponent implements RequiredCapabilityListener {
         // If security manager is enabled init authorization configs
         if (System.getProperty("java.security.manager") != null) {
             initAuthorizationConfigs(bundleContext);
-        }
-
-        // Register the carbon realm service.
-        try {
-            // TODO: Validate the configuration files for multiple primary attributes.
-            StoreConfig storeConfig = StoreConfigBuilder.buildStoreConfigs();
-            CarbonAuthorizationServiceImpl carbonRealmService = new CarbonAuthorizationServiceImpl(storeConfig);
-            CarbonSecurityDataHolder.getInstance().registerCarbonRealmService(carbonRealmService);
-            realmServiceRegistration = bundleContext.registerService(AuthorizationService.class.getName(),
-                    carbonRealmService, null);
-            log.info("Realm service registered successfully.");
-        } catch (Throwable e) {
-            log.error(e.getMessage(), e);
         }
 
 

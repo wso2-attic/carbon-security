@@ -143,15 +143,14 @@
             org.wso2.carbon.security.caas.boot.*,
             org.wso2.carbon.kernel.*,
             org.wso2.carbon.messaging.*,
-            org.wso2.carbon.caching.*
+            org.wso2.carbon.caching.*,
+            org.wso2.carbon.identity.*
         </import.package>
 
         <carbon.component>
             startup.listener;
             componentName="wso2-caas";
             requiredService="org.wso2.carbon.security.caas.user.core.store.connector.AuthorizationStoreConnectorFactory,
-            org.wso2.carbon.security.caas.user.core.store.connector.CredentialStoreConnectorFactory,
-            org.wso2.carbon.security.caas.user.core.store.connector.IdentityStoreConnectorFactory"
         </carbon.component>
 
         <dsannotations>*</dsannotations>
