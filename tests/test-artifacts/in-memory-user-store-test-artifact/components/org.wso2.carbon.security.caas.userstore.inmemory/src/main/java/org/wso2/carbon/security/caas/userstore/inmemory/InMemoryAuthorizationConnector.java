@@ -16,15 +16,15 @@
 
 package org.wso2.carbon.security.caas.userstore.inmemory;
 
-import org.wso2.carbon.security.caas.user.core.bean.Action;
-import org.wso2.carbon.security.caas.user.core.bean.Group;
-import org.wso2.carbon.security.caas.user.core.bean.Permission;
-import org.wso2.carbon.security.caas.user.core.bean.Resource;
-import org.wso2.carbon.security.caas.user.core.bean.Role;
-import org.wso2.carbon.security.caas.user.core.bean.User;
-import org.wso2.carbon.security.caas.user.core.config.AuthorizationStoreConnectorConfig;
-import org.wso2.carbon.security.caas.user.core.exception.AuthorizationStoreException;
-import org.wso2.carbon.security.caas.user.core.store.connector.AuthorizationStoreConnector;
+import org.wso2.carbon.identity.mgt.Action;
+import org.wso2.carbon.identity.mgt.Group;
+import org.wso2.carbon.identity.mgt.Permission;
+import org.wso2.carbon.identity.mgt.Resource;
+import org.wso2.carbon.identity.mgt.Role;
+import org.wso2.carbon.identity.mgt.User;
+import org.wso2.carbon.identity.mgt.connector.AuthorizationStoreConnector;
+import org.wso2.carbon.identity.mgt.connector.config.AuthorizationStoreConnectorConfig;
+import org.wso2.carbon.identity.mgt.exception.AuthorizationStoreException;
 
 import java.util.List;
 
@@ -87,19 +87,17 @@ public class InMemoryAuthorizationConnector implements AuthorizationStoreConnect
     }
 
     @Override
-    public List<Role.RoleBuilder> getRolesForUser(String userId, String identityStoreId)
-            throws AuthorizationStoreException {
+    public List<Role.RoleBuilder> getRolesForUser(String userId) throws AuthorizationStoreException {
         return null;
     }
 
     @Override
-    public List<Role.RoleBuilder> getRolesForGroup(String groupName, String identityStoreId)
-            throws AuthorizationStoreException {
+    public List<Role.RoleBuilder> getRolesForGroup(String groupName) throws AuthorizationStoreException {
         return null;
     }
 
     @Override
-    public List<Permission.PermissionBuilder> getPermissionsForRole(String roleName, Resource resource)
+    public List<Permission.PermissionBuilder> getPermissionsForRole(String roleName, Resource resource) 
             throws AuthorizationStoreException {
         return null;
     }
@@ -111,7 +109,7 @@ public class InMemoryAuthorizationConnector implements AuthorizationStoreConnect
     }
 
     @Override
-    public Resource addResource(String resourceNamespace, String resourceId, String userId, String identityStoreId)
+    public Resource.ResourceBuilder addResource(String resourceNamespace, String resourceId, String userId)
             throws AuthorizationStoreException {
         return null;
     }
@@ -128,8 +126,7 @@ public class InMemoryAuthorizationConnector implements AuthorizationStoreConnect
     }
 
     @Override
-    public Role.RoleBuilder addRole(String roleName, List<Permission> permissions)
-            throws AuthorizationStoreException {
+    public Role.RoleBuilder addRole(String roleName, List<Permission> permissions) throws AuthorizationStoreException {
         return null;
     }
 
@@ -144,8 +141,7 @@ public class InMemoryAuthorizationConnector implements AuthorizationStoreConnect
     }
 
     @Override
-    public void updateRolesInGroup(String groupId, String identityStoreId, List<Role> newRoleList)
-            throws AuthorizationStoreException {
+    public void updateRolesInGroup(String groupId, List<Role> newRoleList) throws AuthorizationStoreException {
 
     }
 
@@ -165,7 +161,7 @@ public class InMemoryAuthorizationConnector implements AuthorizationStoreConnect
     }
 
     @Override
-    public void updateRolesInUser(String userId, String identityStoreId, List<Role> rolesToBeAssign,
+    public void updateRolesInUser(String userId, List<Role> rolesToBeAssign,
                                   List<Role> rolesToBeUnassign) throws AuthorizationStoreException {
 
     }
@@ -183,18 +179,18 @@ public class InMemoryAuthorizationConnector implements AuthorizationStoreConnect
     }
 
     @Override
-    public void updateRolesInGroup(String groupId, String identityStoreId, List<Role> rolesToBeAssign,
+    public void updateRolesInGroup(String groupId, List<Role> rolesToBeAssign,
                                    List<Role> rolesToBeUnassigned) throws AuthorizationStoreException {
 
     }
 
     @Override
-    public boolean isUserInRole(String userId, String identityStoreId, String roleName) {
+    public boolean isUserInRole(String userId, String roleName) {
         return false;
     }
 
     @Override
-    public boolean isGroupInRole(String groupId, String identityStoreId, String roleName) {
+    public boolean isGroupInRole(String groupId, String roleName) {
         return false;
     }
 
@@ -226,6 +222,6 @@ public class InMemoryAuthorizationConnector implements AuthorizationStoreConnect
     }
 
     @Override
-    public void updateRolesInUser(String userId, String identityStore, List<Role> newRoleList) {
+    public void updateRolesInUser(String userId, List<Role> newRoleList) {
     }
 }

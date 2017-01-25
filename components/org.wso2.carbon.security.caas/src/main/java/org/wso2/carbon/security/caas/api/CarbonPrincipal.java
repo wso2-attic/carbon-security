@@ -18,10 +18,11 @@ package org.wso2.carbon.security.caas.api;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.wso2.carbon.security.caas.user.core.bean.Permission;
-import org.wso2.carbon.security.caas.user.core.bean.User;
-import org.wso2.carbon.security.caas.user.core.exception.AuthorizationStoreException;
-import org.wso2.carbon.security.caas.user.core.exception.IdentityStoreException;
+import org.wso2.carbon.identity.mgt.AuthorizationStore;
+import org.wso2.carbon.identity.mgt.User;
+import org.wso2.carbon.identity.mgt.exception.AuthorizationStoreException;
+import org.wso2.carbon.identity.mgt.exception.PermissionNotFoundException;
+import org.wso2.carbon.security.caas.internal.CarbonSecurityDataHolder;
 
 import java.security.Principal;
 import java.util.Objects;
@@ -58,11 +59,7 @@ public class CarbonPrincipal implements Principal {
 
     @Override
     public String getName() {
-
-        // TODO: Uncomment this.
-        // return this.user.getUserName();
-
-        return null;
+        return this.user.getUniqueUserId();
     }
 
     public User getUser() {
@@ -78,11 +75,18 @@ public class CarbonPrincipal implements Principal {
     public boolean isAuthorized(CarbonPermission carbonPermission) {
 
         try {
-            return user.isAuthorized(new Permission(carbonPermission.getName(), carbonPermission.getActions()));
-        } catch (AuthorizationStoreException | IdentityStoreException e) {
-            log.error("Access denied for permission " + carbonPermission.getName() + " for user " + user.getUserId()
-                      + " due to a server error", e);
+            AuthorizationStore authorizationStore =
+                    CarbonSecurityDataHolder.getInstance().getAuthorizationService().getAuthorizationStore();
+            return authorizationStore.isUserAuthorized(user.getUniqueUserId(),
+                                                       authorizationStore.getPermission(carbonPermission.getName(),
+                                                                                        carbonPermission.getActions()));
+        } catch (AuthorizationStoreException | PermissionNotFoundException e) {
+            log.error("Access denied for permission " + carbonPermission.getName() + " for user "
+                    + user.getUniqueUserId() + " due to a server error", e);
             return false;
         }
+
     }
+
+
 }

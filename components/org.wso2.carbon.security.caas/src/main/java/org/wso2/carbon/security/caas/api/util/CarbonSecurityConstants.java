@@ -30,6 +30,7 @@ public final class CarbonSecurityConstants {
 
     public static final String HTTP_AUTHORIZATION_PREFIX_BEARER = "Bearer";
     public static final String HTTP_AUTHORIZATION_PREFIX_BASIC = "Basic";
+    public static final String USERNAME_CLAIM_URI = "http://wso2.org/claims/username";
 
     // Supported Login Modules
     public static final String USERNAME_PASSWORD_LOGIN_MODULE = "USERNAME_PASSWORD_LM";
@@ -46,6 +47,7 @@ public final class CarbonSecurityConstants {
     public static final String STORE_CONFIG_FILE = "store-config.yml";
     public static final String PERMISSION_CONFIG_FILE = "permissions.yml";
     public static final String CLAIM_CONFIG_FILE = "claim-config.yml";
+    public static final String DOMAIN_SEPERATOR = "/";
 
     public static Path getCarbonHomeDirectory() {
         return Paths.get(System.getProperty(CARBON_HOME));

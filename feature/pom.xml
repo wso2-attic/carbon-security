@@ -48,6 +48,16 @@
             <groupId>net.minidev.wso2</groupId>
             <artifactId>json-smart</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.wso2.carbon.identity.mgt</groupId>
+            <artifactId>org.wso2.carbon.identity.mgt.feature</artifactId>
+            <type>zip</type>
+        </dependency>
+        <dependency>
+            <groupId>org.wso2.carbon.datasources</groupId>
+            <artifactId>org.wso2.carbon.datasource.core.feature</artifactId>
+            <type>zip</type>
+        </dependency>
     </dependencies>
 
     <build>
@@ -131,6 +141,14 @@
                                 <feature>
                                     <id>org.wso2.carbon.caching.feature</id>
                                     <version>${org.wso2.carbon.caching.version}</version>
+                                </feature>
+                                <feature>
+                                    <id>org.wso2.carbon.identity.mgt.feature</id>
+                                    <version>${org.wso2.carbon.identity.mgt.version}</version>
+                                </feature>
+                                <feature>
+                                    <id>org.wso2.carbon.datasource.core.feature</id>
+                                    <version>${org.wso2.carbon.datasource.core.version}</version>
                                 </feature>
                             </importFeatures>
                         </configuration>

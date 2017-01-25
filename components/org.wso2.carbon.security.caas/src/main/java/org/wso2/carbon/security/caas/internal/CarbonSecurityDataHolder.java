@@ -18,14 +18,8 @@ package org.wso2.carbon.security.caas.internal;
 
 import org.osgi.framework.BundleContext;
 import org.wso2.carbon.caching.CarbonCachingService;
-import org.wso2.carbon.security.caas.internal.config.ClaimConfig;
-import org.wso2.carbon.security.caas.user.core.common.CarbonRealmServiceImpl;
-import org.wso2.carbon.security.caas.user.core.store.connector.AuthorizationStoreConnectorFactory;
-import org.wso2.carbon.security.caas.user.core.store.connector.CredentialStoreConnectorFactory;
-import org.wso2.carbon.security.caas.user.core.store.connector.IdentityStoreConnectorFactory;
-
-import java.util.HashMap;
-import java.util.Map;
+import org.wso2.carbon.identity.mgt.AuthorizationService;
+import org.wso2.carbon.identity.mgt.RealmService;
 
 /**
  * Carbon security data holder.
@@ -34,13 +28,10 @@ import java.util.Map;
 public class CarbonSecurityDataHolder {
 
     private static CarbonSecurityDataHolder instance = new CarbonSecurityDataHolder();
-    private CarbonRealmServiceImpl carbonRealmService;
-    private Map<String, AuthorizationStoreConnectorFactory> authorizationStoreConnectorFactoryMap = new HashMap<>();
-    private Map<String, CredentialStoreConnectorFactory> credentialStoreConnectorFactoryMap = new HashMap<>();
-    private Map<String, IdentityStoreConnectorFactory> identityStoreConnectorFactoryMap = new HashMap<>();
+    private AuthorizationService authorizationService;
     private CarbonCachingService carbonCachingService;
-    private ClaimConfig claimConfig;
     private BundleContext bundleContext = null;
+    private RealmService realmService;
 
     private CarbonSecurityDataHolder() {
     }
@@ -51,60 +42,6 @@ public class CarbonSecurityDataHolder {
      */
     public static CarbonSecurityDataHolder getInstance() {
         return instance;
-    }
-
-    void registerCarbonRealmService(CarbonRealmServiceImpl carbonRealmService) {
-        this.carbonRealmService = carbonRealmService;
-    }
-
-    public CarbonRealmServiceImpl getCarbonRealmService() {
-
-        if (this.carbonRealmService == null) {
-            throw new IllegalStateException("Carbon Realm Service is null.");
-        }
-        return this.carbonRealmService;
-    }
-
-    /**
-     * Register authorization store connector factory.
-     * @param key Id of the factory.
-     * @param authorizationStoreConnectorFactory AuthorizationStoreConnectorFactory.
-     */
-    void registerAuthorizationStoreConnectorFactory(String key, AuthorizationStoreConnectorFactory
-            authorizationStoreConnectorFactory) {
-        authorizationStoreConnectorFactoryMap.put(key, authorizationStoreConnectorFactory);
-    }
-
-    /**
-     * Register credential store connector factory.
-     * @param key Id of the factory.
-     * @param credentialStoreConnectorFactory CredentialStoreConnectorFactory.
-     */
-    void registerCredentialStoreConnectorFactory(String key,
-                                                 CredentialStoreConnectorFactory credentialStoreConnectorFactory) {
-        credentialStoreConnectorFactoryMap.put(key, credentialStoreConnectorFactory);
-    }
-
-    /**
-     * Register identity store connector factory.
-     * @param key Id of the factory.
-     * @param identityStoreConnectorFactory IdentityStoreConnectorFactory.
-     */
-    void registerIdentityStoreConnectorFactory(String key,
-                                               IdentityStoreConnectorFactory identityStoreConnectorFactory) {
-        identityStoreConnectorFactoryMap.put(key, identityStoreConnectorFactory);
-    }
-
-    public Map<String, AuthorizationStoreConnectorFactory> getAuthorizationStoreConnectorFactoryMap() {
-        return authorizationStoreConnectorFactoryMap;
-    }
-
-    public Map<String, CredentialStoreConnectorFactory> getCredentialStoreConnectorFactoryMap() {
-        return credentialStoreConnectorFactoryMap;
-    }
-
-    public Map<String, IdentityStoreConnectorFactory> getIdentityStoreConnectorFactoryMap() {
-        return identityStoreConnectorFactoryMap;
     }
 
     void registerCacheService(CarbonCachingService carbonCachingService)  {
@@ -127,11 +64,23 @@ public class CarbonSecurityDataHolder {
         return bundleContext;
     }
 
-    public ClaimConfig getClaimConfig() {
-        return claimConfig;
+    void setRealmService(RealmService realmService) {
+        this.realmService = realmService;
     }
 
-    void setClaimConfig(ClaimConfig claimConfig) {
-        this.claimConfig = claimConfig;
+    public RealmService getRealmService() {
+        return realmService;
+    }
+
+    void setAuthorizationService(AuthorizationService authorizationService) {
+        this.authorizationService = authorizationService;
+    }
+
+    public AuthorizationService getAuthorizationService() {
+
+        if (this.authorizationService == null) {
+            throw new IllegalStateException("Carbon Authorization Service is null.");
+        }
+        return this.authorizationService;
     }
 }

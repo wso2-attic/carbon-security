@@ -134,7 +134,8 @@ public class CarbonSecurityLoginException extends LoginException {
         private final String description;
 
         /**
-         * Creates a CarbonSecurityErrorMessages enum with the specified error code and detail message.
+         * Creates a CarbonSecurityErrorMessages enum with the specified errod codeand
+         * detail message.
          *
          * @param code the code corresponding to the error (which is saved for later retrieval by the
          *        {@code getCode()} method).

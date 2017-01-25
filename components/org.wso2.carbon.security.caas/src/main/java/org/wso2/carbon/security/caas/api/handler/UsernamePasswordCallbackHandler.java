@@ -42,7 +42,9 @@ public class UsernamePasswordCallbackHandler implements CarbonCallbackHandler {
     private static final Logger log = LoggerFactory.getLogger(UsernamePasswordCallbackHandler.class);
 
     private CarbonMessage carbonMessage;
+
     private String username;
+
     private char[] password;
 
     @Override
