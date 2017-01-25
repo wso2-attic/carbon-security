@@ -32,7 +32,6 @@
             <extension>
                 <groupId>org.apache.maven.wagon</groupId>
                 <artifactId>wagon-ssh</artifactId>
-                <version>${maven.wagon.ssh.version}</version>
             </extension>
         </extensions>
         <plugins>
@@ -113,10 +112,6 @@
             <artifactId>powermock-module-testng</artifactId>
             <scope>test</scope>
         </dependency>
-        <dependency>
-            <groupId>org.wso2.carbon.identity.mgt</groupId>
-            <artifactId>org.wso2.carbon.identity.mgt</artifactId>
-        </dependency>
     </dependencies>
 
     <properties>
@@ -142,15 +137,8 @@
             org.wso2.carbon.security.caas.boot.*,
             org.wso2.carbon.kernel.*,
             org.wso2.carbon.messaging.*,
-            org.wso2.carbon.caching.*,
-            org.wso2.carbon.identity.*
+            org.wso2.carbon.caching.*
         </import.package>
-
-        <carbon.component>
-            startup.listener;
-            componentName="wso2-caas";
-            requiredService="org.wso2.carbon.security.caas.user.core.store.connector.AuthorizationStoreConnectorFactory,
-        </carbon.component>
 
         <dsannotations>*</dsannotations>
 

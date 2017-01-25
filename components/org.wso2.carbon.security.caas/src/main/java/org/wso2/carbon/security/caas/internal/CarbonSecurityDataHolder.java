@@ -18,8 +18,6 @@ package org.wso2.carbon.security.caas.internal;
 
 import org.osgi.framework.BundleContext;
 import org.wso2.carbon.caching.CarbonCachingService;
-import org.wso2.carbon.identity.mgt.AuthorizationService;
-import org.wso2.carbon.identity.mgt.RealmService;
 
 /**
  * Carbon security data holder.
@@ -28,10 +26,8 @@ import org.wso2.carbon.identity.mgt.RealmService;
 public class CarbonSecurityDataHolder {
 
     private static CarbonSecurityDataHolder instance = new CarbonSecurityDataHolder();
-    private AuthorizationService authorizationService;
     private CarbonCachingService carbonCachingService;
     private BundleContext bundleContext = null;
-    private RealmService realmService;
 
     private CarbonSecurityDataHolder() {
     }
@@ -62,25 +58,5 @@ public class CarbonSecurityDataHolder {
             throw new IllegalStateException("BundleContext is null.");
         }
         return bundleContext;
-    }
-
-    void setRealmService(RealmService realmService) {
-        this.realmService = realmService;
-    }
-
-    public RealmService getRealmService() {
-        return realmService;
-    }
-
-    void setAuthorizationService(AuthorizationService authorizationService) {
-        this.authorizationService = authorizationService;
-    }
-
-    public AuthorizationService getAuthorizationService() {
-
-        if (this.authorizationService == null) {
-            throw new IllegalStateException("Carbon Authorization Service is null.");
-        }
-        return this.authorizationService;
     }
 }

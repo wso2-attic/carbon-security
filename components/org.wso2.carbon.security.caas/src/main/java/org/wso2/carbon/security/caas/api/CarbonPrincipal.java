@@ -18,11 +18,7 @@ package org.wso2.carbon.security.caas.api;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.wso2.carbon.identity.mgt.AuthorizationStore;
-import org.wso2.carbon.identity.mgt.User;
-import org.wso2.carbon.identity.mgt.exception.AuthorizationStoreException;
-import org.wso2.carbon.identity.mgt.exception.PermissionNotFoundException;
-import org.wso2.carbon.security.caas.internal.CarbonSecurityDataHolder;
+import org.wso2.carbon.security.caas.api.model.User;
 
 import java.security.Principal;
 import java.util.Objects;
@@ -44,7 +40,7 @@ public class CarbonPrincipal implements Principal {
     }
 
     public CarbonPrincipal(User user) {
-        this.user = user;
+        this.setUser(user);
     }
 
     @Override
@@ -53,17 +49,21 @@ public class CarbonPrincipal implements Principal {
     }
 
     @Override
-    public boolean equals(Object obj) {
-        return this == obj;
-    }
-
-    @Override
     public String getName() {
-        return this.user.getUniqueUserId();
+        return getUser().getUsername();
     }
 
     public User getUser() {
         return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return this == obj;
     }
 
     /**
@@ -74,19 +74,7 @@ public class CarbonPrincipal implements Principal {
      */
     public boolean isAuthorized(CarbonPermission carbonPermission) {
 
-        try {
-            AuthorizationStore authorizationStore =
-                    CarbonSecurityDataHolder.getInstance().getAuthorizationService().getAuthorizationStore();
-            return authorizationStore.isUserAuthorized(user.getUniqueUserId(),
-                                                       authorizationStore.getPermission(carbonPermission.getName(),
-                                                                                        carbonPermission.getActions()));
-        } catch (AuthorizationStoreException | PermissionNotFoundException e) {
-            log.error("Access denied for permission " + carbonPermission.getName() + " for user "
-                    + user.getUniqueUserId() + " due to a server error", e);
-            return false;
-        }
+        return getUser().isUserAuthorized(carbonPermission);
 
     }
-
-
 }
