@@ -64,6 +64,10 @@ public class SecurityOSGiTestUtils {
                 .artifactId("org.wso2.carbon.security.caas")
                 .versionAsInProject());
         defaultOptionList.add(mavenBundle()
+                .groupId("org.wso2.carbon.identity.mgt")
+                .artifactId("org.wso2.carbon.identity.mgt")
+                .versionAsInProject().noStart());
+        defaultOptionList.add(mavenBundle()
                 .groupId("org.wso2.carbon.security.caas.tests.artifacts.userstore")
                 .artifactId("org.wso2.carbon.security.caas.userstore.inmemory")
                 .versionAsInProject());

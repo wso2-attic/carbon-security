@@ -16,12 +16,12 @@
 
 package org.wso2.carbon.security.caas.userstore.inmemory;
 
-import org.wso2.carbon.identity.mgt.Group;
-import org.wso2.carbon.identity.mgt.User;
 import org.wso2.carbon.identity.mgt.Action;
+import org.wso2.carbon.identity.mgt.Group;
 import org.wso2.carbon.identity.mgt.Permission;
 import org.wso2.carbon.identity.mgt.Resource;
 import org.wso2.carbon.identity.mgt.Role;
+import org.wso2.carbon.identity.mgt.User;
 import org.wso2.carbon.identity.mgt.connector.AuthorizationStoreConnector;
 import org.wso2.carbon.identity.mgt.connector.config.AuthorizationStoreConnectorConfig;
 import org.wso2.carbon.identity.mgt.exception.AuthorizationStoreException;
@@ -109,7 +109,7 @@ public class InMemoryAuthorizationConnector implements AuthorizationStoreConnect
     }
 
     @Override
-    public Resource addResource(String resourceNamespace, String resourceId, String userId)
+    public Resource.ResourceBuilder addResource(String resourceNamespace, String resourceId, String userId)
             throws AuthorizationStoreException {
         return null;
     }

@@ -24,24 +24,13 @@ import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.component.annotations.ReferenceCardinality;
 import org.osgi.service.component.annotations.ReferencePolicy;
-import org.osgi.service.permissionadmin.PermissionAdmin;
-import org.osgi.service.permissionadmin.PermissionInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.wso2.carbon.caching.CarbonCachingService;
+import org.wso2.carbon.identity.mgt.AuthorizationService;
 import org.wso2.carbon.identity.mgt.RealmService;
 import org.wso2.carbon.kernel.startupresolver.RequiredCapabilityListener;
-import org.wso2.carbon.security.caas.api.CarbonJAASConfiguration;
-import org.wso2.carbon.security.caas.api.CarbonPolicy;
-import org.wso2.carbon.security.caas.boot.ProxyLoginModule;
-import org.wso2.carbon.security.caas.internal.config.DefaultPermissionInfo;
-import org.wso2.carbon.security.caas.internal.config.DefaultPermissionInfoCollection;
-import org.wso2.carbon.security.caas.internal.config.SecurityConfigBuilder;
 
-import java.security.Policy;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -66,7 +55,7 @@ public class CarbonSecurityComponent implements RequiredCapabilityListener {
     public void registerCarbonSecurityProvider(BundleContext bundleContext) {
 
         CarbonSecurityDataHolder.getInstance().setBundleContext(bundleContext);
-        initAuthenticationConfigs(bundleContext);
+
     }
 
     @Deactivate
@@ -101,6 +90,26 @@ public class CarbonSecurityComponent implements RequiredCapabilityListener {
         CarbonSecurityDataHolder.getInstance().setRealmService(null);
     }
 
+
+    @Reference(
+            name = "AuthorizationService",
+            service = AuthorizationService.class,
+            cardinality = ReferenceCardinality.AT_LEAST_ONE,
+            policy = ReferencePolicy.DYNAMIC,
+            unbind = "unsetAuthorizationService"
+    )
+    protected void setAuthorizationService(AuthorizationService authorizationService) {
+        if (log.isDebugEnabled()) {
+            log.debug("Setting the Authorization Service");
+        }
+        CarbonSecurityDataHolder.getInstance().setAuthorizationService(authorizationService);
+    }
+
+    protected void unsetAuthorizationService(AuthorizationService authorizationService) {
+        log.debug("UnSetting the Authorization Service");
+        CarbonSecurityDataHolder.getInstance().setAuthorizationService(null);
+    }
+
     @Reference(
             name = "carbon.caching.service",
             service = CarbonCachingService.class,
@@ -116,97 +125,9 @@ public class CarbonSecurityComponent implements RequiredCapabilityListener {
         CarbonSecurityDataHolder.getInstance().registerCacheService(null);
     }
 
-    /**
-     * Initialize authentication related configs.
-     *
-     * @param bundleContext
-     */
-    private void initAuthenticationConfigs(BundleContext bundleContext) {
-
-        // Initialize proxy login module.
-        ProxyLoginModule.init(bundleContext);
-
-        // Set CarbonJAASConfiguration as the implementation of Configuration.
-        CarbonJAASConfiguration configuration = new CarbonJAASConfiguration();
-        configuration.init();
-    }
-
-    /**
-     * Initialize authorization related configs.
-     *
-     * @param bundleContext
-     */
-    private void initAuthorizationConfigs(BundleContext bundleContext) {
-
-        // Set default permissions for all bundles.
-        setDefaultPermissions(bundleContext);
-
-        // Registering CarbonPolicy
-        CarbonPolicy policy = new CarbonPolicy();
-        Policy.setPolicy(policy);
-    }
-
-    /**
-     * Set default permissions for all bundles using PermissionAdmin.
-     *
-     * @param context Bundle context.
-     */
-    private void setDefaultPermissions(BundleContext context) {
-
-        PermissionAdmin permissionAdmin = getPermissionAdmin(context);
-        if (permissionAdmin == null) {
-            return;
-        }
-
-        DefaultPermissionInfoCollection permissionInfoCollection = SecurityConfigBuilder
-                .buildDefaultPermissionInfoCollection();
-        if (Collections.EMPTY_SET.equals(permissionInfoCollection.getPermissions())) {
-            throw new RuntimeException("Default permission info collection can't be empty.");
-        }
-
-        List<PermissionInfo> permissionInfoList = new ArrayList<>();
-
-        for (DefaultPermissionInfo permissionInfo : permissionInfoCollection.getPermissions()) {
-
-            if (permissionInfo.getType() == null || permissionInfo.getType().trim().isEmpty()) {
-                throw new IllegalArgumentException("Type can't be null or empty.");
-
-            }
-            if (permissionInfo.getName() == null || permissionInfo.getName().trim().isEmpty()) {
-                throw new IllegalArgumentException("Name can't be null or empty.");
-            }
-
-            permissionInfoList.add(new PermissionInfo(permissionInfo.getType(), permissionInfo.getName(),
-                    (permissionInfo.getActions() != null && !permissionInfo
-                            .getActions().trim().isEmpty()) ?
-                            permissionInfo.getActions().trim() : null));
-        }
-
-        permissionAdmin.setDefaultPermissions(
-                permissionInfoList.toArray(new PermissionInfo[permissionInfoList.size()]));
-    }
-
-    /**
-     * Get PermissionAdmin.
-     *
-     * @param context Bundle context.
-     * @return Permission admin.
-     */
-    private PermissionAdmin getPermissionAdmin(BundleContext context) {
-        return (PermissionAdmin) context.getService(context.getServiceReference(PermissionAdmin.class.getName()));
-    }
 
     @Override
     public void onAllRequiredCapabilitiesAvailable() {
-
-        BundleContext bundleContext = CarbonSecurityDataHolder.getInstance().getBundleContext();
-
-        // If security manager is enabled init authorization configs
-        if (System.getProperty("java.security.manager") != null) {
-            initAuthorizationConfigs(bundleContext);
-        }
-
-
         log.info("Carbon-Security bundle activated successfully.");
     }
 }

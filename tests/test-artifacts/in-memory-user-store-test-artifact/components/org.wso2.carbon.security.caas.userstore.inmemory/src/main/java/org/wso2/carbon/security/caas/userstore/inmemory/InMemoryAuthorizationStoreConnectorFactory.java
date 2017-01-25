@@ -16,8 +16,8 @@
 
 package org.wso2.carbon.security.caas.userstore.inmemory;
 
-import org.wso2.carbon.security.caas.user.core.store.connector.AuthorizationStoreConnector;
-import org.wso2.carbon.security.caas.user.core.store.connector.AuthorizationStoreConnectorFactory;
+import org.wso2.carbon.identity.mgt.connector.AuthorizationStoreConnector;
+import org.wso2.carbon.identity.mgt.connector.AuthorizationStoreConnectorFactory;
 
 /**
 * InMemory based authorization store connector factory.
