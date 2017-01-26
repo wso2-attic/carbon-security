@@ -20,6 +20,9 @@ import org.osgi.framework.BundleContext;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceReference;
 import org.wso2.carbon.security.caas.api.CarbonCallbackHandler;
+import org.wso2.carbon.security.caas.api.exception.CarbonSecurityServerException;
+import org.wso2.carbon.security.caas.api.model.User;
+import org.wso2.carbon.security.caas.api.model.UsersFile;
 import org.wso2.carbon.security.caas.internal.CarbonSecurityDataHolder;
 
 import java.util.ArrayList;
@@ -32,6 +35,10 @@ import java.util.List;
  * @since 1.0.0
  */
 public class CarbonSecurityUtils {
+
+    private static final String USERS_CONFIG_ABSOLUTE_LOCATION =
+            CarbonSecurityConstants.getCarbonHomeDirectory().getFileName() +
+                                                           CarbonSecurityConstants.USERS_CONFIG_LOCATION;
 
     public static List<CarbonCallbackHandler> getCallbackHandlers(String supportedLoginModule) {
 
@@ -53,6 +60,20 @@ public class CarbonSecurityUtils {
                                             supportedLoginModule);
         }
         return callbackHandlers;
+    }
+
+    private static UsersFile getUsers() throws CarbonSecurityServerException {
+        return FileUtil.readConfigFile(USERS_CONFIG_ABSOLUTE_LOCATION, UsersFile.class);
+    }
+
+    public static User getUser(String username) throws CarbonSecurityServerException {
+        UsersFile users = CarbonSecurityUtils.getUsers();
+        for (User user : users.getUsers()) {
+            if (user.getUsername().equals(username)) {
+                return user;
+            }
+        }
+        return null;
     }
 
     private CarbonSecurityUtils() {

@@ -34,7 +34,6 @@
             <extension>
                 <groupId>org.apache.maven.wagon</groupId>
                 <artifactId>wagon-ssh</artifactId>
-                <version>${maven.wagon.ssh.version}</version>
             </extension>
         </extensions>
         <plugins>
@@ -58,10 +57,6 @@
             <groupId>org.wso2.carbon</groupId>
             <artifactId>osgi-test-util</artifactId>
             <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.wso2.carbon.security.caas.tests.artifacts.userstore</groupId>
-            <artifactId>org.wso2.carbon.security.caas.userstore.inmemory</artifactId>
         </dependency>
         <dependency>
             <groupId>org.wso2.carbon.messaging</groupId>
@@ -223,7 +218,6 @@
                     <plugin>
                         <groupId>org.jacoco</groupId>
                         <artifactId>jacoco-maven-plugin</artifactId>
-                        <version>${jacoco.version}</version>
                         <executions>
                             <execution>
                                 <id>default-prepare-agent</id>
@@ -294,7 +288,6 @@
                     <plugin>
                         <groupId>org.ops4j.pax.exam</groupId>
                         <artifactId>maven-paxexam-plugin</artifactId>
-                        <version>${maven.paxexam.plugin.version}</version>
                         <executions>
                             <execution>
                                 <id>generate-config</id>

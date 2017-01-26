@@ -18,19 +18,12 @@ package org.wso2.carbon.security.caas.api.module;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.wso2.carbon.identity.mgt.AuthenticationContext;
-import org.wso2.carbon.identity.mgt.User;
-import org.wso2.carbon.identity.mgt.claim.Claim;
-import org.wso2.carbon.identity.mgt.exception.AuthenticationFailure;
-import org.wso2.carbon.identity.mgt.exception.IdentityStoreException;
 import org.wso2.carbon.kernel.context.PrivilegedCarbonContext;
 import org.wso2.carbon.security.caas.api.CarbonPrincipal;
 import org.wso2.carbon.security.caas.api.exception.CarbonSecurityClientException;
 import org.wso2.carbon.security.caas.api.exception.CarbonSecurityLoginException.CarbonSecurityErrorMessages;
 import org.wso2.carbon.security.caas.api.exception.CarbonSecurityServerException;
-import org.wso2.carbon.security.caas.api.util.CarbonSecurityConstants;
-import org.wso2.carbon.security.caas.api.util.CarbonSecurityExceptionUtil;
-import org.wso2.carbon.security.caas.internal.CarbonSecurityDataHolder;
+import org.wso2.carbon.security.caas.api.util.CarbonSecurityUtils;
 
 import java.io.IOException;
 import java.util.Map;
@@ -57,7 +50,6 @@ public class UsernamePasswordLoginModule implements LoginModule {
     private static final Logger log = LoggerFactory.getLogger(UsernamePasswordLoginModule.class);
     private Subject subject;
     private String username;
-    private String domain;
     private char[] password;
     private CallbackHandler callbackHandler;
     private Map sharedState;
@@ -65,7 +57,6 @@ public class UsernamePasswordLoginModule implements LoginModule {
     private boolean success = false;
     private boolean commitSuccess = false;
     private CarbonPrincipal carbonPrincipal;
-    private User user;
 
     /**
      * This method initializes the login module.
@@ -115,29 +106,10 @@ public class UsernamePasswordLoginModule implements LoginModule {
                                                             .getDescription(), e);
         }
 
-        String[] usernameDomainSplits = usernameCallback.getName().split(CarbonSecurityConstants.DOMAIN_SEPERATOR);
-        username = usernameDomainSplits[0];
-        if (usernameDomainSplits.length == 2) {
-            domain = usernameDomainSplits[1];
-        } else {
-            domain = null;
-        }
+        username = usernameCallback.getName();
         password = passwordCallback.getPassword();
 
-        try {
-            Claim claim = new Claim();
-            claim.setClaimUri(CarbonSecurityConstants.USERNAME_CLAIM_URI);
-            claim.setValue(username);
-            AuthenticationContext authenticationContext = CarbonSecurityDataHolder.getInstance().getRealmService()
-                                                                                  .getIdentityStore()
-                                                                                  .authenticate(claim, callbacks,
-                                                                                                domain);
-            user = authenticationContext.getUser();
-        } catch (AuthenticationFailure authenticationFailure) {
-            throw CarbonSecurityExceptionUtil.buildLoginException(authenticationFailure);
-        } catch (IdentityStoreException e) {
-            throw CarbonSecurityExceptionUtil.buildLoginException(e);
-        }
+
 
         //TODO Add Audit logs CARBON-15870
         success = true;
@@ -159,7 +131,7 @@ public class UsernamePasswordLoginModule implements LoginModule {
     public boolean commit() throws LoginException {
 
         if (success) {
-            carbonPrincipal = new CarbonPrincipal(user);
+            carbonPrincipal = new CarbonPrincipal(CarbonSecurityUtils.getUser(username));
             if (!subject.getPrincipals().contains(carbonPrincipal)) {
                 subject.getPrincipals().add(carbonPrincipal);
             }

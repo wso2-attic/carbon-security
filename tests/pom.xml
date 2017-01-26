@@ -30,7 +30,6 @@
     <url>http://wso2.com</url>
 
     <modules>
-        <module>test-artifacts</module>
         <module>distribution</module>
         <module>osgi-tests</module>
     </modules>

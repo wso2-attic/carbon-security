@@ -17,7 +17,6 @@
 package org.wso2.carbon.security.caas.internal;
 
 import org.osgi.framework.BundleContext;
-import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
@@ -27,8 +26,6 @@ import org.osgi.service.component.annotations.ReferencePolicy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.wso2.carbon.caching.CarbonCachingService;
-import org.wso2.carbon.identity.mgt.AuthorizationService;
-import org.wso2.carbon.identity.mgt.RealmService;
 import org.wso2.carbon.kernel.startupresolver.RequiredCapabilityListener;
 
 import java.util.Map;
@@ -49,8 +46,6 @@ public class CarbonSecurityComponent implements RequiredCapabilityListener {
 
     private static final Logger log = LoggerFactory.getLogger(CarbonSecurityComponent.class);
 
-    private ServiceRegistration authorizationServiceRegistration;
-
     @Activate
     public void registerCarbonSecurityProvider(BundleContext bundleContext) {
 
@@ -61,53 +56,7 @@ public class CarbonSecurityComponent implements RequiredCapabilityListener {
     @Deactivate
     public void unregisterCarbonSecurityProvider(BundleContext bundleContext) {
 
-        try {
-            bundleContext.ungetService(authorizationServiceRegistration.getReference());
-        } catch (Exception e) {
-            log.error(e.getMessage(), e);
-        }
-
         log.info("Carbon-Security bundle deactivated successfully.");
-    }
-
-
-    @Reference(
-            name = "RealmService",
-            service = RealmService.class,
-            cardinality = ReferenceCardinality.AT_LEAST_ONE,
-            policy = ReferencePolicy.DYNAMIC,
-            unbind = "unsetRealmService"
-    )
-    protected void setRealmService(RealmService realmService) {
-        if (log.isDebugEnabled()) {
-            log.debug("Setting the Realm Service");
-        }
-        CarbonSecurityDataHolder.getInstance().setRealmService(realmService);
-    }
-
-    protected void unsetRealmService(RealmService realmService) {
-        log.debug("UnSetting the Realm Service");
-        CarbonSecurityDataHolder.getInstance().setRealmService(null);
-    }
-
-
-    @Reference(
-            name = "AuthorizationService",
-            service = AuthorizationService.class,
-            cardinality = ReferenceCardinality.AT_LEAST_ONE,
-            policy = ReferencePolicy.DYNAMIC,
-            unbind = "unsetAuthorizationService"
-    )
-    protected void setAuthorizationService(AuthorizationService authorizationService) {
-        if (log.isDebugEnabled()) {
-            log.debug("Setting the Authorization Service");
-        }
-        CarbonSecurityDataHolder.getInstance().setAuthorizationService(authorizationService);
-    }
-
-    protected void unsetAuthorizationService(AuthorizationService authorizationService) {
-        log.debug("UnSetting the Authorization Service");
-        CarbonSecurityDataHolder.getInstance().setAuthorizationService(null);
     }
 
     @Reference(

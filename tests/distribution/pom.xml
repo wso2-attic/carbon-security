@@ -38,47 +38,26 @@
         <dependency>
             <groupId>org.wso2.carbon</groupId>
             <artifactId>org.wso2.carbon.kernel.feature</artifactId>
-            <version>${carbon.kernel.version}</version>
             <type>zip</type>
         </dependency>
         <dependency>
             <groupId>org.wso2.carbon</groupId>
             <artifactId>org.wso2.carbon.runtime.feature</artifactId>
-            <version>${carbon.kernel.version}</version>
             <type>zip</type>
         </dependency>
         <dependency>
             <groupId>org.wso2.carbon.security.caas</groupId>
             <artifactId>org.wso2.carbon.security.caas.feature</artifactId>
-            <version>${carbon.security.caas.version}</version>
             <type>zip</type>
         </dependency>
         <dependency>
             <groupId>org.wso2.carbon.caching</groupId>
             <artifactId>org.wso2.carbon.caching.feature</artifactId>
-            <version>${org.wso2.carbon.caching.version}</version>
-            <type>zip</type>
-        </dependency>
-        <dependency>
-            <groupId>org.wso2.carbon.identity.mgt</groupId>
-            <artifactId>org.wso2.carbon.identity.mgt.feature</artifactId>
             <type>zip</type>
         </dependency>
         <dependency>
             <groupId>org.wso2.carbon.messaging</groupId>
             <artifactId>org.wso2.carbon.messaging.feature</artifactId>
-            <version>${org.wso2.carbon.messaging.version}</version>
-            <type>zip</type>
-        </dependency>
-        <dependency>
-            <groupId>org.wso2.carbon.security.caas.tests.artifacts.userstore</groupId>
-            <artifactId>org.wso2.carbon.security.caas.userstore.inmemory.feature</artifactId>
-            <version>${carbon.security.caas.version}</version>
-            <type>zip</type>
-        </dependency>
-        <dependency>
-            <groupId>org.wso2.carbon.datasources</groupId>
-            <artifactId>org.wso2.carbon.datasource.core.feature</artifactId>
             <type>zip</type>
         </dependency>
     </dependencies>
@@ -143,18 +122,6 @@
                                     <id>org.wso2.carbon.messaging.feature</id>
                                     <version>${org.wso2.carbon.messaging.version}</version>
                                 </feature>
-                                <feature>
-                                    <id>org.wso2.carbon.security.caas.userstore.inmemory.feature</id>
-                                    <version>${carbon.security.caas.version}</version>
-                                </feature>
-                                <feature>
-                                    <id>org.wso2.carbon.identity.mgt.feature</id>
-                                    <version>${org.wso2.carbon.identity.mgt.version}</version>
-                                </feature>
-                                <feature>
-                                    <id>org.wso2.carbon.datasource.core.feature</id>
-                                    <version>${org.wso2.carbon.datasource.core.version}</version>
-                                </feature>
                             </features>
                         </configuration>
                     </execution>
@@ -209,11 +176,6 @@
                                     <id>org.wso2.carbon.security.caas.feature</id>
                                     <version>${carbon.security.caas.version}</version>
                                 </feature>
-                                <feature>
-                                    <id>org.wso2.carbon.security.caas.userstore.inmemory.feature</id>
-                                    <version>${carbon.security.caas.version}</version>
-                                </feature>
-
                             </features>
                         </configuration>
                     </execution>
