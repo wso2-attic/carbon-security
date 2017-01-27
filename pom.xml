@@ -373,7 +373,7 @@
     <properties>
 
         <org.wso2.carbon.datasource.core.version>1.0.0</org.wso2.carbon.datasource.core.version>
-        <carbon.security.caas.version>1.0.1-SNAPSHOT</carbon.security.caas.version>
+        <carbon.security.caas.version>1.0.0-SNAPSHOT</carbon.security.caas.version>
 
         <carbon.feature.plugin.version>2.0.1</carbon.feature.plugin.version>
         <carbon.kernel.version>5.1.0</carbon.kernel.version>
