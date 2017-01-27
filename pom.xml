@@ -27,7 +27,7 @@
     <groupId>org.wso2.carbon.security.caas</groupId>
     <artifactId>org.wso2.carbon.security.caas.parent</artifactId>
     <packaging>pom</packaging>
-    <version>1.0.1-SNAPSHOT</version>
+    <version>1.0.0-SNAPSHOT</version>
     <name>WSO2 Carbon Security CAAS - Parent</name>
 
     <scm>
@@ -259,11 +259,6 @@
                 <version>${carbon.security.caas.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.wso2.carbon.security.caas.tests.artifacts.userstore</groupId>
-                <artifactId>org.wso2.carbon.security.caas.userstore.inmemory</artifactId>
-                <version>${carbon.security.caas.version}</version>
-            </dependency>
-            <dependency>
                 <groupId>org.wso2.carbon</groupId>
                 <artifactId>osgi-test-util</artifactId>
                 <version>${carbon.osgi.test.util.version}</version>
@@ -344,17 +339,12 @@
                 <scope>test</scope>
             </dependency>
             <dependency>
-                <groupId>org.wso2.carbon.security.caas.tests.artifacts.userstore</groupId>
-                <artifactId>org.wso2.carbon.security.caas.userstore.inmemory</artifactId>
-                <version>${carbon.security.caas.version}</version>
-            </dependency>
-            <dependency>
                 <groupId>org.wso2.carbon.security.caas</groupId>
                 <artifactId>org.wso2.carbon.security.caas</artifactId>
                 <version>${carbon.security.caas.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.wso2.carbon.security.caas.tests</groupId>
+                <groupId>org.wso2.carbon.security.caas</groupId>
                 <artifactId>org.wso2.carbon.security.caas.test.distribution</artifactId>
                 <version>${carbon.security.caas.version}</version>
                 <type>zip</type>
@@ -373,7 +363,7 @@
     <properties>
 
         <org.wso2.carbon.datasource.core.version>1.0.0</org.wso2.carbon.datasource.core.version>
-        <carbon.security.caas.version>1.0.1-SNAPSHOT</carbon.security.caas.version>
+        <carbon.security.caas.version>1.0.0-SNAPSHOT</carbon.security.caas.version>
 
         <carbon.feature.plugin.version>2.0.1</carbon.feature.plugin.version>
         <carbon.kernel.version>5.1.0</carbon.kernel.version>
