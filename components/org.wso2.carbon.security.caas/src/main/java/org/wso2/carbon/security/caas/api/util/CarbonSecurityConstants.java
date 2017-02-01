@@ -43,7 +43,7 @@ public final class CarbonSecurityConstants {
     public static final String STORE_CONNECTORS = "storeConnectors";
 
     //Config file names
-    public static final String PERMISSION_CONFIG_FILE = "permissions.yml";
+    public static final String PERMISSION_CONFIG_FILE = "permissions.yaml";
     public static final String USERS_CONFIG_LOCATION = "/conf/security/users.yaml";
 
     public static Path getCarbonHomeDirectory() {
