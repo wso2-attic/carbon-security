@@ -71,7 +71,7 @@
                                     <directory>resources</directory>
                                     <includes>
                                         <include>conf/carbon-jaas.config</include>
-                                        <include>conf/permissions.yml</include>
+                                        <include>conf/permissions.yaml</include>
                                         <include>conf/security.policy</include>
                                         <include>conf/users.yaml</include>
                                         <include>p2.inf</include>
