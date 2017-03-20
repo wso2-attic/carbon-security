@@ -156,7 +156,7 @@
         <!--Logging API version range-->
         <slf4j.logging.package.import.version.range>[1.7.1, 2.0.0)</slf4j.logging.package.import.version.range>
 
-        <org.wso2.carbon.context.import.version.range>[5.0.0, 5.1.0)</org.wso2.carbon.context.import.version.range>
+        <org.wso2.carbon.context.import.version.range>[5.0.0, 5.3.0)</org.wso2.carbon.context.import.version.range>
         <org.snakeyaml.package.import.version.range>[1.16.0, 2.0.0)</org.snakeyaml.package.import.version.range>
     </properties>
 
