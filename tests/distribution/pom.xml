@@ -60,6 +60,11 @@
             <artifactId>org.wso2.carbon.messaging.feature</artifactId>
             <type>zip</type>
         </dependency>
+        <dependency>
+            <groupId>org.wso2.carbon</groupId>
+            <artifactId>org.wso2.carbon.pax.exam.feature</artifactId>
+            <type>zip</type>
+        </dependency>
     </dependencies>
     <build>
         <plugins>
@@ -122,6 +127,10 @@
                                     <id>org.wso2.carbon.messaging.feature</id>
                                     <version>${org.wso2.carbon.messaging.version}</version>
                                 </feature>
+                                <feature>
+                                    <id>org.wso2.carbon.pax.exam.feature</id>
+                                    <version>${carbon.kernel.version}</version>
+                                </feature>
                             </features>
                         </configuration>
                     </execution>
@@ -175,6 +184,10 @@
                                 <feature>
                                     <id>org.wso2.carbon.security.caas.feature</id>
                                     <version>${carbon.security.caas.version}</version>
+                                </feature>
+                                <feature>
+                                    <id>org.wso2.carbon.pax.exam.feature</id>
+                                    <version>${carbon.kernel.version}</version>
                                 </feature>
                             </features>
                         </configuration>

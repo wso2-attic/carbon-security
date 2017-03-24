@@ -20,12 +20,19 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.wso2.carbon.kernel.context.PrivilegedCarbonContext;
 import org.wso2.carbon.security.caas.api.CarbonPrincipal;
+import org.wso2.carbon.security.caas.api.exception.CarbonSecurityAuthenticationException;
 import org.wso2.carbon.security.caas.api.exception.CarbonSecurityClientException;
 import org.wso2.carbon.security.caas.api.exception.CarbonSecurityLoginException.CarbonSecurityErrorMessages;
 import org.wso2.carbon.security.caas.api.exception.CarbonSecurityServerException;
+import org.wso2.carbon.security.caas.api.model.User;
 import org.wso2.carbon.security.caas.api.util.CarbonSecurityUtils;
 
 import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.nio.CharBuffer;
+import java.nio.charset.Charset;
+import java.util.Arrays;
+import java.util.Base64;
 import java.util.Map;
 import javax.security.auth.Subject;
 import javax.security.auth.callback.Callback;
@@ -57,6 +64,8 @@ public class UsernamePasswordLoginModule implements LoginModule {
     private boolean success = false;
     private boolean commitSuccess = false;
     private CarbonPrincipal carbonPrincipal;
+    private User uncommittedUser;
+    private Base64.Decoder decoder = Base64.getDecoder();
 
     /**
      * This method initializes the login module.
@@ -68,7 +77,7 @@ public class UsernamePasswordLoginModule implements LoginModule {
      */
     @Override
     public void initialize(Subject subject, CallbackHandler callbackHandler, Map<String, ?> sharedState,
-                           Map<String, ?> options) {
+            Map<String, ?> options) {
         // TODO Remove this check
         if (username != null || password != null) {
             log.warn("PrototypeServiceFactory failed to deliver new UsernamePasswordLoginModule object");
@@ -92,7 +101,7 @@ public class UsernamePasswordLoginModule implements LoginModule {
 
         NameCallback usernameCallback = new NameCallback("username");
         PasswordCallback passwordCallback = new PasswordCallback("password", false);
-        Callback[] callbacks = {usernameCallback, passwordCallback};
+        Callback[] callbacks = { usernameCallback, passwordCallback };
 
         try {
             callbackHandler.handle(callbacks);
@@ -102,18 +111,51 @@ public class UsernamePasswordLoginModule implements LoginModule {
                     CarbonSecurityErrorMessages.UNSUPPORTED_CALLBACK_EXCEPTION.getDescription(), e);
         } catch (IOException e) {
             throw new CarbonSecurityServerException(CarbonSecurityErrorMessages.CALLBACK_HANDLE_EXCEPTION.getCode(),
-                                                    CarbonSecurityErrorMessages.CALLBACK_HANDLE_EXCEPTION
-                                                            .getDescription(), e);
+                    CarbonSecurityErrorMessages.CALLBACK_HANDLE_EXCEPTION.getDescription(), e);
         }
 
         username = usernameCallback.getName();
         password = passwordCallback.getPassword();
 
-
+        uncommittedUser = validateUserPassword(username, password);
+        success = uncommittedUser != null;
 
         //TODO Add Audit logs CARBON-15870
-        success = true;
-        return true;
+        return success;
+    }
+
+    private User validateUserPassword(String userName, char[] credentials)
+            throws CarbonSecurityServerException, CarbonSecurityAuthenticationException {
+        if (credentials == null) {
+            return null;
+        }
+        User user = CarbonSecurityUtils.getUser(userName);
+        if (user == null) {
+            if (log.isDebugEnabled()) {
+                log.debug("User not found for userName: %s. Failing the authentication." + userName);
+            }
+            throw new CarbonSecurityAuthenticationException();
+        } else {
+            byte[] plainUserPassword = decoder.decode(user.getPassword());
+            if (!Arrays.equals(plainUserPassword, toBytes(credentials))) {
+                if (log.isDebugEnabled()) {
+                    log.debug(
+                            "Password did not match with the configured user, userName: %s, Failing the authentication."
+                                    + userName);
+                }
+                throw new CarbonSecurityAuthenticationException();
+            }
+        }
+        return user;
+    }
+
+    private byte[] toBytes(char[] chars) {
+        CharBuffer charBuffer = CharBuffer.wrap(chars);
+        ByteBuffer byteBuffer = Charset.forName("UTF-8").encode(charBuffer);
+        byte[] bytes = Arrays.copyOfRange(byteBuffer.array(), byteBuffer.position(), byteBuffer.limit());
+        Arrays.fill(charBuffer.array(), '\u0000'); // clear sensitive data
+        Arrays.fill(byteBuffer.array(), (byte) 0); // clear sensitive data
+        return bytes;
     }
 
     /**
@@ -131,7 +173,7 @@ public class UsernamePasswordLoginModule implements LoginModule {
     public boolean commit() throws LoginException {
 
         if (success) {
-            carbonPrincipal = new CarbonPrincipal(CarbonSecurityUtils.getUser(username));
+            carbonPrincipal = new CarbonPrincipal(uncommittedUser);
             if (!subject.getPrincipals().contains(carbonPrincipal)) {
                 subject.getPrincipals().add(carbonPrincipal);
             }

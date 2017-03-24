@@ -31,6 +31,10 @@
     <modules>
         <module>distribution</module>
         <module>osgi-tests</module>
+        <module>coverage-report</module>
     </modules>
 
+    <properties>
+        <surefireArgLine></surefireArgLine>
+    </properties>
 </project>

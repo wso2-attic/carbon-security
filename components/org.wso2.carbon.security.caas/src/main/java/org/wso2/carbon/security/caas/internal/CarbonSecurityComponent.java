@@ -27,8 +27,17 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.wso2.carbon.caching.CarbonCachingService;
 import org.wso2.carbon.kernel.startupresolver.RequiredCapabilityListener;
+import org.wso2.carbon.security.caas.api.CarbonCallbackHandler;
+import org.wso2.carbon.security.caas.api.CarbonJAASConfiguration;
+import org.wso2.carbon.security.caas.api.module.UsernamePasswordLoginModule;
+import org.wso2.carbon.security.caas.api.util.CarbonSecurityConstants;
+import org.wso2.carbon.security.caas.boot.ProxyLoginModule;
+import org.wso2.carbon.security.caas.internal.osgi.UserNamePasswordLoginModuleFactory;
+import org.wso2.carbon.security.caas.internal.osgi.UsernamePasswordCallbackHandlerFactory;
 
+import java.util.Hashtable;
 import java.util.Map;
+import javax.security.auth.spi.LoginModule;
 
 /**
  * OSGi service component which handle authentication and authorization.
@@ -50,7 +59,7 @@ public class CarbonSecurityComponent implements RequiredCapabilityListener {
     public void registerCarbonSecurityProvider(BundleContext bundleContext) {
 
         CarbonSecurityDataHolder.getInstance().setBundleContext(bundleContext);
-
+        initAuthenticationConfigs(bundleContext);
     }
 
     @Deactivate
@@ -62,7 +71,7 @@ public class CarbonSecurityComponent implements RequiredCapabilityListener {
     @Reference(
             name = "carbon.caching.service",
             service = CarbonCachingService.class,
-            cardinality = ReferenceCardinality.MANDATORY,
+            cardinality = ReferenceCardinality.OPTIONAL,
             policy = ReferencePolicy.DYNAMIC,
             unbind = "unRegisterCachingService"
     )
@@ -72,6 +81,35 @@ public class CarbonSecurityComponent implements RequiredCapabilityListener {
 
     protected void unRegisterCachingService(CarbonCachingService carbonCachingService) {
         CarbonSecurityDataHolder.getInstance().registerCacheService(null);
+    }
+
+    /**
+     * Initialize authentication related configs.
+     *
+     * @param bundleContext
+     */
+    private void initAuthenticationConfigs(BundleContext bundleContext) {
+
+        // Initialize proxy login module.
+        ProxyLoginModule.init(bundleContext);
+
+        // Set CarbonJAASConfiguration as the implementation of Configuration.
+        CarbonJAASConfiguration configuration = new CarbonJAASConfiguration();
+        configuration.init();
+
+        // Registering login module provided by the bundle.
+        Hashtable<String, String> usernamePasswordLoginModuleProps = new Hashtable<>();
+        usernamePasswordLoginModuleProps.put(ProxyLoginModule.LOGIN_MODULE_SEARCH_KEY,
+                UsernamePasswordLoginModule.class.getName());
+        bundleContext.registerService(LoginModule.class, new UserNamePasswordLoginModuleFactory(),
+                usernamePasswordLoginModuleProps);
+
+        // Registering callback handler factories.
+        Hashtable<String, String> usernamePasswordCallbackHandlerProps = new Hashtable<>();
+        usernamePasswordCallbackHandlerProps.put(CarbonCallbackHandler.SUPPORTED_LOGIN_MODULE,
+                CarbonSecurityConstants.USERNAME_PASSWORD_LOGIN_MODULE);
+        bundleContext.registerService(CarbonCallbackHandler.class, new UsernamePasswordCallbackHandlerFactory(),
+                usernamePasswordCallbackHandlerProps);
     }
 
 

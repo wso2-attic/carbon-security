@@ -25,6 +25,7 @@ import org.wso2.carbon.security.caas.api.model.User;
 import org.wso2.carbon.security.caas.api.model.UsersFile;
 import org.wso2.carbon.security.caas.internal.CarbonSecurityDataHolder;
 
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -36,9 +37,9 @@ import java.util.List;
  */
 public class CarbonSecurityUtils {
 
-    private static final String USERS_CONFIG_ABSOLUTE_LOCATION =
-            CarbonSecurityConstants.getCarbonHomeDirectory().getFileName() +
-                                                           CarbonSecurityConstants.USERS_CONFIG_LOCATION;
+    private static final String USERS_CONFIG_ABSOLUTE_LOCATION = Paths
+            .get(CarbonSecurityConstants.getCarbonHomeDirectory().toString(),
+                    CarbonSecurityConstants.USERS_CONFIG_LOCATION).toString();
 
     public static List<CarbonCallbackHandler> getCallbackHandlers(String supportedLoginModule) {
 
