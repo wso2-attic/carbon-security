@@ -18,56 +18,40 @@
 
 package org.wso2.carbon.security.caas.api.model;
 
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
+import org.wso2.carbon.security.caas.api.CarbonPermission;
 
-import static org.testng.Assert.*;
+import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertFalse;
+import static org.testng.Assert.assertNull;
 
 public class UserTest {
 
-    private User testUser;
-
-    @BeforeMethod
-    protected void setUp() {
-        testUser = new User();
-    }
-
     @Test
     public void testGetUsername() throws Exception {
+        User testUser =  new User();
         assertNull(testUser.getUsername());
         testUser.setUsername("test");
         assertEquals(testUser.getUsername(), "test");
     }
 
-    @Test
-    public void testSetUsername() throws Exception {
-         testGetUsername();
-    }
-
-    @Test
-    public void testGetPassword() throws Exception {
-
-    }
 
     @Test
     public void testSetPassword() throws Exception {
-
-    }
-
-    @Test
-    public void testGetPermission() throws Exception {
-
-    }
-
-    @Test
-    public void testSetPermission() throws Exception {
-
+        User testUser =  new User();
+        assertNull(testUser.getPassword());
+        testUser.setPassword("test");
+        assertEquals(testUser.getPassword(), "test");
     }
 
     @Test
     public void testIsUserAuthorized() throws Exception {
+        User testUser =  new User();
+        testUser.setPermission("add,edit");
 
+        CarbonPermission permission = new CarbonPermission("resource1", "add");
+
+        assertFalse(testUser.isUserAuthorized(permission), "No permission given for resource 1");
     }
 
 }

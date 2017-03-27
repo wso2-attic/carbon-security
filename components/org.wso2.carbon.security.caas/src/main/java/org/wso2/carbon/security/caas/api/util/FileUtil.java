@@ -118,7 +118,7 @@ public class FileUtil {
         return configEntries;
     }
 
-    public static <T> void writeConfigFiles(Path file, Object data)
+    public static <T> void writeConfigFile(Path file, Object data)
             throws CarbonSecurityServerException {
 
         if (Files.exists(file, new LinkOption[0])) {

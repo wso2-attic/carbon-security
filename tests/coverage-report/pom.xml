@@ -97,7 +97,7 @@
                                                     <include name="jacoco.exec"/>
                                                 </fileset>
                                                 <fileset dir="../osgi-tests/target">
-                                                    <include name="jacoco1.exec"/>
+                                                    <include name="jacoco.exec"/>
                                                 </fileset>
                                             </executiondata>
                                             <structure name="Carbon Security Tests">
