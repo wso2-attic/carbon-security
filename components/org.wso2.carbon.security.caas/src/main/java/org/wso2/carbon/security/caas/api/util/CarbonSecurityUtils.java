@@ -36,9 +36,8 @@ import java.util.List;
  */
 public class CarbonSecurityUtils {
 
-    private static final String USERS_CONFIG_ABSOLUTE_LOCATION =
-            CarbonSecurityConstants.getCarbonHomeDirectory().getFileName() +
-                                                           CarbonSecurityConstants.USERS_CONFIG_LOCATION;
+    private static final String USERS_CONFIG_ABSOLUTE_LOCATION = CarbonSecurityConstants.getCarbonHomeDirectory()
+            .resolve(CarbonSecurityConstants.USERS_CONFIG_LOCATION_RELATIVE_PATH).toString();
 
     public static List<CarbonCallbackHandler> getCallbackHandlers(String supportedLoginModule) {
 
@@ -46,18 +45,17 @@ public class CarbonSecurityUtils {
         BundleContext bundleContext = CarbonSecurityDataHolder.getInstance().getBundleContext();
 
         try {
-            Collection<ServiceReference<CarbonCallbackHandler>> serviceReferences = bundleContext.getServiceReferences
-                    (CarbonCallbackHandler.class, "(&(" + CarbonCallbackHandler.SUPPORTED_LOGIN_MODULE + "=" +
-                                                supportedLoginModule + ")(service.scope=prototype))");
+            Collection<ServiceReference<CarbonCallbackHandler>> serviceReferences = bundleContext
+                    .getServiceReferences(CarbonCallbackHandler.class,
+                            "(&(" + CarbonCallbackHandler.SUPPORTED_LOGIN_MODULE + "=" +
+                                    supportedLoginModule + ")(service.scope=prototype))");
             if (serviceReferences != null) {
-                serviceReferences.forEach(
-                        serviceReference -> callbackHandlers.add(bundleContext.getServiceObjects(serviceReference)
-                                                                         .getService())
-                );
+                serviceReferences.forEach(serviceReference -> callbackHandlers
+                        .add(bundleContext.getServiceObjects(serviceReference).getService()));
             }
         } catch (InvalidSyntaxException e) {
-            throw new IllegalStateException("Invalid syntax found while searching Callback handler " +
-                                            supportedLoginModule);
+            throw new IllegalStateException(
+                    "Invalid syntax found while searching Callback handler " + supportedLoginModule);
         }
         return callbackHandlers;
     }

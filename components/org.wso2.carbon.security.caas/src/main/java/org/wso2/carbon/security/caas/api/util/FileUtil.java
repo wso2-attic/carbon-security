@@ -17,6 +17,8 @@ package org.wso2.carbon.security.caas.api.util;
 
 import org.wso2.carbon.security.caas.api.exception.CarbonSecurityServerException;
 import org.yaml.snakeyaml.Yaml;
+import org.yaml.snakeyaml.constructor.BaseConstructor;
+import org.yaml.snakeyaml.constructor.CustomClassLoaderConstructor;
 import org.yaml.snakeyaml.introspector.BeanAccess;
 
 import java.io.FileOutputStream;
@@ -52,13 +54,19 @@ public class FileUtil {
 
         try (InputStreamReader inputStreamReader =
                      new InputStreamReader(Files.newInputStream(file), StandardCharsets.UTF_8)) {
-            Yaml yaml = new Yaml();
-            yaml.setBeanAccess(BeanAccess.FIELD);
+            Yaml yaml = createYaml(classType);
             return yaml.loadAs(inputStreamReader, classType);
         } catch (IOException e) {
             throw new CarbonSecurityServerException(
                     String.format("Error in reading file %s", file.toString()), e);
         }
+    }
+
+    private static <T> Yaml createYaml(Class<T> classType) {
+        BaseConstructor constructor = new CustomClassLoaderConstructor(classType, classType.getClassLoader());
+        Yaml yaml = new Yaml(constructor);
+        yaml.setBeanAccess(BeanAccess.FIELD);
+        return yaml;
     }
 
     public static <T> List<T> readConfigFiles(Path path, Class<T> classType, String fileNameRegex)
@@ -78,8 +86,7 @@ public class FileUtil {
                         InputStreamReader in =
                                 new InputStreamReader(
                                         Files.newInputStream(file, new OpenOption[0]), StandardCharsets.UTF_8);
-                        Yaml yaml = new Yaml();
-                        yaml.setBeanAccess(BeanAccess.FIELD);
+                        Yaml yaml = createYaml(classType);
                         configEntries.add(yaml.loadAs(in, classType));
                     }
                 } catch (Throwable e) {
@@ -111,13 +118,12 @@ public class FileUtil {
         return configEntries;
     }
 
-    public static <T> void writeConfigFiles(Path file, Object data)
+    public static <T> void writeConfigFile(Path file, Object data)
             throws CarbonSecurityServerException {
 
         if (Files.exists(file, new LinkOption[0])) {
             try {
-                Yaml yaml = new Yaml();
-                yaml.setBeanAccess(BeanAccess.FIELD);
+                Yaml yaml = createYaml(data.getClass());
                 try (Writer writer = new OutputStreamWriter(new FileOutputStream(file.toFile()),
                                                             StandardCharsets.UTF_8)) {
                     yaml.dump(data, writer);

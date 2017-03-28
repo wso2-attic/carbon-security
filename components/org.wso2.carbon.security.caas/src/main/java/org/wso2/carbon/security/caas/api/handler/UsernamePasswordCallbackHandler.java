@@ -23,7 +23,6 @@ import org.wso2.carbon.security.caas.api.CarbonCallbackHandler;
 import org.wso2.carbon.security.caas.api.util.CarbonSecurityConstants;
 
 import java.io.IOException;
-import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import javax.security.auth.callback.Callback;
@@ -64,9 +63,8 @@ public class UsernamePasswordCallbackHandler implements CarbonCallbackHandler {
         if (authorizationHeader.startsWith(CarbonSecurityConstants.HTTP_AUTHORIZATION_PREFIX_BASIC)) {
 
             String credentials = authorizationHeader.split("\\s+")[1];
-            byte[] decodedByte = credentials.getBytes(Charset.forName(StandardCharsets.UTF_8.name()));
-            String authDecoded = new String(Base64.getDecoder().decode(decodedByte),
-                                            Charset.forName(StandardCharsets.UTF_8.name()));
+            byte[] decodedByte = credentials.getBytes(StandardCharsets.UTF_8);
+            String authDecoded = new String(Base64.getDecoder().decode(decodedByte), StandardCharsets.UTF_8);
             String[] authParts = authDecoded.split(":");
             if (authParts.length == 2) {
                 username = authParts[0];
