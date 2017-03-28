@@ -17,13 +17,12 @@
   ~ under the License.
   -->
 
-<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
     <parent>
         <groupId>org.wso2.carbon.security.caas</groupId>
         <artifactId>carbon-security-caas-tests</artifactId>
-        <version>1.0.2-SNAPSHOT</version>
+        <version>1.0.2-m1</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -86,18 +85,18 @@
 
                                     <target xmlns:jacoco="antlib:org.jacoco.ant">
                                         <taskdef uri="antlib:org.jacoco.ant" resource="org/jacoco/ant/antlib.xml">
-                                            <classpath path="${project.build.directory}"/>
+                                            <classpath path="${project.build.directory}" />
                                         </taskdef>
                                         <jacoco:report>
                                             <executiondata>
                                                 <fileset dir="../../components/org.wso2.carbon.security.caas/target">
-                                                    <include name="jacoco.exec"/>
+                                                    <include name="jacoco.exec" />
                                                 </fileset>
                                                 <fileset dir="../../components/org.wso2.carbon.security.caas.boot/target">
-                                                    <include name="jacoco.exec"/>
+                                                    <include name="jacoco.exec" />
                                                 </fileset>
                                                 <fileset dir="../osgi-tests/target">
-                                                    <include name="jacoco.exec"/>
+                                                    <include name="jacoco.exec" />
                                                 </fileset>
                                             </executiondata>
                                             <structure name="Carbon Security Tests">
@@ -106,7 +105,7 @@
                                                         <exclude name="**/*Constants.class" />
                                                         <exclude name="**/*Exception.class" />
                                                     </fileset>
-                                                    <fileset dir="../../components/org.wso2.carbon.security.caas.boot/target/classes" >
+                                                    <fileset dir="../../components/org.wso2.carbon.security.caas.boot/target/classes">
                                                         <exclude name="**/*Exception.class" />
                                                     </fileset>
                                                 </classfiles>
@@ -115,10 +114,10 @@
                                                     <fileset dir="../../components/org.wso2.carbon.security.caas.boot/src/main/java" />
                                                 </sourcefiles>
                                             </structure>
-                                            <html destdir="${project.build.directory}/site/jacoco"/>
+                                            <html destdir="${project.build.directory}/site/jacoco" />
                                             <check>
                                                 <rule element="PACKAGE">
-                                                    <limit counter="LINE" value="COVEREDRATIO" minimum="0.00"/>
+                                                    <limit counter="LINE" value="COVEREDRATIO" minimum="0.00" />
                                                 </rule>
                                             </check>
                                         </jacoco:report>
