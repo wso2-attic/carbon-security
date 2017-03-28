@@ -432,7 +432,6 @@
         <org.jacoco.ant.version>0.7.5.201505241946</org.jacoco.ant.version>
 
         <project.scm.id>my-scm-server</project.scm.id>
-        <maven.checkstyleplugin.excludes>**/*Test.java,**/Mock*.java</maven.checkstyleplugin.excludes>
     </properties>
 
 </project>

@@ -16,7 +16,6 @@
 
 package org.wso2.carbon.security.caas.api.util;
 
-import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
@@ -45,7 +44,7 @@ public final class CarbonSecurityConstants {
 
     //Config file names
     public static final String PERMISSION_CONFIG_FILE = "permissions.yml";
-    public static final String USERS_CONFIG_LOCATION = "/conf/security/users.yaml".replace("/", File.separator);
+    public static final Path USERS_CONFIG_LOCATION_RELATIVE_PATH = Paths.get("conf", "security", "users.yaml");
 
     public static Path getCarbonHomeDirectory() {
         return Paths.get(System.getProperty(CARBON_HOME));

@@ -30,7 +30,7 @@ import org.wso2.carbon.security.caas.api.util.CarbonSecurityUtils;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Base64;
 import java.util.Map;
@@ -132,7 +132,7 @@ public class UsernamePasswordLoginModule implements LoginModule {
         User user = CarbonSecurityUtils.getUser(userName);
         if (user == null) {
             if (log.isDebugEnabled()) {
-                log.debug("User not found for userName: %s. Failing the authentication." + userName);
+                log.debug("User not found for userName: %s. Failing the authentication.", userName);
             }
             throw new CarbonSecurityAuthenticationException();
         } else {
@@ -149,9 +149,13 @@ public class UsernamePasswordLoginModule implements LoginModule {
         return user;
     }
 
-    private byte[] toBytes(char[] chars) {
+    private byte[] toBytes(char[] chars) throws CarbonSecurityServerException {
         CharBuffer charBuffer = CharBuffer.wrap(chars);
-        ByteBuffer byteBuffer = Charset.forName("UTF-8").encode(charBuffer);
+        ByteBuffer byteBuffer = StandardCharsets.UTF_8.encode(charBuffer);
+        if (!byteBuffer.hasArray()) {
+            throw new CarbonSecurityServerException(
+                    "The password check failed due to inability to obtain byte[] from a ByteBuffer");
+        }
         byte[] bytes = Arrays.copyOfRange(byteBuffer.array(), byteBuffer.position(), byteBuffer.limit());
         Arrays.fill(charBuffer.array(), '\u0000'); // clear sensitive data
         Arrays.fill(byteBuffer.array(), (byte) 0); // clear sensitive data

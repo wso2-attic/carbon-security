@@ -29,16 +29,15 @@ public class UserTest {
 
     @Test
     public void testGetUsername() throws Exception {
-        User testUser =  new User();
+        User testUser = new User();
         assertNull(testUser.getUsername());
         testUser.setUsername("test");
         assertEquals(testUser.getUsername(), "test");
     }
 
-
     @Test
     public void testSetPassword() throws Exception {
-        User testUser =  new User();
+        User testUser = new User();
         assertNull(testUser.getPassword());
         testUser.setPassword("test");
         assertEquals(testUser.getPassword(), "test");
@@ -46,7 +45,7 @@ public class UserTest {
 
     @Test
     public void testIsUserAuthorized() throws Exception {
-        User testUser =  new User();
+        User testUser = new User();
         testUser.setPermission("add,edit");
 
         CarbonPermission permission = new CarbonPermission("resource1", "add");
