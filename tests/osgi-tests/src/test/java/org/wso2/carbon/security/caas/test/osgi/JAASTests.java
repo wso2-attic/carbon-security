@@ -28,8 +28,8 @@ import org.testng.annotations.Listeners;
 import org.testng.annotations.Test;
 import org.wso2.carbon.container.CarbonContainerFactory;
 import org.wso2.carbon.container.options.DebugOption;
+import org.wso2.carbon.kernel.CarbonServerInfo;
 import org.wso2.carbon.kernel.context.PrivilegedCarbonContext;
-import org.wso2.carbon.kernel.utils.CarbonServerInfo;
 import org.wso2.carbon.messaging.CarbonMessage;
 import org.wso2.carbon.messaging.DefaultCarbonMessage;
 import org.wso2.carbon.security.caas.api.ProxyCallbackHandler;
@@ -68,7 +68,7 @@ public class JAASTests {
             defaultOptionList.add(new DebugOption(5005));
         }
         defaultOptionList.add(systemProperty("java.security.auth.login.config")
-                .value("./conf/security/carbon-jaas-test.config"));
+                .value("../../conf/security/carbon-jaas-test.config"));
 
         return defaultOptionList.toArray(new Option[defaultOptionList.size()]);
     }

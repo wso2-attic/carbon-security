@@ -65,6 +65,10 @@
             <artifactId>org.wso2.carbon.caching</artifactId>
         </dependency>
         <dependency>
+            <groupId>org.wso2.carbon.utils</groupId>
+            <artifactId>carbon-utils</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.testng</groupId>
             <artifactId>testng</artifactId>
             <scope>test</scope>
@@ -109,7 +113,8 @@
             org.wso2.carbon.security.caas.boot.*,
             org.wso2.carbon.kernel.*,
             org.wso2.carbon.messaging.*,
-            org.wso2.carbon.caching.*
+            org.wso2.carbon.caching.*,
+            org.wso2.carbon.utils.*
         </import.package>
 
         <dsannotations>*</dsannotations>
