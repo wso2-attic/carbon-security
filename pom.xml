@@ -127,6 +127,12 @@
                 <type>zip</type>
             </dependency>
             <dependency>
+                <groupId>org.wso2.carbon</groupId>
+                <artifactId>org.wso2.carbon.touchpoint.feature</artifactId>
+                <version>${carbon.kernel.version}</version>
+                <type>zip</type>
+            </dependency>
+            <dependency>
                 <groupId>org.wso2.carbon.security.caas</groupId>
                 <artifactId>org.wso2.carbon.security.caas.feature</artifactId>
                 <version>${carbon.security.caas.version}</version>
@@ -311,9 +317,32 @@
                 <scope>test</scope>
             </dependency>
             <dependency>
+                <groupId>org.wso2.carbon.utils</groupId>
+                <artifactId>org.wso2.carbon.utils.feature</artifactId>
+                <version>${carbon.utils.version}</version>
+                <type>zip</type>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon.config</groupId>
+                <artifactId>org.wso2.carbon.config.feature</artifactId>
+                <version>${carbon.config.version}</version>
+                <type>zip</type>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon.secvault</groupId>
+                <artifactId>org.wso2.carbon.secvault.feature</artifactId>
+                <version>${carbon.secvault.version}</version>
+                <type>zip</type>
+            </dependency>
+            <dependency>
                 <groupId>org.wso2.carbon</groupId>
                 <artifactId>org.wso2.carbon.container</artifactId>
                 <version>${carbon.kernel.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon.utils</groupId>
+                <artifactId>carbon-utils</artifactId>
+                <version>${carbon.utils.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.jacoco</groupId>
@@ -366,9 +395,12 @@
         <carbon.security.caas.version>1.0.2-SNAPSHOT</carbon.security.caas.version>
 
         <carbon.feature.plugin.version>3.0.0</carbon.feature.plugin.version>
-        <carbon.kernel.version>5.2.0-m3</carbon.kernel.version>
-        <carbon.launcher.version>5.2.0-m3</carbon.launcher.version>
-        <carbon.core.version>5.2.0-m3</carbon.core.version>
+        <carbon.kernel.version>5.2.0-m4</carbon.kernel.version>
+        <carbon.launcher.version>5.2.0-m4</carbon.launcher.version>
+        <carbon.core.version>5.2.0-m4</carbon.core.version>
+        <carbon.utils.version>1.2.1</carbon.utils.version>
+        <carbon.config.version>2.0.2</carbon.config.version>
+        <carbon.secvault.version>5.0.6</carbon.secvault.version>
         <commons.dbcp.version>1.4</commons.dbcp.version>
         <org.wso2.carbon.messaging.version>2.3.1</org.wso2.carbon.messaging.version>
         <org.wso2.carbon.caching.version>1.1.3</org.wso2.carbon.caching.version>
