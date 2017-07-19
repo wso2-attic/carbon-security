@@ -17,6 +17,7 @@
 package org.wso2.carbon.security.caas.test.osgi;
 
 import org.ops4j.pax.exam.Configuration;
+import org.ops4j.pax.exam.ExamFactory;
 import org.ops4j.pax.exam.Option;
 import org.ops4j.pax.exam.spi.reactors.ExamReactorStrategy;
 import org.ops4j.pax.exam.spi.reactors.PerClass;
@@ -25,15 +26,16 @@ import org.osgi.framework.BundleContext;
 import org.testng.Assert;
 import org.testng.annotations.Listeners;
 import org.testng.annotations.Test;
+import org.wso2.carbon.container.CarbonContainerFactory;
+import org.wso2.carbon.container.options.DebugOption;
+import org.wso2.carbon.kernel.CarbonServerInfo;
 import org.wso2.carbon.kernel.context.PrivilegedCarbonContext;
-import org.wso2.carbon.kernel.utils.CarbonServerInfo;
 import org.wso2.carbon.messaging.CarbonMessage;
 import org.wso2.carbon.messaging.DefaultCarbonMessage;
 import org.wso2.carbon.security.caas.api.ProxyCallbackHandler;
 import org.wso2.carbon.security.caas.api.exception.CarbonSecurityAuthenticationException;
-import org.wso2.carbon.security.caas.test.osgi.util.SecurityOSGiTestUtils;
 
-import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
 import javax.inject.Inject;
@@ -48,6 +50,7 @@ import static org.ops4j.pax.exam.CoreOptions.systemProperty;
 
 @Listeners(PaxExam.class)
 @ExamReactorStrategy(PerClass.class)
+@ExamFactory(CarbonContainerFactory.class)
 public class JAASTests {
 
     @Inject
@@ -59,12 +62,15 @@ public class JAASTests {
     @Configuration
     public Option[] createConfiguration() {
 
-        List<Option> optionList = SecurityOSGiTestUtils.getDefaultSecurityPAXOptions();
+        List<Option> defaultOptionList = new ArrayList<>();
 
-        optionList.add(systemProperty("java.security.auth.login.config").value(Paths.get(
-                SecurityOSGiTestUtils.getCarbonHome(), "conf", "security", "carbon-jaas.config").toString()));
+        if (System.getProperty("debug") != null) {
+            defaultOptionList.add(new DebugOption(5005));
+        }
+        defaultOptionList.add(systemProperty("java.security.auth.login.config")
+                .value("../../conf/security/carbon-jaas-test.config"));
 
-        return optionList.toArray(new Option[optionList.size()]);
+        return defaultOptionList.toArray(new Option[defaultOptionList.size()]);
     }
 
     @Test
@@ -73,8 +79,8 @@ public class JAASTests {
         PrivilegedCarbonContext.destroyCurrentContext();
 
         CarbonMessage carbonMessage = new DefaultCarbonMessage();
-        carbonMessage.setHeader("Authorization", "Basic " + Base64.getEncoder()
-                .encodeToString("admin:admin".getBytes()));
+        carbonMessage
+                .setHeader("Authorization", "Basic " + Base64.getEncoder().encodeToString("admin:admin".getBytes()));
         ProxyCallbackHandler callbackHandler = new ProxyCallbackHandler(carbonMessage);
 
         LoginContext loginContext = new LoginContext("CarbonSecurityBasicConfig", callbackHandler);
@@ -89,8 +95,8 @@ public class JAASTests {
         PrivilegedCarbonContext.destroyCurrentContext();
 
         CarbonMessage carbonMessage = new DefaultCarbonMessage();
-        carbonMessage.setHeader("Authorization", "Basic " + Base64.getEncoder()
-                .encodeToString("admin:wrongpassword".getBytes()));
+        carbonMessage.setHeader("Authorization",
+                "Basic " + Base64.getEncoder().encodeToString("admin:wrongpassword".getBytes()));
 
         ProxyCallbackHandler callbackHandler = new ProxyCallbackHandler(carbonMessage);
 
@@ -106,7 +112,7 @@ public class JAASTests {
                 Assert.assertTrue(true);
             } else {
                 Assert.assertTrue(false, "Expected: " + CarbonSecurityAuthenticationException.class.getName() +
-                                         " Caught: " + e.getClass().getName());
+                        " Caught: " + e.getClass().getName());
             }
         }
     }
