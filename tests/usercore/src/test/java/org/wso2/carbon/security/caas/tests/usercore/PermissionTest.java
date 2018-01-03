@@ -36,7 +36,6 @@ import org.wso2.carbon.security.caas.internal.CarbonSecurityDataHolder;
 import org.wso2.carbon.security.caas.internal.config.StoreConfigBuilder;
 import org.wso2.carbon.security.caas.internal.config.domain.DomainConfig;
 import org.wso2.carbon.security.caas.internal.config.domain.DomainConfigBuilder;
-import org.wso2.carbon.security.caas.tests.usercore.constant.UserConstants;
 import org.wso2.carbon.security.caas.user.core.bean.User;
 import org.wso2.carbon.security.caas.user.core.claim.FileBasedMetaClaimStore;
 import org.wso2.carbon.security.caas.user.core.claim.MetaClaimStore;
@@ -77,6 +76,8 @@ import javax.security.auth.callback.PasswordCallback;
  */
 @PrepareForTest(CarbonSecurityDataHolder.class)
 public class PermissionTest extends PowerMockTestCase {
+
+    public static final String USER_NAME = "admin";
 
     /**
      * Logger instance for PermissionTest class
@@ -131,8 +132,7 @@ public class PermissionTest extends PowerMockTestCase {
         char[] password = new char[]{'a', 'd', 'm', 'i', 'n'};
 
         logger.info(String
-                .format("Starting user authentication via %s:%s",
-                        UserConstants.USER_NAME, String.valueOf(password)));
+                .format("Starting user authentication via %s:%s", USER_NAME, String.valueOf(password)));
 
         StoreConfig storeConfig = createStoreConfig();
         MetaClaimStore metaClaimStore = new FileBasedMetaClaimStore();
@@ -144,7 +144,7 @@ public class PermissionTest extends PowerMockTestCase {
 
         // User builder initialisation
         User user = Mockito.mock(User.class);
-        Mockito.when(user.getUserId()).thenReturn(UserConstants.USER_NAME);
+        Mockito.when(user.getUserId()).thenReturn(USER_NAME);
 
         IdentityStore identityStore = CarbonSecurityDataHolder
                 .getInstance().getCarbonRealmService().getIdentityStore();
@@ -154,7 +154,7 @@ public class PermissionTest extends PowerMockTestCase {
         PasswordCallback passwordCallback = new PasswordCallback("password", false);
         NameCallback nameCallback = new NameCallback("username");
 
-        nameCallback.setName(UserConstants.USER_NAME);
+        nameCallback.setName(USER_NAME);
         passwordCallback.setPassword(password);
 
         callbacks[0] = passwordCallback;
